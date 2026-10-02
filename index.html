@@ -93,6 +93,9 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 .arow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
 .arow label{display:flex;align-items:center;gap:6px;margin:0}
 #aReset{color:var(--warn);border-color:var(--warn)}
+#inapp{display:none;background:#fff3bf;color:#5c3c00;border:2px solid #f59f00;border-radius:12px;padding:12px;margin-bottom:12px;font-weight:600}
+#inapp button{margin-top:8px;background:#f59f00;border-color:#f59f00;color:#fff;width:100%}
+#inapp small{display:block;margin-top:6px;font-weight:400}
 .modebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
 .arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .tw{position:absolute;transform:translate(-50%,-50%);z-index:3;min-width:30px;height:26px;padding:0 7px;border-radius:99px;border:2px dashed #ff6b6b;background:rgba(224,49,49,.28);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;text-shadow:0 1px 2px #000;white-space:nowrap}
@@ -292,6 +295,7 @@ select,input{padding:0 10px}
     <button id="menuBtn"><span class="ico">☰</span><span id="menuCur"></span></button>
     <div class="langs" id="langs"></div>
   </div>
+  <div id="inapp"><span id="inappT"></span><button id="inappB"></button><small id="inappH"></small></div>
   <div class="top hero">
     <div>
       <h1 id="tTitle">700서버 KvK 참여 현황</h1>
@@ -441,6 +445,7 @@ const I18N = {
     nth: "{0}번 집결장", needJoin: "필요 집결원", pressPlace: "이 집결장은 아직 배치하지 않았습니다. 위 배치 단추를 누르세요.",
     bReport: "📋 보고서", repTitle: "📋 보고서 — 복사해서 붙여 넣으세요", bCopy: "전체 복사", copied: "복사했습니다.", copyManual: "글을 전부 선택했습니다. 길게 눌러(또는 Ctrl+C) 복사하세요.", repLeader: "집결장", repMember: "집결원",
     bReset: "↺ 배치 초기화", resetAsk: "{0} 연맹의 집결장과 배치를 모두 지울까요? (저장을 눌러야 모두에게 반영됩니다)", resetDone: "초기화했습니다. 저장을 눌러야 모두에게 반영됩니다.",
+    inapp: "카카오톡 같은 앱 안의 브라우저로 열었습니다. 여기서는 작성 화면이 안 열리거나 저장이 안 될 수 있으니 크롬 · 사파리 같은 일반 브라우저로 여세요.", bOpenOut: "다른 브라우저로 열기", inappHint: "화면 위나 아래의 ⋮ (또는 공유) 메뉴에서 '다른 브라우저로 열기'를 누르세요.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -479,6 +484,7 @@ const I18N = {
     nth: "Leader {0}", needJoin: "Joiners needed", pressPlace: "This leader has not been placed yet. Press a Place button above.",
     bReport: "📋 Report", repTitle: "📋 Report — copy and paste", bCopy: "Copy all", copied: "Copied.", copyManual: "All text is selected. Long-press (or Ctrl+C) to copy.", repLeader: "Leader", repMember: "Joiner",
     bReset: "↺ Reset placement", resetAsk: "Clear all rally leaders and the placement for {0}? (It applies to everyone only after you press Save.)", resetDone: "Reset. Press Save to apply it for everyone.",
+    inapp: "You opened this inside an app's built-in browser (such as KakaoTalk). The forms may not open or save here, so please open it in a normal browser like Chrome or Safari.", bOpenOut: "Open in another browser", inappHint: "Use the ⋮ (or share) menu at the top or bottom and choose 'Open in another browser'.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -517,6 +523,7 @@ const I18N = {
     nth: "第 {0} 隊長", needJoin: "需要的成員", pressPlace: "這位隊長尚未配置，請按上方的配置按鈕。",
     bReport: "📋 報告", repTitle: "📋 報告 — 複製後貼上", bCopy: "全部複製", copied: "已複製。", copyManual: "已全選文字，請長按（或 Ctrl+C）複製。", repLeader: "隊長", repMember: "成員",
     bReset: "↺ 重設配置", resetAsk: "要清除 {0} 聯盟的所有隊長與配置嗎？（按下儲存後才會套用到所有人）", resetDone: "已重設。按下儲存後才會套用到所有人。",
+    inapp: "你是在應用程式（例如 KakaoTalk）內建的瀏覽器開啟的。這裡可能無法開啟或儲存表單，請改用 Chrome、Safari 等一般瀏覽器。", bOpenOut: "用其他瀏覽器開啟", inappHint: "請在畫面上方或下方的 ⋮（或分享）選單選擇「用其他瀏覽器開啟」。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -555,6 +562,7 @@ const I18N = {
     nth: "القائد {0}", needJoin: "المطلوب من الأعضاء", pressPlace: "لم يتم توزيع هذا القائد بعد. اضغط زر التوزيع في الأعلى.",
     bReport: "📋 تقرير", repTitle: "📋 تقرير — انسخه والصقه", bCopy: "نسخ الكل", copied: "تم النسخ.", copyManual: "تم تحديد النص كله. اضغط مطولًا (أو Ctrl+C) للنسخ.", repLeader: "القائد", repMember: "عضو",
     bReset: "↺ إعادة ضبط التوزيع", resetAsk: "هل تريد حذف جميع القادة والتوزيع لتحالف {0}؟ (لا يُطبَّق على الجميع إلا بعد الضغط على حفظ)", resetDone: "تمت إعادة الضبط. اضغط حفظ ليُطبَّق على الجميع.",
+    inapp: "لقد فتحت الصفحة داخل متصفح أحد التطبيقات (مثل KakaoTalk). قد لا تُفتح النماذج أو لا تُحفظ هنا، لذا افتحها في متصفح عادي مثل Chrome أو Safari.", bOpenOut: "فتح في متصفح آخر", inappHint: "استخدم قائمة ⋮ (أو المشاركة) في أعلى أو أسفل الشاشة واختر «فتح في متصفح آخر».",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -593,6 +601,7 @@ const I18N = {
     nth: "{0}. lider", needJoin: "Gereken katılımcı", pressPlace: "Bu lider henüz yerleştirilmedi. Yukarıdaki yerleşim düğmesine basın.",
     bReport: "📋 Rapor", repTitle: "📋 Rapor — kopyalayıp yapıştırın", bCopy: "Tümünü kopyala", copied: "Kopyalandı.", copyManual: "Tüm metin seçildi. Kopyalamak için uzun basın (veya Ctrl+C).", repLeader: "Lider", repMember: "Katılımcı",
     bReset: "↺ Yerleşimi sıfırla", resetAsk: "{0} ittifakının tüm liderleri ve yerleşimi silinsin mi? (Herkese yansıması için Kaydet'e basmalısınız.)", resetDone: "Sıfırlandı. Herkese yansıması için Kaydet'e basın.",
+    inapp: "Sayfayı bir uygulamanın (ör. KakaoTalk) içindeki tarayıcıda açtınız. Formlar burada açılmayabilir veya kaydedilmeyebilir; lütfen Chrome veya Safari gibi normal bir tarayıcıda açın.", bOpenOut: "Başka tarayıcıda aç", inappHint: "Ekranın üstündeki veya altındaki ⋮ (ya da paylaş) menüsünden 'Başka tarayıcıda aç'ı seçin.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1329,7 +1338,7 @@ function setLang(l) {
   document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr";
   document.title = tx("title");
   $("langs").innerHTML = LANGS.map(k => '<button data-l="' + k + '"' + (k === LANG ? ' class="on"' : '') + '>' + I18N[k].name + '</button>').join("");
-  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["sTable", "sTable"], ["hRep", "repTitle"], ["repCopy", "bCopy"], ["menuT", "menu"], ["mDash", "mDash"], ["mRally", "mRally"], ["rallyNote", "rallyNote"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
+  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["sTable", "sTable"], ["inappT", "inapp"], ["inappB", "bOpenOut"], ["hRep", "repTitle"], ["repCopy", "bCopy"], ["menuT", "menu"], ["mDash", "mDash"], ["mRally", "mRally"], ["rallyNote", "rallyNote"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
   ["warClose", "popClose", "menuClose", "repClose"].forEach(id => { $(id).title = tx("close"); });
   if ($("rep").style.display !== "none") openReport();
   $("menuCur").textContent = tx(VIEW === "rally" ? "mRally" : "mDash");
@@ -1372,14 +1381,26 @@ const SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLScrbdptVwUimJm__NIv
 // 고른 언어로 팝업을 연다: 설문지는 화면 언어(hl)와 언어 문항을 미리 골라 두고, 병사 정보 화면은 lang 으로 넘긴다
 const SURVEY_LANG = {ko: ["ko", "한국어 (Korea)"], en: ["en", "English"], zh: ["zh-TW", "繁體中文 (台灣·香港)"], ar: ["ar", "العربية (Arabic)"], tr: ["tr", "Türkçe (Turkish)"]};
 const surveyUrl = () => { const v = SURVEY_LANG[LANG] || SURVEY_LANG.en; return SURVEY_URL + "&hl=" + v[0] + "&entry.293341731=" + encodeURIComponent(v[1]); };
+// 카카오톡 · 네이버 · 라인 · 페이스북 · 인스타그램 같은 앱 안의 브라우저. 여기서는 팝업(iframe) 대신 그 화면으로 바로 옮겨 가고, 일반 브라우저로 열도록 안내한다
+const UA = navigator.userAgent || "";
+const IS_KAKAO = /KAKAOTALK/i.test(UA);
+const INAPP = IS_KAKAO || /NAVER\(inapp|DaumApps|Line\/|FBAN|FBAV|FB_IAB|Instagram|Twitter|Snapchat|wv\)/i.test(UA);
+function openOutside() {
+  const url = location.href;
+  if (IS_KAKAO) { location.href = "kakaotalk://web/openExternal?url=" + encodeURIComponent(url); return; }
+  if (/Android/i.test(UA)) { location.href = "intent://" + url.replace(/^https?:\/\//, "") + "#Intent;scheme=https;package=com.android.chrome;end"; return; }
+  $("inappH").textContent = tx("inappHint");
+}
 function openPop(url, title) { $("hPop").textContent = title; $("popFrame").src = url; $("pop").style.display = "flex"; }
 function closePop() {
   if ($("pop").style.display === "none") return;
   $("pop").style.display = "none"; $("popFrame").src = "about:blank";
   load();
 }
-$("bSurvey").addEventListener("click", e => { e.preventDefault(); openPop(surveyUrl(), tx("bSurvey")); });
-$("bTroops").addEventListener("click", e => { e.preventDefault(); openPop("troops.html?embed=1&lang=" + LANG, tx("bTroops")); });
+$("bSurvey").addEventListener("click", e => { e.preventDefault(); if (INAPP) location.href = surveyUrl().replace("embedded=true&", ""); else openPop(surveyUrl(), tx("bSurvey")); });
+$("bTroops").addEventListener("click", e => { e.preventDefault(); if (INAPP) location.href = "troops.html?lang=" + LANG; else openPop("troops.html?embed=1&lang=" + LANG, tx("bTroops")); });
+$("inappB").addEventListener("click", openOutside);
+if (INAPP) $("inapp").style.display = "block";
 $("popClose").addEventListener("click", closePop);
 $("pop").addEventListener("click", e => { if (e.target === $("pop")) closePop(); });
 $("repClose").addEventListener("click", () => { $("rep").style.display = "none"; });
