@@ -939,6 +939,32 @@ function renderChart() {
   $("slotChart").innerHTML = h;
 }
 
+// 최적 배치: 병과별 필요량(need, 1,000 단위)을 사람들(cap, 1,000 단위)로 채우되 「보낸 병력 × 그 병과 레벨(q)」의 합이 가장 크게.
+// 사람 → 병과로 흐르는 최소 비용 흐름을 차례로 늘려 가며 푼다. 그래서 어떤 병과에 T11 이 남아 있는데 T10 을 넣는 일이 없다
+function bestFill(need, cap, q) {
+  const M = cap.length, S = 0, T = M + 4, N = M + 5, g = Array.from({length: N}, () => []);
+  const add = (u, v, c, w) => { g[u].push({v, c, w, r: g[v].length}); g[v].push({v: u, c: 0, w: -w, r: g[u].length - 1}); };
+  for (let m = 0; m < M; m++) { add(S, 1 + m, cap[m], 0); for (let t = 0; t < 3; t++) if (need[t] > 0) add(1 + m, M + 1 + t, cap[m], -q[m][t]); }
+  for (let t = 0; t < 3; t++) add(M + 1 + t, T, need[t], 0);
+  for (;;) {
+    const dist = new Array(N).fill(Infinity), pv = new Array(N).fill(-1), pe = new Array(N).fill(-1), inq = new Array(N).fill(false), queue = [S];
+    dist[S] = 0;
+    while (queue.length) {
+      const u = queue.shift();
+      inq[u] = false;
+      for (let k = 0; k < g[u].length; k++) {
+        const e = g[u][k];
+        if (e.c > 0 && dist[u] + e.w < dist[e.v]) { dist[e.v] = dist[u] + e.w; pv[e.v] = u; pe[e.v] = k; if (!inq[e.v]) { inq[e.v] = true; queue.push(e.v); } }
+      }
+    }
+    if (dist[T] === Infinity) break;
+    let f = Infinity;
+    for (let v = T; v !== S; v = pv[v]) f = Math.min(f, g[pv[v]][pe[v]].c);
+    for (let v = T; v !== S; v = pv[v]) { const e = g[pv[v]][pe[v]]; e.c -= f; g[v][e.r].c += f; }
+  }
+  return cap.map((c, m) => { const out = [0, 0, 0]; g[1 + m].forEach(e => { if (e.v > M && e.v <= M + 3) out[e.v - M - 1] = g[e.v][e.r].c; }); return out; });
+}
+
 // 한 시간대의 자동 배치. 인원수 × 포메이션 비율 = 병과별 목표. 집결장 본인 병력을 먼저 넣고,
 // 집결장 순서대로 하나씩 다 채운 뒤 남은 사람으로 다음 집결장을 채운다. 한 집결 안에서는 가장 모자란 병과에 그 병과 레벨이 가장 높은 사람부터
 function alloc(a, i, mode) {
@@ -952,29 +978,30 @@ function alloc(a, i, mode) {
     return {p: x.p, cap, r, target, own, need: target.map((v, t) => Math.max(0, v - own[t])), members: []};
   });
   const pool = mem.filter(p => !lids.has(p.id)).map(p => ({p, rem: march(p), used: false}));
-  // 집결원은 1,000 단위로 끊어서 보낸다. 남은 몫을 혼자 다 채울 수 있는 사람이 나오면 그 사람이 마지막으로 자투리까지 정확히 채운다
+  // 집결장 순서대로, 남은 사람 가운데 「병사 레벨 합이 가장 높아지는」 배치를 구한다(최소 비용 흐름 — 아래 bestFill).
+  // 1,000 단위로 끊어 보내고, 끝에 남는 자투리만 한 사람이 채운다
   rallies.forEach(R => {
-    for (;;) {
-      const free = pool.filter(m => !m.used), total = R.need[0] + R.need[1] + R.need[2];
-      if (!free.length || total <= 0) break;
-      let t = 0;
-      [1, 2].forEach(k => { if (R.need[k] > R.need[t]) t = k; });
-      free.sort((x, y) => lv(y.p, t) - lv(x.p, t) || (y.p.power || 0) - (x.p.power || 0));
-      const m = free[0], send = [0, 0, 0];
-      m.used = true;
-      if (m.rem >= total) {
-        [0, 1, 2].forEach(k => { send[k] = R.need[k]; R.need[k] = 0; });
-        m.rem -= total;
-        R.members.push({p: m.p, send});
-        break;
-      }
-      let c = Math.floor(m.rem / 1000) * 1000;
-      [t].concat([0, 1, 2].filter(k => k !== t).sort((x, y) => lv(m.p, y) - lv(m.p, x))).forEach(k => {
-        const g = Math.floor(Math.min(c, R.need[k]) / 1000) * 1000;
-        if (g > 0) { send[k] = g; c -= g; m.rem -= g; R.need[k] -= g; }
-      });
-      if (send[0] + send[1] + send[2] > 0) R.members.push({p: m.p, send});
+    const free = pool.filter(m => !m.used);
+    if (!free.length) return;
+    const rank = free.slice().sort((x, y) => (y.p.power || 0) - (x.p.power || 0));
+    const q = free.map(m => [0, 1, 2].map(t => lv(m.p, t) * 1000 + (free.length - rank.indexOf(m))));
+    const units = bestFill(R.need.map(v => Math.floor(v / 1000)), free.map(m => Math.floor(m.rem / 1000)), q);
+    const got = free.map((m, k) => ({m, send: units[k].map(u => u * 1000)}));
+    got.forEach(g => { [0, 1, 2].forEach(t => { R.need[t] -= g.send[t]; g.m.rem -= g.send[t]; }); });
+    // 자투리: 남은 몫을 혼자 채울 수 있는 사람 하나에게 맡긴다. 그 병과 레벨이 가장 높은 사람, 같으면 이미 이 집결에 들어온 사람
+    const left = R.need[0] + R.need[1] + R.need[2];
+    let last = null;
+    if (left > 0) {
+      let big = 0;
+      [1, 2].forEach(t => { if (R.need[t] > R.need[big]) big = t; });
+      const sum = g => g.send[0] + g.send[1] + g.send[2];
+      last = got.filter(g => g.m.rem >= left).sort((x, y) => lv(y.m.p, big) - lv(x.m.p, big) || (sum(y) > 0) - (sum(x) > 0) || (y.m.p.power || 0) - (x.m.p.power || 0))[0] || null;
+      if (last) { [0, 1, 2].forEach(t => { last.send[t] += R.need[t]; R.need[t] = 0; }); last.m.rem -= left; }
     }
+    const main = g => { let t = 0; [1, 2].forEach(k => { if (g.send[k] > g.send[t]) t = k; }); return t; };
+    got.filter(g => g.send[0] + g.send[1] + g.send[2] > 0)
+      .sort((x, y) => (x === last) - (y === last) || main(x) - main(y) || lv(y.m.p, main(y)) - lv(x.m.p, main(x)) || (y.send[0] + y.send[1] + y.send[2]) - (x.send[0] + x.send[1] + x.send[2]))
+      .forEach(g => { g.m.used = true; R.members.push({p: g.m.p, send: g.send}); });
   });
   return {rallies, rest: pool.filter(m => !m.used).map(m => m.p), joiners: pool.length};
 }
