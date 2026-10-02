@@ -31,6 +31,15 @@ input[type=text],select{font:inherit;font-size:15px;width:100%;height:42px;paddi
 .nrow .lab b.on{color:var(--ok)}
 .nrow input{text-align:end;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.3px}
 .nrow input.act{border-color:var(--accent);box-shadow:0 0 0 2px rgba(121,80,242,.25)}
+.onbtn{font:inherit;color:inherit;text-align:start;background:none;border:1px dashed var(--sub);border-radius:10px;height:42px;padding:0 8px;justify-content:center;cursor:pointer}
+.buffs{background:var(--bar);border-radius:10px;padding:10px;margin-bottom:8px}
+.brow{display:grid;grid-template-columns:76px 1fr;gap:8px;align-items:center;margin-bottom:8px;font-size:12px;font-weight:700}
+.dseg{display:flex;height:38px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.dseg button{flex:1;font:inherit;font-size:13px;padding:0;border:none;background:var(--card);color:var(--ink);cursor:pointer}
+.dseg button.on{background:var(--accent);color:#fff;font-weight:700}
+.buffs select{height:38px;font-size:14px}
+.buffs .hint{margin:0;text-align:end;font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink)}
+[hidden]{display:none !important}
 .pad{display:grid;grid-template-columns:repeat(3,1fr) 46px;gap:6px}
 .pad button{font:inherit;font-size:12px;font-weight:700;height:36px;padding:0;border-radius:8px;border:1px solid var(--line);background:var(--bar);color:var(--ink);cursor:pointer;white-space:nowrap}
 .pad button:active{background:var(--accent);color:#fff}
@@ -70,7 +79,8 @@ a{color:var(--accent)}
   <div class="card">
     <div class="t"><span id="tMarch"></span><small id="tMarchSub"></small></div>
     <div class="nrow"><div class="lab"><small class="pet"></small><b>OFF</b></div><input type="text" id="m0" inputmode="numeric" autocomplete="off" maxlength="9"></div>
-    <div class="nrow"><div class="lab"><small class="pet"></small><b class="on">ON</b></div><input type="text" id="m1" inputmode="numeric" autocomplete="off" maxlength="9"></div>
+    <div class="nrow"><button type="button" class="lab onbtn" data-open="m"><small class="pet"></small><b class="on">ON ▾</b></button><input type="text" id="m1" inputmode="numeric" autocomplete="off" maxlength="9"></div>
+    <div class="buffs" id="bm" hidden></div>
     <div class="pad" data-for="m"><button type="button" data-add="100000">+100,000</button><button type="button" data-add="10000">+10,000</button><button type="button" data-add="1000">+1,000</button><button type="button" data-act="back">⌫</button><button type="button" data-add="100">+100</button><button type="button" data-add="10">+10</button><button type="button" data-add="1">+1</button><button type="button" data-act="clear">✕</button></div>
     <div class="hint" id="tMarchHint"></div>
   </div>
@@ -78,7 +88,8 @@ a{color:var(--accent)}
   <div class="card">
     <div class="t"><span id="tRally"></span><small id="tRallySub"></small></div>
     <div class="nrow"><div class="lab"><small class="pet"></small><b>OFF</b></div><input type="text" id="r0" inputmode="numeric" autocomplete="off" maxlength="9"></div>
-    <div class="nrow"><div class="lab"><small class="pet"></small><b class="on">ON</b></div><input type="text" id="r1" inputmode="numeric" autocomplete="off" maxlength="9"></div>
+    <div class="nrow"><button type="button" class="lab onbtn" data-open="r"><small class="pet"></small><b class="on">ON ▾</b></button><input type="text" id="r1" inputmode="numeric" autocomplete="off" maxlength="9"></div>
+    <div class="buffs" id="br" hidden></div>
     <div class="pad" data-for="r"><button type="button" data-add="100000">+100,000</button><button type="button" data-add="10000">+10,000</button><button type="button" data-add="1000">+1,000</button><button type="button" data-act="back">⌫</button><button type="button" data-add="100">+100</button><button type="button" data-add="10">+10</button><button type="button" data-add="1">+1</button><button type="button" data-act="clear">✕</button></div>
     <div class="hint" id="tRallyHint"></div>
   </div>
@@ -107,7 +118,7 @@ const T = {
     tgHint: "훈련소 레벨은 TG 레벨보다 높게 고를 수 없습니다.", camp: "훈련소 레벨", tier: "순금 병사", inf: "보병", cav: "기병", arc: "궁병",
     campHint: "훈련소 레벨은 TG1~TG8 중에서 고르세요. 순금 병사는 T10 / T11 중에서 고르세요.", send: "제출", sending: "보내는 중…",
     ok: "저장되었습니다. 감사합니다!", fail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 제출해 주세요.", errId: "게임 ID는 숫자만 입력하세요 (6~12자리).", pick: "선택", none: "없음",
-    march: "출정 인원수 (한 부대 최대 병력)", pet: "펫 버프", off: "펫 버프 OFF 일 때", on: "펫 버프 ON 일 때", marchHint: "편성 계산에는 펫 버프 OFF 값을 씁니다.",
+    march: "출정 인원수 (한 부대 최대 병력)", pet: "버프", bPet: "펫 버프", bDia: "다이아 버프", bHint: "버프 ON 을 누르면 버프를 골라 ON 값을 자동으로 계산합니다.", off: "펫 버프 OFF 일 때", on: "펫 버프 ON 일 때", marchHint: "편성 계산에는 버프 OFF 값을 씁니다.",
     errMarch: "출정 인원수를 OFF · ON 둘 다 숫자로 입력하세요. ON 값은 OFF 값보다 작을 수 없습니다.",
     rally: "집결 인원수 (내가 집결장일 때 수용 인원)", rallyHint: "집결장을 맡을 수 있는 분은 꼭 넣어 주세요. 모르면 비워 두어도 됩니다.",
     errRally: "집결 인원수는 OFF · ON 둘 다 숫자로 넣거나 둘 다 비워 두세요. ON 값은 OFF 값보다 작을 수 없습니다.",
@@ -117,7 +128,7 @@ const T = {
     tgHint: "Camp levels cannot be higher than your TG level.", camp: "Camp level", tier: "Truegold troops", inf: "Infantry", cav: "Cavalry", arc: "Archer",
     campHint: "Choose TG1-TG8 for each camp, and T10 or T11 for each troop type.", send: "Submit", sending: "Sending…",
     ok: "Saved. Thank you!", fail: "Could not confirm the save. Please submit again in a moment.", errId: "Game ID must be numbers only (6-12 digits).", pick: "Select", none: "None",
-    march: "March size (max troops in one march)", pet: "Pet buff", off: "Pet buff OFF", on: "Pet buff ON", marchHint: "Rally planning uses the pet buff OFF value.",
+    march: "March size (max troops in one march)", pet: "Buff", bPet: "Pet buff", bDia: "Diamond buff", bHint: "Tap Buff ON to pick your buffs and fill in the ON value automatically.", off: "Pet buff OFF", on: "Pet buff ON", marchHint: "Rally planning uses the buff OFF value.",
     errMarch: "Enter both march sizes (OFF and ON) as numbers. ON cannot be smaller than OFF.",
     rally: "Rally capacity (when I lead a rally)", rallyHint: "Please fill this in if you can lead rallies. Leave both empty if you do not know.",
     errRally: "Enter both rally capacities (OFF and ON) as numbers, or leave both empty. ON cannot be smaller than OFF.",
@@ -127,7 +138,7 @@ const T = {
     tgHint: "訓練營等級不能高於 TG 等級。", camp: "訓練營等級", tier: "純金士兵", inf: "步兵", cav: "騎兵", arc: "弓兵",
     campHint: "訓練營等級請選 TG1~TG8。純金士兵請選 T10 或 T11。", send: "提交", sending: "傳送中…",
     ok: "已儲存，謝謝！", fail: "無法確認是否儲存，請稍後再提交一次。", errId: "遊戲 ID 只能填數字（6~12 位）。", pick: "請選擇", none: "無",
-    march: "出征人數（一支部隊的上限）", pet: "寵物增益", off: "寵物增益 OFF 時", on: "寵物增益 ON 時", marchHint: "編組計算使用寵物增益 OFF 的數值。",
+    march: "出征人數（一支部隊的上限）", pet: "增益", bPet: "寵物增益", bDia: "鑽石增益", bHint: "點「增益 ON」選擇增益，會自動算出 ON 的數值。", off: "寵物增益 OFF 時", on: "寵物增益 ON 時", marchHint: "編組計算使用增益 OFF 的數值。",
     errMarch: "請用數字填寫 OFF 與 ON 兩個出征人數，ON 不能小於 OFF。",
     rally: "集結人數（我當集結隊長時的容量）", rallyHint: "可以擔任集結隊長的人請務必填寫。不清楚可以兩格都留空。",
     errRally: "集結人數請 OFF 與 ON 都用數字填寫，或兩格都留空。ON 不能小於 OFF。",
@@ -137,7 +148,7 @@ const T = {
     tgHint: "لا يمكن أن يكون مستوى المعسكر أعلى من مستوى TG.", camp: "مستوى المعسكر", tier: "جنود الذهب الخالص", inf: "المشاة", cav: "الفرسان", arc: "الرماة",
     campHint: "اختر مستوى المعسكر من TG1 إلى TG8، واختر T10 أو T11 لكل نوع.", send: "إرسال", sending: "جارٍ الإرسال…",
     ok: "تم الحفظ. شكرًا لك!", fail: "تعذّر تأكيد الحفظ. حاول الإرسال مرة أخرى بعد قليل.", errId: "رقم ID يجب أن يكون أرقامًا فقط (6 إلى 12 رقمًا).", pick: "اختر", none: "لا يوجد",
-    march: "حجم المسيرة (الحد الأقصى للجنود في مسيرة واحدة)", pet: "تعزيز الحيوان", off: "بدون تعزيز الحيوان (OFF)", on: "مع تعزيز الحيوان (ON)", marchHint: "يُستخدم رقم OFF في حساب الحشود.",
+    march: "حجم المسيرة (الحد الأقصى للجنود في مسيرة واحدة)", pet: "التعزيز", bPet: "تعزيز الحيوان", bDia: "تعزيز الماس", bHint: "اضغط «التعزيز ON» لاختيار التعزيزات وحساب قيمة ON تلقائيًا.", off: "بدون تعزيز الحيوان (OFF)", on: "مع تعزيز الحيوان (ON)", marchHint: "يُستخدم رقم OFF في حساب الحشود.",
     errMarch: "أدخل حجم المسيرة للحالتين OFF و ON بالأرقام. لا يمكن أن يكون ON أقل من OFF.",
     rally: "سعة الحشد (عندما أقود الحشد)", rallyHint: "إذا كنت تستطيع قيادة الحشود فأدخل هذه القيمة. اترك الخانتين فارغتين إذا كنت لا تعرف.",
     errRally: "أدخل سعة الحشد للحالتين OFF و ON بالأرقام، أو اترك الخانتين فارغتين. لا يمكن أن يكون ON أقل من OFF.",
@@ -148,7 +159,7 @@ const T = {
     campHint: "Her kamp için TG1-TG8, her asker türü için T10 veya T11 seçin.", send: "Gönder", sending: "Gönderiliyor…",
     ok: "Kaydedildi. Teşekkürler!", fail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar gönderin.", errId: "Oyun ID yalnızca rakam olmalıdır (6-12 hane).", pick: "Seçin", none: "Yok",
     errPick: "Lütfen TG seviyenizi ve üç kamp seviyesini seçin.", errCamp: "Bir kamp seviyesi TG seviyenizden yüksek. Lütfen kontrol edin.",
-    march: "Sefer kapasitesi (bir seferdeki en fazla asker)", pet: "Pet takviyesi", off: "Evcil hayvan takviyesi KAPALI (OFF)", on: "Evcil hayvan takviyesi AÇIK (ON)", marchHint: "Ralli planlamasında OFF değeri kullanılır.",
+    march: "Sefer kapasitesi (bir seferdeki en fazla asker)", pet: "Takviye", bPet: "Pet takviyesi", bDia: "Elmas takviyesi", bHint: "Takviye ON'a basıp takviyeleri seçin; ON değeri otomatik hesaplanır.", off: "Evcil hayvan takviyesi KAPALI (OFF)", on: "Evcil hayvan takviyesi AÇIK (ON)", marchHint: "Ralli planlamasında OFF değeri kullanılır.",
     errMarch: "Sefer kapasitesini OFF ve ON için rakamla girin. ON, OFF değerinden küçük olamaz.",
     rally: "Ralli kapasitesi (ralliyi ben yönetirken)", rallyHint: "Ralli yönetebiliyorsanız lütfen doldurun. Bilmiyorsanız iki kutuyu da boş bırakın.",
     errRally: "Ralli kapasitesini OFF ve ON için rakamla girin ya da ikisini de boş bırakın. ON, OFF değerinden küçük olamaz.", back: "Katılım panosunu görüntüle"}
@@ -173,8 +184,9 @@ function setLang(l) {
   // 제목의 괄호 설명은 작은 글씨로 내려 한 줄에 들어가게 한다
   const cut = v => { const m = /^(.*?)\s*[(（](.*)[)）]\s*$/.exec(v); return m ? [m[1], m[2]] : [v, ""]; };
   [["tMarch", t.march], ["tRally", t.rally]].forEach(x => { const c = cut(x[1]); $(x[0]).textContent = c[0]; $(x[0] + "Sub").textContent = c[1]; });
-  $("tMarchHint").textContent = t.marchHint; $("tRallyHint").textContent = t.rallyHint;
+  $("tMarchHint").textContent = t.bHint + " " + t.marchHint; $("tRallyHint").textContent = t.bHint + " " + t.rallyHint;
   [...document.querySelectorAll(".pet")].forEach(e => { e.textContent = t.pet; });
+  drawBuffs();
   $("tCamp").textContent = t.camp; $("tTier").textContent = t.tier;
   $("tInf").textContent = t.inf; $("tCav").textContent = t.cav; $("tArc").textContent = t.arc;
   $("tCampHint").textContent = t.campHint; $("send").textContent = t.send; $("tBack").textContent = t.back;
@@ -250,9 +262,41 @@ $("gid").addEventListener("input", () => { $("gid").value = $("gid").value.repla
 const NUM = {m: 3000000, r: 9000000}, ACT = {m: "m0", r: "r0"};
 const digits = el => +el.value.replace(/[^0-9]/g, "") || 0;
 const put = (el, v) => { el.value = v ? Number(v).toLocaleString("en-US") : ""; };
+// 버프 ON 값 자동 계산. 출정: OFF × (다이아 10% · 20%) + 펫 버프(1,500~15,000). 집결: OFF + 펫 버프(60,000~150,000)
+const BUFF = {m: {dia: 0, pet: 0}, r: {dia: 0, pet: 0}};
+const PETS = {m: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(k => k * 1500), r: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => 60000 + k * 10000)};
+const fmtN = v => Number(v).toLocaleString("en-US");
+function calc(k) {
+  const off = digits($(k + "0")), b = BUFF[k], f = $("f" + k);
+  if (!b.dia && !b.pet) { if (f) f.textContent = ""; return; }
+  if (!off) { if (f) f.textContent = ""; return; }
+  const v = Math.min(Math.floor(off * (100 + b.dia) / 100) + b.pet, NUM[k]);
+  put($(k + "1"), v);
+  if (f) f.textContent = fmtN(off) + (b.dia ? " × " + (100 + b.dia) / 100 : "") + (b.pet ? " + " + fmtN(b.pet) : "") + " = " + fmtN(v);
+}
+function drawBuffs() {
+  const t = T[lang];
+  ["m", "r"].forEach(k => {
+    const b = BUFF[k];
+    $("b" + k).innerHTML = (k === "m" ? '<div class="brow"><span>' + t.bDia + '</span><div class="dseg" data-k="m">' + [0, 10, 20].map(v => '<button type="button" data-v="' + v + '"' + (b.dia === v ? ' class="on"' : '') + '>' + (v ? v + "%" : t.none) + '</button>').join("") + '</div></div>' : '') +
+      '<div class="brow"><span>' + t.bPet + '</span><select data-k="' + k + '"><option value="0">' + t.none + '</option>' + PETS[k].map(v => '<option value="' + v + '"' + (b.pet === v ? ' selected' : '') + '>+' + fmtN(v) + '</option>').join("") + '</select></div>' +
+      '<div class="hint" id="f' + k + '"></div>';
+    calc(k);
+  });
+}
+document.addEventListener("click", e => {
+  const o = e.target.closest(".onbtn");
+  if (o) { const el = $("b" + o.getAttribute("data-open")); el.hidden = !el.hidden; return; }
+  const d = e.target.closest(".dseg button");
+  if (d) { BUFF.m.dia = +d.getAttribute("data-v") || 0; drawBuffs(); }
+});
+document.addEventListener("change", e => {
+  const k = e.target.getAttribute && e.target.getAttribute("data-k");
+  if (k && e.target.tagName === "SELECT") { BUFF[k].pet = +e.target.value || 0; calc(k); }
+});
 function mark() { ["m0", "m1", "r0", "r1"].forEach(id => $(id).classList.toggle("act", ACT[id[0]] === id)); }
 ["m0", "m1", "r0", "r1"].forEach(id => {
-  $(id).addEventListener("input", () => { put($(id), Math.min(digits($(id)), NUM[id[0]])); ACT[id[0]] = id; mark(); });
+  $(id).addEventListener("input", () => { put($(id), Math.min(digits($(id)), NUM[id[0]])); ACT[id[0]] = id; mark(); if (id[1] === "0") calc(id[0]); });
   ["focus", "click"].forEach(ev => $(id).addEventListener(ev, () => { ACT[id[0]] = id; mark(); }));
 });
 [...document.querySelectorAll(".pad")].forEach(pad => pad.addEventListener("click", e => {
@@ -260,6 +304,7 @@ function mark() { ["m0", "m1", "r0", "r1"].forEach(id => $(id).classList.toggle(
   if (!b) return;
   const k = pad.getAttribute("data-for"), el = $(ACT[k]), v = digits(el), add = +b.getAttribute("data-add") || 0, act = b.getAttribute("data-act");
   put(el, add ? Math.min(v + add, NUM[k]) : act === "back" ? Math.floor(v / 10) : 0);
+  if (ACT[k] === k + "0") calc(k);
   mark();
 }));
 mark();
