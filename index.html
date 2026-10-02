@@ -52,6 +52,15 @@ tr.bad td:first-child{box-shadow:inset 4px 0 0 #e03131}
 .hr .tag{font-weight:700;font-size:13px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)}
 .warset select{padding:5px 8px}
 .warset input.memo{width:200px;text-align:start}
+.fbox{background:var(--bar);border-radius:12px;padding:12px;margin-bottom:12px;display:flex;flex-direction:column;gap:10px}
+.frow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.fgrp{display:flex;flex-wrap:wrap;align-items:center;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px}
+.fgrp b{min-width:36px}
+.fgrp select{padding:5px 8px}
+.chip{padding:4px 12px;border-radius:99px;font-size:13px;font-weight:700;color:var(--sub)}
+.chip.on{color:#fff}
+.chip.on.t10{background:#f59f00;border-color:#f59f00}
+.chip.on.t11{background:#e03131;border-color:#e03131}
 .pager{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px}
 .pager button{padding:4px 11px;font-size:14px}
 .pager button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
@@ -147,16 +156,16 @@ tr:hover td{background:rgba(121,80,242,.06)}
 
   <div class="card section">
     <h2 id="hResp"></h2>
-    <div class="filters">
-      <select id="fAlly"></select>
-      <select id="fSlot"></select>
-      <input id="fName">
-      <select id="fTg"></select>
-      <input id="fMystic" inputmode="numeric" maxlength="7" style="width:150px">
-      <select id="fInf"></select>
-      <select id="fCav"></select>
-      <select id="fArc"></select>
-      <button id="fReset"></button>
+    <div class="fbox">
+      <div class="frow">
+        <select id="fAlly"></select>
+        <select id="fSlot"></select>
+        <select id="fTg"></select>
+        <input id="fMystic" inputmode="numeric" maxlength="7" style="width:150px">
+        <input id="fName" style="width:150px">
+        <button id="fReset"></button>
+      </div>
+      <div class="frow" id="fTroops"></div>
     </div>
     <div class="scroll"><table id="respTable"></table></div>
     <div class="pager" id="pager"></div>
@@ -224,7 +233,7 @@ const I18N = {
     stamp: "응답 {0}명 · {1} 기준", stampBad: " · 아이디 오류 {0}건(위 명단 · 참여율에서 제외)", stampTail: " · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값({0})",
     hBad: "아이디 오류인 사람 명단", dBad: "게임 ID 가 없거나 숫자가 아니어서 누구인지 확인할 수 없는 응답입니다. 참여율과 집결 편성에 들어가지 않습니다. 해당하는 분은 설문을 다시 작성해 주세요.", thTyped: "입력한 ID", thLang: "언어", pageInfo: "{0}–{1} / {2}명", prev: "이전", next: "다음",
     bWar: "⚔ 작전회의실", warTitle: "⚔ 작전회의실 · KvK 연맹 배치", warDesc: "성을 가운데 두고, 시계 방향으로 몇 시 자리에 어느 연맹이 서는지 보여줍니다.", warNone: "아직 배치가 정해지지 않았습니다.", oclock: "{0}시 방향", thDir: "배치 방향", thMemo: "메모", warSet: "배치 설정 (관리자)", warPick: "정하지 않음", warSave: "배치 저장", warSaved: "배치 저장: {0}", warDone: "저장했습니다. 모두에게 이 배치가 보입니다.", close: "닫기",
-    fTgAll: "건물 전체", fTgMin: "TG{0} 이상", fMystic: "시련 점수 이상", fTroopAll: "{0} 전체", fTroopMin: "{0} T10 이상", fTroop11: "{0} T11", fReset: "필터 지우기",
+    fTgAll: "건물 전체", fTgMin: "TG{0} 이상", fMystic: "시련 점수 이상", fCampAll: "훈련소 전체", fCampMin: "훈련소 TG{0} 이상", fGold: "순금 병사", fReset: "필터 지우기",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Fill in the survey", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -249,7 +258,7 @@ const I18N = {
     stamp: "{0} responses · as of {1}", stampBad: " · {0} with a game ID error (listed above · not counted)", stampTail: " · refreshes every minute · power and Town Center come from the game ID lookup ({0})",
     hBad: "Responses with a game ID error", dBad: "These responses have no game ID or a non-numeric one, so the player cannot be identified. They are not counted in participation or the rally plan. If this is you, please fill in the survey again.", thTyped: "ID as typed", thLang: "Language", pageInfo: "{0}–{1} / {2}", prev: "Prev", next: "Next",
     bWar: "⚔ War room", warTitle: "⚔ War room · KvK alliance positions", warDesc: "With the castle in the centre, this shows which alliance stands at which clock position.", warNone: "Positions have not been set yet.", oclock: "{0} o'clock", thDir: "Position", thMemo: "Note", warSet: "Position settings (admin)", warPick: "Not set", warSave: "Save positions", warSaved: "Positions saved: {0}", warDone: "Saved. Everyone now sees these positions.", close: "Close",
-    fTgAll: "Any Town Center", fTgMin: "TG{0} or higher", fMystic: "Mystic Trial at least", fTroopAll: "{0}: any", fTroopMin: "{0} T10 or higher", fTroop11: "{0} T11", fReset: "Clear filters",
+    fTgAll: "Any Town Center", fTgMin: "TG{0} or higher", fMystic: "Mystic Trial at least", fCampAll: "Any camp", fCampMin: "Camp TG{0} or higher", fGold: "Pure Gold", fReset: "Clear filters",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫問卷", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 括號內為台灣時間）", hRally: "集結編組",
@@ -274,7 +283,7 @@ const I18N = {
     stamp: "回覆 {0} 人 · {1}", stampBad: " · ID 有誤 {0} 筆（見上方名單 · 不計入參加率）", stampTail: " · 每分鐘自動更新 · 戰力與城鎮中心為遊戲 ID 查詢值（{0}）",
     hBad: "ID 有誤的名單", dBad: "這些回覆沒有遊戲 ID 或 ID 不是數字，無法確認是誰。不計入參加率與集結編組。如果是你，請重新填寫問卷。", thTyped: "填寫的 ID", thLang: "語言", pageInfo: "{0}–{1} / {2} 人", prev: "上一頁", next: "下一頁",
     bWar: "⚔ 作戰會議室", warTitle: "⚔ 作戰會議室 · KvK 聯盟配置", warDesc: "以城堡為中心，顯示各聯盟站在幾點鐘方向。", warNone: "尚未設定配置。", oclock: "{0} 點鐘方向", thDir: "配置方向", thMemo: "備註", warSet: "配置設定（管理員）", warPick: "未設定", warSave: "儲存配置", warSaved: "配置儲存：{0}", warDone: "已儲存，所有人都會看到這份配置。", close: "關閉",
-    fTgAll: "全部城鎮中心", fTgMin: "TG{0} 以上", fMystic: "神秘試煉分數以上", fTroopAll: "{0}全部", fTroopMin: "{0} T10 以上", fTroop11: "{0} T11", fReset: "清除篩選",
+    fTgAll: "全部城鎮中心", fTgMin: "TG{0} 以上", fMystic: "神秘試煉分數以上", fCampAll: "全部訓練營", fCampMin: "訓練營 TG{0} 以上", fGold: "純金士兵", fReset: "清除篩選",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "املأ الاستبيان", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · بين القوسين توقيت UTC+3)", hRally: "خطة الحشود",
@@ -299,7 +308,7 @@ const I18N = {
     stamp: "{0} إجابة · حتى {1}", stampBad: " · {0} إجابة بخطأ في المعرف (في القائمة أعلاه · غير محسوبة)", stampTail: " · تحديث تلقائي كل دقيقة · القوة ومركز المدينة من البحث بمعرف اللعبة ({0})",
     hBad: "قائمة من لديهم خطأ في المعرف", dBad: "هذه الإجابات بلا معرف لعبة أو بمعرف غير رقمي، لذلك لا يمكن معرفة صاحبها. لا تُحسب في نسبة المشاركة ولا في خطة الحشود. إذا كنت أحدهم فأعد ملء الاستبيان.", thTyped: "المعرف المكتوب", thLang: "اللغة", pageInfo: "{0}–{1} / {2}", prev: "السابق", next: "التالي",
     bWar: "⚔ غرفة العمليات", warTitle: "⚔ غرفة العمليات · مواقع التحالفات في KvK", warDesc: "القلعة في الوسط، ويظهر هنا موقع كل تحالف بحسب اتجاه عقارب الساعة.", warNone: "لم تُحدد المواقع بعد.", oclock: "اتجاه الساعة {0}", thDir: "الموقع", thMemo: "ملاحظة", warSet: "إعداد المواقع (المشرف)", warPick: "غير محدد", warSave: "حفظ المواقع", warSaved: "تم حفظ المواقع: {0}", warDone: "تم الحفظ. الجميع يرى هذه المواقع الآن.", close: "إغلاق",
-    fTgAll: "كل مراكز المدينة", fTgMin: "TG{0} أو أعلى", fMystic: "التجربة الغامضة على الأقل", fTroopAll: "{0}: الكل", fTroopMin: "{0} T10 أو أعلى", fTroop11: "{0} T11", fReset: "مسح التصفية",
+    fTgAll: "كل مراكز المدينة", fTgMin: "TG{0} أو أعلى", fMystic: "التجربة الغامضة على الأقل", fCampAll: "كل المعسكرات", fCampMin: "المعسكر TG{0} أو أعلى", fGold: "الجنود الذهبيون", fReset: "مسح التصفية",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Anketi doldur", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · parantez içi Türkiye saati)", hRally: "Ralli planı",
@@ -324,10 +333,11 @@ const I18N = {
     stamp: "{0} yanıt · {1} itibarıyla", stampBad: " · ID hatası olan {0} yanıt (yukarıdaki liste · katılıma sayılmaz)", stampTail: " · her dakika otomatik yenilenir · güç ve Şehir Merkezi oyun ID sorgusundan ({0})",
     hBad: "ID hatası olanların listesi", dBad: "Bu yanıtlarda Oyun ID yok ya da rakam değil; bu yüzden kimin olduğu belirlenemiyor. Katılıma ve ralli planına sayılmaz. Bu sizseniz lütfen anketi yeniden doldurun.", thTyped: "Yazılan ID", thLang: "Dil", pageInfo: "{0}–{1} / {2}", prev: "Önceki", next: "Sonraki",
     bWar: "⚔ Harekât odası", warTitle: "⚔ Harekât odası · KvK ittifak yerleşimi", warDesc: "Kale ortada olacak şekilde, hangi ittifakın saat kaç yönünde duracağını gösterir.", warNone: "Yerleşim henüz belirlenmedi.", oclock: "Saat {0} yönü", thDir: "Yön", thMemo: "Not", warSet: "Yerleşim ayarları (yönetici)", warPick: "Belirlenmedi", warSave: "Yerleşimi kaydet", warSaved: "Yerleşim kaydedildi: {0}", warDone: "Kaydedildi. Bu yerleşimi artık herkes görüyor.", close: "Kapat",
-    fTgAll: "Tüm Şehir Merkezleri", fTgMin: "TG{0} ve üzeri", fMystic: "Mistik Deneme en az", fTroopAll: "{0}: tümü", fTroopMin: "{0} T10 ve üzeri", fTroop11: "{0} T11", fReset: "Filtreleri temizle",
+    fTgAll: "Tüm Şehir Merkezleri", fTgMin: "TG{0} ve üzeri", fMystic: "Mistik Deneme en az", fCampAll: "Tüm kamplar", fCampMin: "Kamp TG{0} ve üzeri", fGold: "Saf Altın", fReset: "Filtreleri temizle",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0;
+const FTIER = [new Set(), new Set(), new Set()];   // 병과별로 켜 둔 순금 병사 단추(10 · 11)
 const PER_PAGE = 10;
 const tx = (k, ...a) => {
   const v = I18N[LANG] && I18N[LANG][k] != null ? I18N[LANG][k] : I18N.ko[k];
@@ -551,11 +561,14 @@ function render() {
   $("badTable").innerHTML = '<tr><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th>' + tx("thTyped") + '</th><th>' + tx("thLang") + '</th><th class="c">FULL</th>' + slotTh + '<th>' + tx("thTime") + '</th></tr>' +
     BAD.map(p => '<tr class="bad"><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.name) + '</td><td>' + (p.id ? esc(p.id.length > 40 ? p.id.slice(0, 40) + "…" : p.id) : '<span class="badtag">' + tx("noId") + '</span>') + '</td><td>' + esc(p.lang) + '</td>' + slotTd(p) + '<td>' + esc(p.time) + '</td></tr>').join("");
 
-  const ftg = +$("fTg").value || 0, fm = +String($("fMystic").value || "").replace(/[^0-9]/g, "") || 0, ft = ["fInf", "fCav", "fArc"].map(id => +$(id).value || 0);
+  const ftg = +$("fTg").value || 0, fm = +String($("fMystic").value || "").replace(/[^0-9]/g, "") || 0, fc = [0, 1, 2].map(k => +$("fCamp" + k).value || 0);
   const more = p => {
     if (ftg) { const m = /^TG([0-9])/.exec(p.tc || ""); if (!m || +m[1] < ftg) return false; }
     if (fm && !((p.mystic || 0) >= fm)) return false;
-    if (ft.some(Boolean)) { const t = troops(p); if (!t || ft.some((v, k) => v && t[k][1] < v)) return false; }
+    if (fc.some(Boolean) || FTIER.some(x => x.size)) {
+      const t = troops(p);
+      if (!t || [0, 1, 2].some(k => (fc[k] && t[k][0] < fc[k]) || (FTIER[k].size && !FTIER[k].has(t[k][1])))) return false;
+    }
     return true;
   };
   const shown = DATA.filter(more).filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
@@ -831,10 +844,12 @@ function setLang(l) {
   $("fAlly").innerHTML = '<option value="">' + tx("fAllyAll") + '</option>' + ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
   $("fSlot").innerHTML = '<option value="">' + tx("fSlotAll") + '</option><option value="full">' + tx("fullJoin") + '</option>' + SLOTS.map((s, i) => '<option value="' + i + '">' + s[0] + '</option>').join("");
   $("fAlly").value = fa || ""; $("fSlot").value = fs || "";
-  const keep = ["fTg", "fInf", "fCav", "fArc"].map(id => $(id).value);
+  const keepTg = $("fTg").value, keepCamp = [0, 1, 2].map(k => $("fCamp" + k).value);
   $("fTg").innerHTML = '<option value="">' + tx("fTgAll") + '</option>' + [8, 7, 6, 5, 4, 3, 2, 1].map(n => '<option value="' + n + '">' + (n === 8 ? "TG8" : tx("fTgMin", n)) + '</option>').join("");
-  ["fInf", "fCav", "fArc"].forEach((id, k) => { const n = tx(["inf", "cav", "arc"][k]); $(id).innerHTML = '<option value="">' + tx("fTroopAll", n) + '</option><option value="10">' + tx("fTroopMin", n) + '</option><option value="11">' + tx("fTroop11", n) + '</option>'; });
-  ["fTg", "fInf", "fCav", "fArc"].forEach((id, k) => { $(id).value = keep[k] || ""; });
+  $("fTg").value = keepTg || "";
+  $("fTroops").innerHTML = ["inf", "cav", "arc"].map((n, k) => '<div class="fgrp"><b>' + tx(n) + '</b><select id="fCamp' + k + '"><option value="">' + tx("fCampAll") + '</option>' +
+    [8, 7, 6, 5, 4, 3, 2, 1].map(v => '<option value="' + v + '"' + (+keepCamp[k] === v ? ' selected' : '') + '>' + (v === 8 ? tx("fCampMin", 8).replace(/TG8.*/, "TG8") : tx("fCampMin", v)) + '</option>').join("") + '</select>' +
+    '<span class="sub">' + tx("fGold") + '</span>' + [10, 11].map(v => '<button class="chip t' + v + (FTIER[k].has(v) ? ' on' : '') + '" data-t="' + k + '" data-v="' + v + '">T' + v + '</button>').join("") + '</div>').join("");
   $("fMystic").placeholder = tx("fMystic"); $("fReset").textContent = tx("fReset");
   renderStamp();
   if (LOADED_AT && !LOAD_ERR) { render(); renderAdmin(); }
@@ -842,9 +857,22 @@ function setLang(l) {
 }
 $("langs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setLang(b.getAttribute("data-l")); });
 
-["fAlly", "fSlot", "fTg", "fInf", "fCav", "fArc"].forEach(id => $(id).addEventListener("change", () => { PAGE = 0; render(); }));
+["fAlly", "fSlot", "fTg", "fTroops"].forEach(id => $(id).addEventListener("change", () => { PAGE = 0; render(); }));
+$("fTroops").addEventListener("click", e => {
+  const b = e.target.closest("button.chip");
+  if (!b) return;
+  const set = FTIER[+b.getAttribute("data-t")], v = +b.getAttribute("data-v");
+  if (set.has(v)) set.delete(v); else set.add(v);
+  b.classList.toggle("on", set.has(v));
+  PAGE = 0; render();
+});
 ["fName", "fMystic"].forEach(id => $(id).addEventListener("input", () => { PAGE = 0; render(); }));
-$("fReset").addEventListener("click", () => { ["fAlly", "fSlot", "fName", "fTg", "fMystic", "fInf", "fCav", "fArc"].forEach(id => { $(id).value = ""; }); PAGE = 0; render(); });
+$("fReset").addEventListener("click", () => {
+  ["fAlly", "fSlot", "fName", "fTg", "fMystic", "fCamp0", "fCamp1", "fCamp2"].forEach(id => { $(id).value = ""; });
+  FTIER.forEach(x => x.clear());
+  [...document.querySelectorAll("#fTroops .chip")].forEach(b => b.classList.remove("on"));
+  PAGE = 0; render();
+});
 // 설문 · 병사 정보 입력은 이 화면 위에 팝업으로 띄운다. 닫으면 명단을 다시 읽는다
 const SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLScrbdptVwUimJm__NIvVjMpaIyJM4cDCQWe2SGEQr4Sc1WHfQ/viewform?embedded=true";
 // 고른 언어로 팝업을 연다: 설문지는 화면 언어(hl)와 언어 문항을 미리 골라 두고, 병사 정보 화면은 lang 으로 넘긴다
