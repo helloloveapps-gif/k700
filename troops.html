@@ -76,23 +76,27 @@ const T = {
   ko: {name: "한국어", title: "내 병사 정보 입력", desc: "700서버 KvK 집결 편성에 쓰입니다. 다시 제출하면 마지막 값이 반영됩니다.",
     id: "게임 ID (숫자만)", idHint: "게임 프로필에 있는 숫자 ID 입니다. 닉네임이 아닙니다.", tg: "내 타운센터 TG 레벨", tg0: "TG 없음 (TC30 이하)",
     tgHint: "훈련소 레벨은 TG 레벨보다 높게 고를 수 없습니다.", camp: "훈련소 레벨", tier: "순금 병사", inf: "보병", cav: "기병", arc: "궁병",
-    campHint: "훈련소 레벨은 0~8 입니다. 순금 병사는 T10 / T11 중에서 고르세요.", send: "제출", sending: "보내는 중…",
-    ok: "저장되었습니다. 감사합니다!", fail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 제출해 주세요.", errId: "게임 ID는 숫자만 입력하세요 (6~12자리).", back: "참여 현황 보기"},
+    campHint: "훈련소 레벨은 TG1~TG8 중에서 고르세요. 순금 병사는 T10 / T11 중에서 고르세요.", send: "제출", sending: "보내는 중…",
+    ok: "저장되었습니다. 감사합니다!", fail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 제출해 주세요.", errId: "게임 ID는 숫자만 입력하세요 (6~12자리).", pick: "선택", none: "없음",
+    errPick: "TG 레벨과 훈련소 레벨 세 개를 모두 선택하세요.", errCamp: "훈련소 레벨이 내 TG 레벨보다 높습니다. 다시 확인하세요.", back: "참여 현황 보기"},
   en: {name: "English", title: "My Troop Info", desc: "Used for Kingdom 700 KvK rally planning. If you submit again, the latest entry is used.",
     id: "Game ID (numbers only)", idHint: "The numeric ID on your in-game profile, not your nickname.", tg: "My Town Center TG level", tg0: "No TG (TC30 or lower)",
     tgHint: "Camp levels cannot be higher than your TG level.", camp: "Camp level", tier: "Truegold troops", inf: "Infantry", cav: "Cavalry", arc: "Archer",
-    campHint: "Camp level is 0-8. Choose T10 or T11 for each troop type.", send: "Submit", sending: "Sending…",
-    ok: "Saved. Thank you!", fail: "Could not confirm the save. Please submit again in a moment.", errId: "Game ID must be numbers only (6-12 digits).", back: "View participation board"},
+    campHint: "Choose TG1-TG8 for each camp, and T10 or T11 for each troop type.", send: "Submit", sending: "Sending…",
+    ok: "Saved. Thank you!", fail: "Could not confirm the save. Please submit again in a moment.", errId: "Game ID must be numbers only (6-12 digits).", pick: "Select", none: "None",
+    errPick: "Please select your TG level and all three camp levels.", errCamp: "A camp level is higher than your TG level. Please check again.", back: "View participation board"},
   zh: {name: "繁體中文", title: "我的士兵資料", desc: "用於 700 服 KvK 集結編組。重複提交時以最後一次為準。",
     id: "遊戲 ID（只填數字）", idHint: "遊戲個人資料中的數字 ID，不是暱稱。", tg: "我的城鎮中心 TG 等級", tg0: "沒有 TG（TC30 以下）",
     tgHint: "訓練營等級不能高於 TG 等級。", camp: "訓練營等級", tier: "純金士兵", inf: "步兵", cav: "騎兵", arc: "弓兵",
-    campHint: "訓練營等級為 0~8。純金士兵請選 T10 或 T11。", send: "提交", sending: "傳送中…",
-    ok: "已儲存，謝謝！", fail: "無法確認是否儲存，請稍後再提交一次。", errId: "遊戲 ID 只能填數字（6~12 位）。", back: "查看參加狀況"},
+    campHint: "訓練營等級請選 TG1~TG8。純金士兵請選 T10 或 T11。", send: "提交", sending: "傳送中…",
+    ok: "已儲存，謝謝！", fail: "無法確認是否儲存，請稍後再提交一次。", errId: "遊戲 ID 只能填數字（6~12 位）。", pick: "請選擇", none: "無",
+    errPick: "請選擇 TG 等級與三個訓練營等級。", errCamp: "訓練營等級高於你的 TG 等級，請再確認。", back: "查看參加狀況"},
   ar: {name: "العربية", title: "معلومات جنودي", desc: "تُستخدم لتنظيم الحشود في KvK للمملكة 700. إذا أرسلت مرة أخرى فسيُعتمد آخر إرسال.",
     id: "رقم ID اللاعب (أرقام فقط)", idHint: "الرقم الموجود في ملفك داخل اللعبة، وليس اسمك.", tg: "مستوى TG لمركز المدينة", tg0: "بدون TG (TC30 أو أقل)",
     tgHint: "لا يمكن أن يكون مستوى المعسكر أعلى من مستوى TG.", camp: "مستوى المعسكر", tier: "جنود الذهب الخالص", inf: "المشاة", cav: "الفرسان", arc: "الرماة",
-    campHint: "مستوى المعسكر من 0 إلى 8. اختر T10 أو T11 لكل نوع.", send: "إرسال", sending: "جارٍ الإرسال…",
-    ok: "تم الحفظ. شكرًا لك!", fail: "تعذّر تأكيد الحفظ. حاول الإرسال مرة أخرى بعد قليل.", errId: "رقم ID يجب أن يكون أرقامًا فقط (6 إلى 12 رقمًا).", back: "عرض لوحة المشاركة"}
+    campHint: "اختر مستوى المعسكر من TG1 إلى TG8، واختر T10 أو T11 لكل نوع.", send: "إرسال", sending: "جارٍ الإرسال…",
+    ok: "تم الحفظ. شكرًا لك!", fail: "تعذّر تأكيد الحفظ. حاول الإرسال مرة أخرى بعد قليل.", errId: "رقم ID يجب أن يكون أرقامًا فقط (6 إلى 12 رقمًا).", pick: "اختر", none: "لا يوجد",
+    errPick: "اختر مستوى TG ومستويات المعسكرات الثلاثة.", errCamp: "مستوى أحد المعسكرات أعلى من مستوى TG لديك. تحقق مرة أخرى.", back: "عرض لوحة المشاركة"}
 };
 const $ = id => document.getElementById(id);
 const nav = (navigator.language || "en").toLowerCase();
@@ -111,20 +115,22 @@ function setLang(l) {
   $("tCamp").textContent = t.camp; $("tTier").textContent = t.tier;
   $("tInf").textContent = t.inf; $("tCav").textContent = t.cav; $("tArc").textContent = t.arc;
   $("tCampHint").textContent = t.campHint; $("send").textContent = t.send; $("tBack").textContent = t.back;
-  const cur = $("tg").value;
-  $("tg").innerHTML = [0, 1, 2, 3, 4, 5, 6, 7, 8].map(v => '<option value="' + v + '">' + (v ? "TG" + v : t.tg0) + '</option>').join("");
-  $("tg").value = cur || "0";
+  const opts = zero => '<option value="">' + t.pick + '</option>' + [0, 1, 2, 3, 4, 5, 6, 7, 8].map(v => '<option value="' + v + '">' + (v ? "TG" + v : zero) + '</option>').join("");
+  ["tg", "c0", "c1", "c2"].forEach(id => { const cur = $(id).value; $(id).innerHTML = opts(id === "tg" ? t.tg0 : t.none); $(id).value = cur; });
   $("msg").className = "msg";
 }
 
-// 훈련소 레벨은 TG 레벨까지만 고를 수 있다
-function limitCamps() {
-  const tg = +$("tg").value;
+// 훈련소 레벨은 내 TG 레벨보다 높을 수 없다. 높으면 그 칸을 빨갛게 하고 제출을 막는다
+function checkCamps() {
+  const tgv = $("tg").value, tg = +tgv;
+  let bad = false;
   [0, 1, 2].forEach(i => {
-    const el = $("c" + i), cur = Math.min(+el.value || 0, tg);
-    el.innerHTML = Array.from({length: tg + 1}, (_, v) => '<option value="' + v + '">' + v + '</option>').join("");
-    el.value = String(cur);
+    const el = $("c" + i), over = tgv !== "" && el.value !== "" && +el.value > tg;
+    el.style.borderColor = over ? "var(--warn)" : "";
+    if (over) bad = true;
   });
+  if (bad) say("err", T[lang].errCamp); else if ($("msg").className.indexOf("err") >= 0) $("msg").className = "msg";
+  return !bad;
 }
 
 function drawTiers() {
@@ -152,7 +158,9 @@ async function saved(id, before) {
 async function send() {
   const t = T[lang], id = $("gid").value.trim();
   if (!/^[0-9]{6,12}$/.test(id)) { say("err", t.errId); $("gid").focus(); return; }
-  const tg = +$("tg").value, camps = [0, 1, 2].map(i => Math.min(+$("c" + i).value || 0, tg));
+  if ($("tg").value === "" || [0, 1, 2].some(i => $("c" + i).value === "")) { say("err", t.errPick); return; }
+  if (!checkCamps()) return;
+  const tg = +$("tg").value, camps = [0, 1, 2].map(i => +$("c" + i).value);
   const body = new URLSearchParams();
   body.append(F.id, id); body.append(F.tg, String(tg)); body.append(F.lang, lang);
   camps.forEach((c, i) => body.append(F.c[i], String(c)));
@@ -167,7 +175,7 @@ async function send() {
 }
 
 $("langs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setLang(b.getAttribute("data-l")); });
-$("tg").addEventListener("change", limitCamps);
+["tg", "c0", "c1", "c2"].forEach(id => $(id).addEventListener("change", checkCamps));
 $("gid").addEventListener("input", () => { $("gid").value = $("gid").value.replace(/[^0-9]/g, ""); });
 document.addEventListener("click", e => {
   const b = e.target.closest(".seg button");
@@ -176,7 +184,7 @@ document.addEventListener("click", e => {
   drawTiers();
 });
 $("send").addEventListener("click", send);
-setLang(lang); limitCamps(); drawTiers();
+setLang(lang); drawTiers();
 </script>
 </body>
 </html>
