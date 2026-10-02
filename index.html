@@ -89,6 +89,7 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 .stats b{font-size:15px;font-variant-numeric:tabular-nums}
 .stats input{width:100% !important;min-width:0;min-height:30px !important;padding:0 6px !important;font-weight:700;font-size:15px}
 .stats .hot{background:rgba(245,159,0,.18)}
+#repText{display:block;width:100%;height:58vh;min-height:240px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bar);color:var(--ink);font:13px/1.55 "Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;white-space:pre;overflow:auto;resize:vertical}
 .modebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
 .arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .tw{position:absolute;transform:translate(-50%,-50%);z-index:3;min-width:30px;height:26px;padding:0 7px;border-radius:99px;border:2px dashed #ff6b6b;background:rgba(224,49,49,.28);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;text-shadow:0 1px 2px #000;white-space:nowrap}
@@ -350,6 +351,13 @@ select,input{padding:0 10px}
     <iframe id="popFrame" title="form"></iframe>
   </div>
 </div>
+<div class="modal" id="rep" style="display:none">
+  <div class="mbox">
+    <div class="mhead"><h2 id="hRep"></h2><button id="repClose" class="xbtn">✕</button></div>
+    <textarea id="repText" readonly spellcheck="false"></textarea>
+    <div style="margin-top:10px"><button class="primary" id="repCopy"></button> <span class="sub" id="repMsg"></span></div>
+  </div>
+</div>
 <div class="modal" id="war" style="display:none">
   <div class="mbox">
     <div class="mhead"><h2 id="hWar"></h2><button id="warClose" class="xbtn">✕</button></div>
@@ -412,6 +420,7 @@ const I18N = {
     placed: "✔ 배치했습니다 — 아래 편성표를 보세요 ↓",
     capSplit: "{0} = 본인 {1} + 집결원 {2}", defNote: "＊ 출정 인원수를 입력하지 않아 기본값으로 계산한 사람", fullOk: "✔ 다 채움", nJoin: "집결원 {0}명",
     nth: "{0}번 집결장", needJoin: "필요 집결원", pressPlace: "이 집결장은 아직 배치하지 않았습니다. 위 배치 단추를 누르세요.",
+    bReport: "📋 보고서", repTitle: "📋 보고서 — 복사해서 붙여 넣으세요", bCopy: "전체 복사", copied: "복사했습니다.", repLeader: "집결장", repMember: "집결원",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -448,6 +457,7 @@ const I18N = {
     placed: "✔ Placed — see the timetable below ↓",
     capSplit: "{0} = leader {1} + joiners {2}", defNote: "＊ No march size entered, so the default value was used", fullOk: "✔ Full", nJoin: "{0} joiners",
     nth: "Leader {0}", needJoin: "Joiners needed", pressPlace: "This leader has not been placed yet. Press a Place button above.",
+    bReport: "📋 Report", repTitle: "📋 Report — copy and paste", bCopy: "Copy all", copied: "Copied.", repLeader: "Leader", repMember: "Joiner",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -484,6 +494,7 @@ const I18N = {
     placed: "✔ 已配置 — 請看下方的編組表 ↓",
     capSplit: "{0} = 隊長 {1} + 成員 {2}", defNote: "＊ 未填出征人數，以預設值計算", fullOk: "✔ 已填滿", nJoin: "成員 {0} 人",
     nth: "第 {0} 隊長", needJoin: "需要的成員", pressPlace: "這位隊長尚未配置，請按上方的配置按鈕。",
+    bReport: "📋 報告", repTitle: "📋 報告 — 複製後貼上", bCopy: "全部複製", copied: "已複製。", repLeader: "隊長", repMember: "成員",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -520,6 +531,7 @@ const I18N = {
     placed: "✔ تم التوزيع — انظر الجدول في الأسفل ↓",
     capSplit: "{0} = القائد {1} + الأعضاء {2}", defNote: "＊ لم يُدخل حجم المسيرة فاستُخدمت القيمة الافتراضية", fullOk: "✔ مكتمل", nJoin: "الأعضاء {0}",
     nth: "القائد {0}", needJoin: "المطلوب من الأعضاء", pressPlace: "لم يتم توزيع هذا القائد بعد. اضغط زر التوزيع في الأعلى.",
+    bReport: "📋 تقرير", repTitle: "📋 تقرير — انسخه والصقه", bCopy: "نسخ الكل", copied: "تم النسخ.", repLeader: "القائد", repMember: "عضو",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -556,6 +568,7 @@ const I18N = {
     placed: "✔ Yerleştirildi — aşağıdaki çizelgeye bakın ↓",
     capSplit: "{0} = lider {1} + katılımcılar {2}", defNote: "＊ Sefer kapasitesi girilmediği için varsayılan değer kullanıldı", fullOk: "✔ Dolu", nJoin: "{0} katılımcı",
     nth: "{0}. lider", needJoin: "Gereken katılımcı", pressPlace: "Bu lider henüz yerleştirilmedi. Yukarıdaki yerleşim düğmesine basın.",
+    bReport: "📋 Rapor", repTitle: "📋 Rapor — kopyalayıp yapıştırın", bCopy: "Tümünü kopyala", copied: "Kopyalandı.", repLeader: "Lider", repMember: "Katılımcı",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -919,7 +932,7 @@ function renderRally() {
   const a = $("rAlly").value || ALLIES[0], box = planBox(a), ls = box.leaders || [];
   const editing = IS_ADMIN && DRAFT && can(a);
   const stale = editing && JSON.stringify(ls) !== JSON.stringify((DRAFT.A[a] || {}).leaders || []);
-  const bar = '<div class="modebar"><button class="modeb' + (RMODE === "atk" ? ' primary' : '') + '" data-mode="atk">' + tx("bAtk") + '</button><button class="modeb' + (RMODE === "def" ? ' primary' : '') + '" data-mode="def">' + tx("bDef") + '</button>' +
+  const bar = '<div class="modebar"><button class="modeb' + (RMODE === "atk" ? ' primary' : '') + '" data-mode="atk">' + tx("bAtk") + '</button><button class="modeb' + (RMODE === "def" ? ' primary' : '') + '" data-mode="def">' + tx("bDef") + '</button>' + (ls.length ? '<button class="repb">' + tx("bReport") + '</button>' : '') +
     '<b style="color:var(--warn)" id="rallyMsg">' + (stale ? tx("stale") : '') + '</b></div>';
   if (!ls.length) {
     $("rally").innerHTML = editing && leadersOf(a).length ? bar + '<div class="msg">' + tx("pressPlace") + '</div>' : (editing ? bar : '') + '<div class="sub">' + tx("noPlan", esc(a)) + (editing ? tx("noPlanAdmin") : '') + '</div>';
@@ -962,6 +975,46 @@ function renderRally() {
   h += '<details class="tbl"><summary>' + tx("restTitle") + '</summary>' +
     plan.map((pl, i) => '<div class="troopline"><b>' + esc(SLOTS[i][0]) + '</b> <span class="sub">(' + pl.rest.length + ' / ' + pl.joiners + ')</span> ' + (pl.rest.length ? pl.rest.map(nm).join(", ") : '<span class="sub">' + tx("noOne") + '</span>') + '</div>').join("") + '</details>';
   $("rally").innerHTML = h;
+}
+
+// 보고서: 지금 보이는 배치(공격 또는 수비)를 글로. 집결장 : 이름 (병력) / 집결원 : 이름 (병력)
+function buildReport(a) {
+  const box = planBox(a), ls = box.leaders || [], z = TZ[LANG], kinds = [tx("inf"), tx("cav"), tx("arc")];
+  const amt = v => [0, 1, 2].filter(t => v[t]).map(t => kinds[t] + " " + fmt(v[t])).join(" · ") || "0";
+  const nm = p => p.gname || p.name;
+  const plan = SLOTS.map((s, i) => alloc(a, i, RMODE));
+  const out = ["[" + a + "] " + tx(RMODE === "def" ? "bDef" : "bAtk")];
+  ls.forEach((l, n) => {
+    const p = DATA.find(x => x.id === l.id), r = ratioOf(l, RMODE);
+    out.push("", "━━ " + tx("nth", n + 1) + " · " + (p ? nm(p) : l.id) + " · " + r.map(v => +v || 0).join(":") + " · " + tx("thRallyCap") + " " + fmt(l.cap) + " ━━");
+    const rows = plan.map(pl => pl.rallies.find(q => q.p.id === l.id) || null);
+    const sig = x => x ? JSON.stringify([x.own, x.members.map(m => [m.p.id, m.send]), x.need]) : "away";
+    for (let i = 0; i < rows.length;) {
+      let j = i;
+      while (j + 1 < rows.length && sig(rows[j + 1]) === sig(rows[i])) j++;
+      const x = rows[i], when = "[" + SLOTS[i][0].slice(0, 5) + "~" + SLOTS[j][0].slice(6) + " UTC" + (z ? " / " + z[0] + " " + hm(SLOTS[i][1], z[1]) + "~" + hm(SLOTS[j][2], z[1]) : "") + "]";
+      if (!x) out.push(when + " " + tx("leaderAway"));
+      else {
+        out.push(when, tx("repLeader") + " : " + nm(x.p) + " (" + amt(x.own) + ")");
+        x.members.forEach(m => out.push(tx("repMember") + " : " + nm(m.p) + " (" + amt(m.send) + ")"));
+        if (x.need[0] + x.need[1] + x.need[2]) out.push("※ " + tx("short", amt(x.need)));
+      }
+      i = j + 1;
+    }
+  });
+  return out.join("\n");
+}
+function openReport() {
+  $("repText").value = buildReport($("rAlly").value || ALLIES[0]);
+  $("repMsg").textContent = "";
+  $("rep").style.display = "flex";
+}
+async function copyReport() {
+  const t = $("repText");
+  let ok = false;
+  try { await navigator.clipboard.writeText(t.value); ok = true; } catch (e) {}
+  if (!ok) { try { t.focus(); t.select(); ok = document.execCommand("copy"); } catch (e) {} }
+  $("repMsg").textContent = ok ? tx("copied") : "";
 }
 
 // 관리자 편성 설정 (관리자 링크로 들어왔을 때만). 집결장마다 카드 하나: 최종 집결 인원수, 공격 · 수비 포메이션과 필요 병력
@@ -1231,8 +1284,9 @@ function setLang(l) {
   document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr";
   document.title = tx("title");
   $("langs").innerHTML = LANGS.map(k => '<button data-l="' + k + '"' + (k === LANG ? ' class="on"' : '') + '>' + I18N[k].name + '</button>').join("");
-  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["sTable", "sTable"], ["menuT", "menu"], ["mDash", "mDash"], ["mRally", "mRally"], ["rallyNote", "rallyNote"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
-  ["warClose", "popClose", "menuClose"].forEach(id => { $(id).title = tx("close"); });
+  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["sTable", "sTable"], ["hRep", "repTitle"], ["repCopy", "bCopy"], ["menuT", "menu"], ["mDash", "mDash"], ["mRally", "mRally"], ["rallyNote", "rallyNote"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
+  ["warClose", "popClose", "menuClose", "repClose"].forEach(id => { $(id).title = tx("close"); });
+  if ($("rep").style.display !== "none") openReport();
   $("menuCur").textContent = tx(VIEW === "rally" ? "mRally" : "mDash");
   $("fName").placeholder = "🔍 " + tx("findName");
   const fa = $("fAlly").value, fs = $("fSlot").value;
@@ -1283,10 +1337,13 @@ $("bSurvey").addEventListener("click", e => { e.preventDefault(); openPop(survey
 $("bTroops").addEventListener("click", e => { e.preventDefault(); openPop("troops.html?embed=1&lang=" + LANG, tx("bTroops")); });
 $("popClose").addEventListener("click", closePop);
 $("pop").addEventListener("click", e => { if (e.target === $("pop")) closePop(); });
+$("repClose").addEventListener("click", () => { $("rep").style.display = "none"; });
+$("rep").addEventListener("click", e => { if (e.target === $("rep")) $("rep").style.display = "none"; });
+$("repCopy").addEventListener("click", copyReport);
 $("bWar").addEventListener("click", () => { $("war").style.display = "flex"; renderWar(); });
 $("warClose").addEventListener("click", () => { $("war").style.display = "none"; });
 $("war").addEventListener("click", e => { if (e.target === $("war")) $("war").style.display = "none"; });
-document.addEventListener("keydown", e => { if (e.key === "Escape") { $("war").style.display = "none"; $("menu").style.display = "none"; closePop(); } });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { $("war").style.display = "none"; $("menu").style.display = "none"; $("rep").style.display = "none"; closePop(); } });
 $("warBody").addEventListener("change", e => {
   const ta = e.target.getAttribute && e.target.getAttribute("data-ta");
   if (ta && MAPD && MAPD[ta]) { MAPD[ta].t = TOWERS[e.target.value] ? e.target.value : ""; MAP_DIRTY = true; renderWar(); return; }
@@ -1320,6 +1377,7 @@ $("rAlly").addEventListener("change", () => { renderAdmin(); renderRally(); });
 // 「공격 배치」 · 「수비 배치」: 그 포메이션으로 다시 그린다. 관리자는 지금 고친 설정으로 계산한다
 $("rally").addEventListener("click", e => {
   if (pickTab(e)) return;
+  if (e.target.closest("button.repb")) { openReport(); return; }
   const b = e.target.closest("button.modeb");
   if (!b) return;
   RMODE = b.getAttribute("data-mode") === "def" ? "def" : "atk";
