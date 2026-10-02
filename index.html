@@ -152,6 +152,30 @@ h1,h2,.sub,label,th,td,.msg{word-break:keep-all}
   .adminbox input.name,.warset input.memo{width:130px}
   .pager button{padding:4px 9px}
 }
+/* 단추 · 입력칸 크기 통일 */
+button,select,input{min-height:40px;border-radius:10px;padding:0 14px;font-size:14px}
+button{font-weight:600}
+select,input{padding:0 10px}
+.top .acts{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:8px}
+.top .acts button{width:100%;white-space:normal;line-height:1.2}
+.star{min-height:0;padding:0 4px}
+.chip{min-height:30px;padding:0 13px}
+.pager button{min-height:34px;min-width:34px;padding:0 10px}
+.fgrp select,.warset select{min-height:34px;padding:0 8px}
+.adminbox input{min-height:34px;padding:0 8px}
+.adminbox button.del{min-height:30px;padding:0 10px}
+.xbtn{min-height:36px;padding:0}
+/* 언어 고르기: 한 줄 다섯 칸 */
+.langs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:460px;margin-inline-start:auto;margin-bottom:12px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:visible}
+.langs button{min-height:32px;padding:0 2px;border:none;border-radius:8px;background:none;font-size:13px;font-weight:600;color:var(--sub)}
+.langs button.on{background:var(--accent);color:#fff}
+@media (max-width:600px){
+  .langs{max-width:none;margin-bottom:10px;padding:4px}
+  .langs button{padding:0 2px;font-size:12px}
+  .top .acts{grid-auto-flow:row;grid-template-columns:1fr 1fr}
+  .top .acts button{padding:0 6px}
+  .pager button{padding:0 8px}
+}
 </style>
 </head>
 <body>
