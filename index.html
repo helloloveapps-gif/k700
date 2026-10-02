@@ -307,7 +307,7 @@ select,input{padding:0 10px}
       <div class="sub" id="stamp">불러오는 중…</div>
     </div>
     <div class="acts">
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLScrbdptVwUimJm__NIvVjMpaIyJM4cDCQWe2SGEQr4Sc1WHfQ/viewform" target="_blank" rel="noopener"><button id="bSurvey">참여 시간 작성</button></a>
+      <a href="kvk.html"><button id="bSurvey">참여 시간 작성</button></a>
       <a href="troops.html"><button id="bTroops">병사 정보 입력</button></a>
       <button id="bWar"></button>
       <button class="primary" id="reload">새로 고침</button>
@@ -648,7 +648,16 @@ const tx = (k, ...a) => {
 const hm = (h, off) => String((Math.floor(h) + off) % 24).padStart(2, "0") + ":" + (h % 1 ? "30" : "00");
 const slotLocal = i => { const z = TZ[LANG]; return z ? z[0] + " " + hm(SLOTS[i][1], z[1]) + "~" + hm(SLOTS[i][2], z[1]) : ""; };
 let DATA = [];
-let BAD_ID = 0, BAD = [];
+let BAD_ID = 0, BAD = [], KVK_WEB = [];
+// 시트의 타임스탬프("2026. 10. 2 오후 5:09:36")를 비교할 수 있는 수로. 같은 사람이 여러 번 내면 가장 늦은 답을 쓴다
+const tsOf = v => {
+  const m = /(\d+)\D+(\d+)\D+(\d+)\D*?(오전|오후|AM|PM)?\s*(\d+):(\d+)(?::(\d+))?/i.exec(String(v || ""));
+  if (!m) return Date.parse(v) || 0;
+  let h = +m[5];
+  if (/오후|PM/i.test(m[4] || "") && h < 12) h += 12;
+  if (/오전|AM/i.test(m[4] || "") && h === 12) h = 0;
+  return Date.UTC(+m[1], +m[2] - 1, +m[3], h, +m[6], +(m[7] || 0));
+};
 const LOOKUP = typeof PLAYERS === "undefined" ? {} : PLAYERS;
 const SOLD = typeof SOLDIERS === "undefined" ? {} : SOLDIERS;
 const COLORS = {NeX: "#3b5bdb", NvA: "#f76707", AEH: "#2f9e44", LoV: "#d6336c"};
@@ -748,13 +757,19 @@ async function loadSelf() {
   const r = await fetch("https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?gid=" + TROOP_GID + "&headers=1&tqx=out:csv&_=" + Date.now());
   const rows = parseCsv(await r.text());
   const h = rows[0] || [], col = n => h.findIndex(x => String(x).trim() === n);
-  const ci = {id: col("game_id"), tg: col("tg"), m: col("march number"), mo: col("march_on number"), ra: col("rally number"), rao: col("rally_on number"), cfg: col("config number"), c: ["inf_camp number", "cav_camp number", "arc_camp number"].map(col), t: ["inf_tier number", "cav_tier number", "arc_tier number"].map(col)};
+  const ci = {id: col("game_id"), ui: col("ui_code"), tg: col("tg"), m: col("march number"), mo: col("march_on number"), ra: col("rally number"), rao: col("rally_on number"), cfg: col("config number"), c: ["inf_camp number", "cav_camp number", "arc_camp number"].map(col), t: ["inf_tier number", "cav_tier number", "arc_tier number"].map(col)};
   const out = {}, march = {}, marchOn = {}, rally = {}, rallyOn = {};
   let cfg = null;
+  const kvk = [];
   rows.slice(1).forEach(row => {
     const cj = ci.cfg >= 0 ? String(row[ci.cfg] || "").trim() : "";
     if (cj) {
-      try { const c = JSON.parse(cj); if (c && ADMIN_H && c.k === ADMIN_H && c.A) cfg = c; } catch (e) {}
+      try {
+        const c = JSON.parse(cj);
+        if (c && ADMIN_H && c.k === ADMIN_H && c.A) cfg = c;
+        // 웹 참여 시간 설문(kvk.html)의 답: {t:"kvk", a:연맹, n:닉네임, s:"110011"(여섯 시간대), x:불참}
+        if (c && c.t === "kvk") kvk.push({time: String(row[0] || ""), id: String(row[ci.id] || "").trim(), lang: ci.ui >= 0 ? String(row[ci.ui] || "").trim() : "", a: String(c.a || ""), n: String(c.n || ""), s: String(c.s || ""), x: !!c.x});
+      } catch (e) {}
       return;
     }
     const id = String(row[ci.id] || "").trim(), tg = parseInt(row[ci.tg], 10);
@@ -770,7 +785,7 @@ async function loadSelf() {
     if (ra >= 1000 && ra <= 9000000) rally[id] = ra; else delete rally[id];
     if (rao >= 1000 && rao <= 9000000) rallyOn[id] = rao; else delete rallyOn[id];
   });
-  return {self: out, march, marchOn, rally, rallyOn, cfg};
+  return {self: out, march, marchOn, rally, rallyOn, cfg, kvk};
 }
 function troopCells(p) {
   const t = troops(p);
@@ -861,7 +876,15 @@ function build(rows) {
       BAD.push({bad: true, key: "bad" + BAD_ID, lang, time: r[0], ally, id: String(r[2] || "").trim(), name: String(r[3] || "").trim(), full, slots, absent, gname: "", gally: "", matched: false, power: null, tc: "", mystic: null});
       return;
     }
-    byId.set(id, {key: id, lang, time: r[0], ally, id: String(r[2] || "").trim(), name: String(r[3] || "").trim(), full, slots, absent});
+    byId.set(id, {key: id, lang, time: r[0], ts: tsOf(r[0]), ally, id: String(r[2] || "").trim(), name: String(r[3] || "").trim(), full, slots, absent});
+  });
+  // 웹 설문 답을 합친다. 같은 ID 는 더 늦게 낸 답이 이긴다
+  KVK_WEB.forEach(w => {
+    if (!/^[0-9]{7,12}$/.test(w.id) || ALLIES.indexOf(w.a) < 0) return;
+    const ts = tsOf(w.time), old = byId.get(w.id);
+    if (old && old.ts > ts) return;
+    const slots = SLOTS.map((x, i) => !w.x && w.s[i] === "1");
+    byId.set(w.id, {key: w.id, lang: w.lang, time: w.time, ts, ally: w.a, id: w.id, name: w.n, full: slots.every(Boolean), slots, absent: w.x || !slots.some(Boolean)});
   });
   const list = [...byId.values()];
   list.forEach(p => {
@@ -1397,7 +1420,7 @@ async function load() {
     const first = !DATA.length;
     try {
       const r = await loadSelf();
-      SELF = r.self; MARCH = r.march; MARCH_ON = r.marchOn; RALLY = r.rally; RALLY_ON = r.rallyOn;
+      SELF = r.self; MARCH = r.march; MARCH_ON = r.marchOn; RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || [];
     } catch (e) {}
     try { CFG = await loadConfig(); } catch (e) {}
     const firstDraft = IS_ADMIN && !DRAFT;
@@ -1506,7 +1529,7 @@ function closePop() {
   $("pop").style.display = "none"; $("popFrame").src = "about:blank";
   load();
 }
-$("bSurvey").addEventListener("click", e => { e.preventDefault(); if (INAPP) location.href = surveyUrl().replace("embedded=true&", ""); else openPop(surveyUrl(), tx("bSurvey")); });
+$("bSurvey").addEventListener("click", e => { e.preventDefault(); if (INAPP) location.href = "kvk.html?lang=" + LANG; else openPop("kvk.html?embed=1&lang=" + LANG, tx("bSurvey")); });
 $("bTroops").addEventListener("click", e => { e.preventDefault(); if (INAPP) location.href = "troops.html?lang=" + LANG; else openPop("troops.html?embed=1&lang=" + LANG, tx("bTroops")); });
 $("inappB").addEventListener("click", openOutside);
 if (INAPP) $("inapp").style.display = "block";

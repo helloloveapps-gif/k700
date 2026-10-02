@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>700 KvK · Time</title>
+<style>
+:root{--bg:#e9edf7;--card:#fff;--ink:#1c2230;--sub:#667085;--line:#d9deea;--accent:#5f3dc4;--bar:#dfe4f3;--warn:#e03131;--ok:#2f9e44}
+@media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b202b;--ink:#e8ebf2;--sub:#98a2b3;--line:#2b3242;--accent:#9775fa;--bar:#2a3145;--warn:#ff6b6b;--ok:#51cf66}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Malgun Gothic","Apple SD Gothic Neo","Microsoft JhengHei","Segoe UI",system-ui,sans-serif;word-break:keep-all}
+.wrap{max-width:520px;margin:0 auto;padding:12px 12px 40px}
+.hero{background:linear-gradient(120deg,#1b2a80 0%,#5f3dc4 55%,#d6336c 100%);color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.hero h1{font-size:18px;margin:0 0 4px}
+.hero p{margin:0;font-size:12px;opacity:.9}
+.langs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:10px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.langs button{font:inherit;font-size:12px;font-weight:600;min-height:32px;padding:0 2px;border-radius:8px;border:none;background:none;color:var(--sub);cursor:pointer}
+.langs button.on{background:var(--accent);color:#fff}
+body.embed .langs,body.embed .hero h1{display:none}
+body.embed .hero{padding:10px 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.t{display:block;font-weight:700;font-size:14px;margin-bottom:8px}
+.hint{color:var(--sub);font-size:12px;margin-top:6px}
+input[type=text]{font:inherit;font-size:15px;width:100%;height:42px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.pick{display:grid;gap:6px}
+.pick.a{grid-template-columns:repeat(4,1fr)}
+.pick.s{grid-template-columns:repeat(2,1fr)}
+.pick button{font:inherit;min-height:44px;padding:4px 6px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-weight:700;line-height:1.2}
+.pick button small{display:block;font-weight:400;font-size:11px;color:var(--sub)}
+.pick button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pick button.on small{color:rgba(255,255,255,.85)}
+.pick button.wide{grid-column:1/-1}
+.pick button.full.on{background:#f59f00;border-color:#f59f00}
+.pick button.no{border-style:dashed;color:var(--sub)}
+.pick button.no.on{background:#868e96;border-color:#868e96;color:#fff;border-style:solid}
+.submit{font:inherit;font-size:16px;font-weight:700;width:100%;height:48px;border-radius:12px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+.submit:disabled{opacity:.5}
+.msg{margin-top:10px;padding:10px 12px;border-radius:10px;font-weight:700;display:none}
+.msg.ok{display:block;background:rgba(47,158,68,.15);color:var(--ok)}
+.msg.err{display:block;background:rgba(224,49,49,.12);color:var(--warn)}
+.msg.wait{display:block;background:var(--bar);color:var(--ink);font-weight:400}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="langs" id="langs"></div>
+  <div class="hero"><h1 id="tTitle"></h1><p id="tDesc"></p></div>
+
+  <div class="card">
+    <span class="t" id="tAlly"></span>
+    <div class="pick a" id="ally"></div>
+  </div>
+
+  <div class="card">
+    <label class="t" id="tId" for="gid"></label>
+    <input type="text" id="gid" inputmode="numeric" autocomplete="off" maxlength="12">
+    <div class="hint" id="tIdHint"></div>
+  </div>
+
+  <div class="card">
+    <label class="t" id="tNick" for="nick"></label>
+    <input type="text" id="nick" autocomplete="off" maxlength="30">
+  </div>
+
+  <div class="card">
+    <span class="t" id="tTime"></span>
+    <div class="pick s" id="slots"></div>
+    <div class="hint" id="tTimeHint"></div>
+  </div>
+
+  <button class="submit" id="send"></button>
+  <div class="msg" id="msg"></div>
+  <p class="hint" style="text-align:center;margin-top:18px"><a href="./" id="tBack"></a></p>
+</div>
+<script>
+// 참여 시간 설문(웹). 답은 병사 정보 저장용 설문지의 config 칸에 JSON 으로 쌓이고, 현황판이 그 탭에서 읽는다
+const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfAnxDTxK2o8l1F6yTpPvlZ-4toOYDxLqcgEs5F8wDUeWY95w/formResponse";
+const SHEET = "https://docs.google.com/spreadsheets/d/1fwh4GmuMnzgylvhzoALqD0KIK5ssld-Ghs3U4Loul4E/gviz/tq?gid=404058685&headers=1&tqx=out:csv";
+const F = {id: "entry.1548665780", lang: "entry.1865700227", cfg: "entry.155379975"};
+const ALLIES = ["NeX", "NvA", "AEH", "LoV"];
+const SLOTS = [["12:00~13:00", 12, 13], ["13:00~14:00", 13, 14], ["14:00~15:00", 14, 15], ["15:00~16:00", 15, 16], ["16:00~17:00", 16, 17], ["17:00~17:30", 17, 17.5]];
+const TZ = {ko: ["한국", 9], en: null, zh: ["台灣", 8], ar: ["UTC+3", 3], tr: ["Türkiye", 3]};
+const T = {
+  ko: {name: "한국어", title: "KvK 참여 시간", desc: "참여할 수 있는 시간을 모두 고르세요. 다시 제출하면 마지막 답만 반영됩니다.",
+    ally: "연맹", id: "게임 ID (숫자만)", idHint: "게임 프로필에 있는 숫자 ID 입니다. 닉네임이 아닙니다.", nick: "게임 닉네임",
+    time: "참여 가능 시간 (UTC)", timeHint: "작은 글씨는 한국 시간입니다. FULL 을 누르면 전 시간이 선택됩니다.", full: "FULL — 전 시간 참여", absent: "불참 (참여하지 않음)",
+    send: "제출", sending: "보내는 중…", ok: "저장되었습니다. 감사합니다!", fail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 제출해 주세요.",
+    errAlly: "연맹을 고르세요.", errId: "게임 ID는 숫자만 입력하세요 (7~12자리).", errNick: "게임 닉네임을 적어 주세요.", errTime: "참여 가능한 시간을 하나 이상 고르거나 '불참'을 고르세요.", back: "참여 현황 보기"},
+  en: {name: "English", title: "KvK Available Time", desc: "Select every time you can join. If you submit again, only your latest answer counts.",
+    ally: "Alliance", id: "Game ID (numbers only)", idHint: "The numeric ID on your in-game profile, not your nickname.", nick: "In-game nickname",
+    time: "Available time (UTC)", timeHint: "Press FULL to select every slot.", full: "FULL — all slots", absent: "Not participating",
+    send: "Submit", sending: "Sending…", ok: "Saved. Thank you!", fail: "Could not confirm the save. Please submit again in a moment.",
+    errAlly: "Please pick your alliance.", errId: "Game ID must be numbers only (7-12 digits).", errNick: "Please enter your in-game nickname.", errTime: "Pick at least one time slot, or choose 'Not participating'.", back: "View participation board"},
+  zh: {name: "繁體中文", title: "KvK 可參加時間", desc: "請選擇所有可以參加的時段。重複提交時以最後一次為準。",
+    ally: "聯盟", id: "遊戲 ID（只填數字）", idHint: "遊戲個人資料中的數字 ID，不是暱稱。", nick: "遊戲暱稱",
+    time: "可參加時間（UTC）", timeHint: "小字為台灣時間。按 FULL 會選取全部時段。", full: "FULL — 全程參加", absent: "不參加",
+    send: "提交", sending: "傳送中…", ok: "已儲存，謝謝！", fail: "無法確認是否儲存，請稍後再提交一次。",
+    errAlly: "請選擇聯盟。", errId: "遊戲 ID 只能填數字（7~12 位）。", errNick: "請填寫遊戲暱稱。", errTime: "請至少選一個時段，或選擇「不參加」。", back: "查看參加狀況"},
+  ar: {name: "العربية", title: "أوقات المشاركة في KvK", desc: "اختر كل الأوقات التي تستطيع المشاركة فيها. إذا أرسلت مرة أخرى فسيُعتمد آخر إرسال.",
+    ally: "التحالف", id: "رقم ID اللاعب (أرقام فقط)", idHint: "الرقم الموجود في ملفك داخل اللعبة، وليس اسمك.", nick: "اسمك في اللعبة",
+    time: "الأوقات المتاحة (UTC)", timeHint: "الخط الصغير بتوقيت UTC+3. اضغط FULL لاختيار كل الفترات.", full: "FULL — مشاركة كاملة", absent: "لن أشارك",
+    send: "إرسال", sending: "جارٍ الإرسال…", ok: "تم الحفظ. شكرًا لك!", fail: "تعذّر تأكيد الحفظ. حاول الإرسال مرة أخرى بعد قليل.",
+    errAlly: "اختر التحالف.", errId: "رقم ID يجب أن يكون أرقامًا فقط (7 إلى 12 رقمًا).", errNick: "اكتب اسمك في اللعبة.", errTime: "اختر فترة واحدة على الأقل، أو اختر «لن أشارك».", back: "عرض لوحة المشاركة"},
+  tr: {name: "Türkçe", title: "KvK Katılım Saatleri", desc: "Katılabileceğiniz tüm saatleri seçin. Tekrar gönderirseniz yalnızca son yanıtınız geçerli olur.",
+    ally: "İttifak", id: "Oyun ID (yalnızca rakam)", idHint: "Oyun profilinizdeki sayısal ID. Takma adınız değil.", nick: "Oyun içi takma ad",
+    time: "Uygun saatler (UTC)", timeHint: "Küçük yazı Türkiye saatidir. FULL'a basınca tüm saatler seçilir.", full: "FULL — tam katılım", absent: "Katılmıyorum",
+    send: "Gönder", sending: "Gönderiliyor…", ok: "Kaydedildi. Teşekkürler!", fail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar gönderin.",
+    errAlly: "Lütfen ittifakınızı seçin.", errId: "Oyun ID yalnızca rakam olmalıdır (7-12 hane).", errNick: "Lütfen oyun içi takma adınızı yazın.", errTime: "En az bir saat dilimi seçin ya da 'Katılmıyorum'u seçin.", back: "Katılım panosunu görüntüle"}
+};
+const $ = id => document.getElementById(id);
+const nav = (navigator.language || "en").toLowerCase();
+let lang = nav.indexOf("ko") === 0 ? "ko" : nav.indexOf("zh") === 0 ? "zh" : nav.indexOf("ar") === 0 ? "ar" : nav.indexOf("tr") === 0 ? "tr" : "en";
+try { const saved = localStorage.getItem("k700lang"); if (saved && T[saved]) lang = saved; } catch (e) {}
+{ const q = new URLSearchParams(location.search).get("lang"); if (q && T[q]) lang = q; }
+let ally = "", absent = false;
+const on = [false, false, false, false, false, false];
+const hm = (h, off) => String((Math.floor(h) + off) % 24).padStart(2, "0") + ":" + (h % 1 ? "30" : "00");
+
+function draw() {
+  const t = T[lang], z = TZ[lang], full = on.every(Boolean);
+  $("ally").innerHTML = ALLIES.map(a => '<button type="button" data-a="' + a + '"' + (a === ally ? ' class="on"' : '') + '>' + a + '</button>').join("");
+  $("slots").innerHTML = '<button type="button" class="wide full' + (full ? ' on' : '') + '" data-k="full">' + t.full + '</button>' +
+    SLOTS.map((s, i) => '<button type="button" data-k="' + i + '"' + (on[i] ? ' class="on"' : '') + '>' + s[0] + (z ? '<small>' + z[0] + ' ' + hm(s[1], z[1]) + '~' + hm(s[2], z[1]) + '</small>' : '') + '</button>').join("") +
+    '<button type="button" class="wide no' + (absent ? ' on' : '') + '" data-k="no">' + t.absent + '</button>';
+}
+function setLang(l) {
+  lang = l;
+  const t = T[l];
+  try { localStorage.setItem("k700lang", l); } catch (e) {}
+  document.documentElement.lang = l === "zh" ? "zh-Hant" : l;
+  document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+  $("langs").innerHTML = Object.keys(T).map(k => '<button data-l="' + k + '"' + (k === l ? ' class="on"' : '') + '>' + T[k].name + '</button>').join("");
+  $("tTitle").textContent = t.title; $("tDesc").textContent = t.desc;
+  $("tAlly").textContent = t.ally; $("tId").textContent = t.id; $("tIdHint").textContent = t.idHint; $("tNick").textContent = t.nick;
+  $("tTime").textContent = t.time; $("tTimeHint").textContent = t.timeHint;
+  $("send").textContent = t.send; $("tBack").textContent = t.back;
+  $("msg").className = "msg";
+  draw();
+}
+function say(kind, text) { $("msg").className = "msg " + kind; $("msg").textContent = text; }
+
+async function countRows(id) {
+  const txt = await fetch(SHEET + "&_=" + Date.now()).then(r => r.text());
+  return txt.split("\n").filter(x => x.indexOf('"' + id + '"') >= 0).length;
+}
+// 제출 전보다 이 ID 의 줄이 늘었으면 저장된 것
+async function saved(id, before) {
+  for (let k = 0; k < 8; k++) {
+    await new Promise(r => setTimeout(r, 2500));
+    try { if (await countRows(id) > before) return true; } catch (e) {}
+  }
+  return false;
+}
+async function send() {
+  const t = T[lang], id = $("gid").value.trim(), nick = $("nick").value.trim();
+  if (!ally) { say("err", t.errAlly); return; }
+  if (!/^[0-9]{7,12}$/.test(id)) { say("err", t.errId); $("gid").focus(); return; }
+  if (!nick) { say("err", t.errNick); $("nick").focus(); return; }
+  if (!absent && !on.some(Boolean)) { say("err", t.errTime); return; }
+  const body = new URLSearchParams();
+  body.append(F.id, id); body.append(F.lang, lang);
+  body.append(F.cfg, JSON.stringify({t: "kvk", a: ally, n: nick, s: absent ? "000000" : on.map(v => v ? 1 : 0).join(""), x: absent ? 1 : 0}));
+  $("send").disabled = true; say("wait", t.sending);
+  let before = 0;
+  try { before = await countRows(id); } catch (e) {}
+  try { await fetch(FORM, {method: "POST", mode: "no-cors", body}); } catch (e) {}
+  const ok = await saved(id, before);
+  say(ok ? "ok" : "err", ok ? t.ok : t.fail);
+  $("send").disabled = false;
+}
+
+$("langs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setLang(b.getAttribute("data-l")); });
+$("gid").addEventListener("input", () => { $("gid").value = $("gid").value.replace(/[^0-9]/g, ""); });
+$("ally").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { ally = b.getAttribute("data-a"); draw(); } });
+// FULL 은 전 시간을 켜고(다시 누르면 끔), 불참은 시간을 모두 지운다. 시간을 고르면 불참은 풀린다
+$("slots").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  const k = b.getAttribute("data-k");
+  if (k === "full") { const v = !on.every(Boolean); on.fill(v); if (v) absent = false; }
+  else if (k === "no") { absent = !absent; if (absent) on.fill(false); }
+  else { on[+k] = !on[+k]; if (on[+k]) absent = false; }
+  draw();
+});
+$("send").addEventListener("click", send);
+setLang(lang);
+if (/[?&]embed=1/.test(location.search)) { $("tBack").parentNode.style.display = "none"; document.body.classList.add("embed"); }
+</script>
+</body>
+</html>
