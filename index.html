@@ -32,6 +32,9 @@ td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
 td.c,th.c{text-align:center}
 .dot{color:var(--ok);font-weight:700}
 .no{color:var(--line)}
+tr.bad td{background:rgba(224,49,49,.10);color:#c92a2a;text-decoration:line-through;text-decoration-color:#e03131;text-decoration-thickness:2px}
+tr.bad td:first-child{box-shadow:inset 4px 0 0 #e03131}
+.badtag{display:inline-block;text-decoration:none;background:#e03131;color:#fff;border-radius:4px;padding:0 6px;font-size:11px;font-weight:700}
 .tag{display:inline-block;padding:1px 8px;border-radius:99px;background:var(--bar);font-size:12px}
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
 .msg{padding:14px;border-radius:10px;background:var(--bar);margin-bottom:16px}
@@ -143,7 +146,7 @@ const norm = s => String(s || "").normalize("NFKC").replace(/\s+/g, "").toLowerC
 const fmt = n => n == null ? "" : Number(n).toLocaleString("ko-KR");
 const pct = (a, b) => b ? Math.round(a / b * 1000) / 10 : 0;
 let DATA = [];
-let BAD_ID = 0;
+let BAD_ID = 0, BAD = [];
 const LOOKUP = typeof PLAYERS === "undefined" ? {} : PLAYERS;
 const SOLD = typeof SOLDIERS === "undefined" ? {} : SOLDIERS;
 const COLORS = {NeX: "#3b5bdb", NvA: "#f76707", AEH: "#2f9e44", LoV: "#d6336c"};
@@ -285,23 +288,27 @@ async function fetchRows() {
 
 function build(rows) {
   const byId = new Map();
-  BAD_ID = 0;
+  BAD_ID = 0; BAD = [];
   const head = rows[0] || [];
   const langCol = head.findIndex(h => String(h).indexOf("Language") >= 0);
   rows.slice(1).forEach(row => {
     if (!row) return;
     const lang = langCol >= 0 ? String(row[langCol] || "").trim().split(" ")[0] : "";
     const f = row.filter((v, i) => i > 0 && i !== langCol && String(v || "").trim() !== "");
-    if (f.length < 4) return;
-    const r = [row[0], f[0], f[1], f[2], f[3]];
+    if (f.length < 3) return;
+    const r = f.length === 3 ? [row[0], f[0], "", f[1], f[2]] : [row[0], f[0], f[1], f[2], f[3]];
     const ally = String(r[1] || "").trim().split(" ")[0];
     const id = /^[0-9]{5,12}$/.test(String(r[2] || "").trim()) ? String(r[2]).trim() : "";
     if (!ally) return;
-    if (!id) { BAD_ID++; return; }
     const ans = String(r[4] || "");
     const full = ans.indexOf("FULL") >= 0;
     const picks = ans.split(", ").map(x => x.trim());
     const slots = SLOTS.map(s => full || picks.some(x => x.indexOf(s[0]) === 0));
+    if (!id) {
+      BAD_ID++;
+      BAD.push({bad: true, key: "bad" + BAD_ID, lang, time: r[0], ally, id: String(r[2] || "").trim(), name: String(r[3] || "").trim(), full, slots, gname: "", gally: "", matched: false, power: null, tc: "", mystic: null});
+      return;
+    }
     byId.set(id, {key: id, lang, time: r[0], ally, id: String(r[2] || "").trim(), name: String(r[3] || "").trim(), full, slots});
   });
   const list = [...byId.values()];
@@ -339,12 +346,12 @@ function render() {
   $("slotTable").innerHTML = st;
 
   const fa = $("fAlly").value, fs = $("fSlot").value, fn = norm($("fName").value);
-  const shown = DATA.filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
+  const shown = DATA.concat(BAD).filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
   let rt = '<tr><th class="c">집결장</th><th>연맹</th><th>닉네임</th><th>현재 연맹</th><th class="n">게임 ID</th><th class="n">시련</th><th class="n">전투력</th><th>건물</th><th class="n">출정 인원수<br><small>펫 버프 OFF / ON</small></th><th class="n">집결 인원수<br><small>펫 버프 OFF / ON</small></th><th class="c">보병<br><small>병사 · 훈련소</small></th><th class="c">기병<br><small>병사 · 훈련소</small></th><th class="c">궁병<br><small>병사 · 훈련소</small></th><th class="c">FULL</th>' +
     SLOTS.map(s => '<th class="c">' + s[0].slice(0, 2) + '시</th>').join("") + '<th>제출 시각</th></tr>';
   shown.forEach(p => {
-    rt += '<tr><td class="c">' + (IS_ADMIN ? '<button class="star' + (isLeader(p) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (isLeader(p) ? '★' : '☆') + '</button>' : (isLeader(p) ? '<span class="star on">★</span>' : '')) + '</td><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">(설문: ' + esc(p.name) + ')</span>' : '') + (p.matched ? "" : ' <span class="sub">(ID 조회 전)</span>') +
-      '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">≠ 설문</span>' : '') : '') + '</td><td class="n">' + esc(p.id) +
+    rt += '<tr' + (p.bad ? ' class="bad"' : '') + '><td class="c">' + (p.bad ? '' : IS_ADMIN ? '<button class="star' + (isLeader(p) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (isLeader(p) ? '★' : '☆') + '</button>' : (isLeader(p) ? '<span class="star on">★</span>' : '')) + '</td><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">(설문: ' + esc(p.name) + ')</span>' : '') + (p.bad ? ' <span class="badtag">ID 없음</span>' : p.matched ? "" : ' <span class="sub">(ID 조회 전)</span>') +
+      '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">≠ 설문</span>' : '') : '') + '</td><td class="n">' + esc(p.bad ? (p.id.length > 24 ? p.id.slice(0, 24) + "…" : p.id) : p.id) +
       '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH[p.id] ? '<b>' + fmt(MARCH[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (MARCH_ON[p.id] ? fmt(MARCH_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') +
       '</td><td class="n march">' + (RALLY[p.id] ? '<b>' + fmt(RALLY[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (RALLY_ON[p.id] ? fmt(RALLY_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') + '</td>' + troopCells(p) + '<td class="c">' + (p.full ? '<span class="dot full">★</span>' : '<span class="no">·</span>') + '</td>' +
       p.slots.map(v => '<td class="c">' + (v ? '<span class="dot">●</span>' : '<span class="no">·</span>') + '</td>').join("") + '<td class="sub">' + esc(p.time) + '</td></tr>';
@@ -512,7 +519,7 @@ async function load() {
     DATA = build(await fetchRows());
     if (first) { const a = ALLIES.find(x => DATA.some(p => p.ally === x)); if (a) $("rAlly").value = a; }
     $("msg").innerHTML = "";
-    $("stamp").textContent = "응답 " + DATA.length + "명 · " + new Date().toLocaleString("ko-KR") + " 기준" + (BAD_ID ? " · 게임 ID 가 숫자가 아닌 응답 " + BAD_ID + "건 제외" : "") + " · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값(" + (typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT) + ")";
+    $("stamp").textContent = "응답 " + DATA.length + "명 · " + new Date().toLocaleString("ko-KR") + " 기준" + (BAD_ID ? " · 게임 ID 없는 응답 " + BAD_ID + "건(붉은 줄 · 참여율에서 제외)" : "") + " · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값(" + (typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT) + ")";
     render();
     const cur = $("rAlly").value || ALLIES[0];
     if (firstDraft || first || (IS_ADMIN && !DIRTY[cur] && !$("admin").contains(document.activeElement))) renderAdmin();
