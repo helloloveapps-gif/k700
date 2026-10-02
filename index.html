@@ -631,8 +631,10 @@ const troops = p => SELF[p.id] || (SOLD[p.id] && SOLD[p.id].s) || null;
 const cfgNow = () => (IS_ADMIN && DRAFT) ? DRAFT : CFG;
 const leadersOf = a => ((cfgNow().A[a] || {}).leaders || []);
 const isLeader = p => leadersOf(p.ally).some(l => l.id === p.id);
-const marchOf = p => MARCH[p.id] || +((cfgNow().A[p.ally] || {}).def) || 100000;
-const blank = () => ({def: 100000, leaders: [], by: "", at: ""});
+const marchOf = p => MARCH[p.id] || +((cfgNow().A[p.ally] || {}).def) || DEF_MARCH;
+// 기본값: 출정 인원수를 안 넣은 사람은 145,000, 집결 인원수를 안 넣은 집결장은 1,300,000 (이박사님 2026-10-02)
+const DEF_MARCH = 145000, DEF_RALLY = 1300000;
+const blank = () => ({def: DEF_MARCH, leaders: [], by: "", at: ""});
 // 포메이션: r = 공격 비율, d = 수비 비율(보병 · 기병 · 궁병). 화면은 RMODE 로 둘 중 하나를 그린다
 let RMODE = "atk";
 const SELK = {};   // 연맹별로 지금 고른 집결장 번호(0부터)
@@ -660,7 +662,7 @@ const ownSplit = (own, r, target) => {
   return n;
 };
 const boxOk = b => ((b || {}).leaders || []).every(l => ratioOk(ratioOf(l, "atk")) && ratioOk(ratioOf(l, "def")));
-const newLeader = id => ({id, cap: RALLY_ON[id] || RALLY[id] || 180000, r: [6, 4, 0], d: [5, 2, 3]});
+const newLeader = id => ({id, cap: RALLY_ON[id] || RALLY[id] || DEF_RALLY, r: [6, 4, 0], d: [5, 2, 3]});
 
 // 편성 설정 탭(구글 드라이브 응답 시트의 셋째 탭). 연맹마다 가장 최근에 저장한 묶음만 쓴다
 async function loadConfig() {
@@ -683,7 +685,7 @@ async function loadConfig() {
       } catch (e) {}
       return;
     }
-    if (!last[a] || b > last[a].batch) last[a] = {batch: b, def: num(row[ci.def]) || 100000, leaders: [], by: String(row[ci.by] || "").trim(), at: String(row[ci.at] || "").trim()};
+    if (!last[a] || b > last[a].batch) last[a] = {batch: b, def: (num(row[ci.def]) && num(row[ci.def]) !== 100000) ? num(row[ci.def]) : DEF_MARCH, leaders: [], by: String(row[ci.by] || "").trim(), at: String(row[ci.at] || "").trim()};
     if (b !== last[a].batch) return;
     const id = String(row[ci.lid] || "").trim();
     if (/^[0-9]{5,12}$/.test(id) && !last[a].leaders.some(l => l.id === id)) {
@@ -933,7 +935,7 @@ function renderChart() {
 function alloc(a, i, mode) {
   const mem = DATA.filter(p => p.ally === a && p.slots[i]);
   const box = planBox(a), all = box.leaders || [], lids = new Set(all.map(l => l.id));
-  const march = p => MARCH[p.id] || +box.def || 100000;
+  const march = p => MARCH[p.id] || +box.def || DEF_MARCH;
   const lv = (p, t) => { const s = troops(p); return s ? s[t][1] * 100 + s[t][0] : 0; };
   const rallies = all.map(l => ({l, p: mem.find(p => p.id === l.id)})).filter(x => x.p).map(x => {
     const cap = Math.max(0, +x.l.cap || 0), r = ratioOf(x.l, mode).map(v => Math.max(0, +v || 0));
@@ -992,7 +994,7 @@ function renderRally() {
   ls.forEach((l, n) => {
     if (l.id !== selId) return;
     const p = DATA.find(x => x.id === l.id), r = ratioOf(l, RMODE);
-    const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +box.def || 100000, cap);
+    const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +box.def || DEF_MARCH, cap);
     h += '<div class="card leader" style="margin-top:12px;padding:12px"><div class="lname">' + (n + 1) + '. ★ ' + (p ? nm(p) : esc(l.id)) + ' <span class="sub" style="font-weight:400">' + (RMODE === "def" ? '🛡' : '⚔') + ' ' + r.map(v => +v || 0).join(":") + '</span></div>' +
       '<div class="sub">' + tx("capSplit", '<b>' + fmt(cap) + '</b>', fmt(own), '<b>' + fmt(cap - own) + '</b>') + '</div>';
     const rows = plan.map(pl => pl.rallies.find(q => q.p.id === l.id) || null);
@@ -1062,7 +1064,7 @@ async function copyReport() {
 // 관리자 편성 설정 (관리자 링크로 들어왔을 때만). 집결장마다 카드 하나: 최종 집결 인원수, 공격 · 수비 포메이션과 필요 병력
 // 집결 인원수에서 집결장 본인 출정 인원수를 먼저 빼고, 남은 수만 집결원으로 채운다
 function shareText(l, def) {
-  const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +def || 100000, cap);
+  const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +def || DEF_MARCH, cap);
   return tx("memShare", fmt(cap), fmt(own), fmt(cap - own));
 }
 function needText(l, mode) { const r = ratioOf(l, mode), n = needOf(l.cap, r); return ratioOk(r) ? tx("needLine", fmt(n[0]), fmt(n[1]), fmt(n[2])) : tx("sumBad", ratioSum(r)); }
@@ -1087,7 +1089,7 @@ function renderAdmin() {
     '<label class="line">' + tx("aDef") + ' <input id="aDef" inputmode="numeric" value="' + esc(box0.def) + '"></label>';
   if (ls.length) {
     const k = SELK[a] = Math.min(SELK[a] || 0, ls.length - 1), l = ls[k];
-    const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +box0.def || 100000, cap);
+    const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +box0.def || DEF_MARCH, cap);
     h += tabsHtml(ls, k) +
       '<div class="lcard"><div class="lhead"><span class="lname">' + tx("nth", k + 1) + ' ★ ' + who(l.id) + '</span><span class="sub">' + tx("thMystic") + ' ' + (fmt(info(l.id).mystic) || '·') + '</span><span class="sp"></span>' +
         (k ? '<button class="del up" data-up="' + k + '">▲ ' + tx("aUp") + '</button>' : '') + '<button class="del" data-k="' + k + '">' + tx("aDel") + '</button></div>' +
@@ -1221,7 +1223,7 @@ async function saveConfig() {
   for (const l of rows) {
     const body = new URLSearchParams();
     body.append(CF.batch, String(stamp)); body.append(CF.at, at); body.append(CF.by, by); body.append(CF.ally, a);
-    body.append(CF.def, String(+box.def || 100000)); body.append(CF.admin, ME.h);
+    body.append(CF.def, String(+box.def || DEF_MARCH)); body.append(CF.admin, ME.h);
     if (l) {
       const p = DATA.find(x => x.id === l.id);
       body.append(CF.lid, l.id); body.append(CF.lname, (p ? (p.gname || p.name) : "") + " [D:" + ratioOf(l, "def").map(v => +v || 0).join("/") + "]");
@@ -1460,7 +1462,7 @@ $("admin").addEventListener("input", e => {
     if (!l) return;
     const k = +el.dataset.k, f = el.dataset.f;
     if (f === "cap") l.cap = v; else (f[0] === "d" ? l.d : l.r)[+f.slice(1)] = v;
-    if ($("stNeed")) { const c = Math.max(0, +l.cap || 0), o = Math.min(MARCH[l.id] || +(DRAFT.A[cur] || {}).def || 100000, c); $("stOwn").textContent = fmt(o); $("stNeed").textContent = fmt(c - o); }
+    if ($("stNeed")) { const c = Math.max(0, +l.cap || 0), o = Math.min(MARCH[l.id] || +(DRAFT.A[cur] || {}).def || DEF_MARCH, c); $("stOwn").textContent = fmt(o); $("stNeed").textContent = fmt(c - o); }
     if ($("nr" + k)) { $("nr" + k).textContent = needText(l, "atk"); $("nr" + k).className = needCls(l, "atk"); }
     if ($("nd" + k)) { $("nd" + k).textContent = needText(l, "def"); $("nd" + k).className = needCls(l, "def"); }
   } else return;
