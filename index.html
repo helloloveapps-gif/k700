@@ -101,6 +101,13 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 #roleBody h3{margin:14px 0 4px;font-size:15px}
 #aConf{background:var(--ok);border-color:var(--ok);color:#fff}
 #aConf.off{background:none;color:var(--sub);border-color:var(--line)}
+#meBar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--card);border:2px solid #7950f2;border-radius:12px;padding:10px 12px;margin-bottom:12px}
+#meBar b.t{color:#7950f2;white-space:nowrap}
+#meBar input{flex:1 1 180px;min-width:0;text-align:start}
+#meBar .sub{flex:1 1 100%;font-size:12px}
+#meBar .who2{font-weight:700}
+#meBar .sp{flex:1}
+tr.mine td{background:rgba(121,80,242,.16)}
 .modebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
 .arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .tw{position:absolute;transform:translate(-50%,-50%);z-index:3;min-width:30px;height:26px;padding:0 7px;border-radius:99px;border:2px dashed #ff6b6b;background:rgba(224,49,49,.28);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;text-shadow:0 1px 2px #000;white-space:nowrap}
@@ -301,6 +308,7 @@ select,input{padding:0 10px}
     <div class="langs" id="langs"></div>
   </div>
   <div id="inapp"><span id="inappT"></span><button id="inappB"></button><small id="inappH"></small></div>
+  <div id="meBar"></div>
   <div class="top hero">
     <div>
       <h1 id="tTitle">700서버 KvK 참여 현황</h1>
@@ -463,6 +471,7 @@ const I18N = {
     roleHint: "닉네임을 누르면 그 사람이 어느 집결장에서 무엇을 하는지 나옵니다(배치를 확정한 연맹만).", roleSend: "보낼 병력",
     absent: "불참", absentN: " · 불참 {0}명",
     idBad: "ID 형식 오류", idProb: "ID 문제",
+    meTitle: "👤 내 게임 ID", mePh: "게임 ID 숫자 (비밀번호 없음)", meOk: "확인", meChange: "바꾸기", meRole: "내 역할 보기", meUnknown: "아직 응답이 없는 ID", meHint: "ID만 넣으면 됩니다(비밀번호 없음). 이 기기에서는 참여 시간 · 병사 정보 화면에 자동으로 채워집니다.", meBadId: "게임 ID는 숫자 7~12자리입니다.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -507,6 +516,7 @@ const I18N = {
     roleHint: "Tap a nickname to see which rally that player is in and what to send (confirmed alliances only).", roleSend: "Troops to send",
     absent: "Not joining", absentN: " · {0} not joining",
     idBad: "Invalid ID", idProb: "ID problem",
+    meTitle: "👤 My game ID", mePh: "Game ID number (no password)", meOk: "OK", meChange: "Change", meRole: "My role", meUnknown: "No answer yet for this ID", meHint: "Just enter your ID (no password). On this device it fills in the time survey and troop form for you.", meBadId: "A game ID is 7-12 digits.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -551,6 +561,7 @@ const I18N = {
     roleHint: "點暱稱可以看到那位成員在哪個集結、要派什麼兵（只限已確定配置的聯盟）。", roleSend: "要派的兵力",
     absent: "不參加", absentN: " · 不參加 {0} 人",
     idBad: "ID 格式錯誤", idProb: "ID 問題",
+    meTitle: "👤 我的遊戲 ID", mePh: "遊戲 ID 數字（不需要密碼）", meOk: "確定", meChange: "更改", meRole: "查看我的任務", meUnknown: "這個 ID 還沒有回覆", meHint: "只要輸入 ID（不需要密碼）。在這台裝置上，參加時間與士兵資料畫面會自動帶入。", meBadId: "遊戲 ID 是 7~12 位數字。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -595,6 +606,7 @@ const I18N = {
     roleHint: "اضغط على الاسم لترى في أي حشد يشارك اللاعب وماذا يرسل (للتحالفات المؤكدة فقط).", roleSend: "الجنود المطلوب إرسالهم",
     absent: "غير مشارك", absentN: " · غير مشارك {0}",
     idBad: "معرف غير صالح", idProb: "مشكلة المعرف",
+    meTitle: "👤 معرف لعبتي", mePh: "رقم معرف اللعبة (بدون كلمة مرور)", meOk: "تأكيد", meChange: "تغيير", meRole: "دوري", meUnknown: "لا توجد إجابة لهذا المعرف بعد", meHint: "أدخل معرفك فقط (بدون كلمة مرور). على هذا الجهاز سيُملأ تلقائيًا في استبيان الوقت ونموذج الجنود.", meBadId: "معرف اللعبة من 7 إلى 12 رقمًا.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -639,6 +651,7 @@ const I18N = {
     roleHint: "Bir oyuncunun hangi rallide ne göndereceğini görmek için takma ada dokunun (yalnızca onaylanmış ittifaklar).", roleSend: "Gönderilecek asker",
     absent: "Katılmıyor", absentN: " · {0} katılmıyor",
     idBad: "Geçersiz ID", idProb: "ID sorunu",
+    meTitle: "👤 Oyun ID'm", mePh: "Oyun ID numarası (şifre yok)", meOk: "Tamam", meChange: "Değiştir", meRole: "Görevim", meUnknown: "Bu ID için henüz yanıt yok", meHint: "Yalnızca ID'nizi girin (şifre yok). Bu cihazda zaman anketi ve asker formuna otomatik doldurulur.", meBadId: "Oyun ID 7-12 haneli bir sayıdır.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -964,7 +977,7 @@ function render() {
   if (PAGE >= pages) PAGE = pages - 1;
   const from = PAGE * PER_PAGE, view = shown.slice(from, from + PER_PAGE);
   view.forEach(p => {
-    rt += '<tr><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td><button class="who" data-id="' + esc(p.id) + '">' + esc(p.gname || p.name) + '</button>' + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
+    rt += '<tr' + (p.id === myId() ? ' class="mine"' : '') + '><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td><button class="who" data-id="' + esc(p.id) + '">' + esc(p.gname || p.name) + '</button>' + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
       '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH[p.id] ? '<b>' + fmt(MARCH[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (MARCH_ON[p.id] ? fmt(MARCH_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') +
       '</td><td class="n march">' + (RALLY[p.id] ? '<b>' + fmt(RALLY[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (RALLY_ON[p.id] ? fmt(RALLY_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') + '</td>' + troopCells(p) + slotTd(p) + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
@@ -980,6 +993,7 @@ function render() {
   $("pager").innerHTML = pg + (shown.length ? ' <span class="sub">' + tx("pageInfo", from + 1, from + view.length, shown.length) + '</span>' : '');
 
   renderRally();
+  if (!$("meBar").contains(document.activeElement)) renderMe();
 
   let ms = "";
   // 명단 닉네임 → 게임 ID (병사 명단 · ID 조회값에서 아는 만큼). ID 를 알면 ID 로, 모르면 닉네임으로 대조한다
@@ -1169,6 +1183,35 @@ function roleHtml(p) {
   });
   return h;
 }
+// 상단 「내 게임 ID」: 비밀번호 없이 ID 만. 이 기기에 기억해 참여 시간 · 병사 정보 화면이 같이 쓴다(k700id). 화면에는 ID 대신 닉네임을 보인다
+const myId = () => { try { return localStorage.getItem("k700id") || ""; } catch (e) { return ""; } };
+function renderMe() {
+  const id = myId(), box = $("meBar");
+  if (!id) {
+    box.innerHTML = '<b class="t">' + tx("meTitle") + '</b><input id="meIn" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="' + esc(tx("mePh")) + '"><button class="primary" id="meOk">' + tx("meOk") + '</button><span class="sub" id="meMsg">' + tx("meHint") + '</span>';
+    return;
+  }
+  const p = DATA.find(x => x.id === id);
+  box.innerHTML = '<b class="t">👤</b><span class="who2">' + (p ? esc(p.gname || p.name) + ' <span class="sub" style="font-weight:400">(' + esc(p.ally) + ')</span>' : '<span class="sub">' + tx("meUnknown") + '</span>') + '</span><span class="sp"></span>' +
+    (p ? '<button id="meRole">' + tx("meRole") + '</button>' : '') + '<button id="meChange">' + tx("meChange") + '</button>';
+}
+$("meBar").addEventListener("click", e => {
+  const t = e.target.closest("button");
+  if (!t) return;
+  if (t.id === "meOk") {
+    const v = ($("meIn").value || "").replace(/[^0-9]/g, "");
+    if (!/^[0-9]{7,12}$/.test(v)) { $("meMsg").textContent = tx("meBadId"); return; }
+    try { localStorage.setItem("k700id", v); } catch (x) {}
+    renderMe(); render();
+  } else if (t.id === "meChange") {
+    try { ["k700id", "k700nick", "k700ally"].forEach(k => localStorage.removeItem(k)); } catch (x) {}
+    renderMe(); render();
+    if ($("meIn")) $("meIn").focus();
+  } else if (t.id === "meRole") openRole(myId());
+});
+$("meBar").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "meIn") $("meOk").click(); });
+$("meBar").addEventListener("input", e => { if (e.target.id === "meIn") e.target.value = e.target.value.replace(/[^0-9]/g, ""); });
+
 function openRole(id) {
   const p = DATA.find(x => x.id === id);
   if (!p) return;
@@ -1501,6 +1544,7 @@ function setLang(l) {
   if ($("rep").style.display !== "none") openReport();
   $("menuCur").textContent = tx(VIEW === "rally" ? "mRally" : "mDash");
   $("fName").placeholder = "🔍 " + tx("findName");
+  renderMe();
   const fa = $("fAlly").value, fs = $("fSlot").value;
   $("fAlly").innerHTML = '<option value="">' + tx("fAllyAll") + '</option>' + ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
   $("fSlot").innerHTML = '<option value="">' + tx("fSlotAll") + '</option><option value="full">' + tx("fullJoin") + '</option>' + SLOTS.map((s, i) => '<option value="' + i + '">' + s[0] + '</option>').join("") + '<option value="absent">' + tx("absent") + '</option>';
