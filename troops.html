@@ -148,6 +148,7 @@ const $ = id => document.getElementById(id);
 const nav = (navigator.language || "en").toLowerCase();
 let lang = nav.indexOf("ko") === 0 ? "ko" : nav.indexOf("zh") === 0 ? "zh" : nav.indexOf("ar") === 0 ? "ar" : nav.indexOf("tr") === 0 ? "tr" : "en";
 try { const saved = localStorage.getItem("k700lang"); if (saved && T[saved]) lang = saved; } catch (e) {}
+{ const q = new URLSearchParams(location.search).get("lang"); if (q && T[q]) lang = q; }
 const tiers = [10, 10, 10];
 
 function setLang(l) {

@@ -847,14 +847,17 @@ $("langs").addEventListener("click", e => { const b = e.target.closest("button")
 $("fReset").addEventListener("click", () => { ["fAlly", "fSlot", "fName", "fTg", "fMystic", "fInf", "fCav", "fArc"].forEach(id => { $(id).value = ""; }); PAGE = 0; render(); });
 // 설문 · 병사 정보 입력은 이 화면 위에 팝업으로 띄운다. 닫으면 명단을 다시 읽는다
 const SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLScrbdptVwUimJm__NIvVjMpaIyJM4cDCQWe2SGEQr4Sc1WHfQ/viewform?embedded=true";
+// 고른 언어로 팝업을 연다: 설문지는 화면 언어(hl)와 언어 문항을 미리 골라 두고, 병사 정보 화면은 lang 으로 넘긴다
+const SURVEY_LANG = {ko: ["ko", "한국어 (Korea)"], en: ["en", "English"], zh: ["zh-TW", "繁體中文 (台灣·香港)"], ar: ["ar", "العربية (Arabic)"], tr: ["tr", "Türkçe (Turkish)"]};
+const surveyUrl = () => { const v = SURVEY_LANG[LANG] || SURVEY_LANG.en; return SURVEY_URL + "&hl=" + v[0] + "&entry.293341731=" + encodeURIComponent(v[1]); };
 function openPop(url, title) { $("hPop").textContent = title; $("popFrame").src = url; $("pop").style.display = "flex"; }
 function closePop() {
   if ($("pop").style.display === "none") return;
   $("pop").style.display = "none"; $("popFrame").src = "about:blank";
   load();
 }
-$("bSurvey").addEventListener("click", e => { e.preventDefault(); openPop(SURVEY_URL, tx("bSurvey")); });
-$("bTroops").addEventListener("click", e => { e.preventDefault(); openPop("troops.html?embed=1", tx("bTroops")); });
+$("bSurvey").addEventListener("click", e => { e.preventDefault(); openPop(surveyUrl(), tx("bSurvey")); });
+$("bTroops").addEventListener("click", e => { e.preventDefault(); openPop("troops.html?embed=1&lang=" + LANG, tx("bTroops")); });
 $("popClose").addEventListener("click", closePop);
 $("pop").addEventListener("click", e => { if (e.target === $("pop")) closePop(); });
 $("bWar").addEventListener("click", () => { $("war").style.display = "flex"; renderWar(); });
