@@ -650,6 +650,15 @@ const needOf = (cap, r) => {
   n[top] += c - (n[0] + n[1] + n[2]);
   return n;
 };
+// 집결장 본인 병력을 비율대로 나누되 1,000 단위로 끊고, 남는 자투리는 비율이 가장 큰 병과에 준다(목표를 넘지 않게)
+const ownSplit = (own, r, target) => {
+  const c = Math.max(0, Math.floor(+own || 0)), v = [0, 1, 2].map(k => Math.max(0, +r[k] || 0)), sum = v[0] + v[1] + v[2];
+  if (!sum) return [0, 0, 0];
+  const n = v.map((x, k) => Math.min(target[k], Math.floor(c * x / sum / 1000) * 1000));
+  let left = c - (n[0] + n[1] + n[2]);
+  [0, 1, 2].sort((x, y) => v[y] - v[x]).forEach(k => { const g = Math.min(left, target[k] - n[k]); if (g > 0) { n[k] += g; left -= g; } });
+  return n;
+};
 const boxOk = b => ((b || {}).leaders || []).every(l => ratioOk(ratioOf(l, "atk")) && ratioOk(ratioOf(l, "def")));
 const newLeader = id => ({id, cap: RALLY_ON[id] || RALLY[id] || 180000, r: [6, 4, 0], d: [5, 2, 3]});
 
@@ -928,24 +937,32 @@ function alloc(a, i, mode) {
   const lv = (p, t) => { const s = troops(p); return s ? s[t][1] * 100 + s[t][0] : 0; };
   const rallies = all.map(l => ({l, p: mem.find(p => p.id === l.id)})).filter(x => x.p).map(x => {
     const cap = Math.max(0, +x.l.cap || 0), r = ratioOf(x.l, mode).map(v => Math.max(0, +v || 0));
-    const target = needOf(cap, r), own = needOf(Math.min(march(x.p), cap), r);
+    const target = needOf(cap, r), own = ownSplit(Math.min(march(x.p), cap), r, target);
     return {p: x.p, cap, r, target, own, need: target.map((v, t) => Math.max(0, v - own[t])), members: []};
   });
   const pool = mem.filter(p => !lids.has(p.id)).map(p => ({p, rem: march(p), used: false}));
+  // 집결원은 1,000 단위로 끊어서 보낸다. 남은 몫을 혼자 다 채울 수 있는 사람이 나오면 그 사람이 마지막으로 자투리까지 정확히 채운다
   rallies.forEach(R => {
     for (;;) {
-      const free = pool.filter(m => !m.used);
-      if (!free.length || R.need[0] + R.need[1] + R.need[2] <= 0) break;
+      const free = pool.filter(m => !m.used), total = R.need[0] + R.need[1] + R.need[2];
+      if (!free.length || total <= 0) break;
       let t = 0;
       [1, 2].forEach(k => { if (R.need[k] > R.need[t]) t = k; });
       free.sort((x, y) => lv(y.p, t) - lv(x.p, t) || (y.p.power || 0) - (x.p.power || 0));
       const m = free[0], send = [0, 0, 0];
       m.used = true;
+      if (m.rem >= total) {
+        [0, 1, 2].forEach(k => { send[k] = R.need[k]; R.need[k] = 0; });
+        m.rem -= total;
+        R.members.push({p: m.p, send});
+        break;
+      }
+      let c = Math.floor(m.rem / 1000) * 1000;
       [t].concat([0, 1, 2].filter(k => k !== t).sort((x, y) => lv(m.p, y) - lv(m.p, x))).forEach(k => {
-        const g = Math.min(m.rem, R.need[k]);
-        if (g > 0) { send[k] = g; m.rem -= g; R.need[k] -= g; }
+        const g = Math.floor(Math.min(c, R.need[k]) / 1000) * 1000;
+        if (g > 0) { send[k] = g; c -= g; m.rem -= g; R.need[k] -= g; }
       });
-      R.members.push({p: m.p, send});
+      if (send[0] + send[1] + send[2] > 0) R.members.push({p: m.p, send});
     }
   });
   return {rallies, rest: pool.filter(m => !m.used).map(m => m.p), joiners: pool.length};
