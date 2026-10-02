@@ -63,7 +63,12 @@ details.tt>summary{cursor:pointer;padding:9px 12px;background:var(--bar);font-we
 details.tt>summary small{font-weight:400;color:var(--sub);font-size:12px}
 details.tt>summary .fill{margin-inline-start:auto;font-size:12px;font-weight:700}
 details.tt.away>summary{font-weight:400;color:var(--sub)}
-details.tt .scroll{padding:0 4px 4px}
+.ttl .tr{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:7px 12px;border-top:1px solid var(--line);font-size:13px}
+.ttl .amt{margin-inline-start:auto;text-align:end;font-variant-numeric:tabular-nums}
+.ttl .amt b{margin-inline-start:6px}
+.ttl .tr.own{background:rgba(245,159,0,.10)}
+.ttl .tr.sum{background:var(--bar);font-weight:700}
+.ttl .tr small{color:var(--accent);font-weight:700}
 .fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex:1 1 100%}
 .fgrid label{display:flex;align-items:center;gap:6px;margin:0;font-size:13px}
 .fgrid input{flex:1;min-width:0;width:auto !important}
@@ -884,7 +889,8 @@ function renderRally() {
     return;
   }
   const nm = p => esc(p.gname || p.name);
-  const line = (label, v, cls) => '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + label + '</td>' + v.map(x => '<td class="n">' + (x ? fmt(x) : '<span class="no">·</span>') + '</td>').join("") + '<td class="n"><b>' + fmt(v[0] + v[1] + v[2]) + '</b></td></tr>';
+  const kinds = [tx("inf"), tx("cav"), tx("arc")];
+  const line = (label, v, cls) => '<div class="tr' + (cls ? ' ' + cls : '') + '"><span>' + label + '</span><span class="amt">' + ([0, 1, 2].filter(t => v[t]).map(t => kinds[t] + ' ' + fmt(v[t])).join(' · ') || '·') + '<b>= ' + fmt(v[0] + v[1] + v[2]) + '</b></span></div>';
   const meta = CFG.A[a] || {}, defTag = ' <span class="sub">' + tx("defMarch") + '</span>';
   const slotName = i => esc(SLOTS[i][0]) + (slotLocal(i) ? ' <small>(' + esc(slotLocal(i)) + ')</small>' : '');
   const plan = SLOTS.map((s, i) => alloc(a, i, RMODE));
@@ -899,11 +905,10 @@ function renderRally() {
       if (!x) { h += '<details class="tt away"><summary>' + slotName(i) + '<span class="fill">' + tx("leaderAway") + '</span></summary></details>'; return; }
       const filled = x.target.map((v, t) => v - x.need[t]), tot = filled[0] + filled[1] + filled[2], full = tot >= x.cap;
       h += '<details class="tt" open><summary>' + slotName(i) + '<span class="fill" style="color:' + (full ? 'var(--ok)' : 'var(--warn)') + '">' + tx("slotFill", fmt(tot), fmt(x.cap), pct(tot, x.cap || 1), x.members.length) + '</span></summary>' +
-        '<div class="scroll"><table class="plan"><tr><th>' + tx("thSender") + '</th><th class="n">' + tx("inf") + '</th><th class="n">' + tx("cav") + '</th><th class="n">' + tx("arc") + '</th><th class="n">' + tx("thSum") + '</th></tr>' +
+        '<div class="ttl">' +
         line('<b>' + tx("leaderSelf") + '</b>' + (MARCH[x.p.id] ? '' : defTag), x.own, "own") +
         x.members.map(m => line(nm(m.p) + troopMini(m.p) + (MARCH[m.p.id] ? '' : defTag), m.send)).join("") +
-        '<tr class="sum"><td>' + tx("fillTarget") + '</td>' + [0, 1, 2].map(t => '<td class="n">' + fmt(filled[t]) + ' / ' + fmt(x.target[t]) + (x.need[t] ? '<br><span class="short">' + tx("short", fmt(x.need[t])) + '</span>' : '') + '</td>').join("") +
-        '<td class="n">' + fmt(tot) + ' / ' + fmt(x.cap) + '</td></tr></table></div></details>';
+        '<div class="tr sum"><span>' + tx("fillTarget") + '</span><span class="amt">' + [0, 1, 2].filter(t => x.target[t]).map(t => kinds[t] + ' ' + fmt(filled[t]) + ' / ' + fmt(x.target[t]) + (x.need[t] ? ' <span class="short">(' + tx("short", fmt(x.need[t])) + ')</span>' : '')).join('<br>') + '</span></div></div></details>';
     });
     h += '</div>';
   });
