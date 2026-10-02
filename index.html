@@ -362,6 +362,7 @@ const I18N = {
     menu: "메뉴", mDash: "📊 대시보드", mRally: "⚔ 집결장 전용", aPick: "집결장 추가", aPickHint: "사람 선택 (시련 높은 순)", aAdd: "추가", rallyNote: "집결장 설정은 관리자 링크로 들어온 사람만 바꿀 수 있습니다. 지금은 보기만 됩니다.", optMystic: "시련 {0}", optRally: "집결 {0}",
     sAll: "전체", sTable: "표로 보기",
     twC: "센터", twN: "북", twE: "동", twS: "남", twW: "서", thTarget: "공격 목표", warDrag: "연맹 딱지를 타워(센터 · 동 · 서 · 남 · 북)로 끌어다 놓으면 공격 목표가 정해집니다. 빈 곳에 놓으면 지워집니다.",
+    noRight: "{0} 연맹은 내 링크로 설정할 권한이 없습니다. 보기만 됩니다.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -390,6 +391,7 @@ const I18N = {
     menu: "Menu", mDash: "📊 Dashboard", mRally: "⚔ Rally leaders", aPick: "Add a rally leader", aPickHint: "Pick a player (by Mystic Trial)", aAdd: "Add", rallyNote: "Only people who came in through the admin link can change the rally settings. You are in view-only mode.", optMystic: "Trial {0}", optRally: "Rally {0}",
     sAll: "All", sTable: "View as table",
     twC: "Center", twN: "North", twE: "East", twS: "South", twW: "West", thTarget: "Attack target", warDrag: "Drag an alliance badge onto a tower (Center, East, West, South, North) to set its attack target. Drop it on empty space to clear it.",
+    noRight: "Your link does not have the right to edit {0}. View only.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -418,6 +420,7 @@ const I18N = {
     menu: "選單", mDash: "📊 總覽", mRally: "⚔ 集結隊長專用", aPick: "新增集結隊長", aPickHint: "選擇成員（依神秘試煉排序）", aAdd: "新增", rallyNote: "只有從管理員連結進入的人才能更改集結設定，目前僅供檢視。", optMystic: "試煉 {0}", optRally: "集結 {0}",
     sAll: "全部", sTable: "以表格檢視",
     twC: "中央", twN: "北", twE: "東", twS: "南", twW: "西", thTarget: "攻擊目標", warDrag: "把聯盟標籤拖到塔（中央 · 東 · 西 · 南 · 北）上即可設定攻擊目標，放到空白處則清除。",
+    noRight: "你的連結沒有設定 {0} 聯盟的權限，僅供檢視。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -446,6 +449,7 @@ const I18N = {
     menu: "القائمة", mDash: "📊 لوحة المتابعة", mRally: "⚔ قادة الحشود", aPick: "إضافة قائد حشد", aPickHint: "اختر لاعبًا (حسب التجربة الغامضة)", aAdd: "إضافة", rallyNote: "لا يستطيع تغيير إعدادات الحشود إلا من دخل عبر رابط المشرف. أنت الآن في وضع العرض فقط.", optMystic: "التجربة {0}", optRally: "الحشد {0}",
     sAll: "الكل", sTable: "عرض كجدول",
     twC: "الوسط", twN: "شمال", twE: "شرق", twS: "جنوب", twW: "غرب", thTarget: "هدف الهجوم", warDrag: "اسحب شارة التحالف إلى أحد الأبراج (الوسط، الشرق، الغرب، الجنوب، الشمال) لتحديد هدف الهجوم. أفلتها في مكان فارغ لإلغائه.",
+    noRight: "رابطك لا يملك صلاحية تعديل تحالف {0}. للعرض فقط.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -474,6 +478,7 @@ const I18N = {
     menu: "Menü", mDash: "📊 Pano", mRally: "⚔ Ralli liderleri", aPick: "Ralli lideri ekle", aPickHint: "Oyuncu seçin (Mistik Deneme sırasıyla)", aAdd: "Ekle", rallyNote: "Ralli ayarlarını yalnızca yönetici bağlantısıyla girenler değiştirebilir. Şu anda yalnızca görüntülüyorsunuz.", optMystic: "Deneme {0}", optRally: "Ralli {0}",
     sAll: "Tümü", sTable: "Tablo olarak göster",
     twC: "Merkez", twN: "Kuzey", twE: "Doğu", twS: "Güney", twW: "Batı", thTarget: "Saldırı hedefi", warDrag: "Saldırı hedefini belirlemek için ittifak rozetini bir kulenin (Merkez, Doğu, Batı, Güney, Kuzey) üzerine sürükleyin. Boş bir yere bırakırsanız hedef silinir.",
+    noRight: "Bağlantınızın {0} ittifakını düzenleme yetkisi yok. Yalnızca görüntüleme.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -500,6 +505,13 @@ const CFG_POST = "https://docs.google.com/forms/d/e/1FAIpQLSfAoSbMjHVaMWoe4_ZXJs
 const CF = {batch: "entry.1955233304", at: "entry.1704332077", by: "entry.1229364967", ally: "entry.1548076083", lid: "entry.457484191", lname: "entry.983043760",
   cap: "entry.2053570414", r: ["entry.595820836", "entry.384052637", "entry.528548753"], def: "entry.129140848", admin: "entry.844276430"};
 const ADMIN_H = typeof ADMIN_HASH === "undefined" ? "" : ADMIN_HASH;
+// 저장 권한은 사람마다 따로: admin.js 의 ADMINS = [{h: 링크 확인 값, n: 이름, s: 범위}]. 범위는 "*"(전부) 또는 "NvA,MAP" 처럼 연맹 · 배치도(MAP) 목록.
+// 옛 ADMIN_HASH 는 전부 할 수 있는 주인 링크로 남긴다
+const ADMIN_LIST = (typeof ADMINS === "undefined" ? [] : ADMINS).concat(ADMIN_H ? [{h: ADMIN_H, n: "", s: "*"}] : []);
+let ME = null;
+const scopeOk = (sc, a) => sc === "*" || String(sc || "").split(",").indexOf(a) >= 0;
+const can = a => !!ME && scopeOk(ME.s, a);
+const rowOk = (hash, a) => !!hash && ADMIN_LIST.some(x => x.h === hash && scopeOk(x.s, a));
 const FORM_POST = "https://docs.google.com/forms/d/e/1FAIpQLSfAnxDTxK2o8l1F6yTpPvlZ-4toOYDxLqcgEs5F8wDUeWY95w/formResponse";
 const troops = p => SELF[p.id] || (SOLD[p.id] && SOLD[p.id].s) || null;
 const cfgNow = () => (IS_ADMIN && DRAFT) ? DRAFT : CFG;
@@ -519,9 +531,8 @@ async function loadConfig() {
   const last = {};
   let map = null;
   rows.slice(1).forEach(row => {
-    if (!ADMIN_H || String(row[ci.admin] || "").trim() !== ADMIN_H) return;
     const a = String(row[ci.ally] || "").trim(), b = num(row[ci.batch]);
-    if (!a || !b) return;
+    if (!a || !b || !rowOk(String(row[ci.admin] || "").trim(), a)) return;
     if (a === "MAP") {
       if (map && b <= map.batch) return;
       try {
@@ -716,18 +727,18 @@ function render() {
   };
   const shown = DATA.filter(more).filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
   const pet = '<br><small>' + tx("petSub") + '</small>', ts = '<br><small>' + tx("troopSub") + '</small>';
-  let rt = '<tr><th class="c">' + tx("thLeader") + '</th><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th>' + tx("thNowAlly") + '</th><th class="n">' + tx("thId") + '</th><th class="n">' + tx("thMystic") + '</th><th class="n">' + tx("thPower") + '</th><th>' + tx("thBuilding") + '</th><th class="n">' + tx("thMarch") + pet + '</th><th class="n">' + tx("thRallyCap") + pet + '</th><th class="c">' + tx("inf") + ts + '</th><th class="c">' + tx("cav") + ts + '</th><th class="c">' + tx("arc") + ts + '</th><th class="c">FULL</th>' +
+  let rt = '<tr><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th>' + tx("thNowAlly") + '</th><th class="n">' + tx("thId") + '</th><th class="n">' + tx("thMystic") + '</th><th class="n">' + tx("thPower") + '</th><th>' + tx("thBuilding") + '</th><th class="n">' + tx("thMarch") + pet + '</th><th class="n">' + tx("thRallyCap") + pet + '</th><th class="c">' + tx("inf") + ts + '</th><th class="c">' + tx("cav") + ts + '</th><th class="c">' + tx("arc") + ts + '</th><th class="c">FULL</th>' +
     slotTh + '<th>' + tx("thTime") + '</th></tr>';
   const pages = Math.max(1, Math.ceil(shown.length / PER_PAGE));
   if (PAGE >= pages) PAGE = pages - 1;
   const from = PAGE * PER_PAGE, view = shown.slice(from, from + PER_PAGE);
   view.forEach(p => {
-    rt += '<tr><td class="c">' + (IS_ADMIN ? '<button class="star' + (isLeader(p) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (isLeader(p) ? '★' : '☆') + '</button>' : (isLeader(p) ? '<span class="star on">★</span>' : '')) + '</td><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
+    rt += '<tr><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
       '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n">' + esc(p.id) +
       '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH[p.id] ? '<b>' + fmt(MARCH[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (MARCH_ON[p.id] ? fmt(MARCH_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') +
       '</td><td class="n march">' + (RALLY[p.id] ? '<b>' + fmt(RALLY[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (RALLY_ON[p.id] ? fmt(RALLY_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') + '</td>' + troopCells(p) + slotTd(p) + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
-  if (!shown.length) rt += '<tr><td colspan="21" class="sub">' + tx("noResp") + '</td></tr>';
+  if (!shown.length) rt += '<tr><td colspan="20" class="sub">' + tx("noResp") + '</td></tr>';
   $("respTable").innerHTML = rt;
   let pg = "";
   if (pages > 1) {
@@ -837,6 +848,7 @@ function renderRally() {
 function renderAdmin() {
   const box = $("admin");
   if (!IS_ADMIN || !DRAFT) { box.innerHTML = ""; return; }
+  if (!can($("rAlly").value || ALLIES[0])) { box.innerHTML = '<div class="msg">' + tx("noRight", esc($("rAlly").value || ALLIES[0])) + '</div>'; return; }
   const a = $("rAlly").value || ALLIES[0], ls = leadersOf(a);
   const box0 = DRAFT.A[a] || (DRAFT.A[a] = blank());
   let by = "";
@@ -848,7 +860,7 @@ function renderAdmin() {
     '<div class="frow" style="margin-bottom:10px"><b>' + tx("aPick") + '</b><select id="aPick"><option value="">' + tx("aPickHint") + '</option>' +
       DATA.filter(p => p.ally === a && !isLeader(p)).map(p => '<option value="' + esc(p.id) + '">' + esc(p.gname || p.name) + (p.mystic ? ' · ' + tx("optMystic", fmt(p.mystic)) : '') + (RALLY[p.id] ? ' · ' + tx("optRally", fmt(RALLY[p.id])) : '') + '</option>').join("") +
       '</select><button id="aAdd">' + tx("aAdd") + '</button></div>' +
-    '<label>' + tx("aBy") + ' <input id="aBy" class="name" maxlength="20" value="' + esc(by) + '"></label> &nbsp; ' +
+    '<label>' + tx("aBy") + ' <input id="aBy" class="name" maxlength="20" value="' + esc(ME.n || by) + '"' + (ME.n ? ' readonly' : '') + '></label> &nbsp; ' +
     '<label>' + tx("aDef") + ' <input id="aDef" inputmode="numeric" value="' + esc(box0.def) + '"></label>';
   if (ls.length) {
     h += '<div class="scroll" style="margin-top:10px"><table class="plan"><tr><th>' + tx("aLeaderCol", esc(a)) + '</th><th class="n">' + tx("thMystic") + '</th><th class="n">' + tx("aOwnMarch") + '</th><th class="n">' + tx("aCap") + '</th><th class="n">' + tx("inf") + ' %</th><th class="n">' + tx("cav") + ' %</th><th class="n">' + tx("arc") + ' %</th><th></th></tr>' +
@@ -871,7 +883,7 @@ const hourXY = (k, r) => { const g = k * Math.PI / 6; return [50 + r * Math.sin(
 let DRAG = null;
 const mapClean = P => { const o = {}; ALLIES.forEach(a => { const v = (P || {})[a] || {}, h = +v.h; o[a] = {h: h >= 1 && h <= 12 ? Math.round(h) : 0, m: String(v.m || "").slice(0, 40), t: TOWERS[v.t] ? v.t : ""}; }); return o; };
 function renderWar() {
-  const admin = IS_ADMIN && MAPD, P = admin ? MAPD : mapClean(mapSaved()), meta = CFG.map || {};
+  const admin = IS_ADMIN && MAPD && can("MAP"), P = admin ? MAPD : mapClean(mapSaved()), meta = CFG.map || {};
   const at = {}, hit = {};
   ALLIES.forEach(a => { if (P[a].h) { (at[P[a].h] = at[P[a].h] || []).push(a); if (P[a].t) hit[P[a].t] = 1; } });
   let h = '<div class="warmap" dir="ltr" id="warMap"><img class="castle" src="castle.png" alt="" onerror="this.hidden=true"><div class="castle ph">🏰</div>';
@@ -902,7 +914,7 @@ function renderWar() {
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(k => '<option value="' + k + '"' + (P[a].h === k ? ' selected' : '') + '>' + tx("oclock", k) + '</option>').join("") + '</select></td>' +
         '<td><select data-ta="' + esc(a) + '"><option value="">' + tx("warPick") + '</option>' + Object.keys(TOWERS).map(k => '<option value="' + k + '"' + (P[a].t === k ? ' selected' : '') + '>' + tx("tw" + k) + '</option>').join("") + '</select></td>' +
         '<td><input class="memo" maxlength="40" data-m="' + esc(a) + '" value="' + esc(P[a].m) + '"></td></tr>').join("") + '</table></div>' +
-      '<div style="margin-top:10px"><label>' + tx("aBy") + ' <input id="wBy" class="name" maxlength="20" value="' + esc(by) + '"></label> <button class="primary" id="wSave">' + tx("warSave") + '</button> <span class="sub" id="wMsg"></span></div></div>';
+      '<div style="margin-top:10px"><label>' + tx("aBy") + ' <input id="wBy" class="name" maxlength="20" value="' + esc(ME.n || by) + '"' + (ME.n ? ' readonly' : '') + '></label> <button class="primary" id="wSave">' + tx("warSave") + '</button> <span class="sub" id="wMsg"></span></div></div>';
   }
   $("warBody").innerHTML = h;
 }
@@ -949,7 +961,7 @@ async function saveMap() {
   msg.textContent = tx("aSaving");
   const body = new URLSearchParams();
   body.append(CF.batch, String(stamp)); body.append(CF.at, at); body.append(CF.by, by); body.append(CF.ally, "MAP");
-  body.append(CF.lname, JSON.stringify(mapClean(MAPD))); body.append(CF.admin, ADMIN_H);
+  body.append(CF.lname, JSON.stringify(mapClean(MAPD))); body.append(CF.admin, ME.h);
   try { await fetch(CFG_POST, {method: "POST", mode: "no-cors", body}); } catch (e) {}
   for (let n = 0; n < 8; n++) {
     await new Promise(r => setTimeout(r, 2500));
@@ -969,6 +981,7 @@ async function saveMap() {
 // 지금 고른 연맹의 설정을 드라이브 시트에 한 줄씩(집결장마다) 쌓는다
 async function saveConfig() {
   const msg = $("aMsg"), a = $("rAlly").value || ALLIES[0], box = DRAFT.A[a] || blank();
+  if (!can(a)) return;
   const by = ($("aBy").value || "").trim(), stamp = Date.now(), at = new Date().toLocaleString("sv-SE").slice(0, 16);
   if (!by) { msg.textContent = tx("aNeedName"); $("aBy").focus(); return; }
   const rows = box.leaders.length ? box.leaders : [null];
@@ -976,7 +989,7 @@ async function saveConfig() {
   for (const l of rows) {
     const body = new URLSearchParams();
     body.append(CF.batch, String(stamp)); body.append(CF.at, at); body.append(CF.by, by); body.append(CF.ally, a);
-    body.append(CF.def, String(+box.def || 100000)); body.append(CF.admin, ADMIN_H);
+    body.append(CF.def, String(+box.def || 100000)); body.append(CF.admin, ME.h);
     if (l) {
       const p = DATA.find(x => x.id === l.id);
       body.append(CF.lid, l.id); body.append(CF.lname, p ? (p.gname || p.name) : "");
@@ -1004,9 +1017,11 @@ async function initAdmin() {
   const q = new URLSearchParams(location.search);
   let t = q.get("admin") || "";
   try { if (!t) t = localStorage.getItem("k700admin") || ""; } catch (e) {}
-  if (!t || !ADMIN_H || !window.crypto || !crypto.subtle) return;
+  if (!t || !ADMIN_LIST.length || !window.crypto || !crypto.subtle) return;
   const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
-  if ([...new Uint8Array(d)].map(b => b.toString(16).padStart(2, "0")).join("") !== ADMIN_H) return;
+  const hx = [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, "0")).join("");
+  ME = ADMIN_LIST.find(x => x.h === hx) || null;
+  if (!ME) return;
   IS_ADMIN = true;
   try { localStorage.setItem("k700admin", t); } catch (e) {}
   if (q.get("admin")) history.replaceState(null, "", location.pathname);
@@ -1146,7 +1161,7 @@ $("warBody").addEventListener("change", e => {
 });
 $("warBody").addEventListener("input", e => {
   const el = e.target;
-  if (el.id === "wBy") { try { localStorage.setItem("k700by", el.value.trim()); } catch (x) {} return; }
+  if (el.id === "wBy") { if (!ME.n) try { localStorage.setItem("k700by", el.value.trim()); } catch (x) {} return; }
   const a = el.getAttribute && el.getAttribute("data-m");
   if (a && MAPD && MAPD[a]) { MAPD[a].m = el.value.slice(0, 40); MAP_DIRTY = true; }
 });
@@ -1181,7 +1196,7 @@ $("respTable").addEventListener("click", e => {
 });
 $("admin").addEventListener("input", e => {
   const el = e.target, v = +String(el.value).replace(/[^0-9]/g, "") || 0, cur = $("rAlly").value || ALLIES[0];
-  if (el.id === "aBy") { try { localStorage.setItem("k700by", el.value.trim()); } catch (x) {} return; }
+  if (el.id === "aBy") { if (!ME.n) try { localStorage.setItem("k700by", el.value.trim()); } catch (x) {} return; }
   DIRTY[cur] = true;
   if (el.id === "aDef") (DRAFT.A[cur] || (DRAFT.A[cur] = blank())).def = v;
   else if (el.dataset.f) {
