@@ -85,10 +85,11 @@ td.c,th.c{text-align:center}
 
   <div class="card section">
     <h2>아직 응답하지 않은 연맹원</h2>
-    <div class="sub" style="margin-bottom:10px">설문에 적은 닉네임과 명단 닉네임이 같은 사람만 응답한 것으로 봅니다. 닉네임을 다르게 적었으면 여기에 남아 있을 수 있습니다.</div>
+    <div class="sub" style="margin-bottom:10px">게임 ID 로 조회한 닉네임(없으면 설문에 적은 닉네임)이 명단 닉네임과 같은 사람을 응답한 것으로 봅니다. 명단을 받은 뒤 닉네임을 바꿨으면 여기에 남아 있을 수 있습니다.</div>
     <div id="missing"></div>
   </div>
 </div>
+<script src="players.js"></script>
 <script>
 const SHEET_ID = "1fwh4GmuMnzgylvhzoALqD0KIK5ssld-Ghs3U4Loul4E";
 const GID = "952911154";
@@ -104,6 +105,14 @@ const norm = s => String(s || "").normalize("NFKC").replace(/\s+/g, "").toLowerC
 const fmt = n => n == null ? "" : Number(n).toLocaleString("ko-KR");
 const pct = (a, b) => b ? Math.round(a / b * 1000) / 10 : 0;
 let DATA = [];
+const LOOKUP = typeof PLAYERS === "undefined" ? {} : PLAYERS;
+function tcLabel(v) {
+  if (v == null) return "";
+  if (v <= 30) return "TC" + v;
+  const tg = Math.floor((v - 30) / 5), sub = (v - 30) % 5;
+  if (!tg) return "TC30-" + sub;
+  return "TG" + tg + (sub ? "-" + sub : "");
+}
 const DEFAULT_LEADERS = [];
 let LEADERS = new Set((location.hash.indexOf("#L=") === 0 ? decodeURIComponent(location.hash.slice(3)).split(",") : DEFAULT_LEADERS).filter(Boolean));
 function saveLeaders() { history.replaceState(null, "", location.pathname + (LEADERS.size ? "#L=" + [...LEADERS].join(",") : "")); }
@@ -174,8 +183,14 @@ function build(rows) {
   });
   const list = [...byId.values()];
   list.forEach(p => {
-    const m = (ROSTER[p.ally] ? ROSTER[p.ally].members : []).find(x => norm(x[0]) === norm(p.name));
-    p.power = m ? m[1] : null; p.tc = m ? m[2] : ""; p.matched = !!m;
+    const info = LOOKUP[p.id];
+    if (info) {
+      p.power = info.p; p.tc = tcLabel(info.tc); p.gname = info.n; p.gally = info.a || ""; p.matched = true;
+      return;
+    }
+    let m = null;
+    ALLIES.some(a => (m = ROSTER[a].members.find(x => norm(x[0]) === norm(p.name))));
+    p.power = m ? m[1] : null; p.tc = m ? m[2] : ""; p.gname = ""; p.gally = ""; p.matched = false;
   });
   list.sort((a, b) => (b.power || 0) - (a.power || 0));
   return list;
@@ -201,22 +216,24 @@ function render() {
   $("slotTable").innerHTML = st;
 
   const fa = $("fAlly").value, fs = $("fSlot").value, fn = norm($("fName").value);
-  const shown = DATA.filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || norm(p.name).indexOf(fn) >= 0));
-  let rt = '<tr><th class="c">집결장</th><th>연맹</th><th>닉네임</th><th class="n">게임 ID</th><th class="n">전투력</th><th>건물</th><th class="c">FULL</th>' +
+  const shown = DATA.filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
+  let rt = '<tr><th class="c">집결장</th><th>연맹</th><th>닉네임</th><th>현재 연맹</th><th class="n">게임 ID</th><th class="n">전투력</th><th>건물</th><th class="c">FULL</th>' +
     SLOTS.map(s => '<th class="c">' + s[0].slice(0, 2) + '시</th>').join("") + '<th>제출 시각</th></tr>';
   shown.forEach(p => {
-    rt += '<tr><td class="c"><button class="star' + (LEADERS.has(p.key) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (LEADERS.has(p.key) ? '★' : '☆') + '</button></td><td><span class="tag">' + esc(p.ally) + '</span></td><td>' + esc(p.name) + (p.matched ? "" : ' <span class="sub">(명단에 없음)</span>') + '</td><td class="n">' + esc(p.id) +
+    rt += '<tr><td class="c"><button class="star' + (LEADERS.has(p.key) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (LEADERS.has(p.key) ? '★' : '☆') + '</button></td><td><span class="tag">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">(설문: ' + esc(p.name) + ')</span>' : '') + (p.matched ? "" : ' <span class="sub">(ID 조회 전)</span>') +
+      '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">≠ 설문</span>' : '') : '') + '</td><td class="n">' + esc(p.id) +
       '</td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="c">' + (p.full ? '<span class="dot">●</span>' : '<span class="no">·</span>') + '</td>' +
       p.slots.map(v => '<td class="c">' + (v ? '<span class="dot">●</span>' : '<span class="no">·</span>') + '</td>').join("") + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
-  if (!shown.length) rt += '<tr><td colspan="14" class="sub">해당하는 응답이 없습니다.</td></tr>';
+  if (!shown.length) rt += '<tr><td colspan="15" class="sub">해당하는 응답이 없습니다.</td></tr>';
   $("respTable").innerHTML = rt;
 
   renderRally();
 
   let ms = "";
   ALLIES.forEach(a => {
-    const done = new Set(DATA.filter(p => p.ally === a).map(p => norm(p.name)));
+    const done = new Set();
+    DATA.forEach(p => { done.add(norm(p.name)); if (p.gname) done.add(norm(p.gname)); });
     const left = ROSTER[a].members.filter(m => !done.has(norm(m[0])));
     ms += '<h2 style="margin-top:14px">' + esc(a) + ' <span class="sub">' + left.length + '명 남음</span></h2><div class="names">' + left.map(m => '<span>' + esc(m[0]) + '</span>').join("") + '</div>';
   });
@@ -245,8 +262,8 @@ function renderRally() {
       groups[round % 2 ? ls.length - 1 - pos : pos].push(p);
     });
     h += '<div class="grid" style="margin-bottom:0">' + ls.map((l, j) =>
-      '<div class="card"><div><b>★ ' + esc(l.name) + '</b></div><div class="sub">' + (l.power ? '전투력 ' + fmt(l.power) + ' · ' : '') + '집결원 ' + groups[j].length + '명 (' + pct(groups[j].length, ms.length || 1) + '%)</div>' +
-      '<div class="names" style="margin-top:8px">' + (groups[j].map(p => '<span>' + esc(p.name) + '</span>').join("") || '<span class="sub">배정된 집결원 없음</span>') + '</div></div>').join("") + '</div>';
+      '<div class="card"><div><b>★ ' + esc(l.gname || l.name) + '</b></div><div class="sub">' + (l.power ? '전투력 ' + fmt(l.power) + ' · ' : '') + '집결원 ' + groups[j].length + '명 (' + pct(groups[j].length, ms.length || 1) + '%)</div>' +
+      '<div class="names" style="margin-top:8px">' + (groups[j].map(p => '<span>' + esc(p.gname || p.name) + '</span>').join("") || '<span class="sub">배정된 집결원 없음</span>') + '</div></div>').join("") + '</div>';
   });
   $("rally").innerHTML = h;
 }
@@ -258,7 +275,7 @@ async function load() {
     DATA = build(await fetchRows());
     if (first) { const a = ALLIES.find(x => DATA.some(p => p.ally === x)); if (a) $("rAlly").value = a; }
     $("msg").innerHTML = "";
-    $("stamp").textContent = "응답 " + DATA.length + "명 · " + new Date().toLocaleString("ko-KR") + " 기준 · 1분마다 자동 갱신";
+    $("stamp").textContent = "응답 " + DATA.length + "명 · " + new Date().toLocaleString("ko-KR") + " 기준 · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값(" + (typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT) + ")";
     render();
   } catch (e) {
     $("stamp").textContent = "불러오지 못했습니다";
