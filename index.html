@@ -393,6 +393,7 @@ const I18N = {
     bAtk: "⚔ 공격 배치", bDef: "🛡 수비 배치", stale: "설정이 바뀌었습니다. 배치 단추를 눌러 다시 계산하세요.", fAtk: "⚔ 공격 포메이션", fDef: "🛡 수비 포메이션", capFinal: "최종 집결 인원수", needLine: "필요 → 보병 {0} · 기병 {1} · 궁병 {2}", selfBoth: "본인 입력 OFF {0} / ON {1}", aUp: "위로", modeNow: "{0} 기준",
     sumBad: "합계 {0} — 보병 + 기병 + 궁병 합이 정확히 10(또는 100)이어야 합니다.", sumBlock: "포메이션 합이 10(또는 100)이 아닌 집결장이 있습니다. 고친 뒤 다시 누르세요.",
     leaderAway: "집결장이 이 시간대에 참여하지 않습니다", restTitle: "배치되지 않고 남는 인원", slotFill: "채움 {0} / {1} ({2}%) · 집결원 {3}명", ttTitle: "시간대별 편성표", noOne: "남는 사람 없음",
+    memShare: "집결 인원수 {0} − 집결장 본인 출정 {1} = 집결원이 채울 몫 {2}",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -425,6 +426,7 @@ const I18N = {
     bAtk: "⚔ Place attack", bDef: "🛡 Place defence", stale: "Settings changed. Press a Place button to recalculate.", fAtk: "⚔ Attack formation", fDef: "🛡 Defence formation", capFinal: "Final rally capacity", needLine: "Needed → Infantry {0} · Cavalry {1} · Archer {2}", selfBoth: "Self-reported OFF {0} / ON {1}", aUp: "Up", modeNow: "{0}",
     sumBad: "Total {0} — infantry + cavalry + archer must add up to exactly 10 (or 100).", sumBlock: "A leader has a formation that does not add up to 10 (or 100). Fix it and press again.",
     leaderAway: "The leader is not available in this time slot", restTitle: "Players left unassigned", slotFill: "Filled {0} / {1} ({2}%) · {3} joiners", ttTitle: "Timetable", noOne: "No one left over",
+    memShare: "Rally capacity {0} − leader's own march {1} = left for joiners {2}",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -457,6 +459,7 @@ const I18N = {
     bAtk: "⚔ 進攻配置", bDef: "🛡 防守配置", stale: "設定已變更，請按配置按鈕重新計算。", fAtk: "⚔ 進攻陣型", fDef: "🛡 防守陣型", capFinal: "最終集結人數", needLine: "需要 → 步兵 {0} · 騎兵 {1} · 弓兵 {2}", selfBoth: "本人填寫 OFF {0} / ON {1}", aUp: "上移", modeNow: "{0}",
     sumBad: "合計 {0} — 步兵 + 騎兵 + 弓兵必須剛好等於 10（或 100）。", sumBlock: "有隊長的陣型合計不是 10（或 100），請修正後再按一次。",
     leaderAway: "隊長此時段不參加", restTitle: "未分配的成員", slotFill: "已填 {0} / {1}（{2}%）· 成員 {3} 人", ttTitle: "各時段編組表", noOne: "沒有剩餘成員",
+    memShare: "集結人數 {0} − 隊長本人出征 {1} = 成員要補的人數 {2}",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -489,6 +492,7 @@ const I18N = {
     bAtk: "⚔ توزيع الهجوم", bDef: "🛡 توزيع الدفاع", stale: "تغيّرت الإعدادات. اضغط زر التوزيع لإعادة الحساب.", fAtk: "⚔ تشكيلة الهجوم", fDef: "🛡 تشكيلة الدفاع", capFinal: "سعة الحشد النهائية", needLine: "المطلوب ← مشاة {0} · فرسان {1} · رماة {2}", selfBoth: "أدخلها بنفسه OFF {0} / ON {1}", aUp: "أعلى", modeNow: "{0}",
     sumBad: "المجموع {0} — يجب أن يساوي مجموع المشاة + الفرسان + الرماة 10 بالضبط (أو 100).", sumBlock: "توجد تشكيلة مجموعها ليس 10 (أو 100). صحّحها ثم اضغط مرة أخرى.",
     leaderAway: "القائد غير متاح في هذه الفترة", restTitle: "أعضاء لم يتم توزيعهم", slotFill: "تم ملء {0} / {1} ({2}%) · الأعضاء {3}", ttTitle: "جدول الفترات", noOne: "لا أحد متبقٍ",
+    memShare: "سعة الحشد {0} − مسيرة القائد {1} = المتبقي للأعضاء {2}",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -521,6 +525,7 @@ const I18N = {
     bAtk: "⚔ Saldırı yerleşimi", bDef: "🛡 Savunma yerleşimi", stale: "Ayarlar değişti. Yeniden hesaplamak için yerleşim düğmesine basın.", fAtk: "⚔ Saldırı dizilişi", fDef: "🛡 Savunma dizilişi", capFinal: "Nihai ralli kapasitesi", needLine: "Gereken → Piyade {0} · Süvari {1} · Okçu {2}", selfBoth: "Kendi girdiği OFF {0} / ON {1}", aUp: "Yukarı", modeNow: "{0}",
     sumBad: "Toplam {0} — piyade + süvari + okçu tam olarak 10 (veya 100) etmelidir.", sumBlock: "Dizilişi 10 (veya 100) etmeyen bir lider var. Düzeltip tekrar basın.",
     leaderAway: "Lider bu saat diliminde katılmıyor", restTitle: "Yerleştirilmeyen oyuncular", slotFill: "Dolan {0} / {1} (%{2}) · {3} katılımcı", ttTitle: "Saat çizelgesi", noOne: "Boşta kimse yok",
+    memShare: "Ralli kapasitesi {0} − liderin kendi seferi {1} = katılımcılara kalan {2}",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -899,7 +904,8 @@ function renderRally() {
     const p = DATA.find(x => x.id === l.id), r = ratioOf(l, RMODE), need = needOf(l.cap, r);
     h += '<div class="card leader" style="margin-top:14px"><div class="lname">' + (n + 1) + '. ★ ' + (p ? nm(p) : esc(l.id)) + '</div>' + (p ? troopLine(p) : '') +
       '<div class="sub">' + tx(RMODE === "def" ? "fDef" : "fAtk") + ' ' + r.map(v => +v || 0).join(" : ") + ' · ' + tx("capFinal") + ' ' + fmt(l.cap) + '</div>' +
-      '<div class="need" style="margin:2px 0 4px">' + tx("needLine", fmt(need[0]), fmt(need[1]), fmt(need[2])) + '</div>';
+      '<div class="need" style="margin:2px 0 0">' + tx("needLine", fmt(need[0]), fmt(need[1]), fmt(need[2])) + '</div>' +
+      '<div class="sub" style="margin:0 0 4px"><b>' + shareText(l, box.def) + '</b></div>';
     plan.forEach((pl, i) => {
       const x = pl.rallies.find(q => q.p.id === l.id);
       if (!x) { h += '<details class="tt away"><summary>' + slotName(i) + '<span class="fill">' + tx("leaderAway") + '</span></summary></details>'; return; }
@@ -918,6 +924,11 @@ function renderRally() {
 }
 
 // 관리자 편성 설정 (관리자 링크로 들어왔을 때만). 집결장마다 카드 하나: 최종 집결 인원수, 공격 · 수비 포메이션과 필요 병력
+// 집결 인원수에서 집결장 본인 출정 인원수를 먼저 빼고, 남은 수만 집결원으로 채운다
+function shareText(l, def) {
+  const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +def || 100000, cap);
+  return tx("memShare", fmt(cap), fmt(own), fmt(cap - own));
+}
 function needText(l, mode) { const r = ratioOf(l, mode), n = needOf(l.cap, r); return ratioOk(r) ? tx("needLine", fmt(n[0]), fmt(n[1]), fmt(n[2])) : tx("sumBad", ratioSum(r)); }
 const needCls = (l, mode) => "need" + (ratioOk(ratioOf(l, mode)) ? "" : " bad");
 function renderAdmin() {
@@ -943,7 +954,8 @@ function renderAdmin() {
     h += ls.map((l, k) => '<div class="lcard"><div class="lhead"><span class="lname">' + (k + 1) + '. ★ ' + who(l.id) + '</span><span class="sub">' + tx("thMystic") + ' ' + (fmt(info(l.id).mystic) || '·') + ' · ' + tx("aOwnMarch") + ' ' + fmt(MARCH[l.id] || box0.def) + '</span><span class="sp"></span>' +
         (k ? '<button class="del up" data-up="' + k + '">▲ ' + tx("aUp") + '</button>' : '') + '<button class="del" data-k="' + k + '">' + tx("aDel") + '</button></div>' +
       '<div class="lrow"><b>' + tx("capFinal") + '</b><input data-k="' + k + '" data-f="cap" inputmode="numeric" maxlength="8" value="' + esc(l.cap) + '">' +
-        (RALLY[l.id] ? '<small class="sub">' + tx("selfBoth", fmt(RALLY[l.id]), RALLY_ON[l.id] ? fmt(RALLY_ON[l.id]) : '·') + '</small>' : '') + '</div>' +
+        (RALLY[l.id] ? '<small class="sub">' + tx("selfBoth", fmt(RALLY[l.id]), RALLY_ON[l.id] ? fmt(RALLY_ON[l.id]) : '·') + '</small>' : '') +
+        '<span class="need" id="ms' + k + '" style="color:var(--ink)">' + shareText(l, box0.def) + '</span></div>' +
       '<div class="lrow form"><b>' + tx("fAtk") + '</b>' + three(k, "r", l.r) + '<span class="' + needCls(l, "atk") + '" id="nr' + k + '">' + needText(l, "atk") + '</span></div>' +
       '<div class="lrow form"><b>' + tx("fDef") + '</b>' + three(k, "d", l.d) + '<span class="' + needCls(l, "def") + '" id="nd' + k + '">' + needText(l, "def") + '</span></div></div>').join("");
   } else {
@@ -1295,6 +1307,7 @@ $("admin").addEventListener("input", e => {
     if (!l) return;
     const k = +el.dataset.k, f = el.dataset.f;
     if (f === "cap") l.cap = v; else (f[0] === "d" ? l.d : l.r)[+f.slice(1)] = v;
+    if ($("ms" + k)) $("ms" + k).textContent = shareText(l, (DRAFT.A[cur] || {}).def);
     if ($("nr" + k)) { $("nr" + k).textContent = needText(l, "atk"); $("nr" + k).className = needCls(l, "atk"); }
     if ($("nd" + k)) { $("nd" + k).textContent = needText(l, "def"); $("nd" + k).className = needCls(l, "def"); }
   } else return;
