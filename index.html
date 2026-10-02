@@ -718,12 +718,14 @@ const newLeader = id => ({id, cap: RALLY_ON[id] || RALLY[id] || DEF_RALLY, r: [6
 // 편성 설정 탭(구글 드라이브 응답 시트의 셋째 탭). 연맹마다 가장 최근에 저장한 묶음만 쓴다
 async function loadConfig() {
   const r = await fetch("https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?gid=" + CFG_GID + "&headers=1&tqx=out:csv&_=" + Date.now());
-  const rows = parseCsv(await r.text());
+  const txt = await r.text();
+  if (!r.ok || txt.trim().charAt(0) === "<") throw new Error("sheet");
+  const rows = parseCsv(txt);
   const h = rows[0] || [], col = n => h.findIndex(x => String(x).trim() === n + " number");
   const ci = {batch: col("저장 묶음"), at: col("저장 시각"), by: col("저장한 사람"), ally: col("연맹"), lid: col("집결장 게임 ID"), lname: col("집결장 닉네임"), cap: col("수용 인원"),
     r: ["보병 비율", "기병 비율", "궁병 비율"].map(col), def: col("출정 기본값"), admin: col("관리자 확인")};
   const num = v => +String(v || "").replace(/[^0-9]/g, "") || 0;
-  const last = {};
+  const all = {};   // 연맹 → 저장 묶음 번호 → 그 묶음
   let map = null;
   rows.slice(1).forEach(row => {
     const a = String(row[ci.ally] || "").trim(), b = num(row[ci.batch]);
@@ -736,14 +738,22 @@ async function loadConfig() {
       } catch (e) {}
       return;
     }
-    if (!last[a] || b > last[a].batch) last[a] = {batch: b, def: (num(row[ci.def]) && num(row[ci.def]) !== 100000) ? num(row[ci.def]) : DEF_MARCH, leaders: [], by: String(row[ci.by] || "").trim(), at: String(row[ci.at] || "").trim()};
-    if (b !== last[a].batch) return;
+    const byA = all[a] || (all[a] = {});
+    const g = byA[b] || (byA[b] = {batch: b, def: (num(row[ci.def]) && num(row[ci.def]) !== 100000) ? num(row[ci.def]) : DEF_MARCH, leaders: [], by: String(row[ci.by] || "").trim(), at: String(row[ci.at] || "").trim(), conf: "", n: null});
     const id = String(row[ci.lid] || "").trim();
-    if (/^[0-9]{5,12}$/.test(id) && !last[a].leaders.some(l => l.id === id)) {
-      const dm = /\[D:(\d+)\/(\d+)\/(\d+)\]/.exec(String(row[ci.lname] || "")), cm = /\[C:([ad]*)\]/.exec(String(row[ci.lname] || ""));
-      if (cm) last[a].conf = cm[1];
-      last[a].leaders.push({id, cap: num(row[ci.cap]), r: ci.r.map(c => num(row[c])), d: dm ? [+dm[1], +dm[2], +dm[3]] : [5, 2, 3]});
+    if (/^[0-9]{7,12}$/.test(id) && !g.leaders.some(l => l.id === id)) {
+      // 닉네임 칸 끝의 표시: [D:수비 비율] [C:확정] [N:이 묶음의 집결장 수]
+      const mk = /\[D:(\d+)\/(\d+)\/(\d+)\](?: \[C:([ad]*)\])?(?: \[N:(\d+)\])?\s*$/.exec(String(row[ci.lname] || ""));
+      if (mk && mk[4]) g.conf = mk[4];
+      if (mk && mk[5] != null) g.n = +mk[5];
+      g.leaders.push({id, cap: num(row[ci.cap]), r: ci.r.map(c => num(row[c])), d: mk ? [+mk[1], +mk[2], +mk[3]] : [5, 2, 3]});
     }
+  });
+  // 연맹마다 「줄이 다 들어온」 묶음 가운데 가장 최근 것만 쓴다. 저장 도중이거나 한 줄이 빠진 묶음은 건너뛴다
+  const last = {};
+  Object.keys(all).forEach(a => {
+    const ok = Object.keys(all[a]).map(Number).sort((x, y) => y - x).map(b => all[a][b]).find(g => g.n == null || g.leaders.length === g.n);
+    if (ok) last[a] = ok;
   });
   return {A: last, map};
 }
@@ -755,7 +765,9 @@ function syncDraft() {
 // 병사 정보 설문 탭. 병사 줄: 같은 ID 는 마지막 줄만, 훈련소 레벨이 TG 보다 높은 줄은 버린다. 설정 줄: 관리자 값이 맞는 마지막 줄
 async function loadSelf() {
   const r = await fetch("https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?gid=" + TROOP_GID + "&headers=1&tqx=out:csv&_=" + Date.now());
-  const rows = parseCsv(await r.text());
+  const txt = await r.text();
+  if (!r.ok || txt.trim().charAt(0) === "<") throw new Error("sheet");
+  const rows = parseCsv(txt);
   const h = rows[0] || [], col = n => h.findIndex(x => String(x).trim() === n);
   const ci = {id: col("game_id"), ui: col("ui_code"), tg: col("tg"), m: col("march number"), mo: col("march_on number"), ra: col("rally number"), rao: col("rally_on number"), cfg: col("config number"), c: ["inf_camp number", "cav_camp number", "arc_camp number"].map(col), t: ["inf_tier number", "cav_tier number", "arc_tier number"].map(col)};
   const out = {}, march = {}, marchOn = {}, rally = {}, rallyOn = {};
@@ -773,7 +785,7 @@ async function loadSelf() {
       return;
     }
     const id = String(row[ci.id] || "").trim(), tg = parseInt(row[ci.tg], 10);
-    if (!/^[0-9]{5,12}$/.test(id) || !(tg >= 0 && tg <= 8)) return;
+    if (!/^[0-9]{7,12}$/.test(id) || !(tg >= 0 && tg <= 8)) return;
     const s = [0, 1, 2].map(i => [parseInt(row[ci.c[i]], 10), parseInt(row[ci.t[i]], 10)]);
     if (s.some(x => !(x[0] >= 0 && x[0] <= tg) || (x[1] !== 10 && x[1] !== 11))) return;
     out[id] = s;
@@ -833,7 +845,7 @@ function viaJsonp() {
     window[name] = resp => {
       cleanup();
       if (!resp || resp.status === "error") return reject(new Error("gviz"));
-      const rows = resp.table.rows.map(r => r.c.map(c => c == null ? "" : (c.f != null && typeof c.v !== "string" ? String(c.f).replace(/,/g, "") : String(c.v == null ? "" : c.v))));
+      const rows = resp.table.rows.map(r => r.c.map(c => c == null ? "" : (c.f != null && typeof c.v === "string" && c.v.indexOf("Date(") === 0 ? String(c.f) : c.f != null && typeof c.v !== "string" ? String(c.f).replace(/,/g, "") : String(c.v == null ? "" : c.v))));
       resolve([resp.table.cols.map(c => c.label || "")].concat(rows));
     };
     s.onerror = () => { cleanup(); reject(new Error("load")); };
@@ -1053,7 +1065,10 @@ function alloc(a, i, mode, bx) {
       let big = 0;
       [1, 2].forEach(t => { if (R.need[t] > R.need[big]) big = t; });
       const sum = g => g.send[0] + g.send[1] + g.send[2];
-      last = got.filter(g => g.m.rem >= left).sort((x, y) => lv(y.m.p, big) - lv(x.m.p, big) || (sum(y) > 0) - (sum(x) > 0) || (y.m.p.power || 0) - (x.m.p.power || 0))[0] || null;
+      const best = g => lv(g.m.p, 0) + lv(g.m.p, 1) + lv(g.m.p, 2);
+      const fit = got.filter(g => g.m.rem >= left);
+      last = fit.filter(g => sum(g) > 0).sort((x, y) => lv(y.m.p, big) - lv(x.m.p, big) || (y.m.p.power || 0) - (x.m.p.power || 0))[0] ||
+        fit.sort((x, y) => best(x) - best(y) || x.m.rem - y.m.rem)[0] || null;
       if (last) { [0, 1, 2].forEach(t => { last.send[t] += R.need[t]; R.need[t] = 0; }); last.m.rem -= left; }
     }
     const main = g => { let t = 0; [1, 2].forEach(k => { if (g.send[k] > g.send[t]) t = k; }); return t; };
@@ -1068,7 +1083,7 @@ function alloc(a, i, mode, bx) {
 function renderRally() {
   const a = $("rAlly").value || ALLIES[0], box = planBox(a), ls = box.leaders || [];
   const editing = IS_ADMIN && DRAFT && can(a);
-  const stale = editing && JSON.stringify(ls) !== JSON.stringify((DRAFT.A[a] || {}).leaders || []);
+  const stale = editing && JSON.stringify([ls, +box.def || 0]) !== JSON.stringify([(DRAFT.A[a] || {}).leaders || [], +(DRAFT.A[a] || {}).def || 0]);
   const bar = '<div class="modebar"><button class="modeb' + (RMODE === "atk" ? ' primary' : '') + '" data-mode="atk">' + tx("bAtk") + '</button><button class="modeb' + (RMODE === "def" ? ' primary' : '') + '" data-mode="def">' + tx("bDef") + '</button>' + (ls.length ? '<button class="repb">' + tx("bReport") + '</button>' : '') +
     '<b style="color:var(--warn)" id="rallyMsg">' + (stale ? tx("stale") : '') + '</b></div>';
   if (!ls.length) {
@@ -1352,12 +1367,18 @@ async function saveMap() {
 }
 
 // 지금 고른 연맹의 설정을 드라이브 시트에 한 줄씩(집결장마다) 쌓는다
+let SAVING = false;
 async function saveConfig() {
+  if (SAVING) return false;
+  SAVING = true; $("admin").style.pointerEvents = "none"; $("admin").style.opacity = ".6";   // 저장이 끝날 때까지 설정 상자를 잠근다
+  try { return await saveConfig1(); } finally { SAVING = false; $("admin").style.pointerEvents = ""; $("admin").style.opacity = ""; }
+}
+async function saveConfig1() {
   const msg = $("aMsg"), a = $("rAlly").value || ALLIES[0], box = DRAFT.A[a] || blank();
-  if (!can(a)) return;
+  if (!can(a)) return false;
   const by = ($("aBy").value || "").trim(), stamp = Date.now(), at = new Date().toLocaleString("sv-SE").slice(0, 16);
-  if (!by) { msg.textContent = tx("aNeedName"); $("aBy").focus(); return; }
-  if (!boxOk(box)) { msg.textContent = tx("sumBlock"); return; }
+  if (!by) { msg.textContent = tx("aNeedName"); $("aBy").focus(); return false; }
+  if (!boxOk(box)) { msg.textContent = tx("sumBlock"); return false; }
   const rows = box.leaders.length ? box.leaders : [null];
   msg.textContent = tx("aSaving");
   for (const l of rows) {
@@ -1366,7 +1387,7 @@ async function saveConfig() {
     body.append(CF.def, String(+box.def || DEF_MARCH)); body.append(CF.admin, ME.h);
     if (l) {
       const p = DATA.find(x => x.id === l.id);
-      body.append(CF.lid, l.id); body.append(CF.lname, (p ? (p.gname || p.name) : "") + " [D:" + ratioOf(l, "def").map(v => +v || 0).join("/") + "]" + (box.conf ? " [C:" + box.conf + "]" : ""));
+      body.append(CF.lid, l.id); body.append(CF.lname, (p ? (p.gname || p.name) : "") + " [D:" + ratioOf(l, "def").map(v => +v || 0).join("/") + "]" + (box.conf ? " [C:" + box.conf + "]" : "") + " [N:" + box.leaders.length + "]");
       body.append(CF.cap, String(+l.cap || 0));
       [0, 1, 2].forEach(t => body.append(CF.r[t], String(+l.r[t] || 0)));
     }
@@ -1380,11 +1401,12 @@ async function saveConfig() {
         CFG = c; DIRTY[a] = false; delete PLAN[a]; syncDraft();
         renderAdmin(); render();
         $("aMsg").textContent = tx("aSaved");
-        return;
+        return true;
       }
     } catch (e) {}
   }
-  msg.textContent = tx("aFail");
+  $("aMsg").textContent = tx("aFail");
+  return false;
 }
 
 async function initAdmin() {
@@ -1613,6 +1635,7 @@ $("respTable").addEventListener("click", e => {
 $("admin").addEventListener("input", e => {
   const el = e.target, v = +String(el.value).replace(/[^0-9]/g, "") || 0, cur = $("rAlly").value || ALLIES[0];
   if (el.id === "aBy") { if (!ME.n) try { localStorage.setItem("k700by", el.value.trim()); } catch (x) {} return; }
+  if (el.id !== "aDef" && !(el.dataset && el.dataset.f)) return;
   DIRTY[cur] = true;
   if (el.id === "aDef") (DRAFT.A[cur] || (DRAFT.A[cur] = blank())).def = v;
   else if (el.dataset.f) {
@@ -1640,7 +1663,7 @@ $("admin").addEventListener("click", e => {
     const a = $("rAlly").value || ALLIES[0];
     if (!DRAFT || !can(a) || !confirm(tx("resetAsk", a))) return;
     const box = DRAFT.A[a] || (DRAFT.A[a] = blank());
-    box.leaders = []; SELK[a] = 0; DIRTY[a] = true;
+    box.leaders = []; box.conf = ""; SELK[a] = 0; DIRTY[a] = true;
     PLAN[a] = JSON.parse(JSON.stringify(box));
     renderAdmin(); render();
     $("aMsg").textContent = tx("resetDone");
@@ -1650,10 +1673,13 @@ $("admin").addEventListener("click", e => {
   if (e.target.id === "aConf") {
     // 확정 = 지금 설정을 저장하면서 이 포메이션(공격 또는 수비)에 확정 표시를 단다. 다시 누르면 확정을 푼다
     const a = $("rAlly").value || ALLIES[0], box = DRAFT.A[a], f = RMODE === "def" ? "d" : "a";
-    if (!box || !can(a) || !box.leaders.length) return;
-    box.conf = String(box.conf || "").indexOf(f) >= 0 ? String(box.conf).replace(f, "") : (String(box.conf || "") + f).split("").sort().join("");
+    if (!box || !can(a) || !box.leaders.length || SAVING) return;
+    if (!($("aBy").value || "").trim()) { $("aMsg").textContent = tx("aNeedName"); $("aBy").focus(); return; }
+    if (!boxOk(box)) { $("aMsg").textContent = tx("sumBlock"); return; }
+    const before = String(box.conf || "");
+    box.conf = before.indexOf(f) >= 0 ? before.replace(f, "") : (before + f).split("").sort().join("");
     DIRTY[a] = true;
-    saveConfig();
+    saveConfig().then(ok => { if (!ok) { box.conf = before; renderAdmin(); renderRally(); $("aMsg").textContent = tx("aFail"); } });
     return;
   }
   if (e.target.id === "aAdd") {
