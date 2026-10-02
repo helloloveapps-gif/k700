@@ -26,14 +26,20 @@ button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
 .section{margin-bottom:16px}
 .scroll{overflow-x:auto}
 table{border-collapse:collapse;width:100%;font-size:14px}
-th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;white-space:nowrap}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:start;white-space:nowrap}
 th{color:var(--sub);font-weight:600;font-size:13px}
-td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+td.n,th.n{text-align:end;font-variant-numeric:tabular-nums}
 td.c,th.c{text-align:center}
 .dot{color:var(--ok);font-weight:700}
 .no{color:var(--line)}
 tr.bad td{background:rgba(224,49,49,.10);color:#c92a2a;text-decoration:line-through;text-decoration-color:#e03131;text-decoration-thickness:2px}
 tr.bad td:first-child{box-shadow:inset 4px 0 0 #e03131}
+#badBox{border:2px solid #e03131}
+#badBox>h2{border-inline-start-color:#e03131;color:#e03131}
+.pager{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.pager button{padding:4px 11px;font-size:14px}
+.pager button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.pager button:disabled{opacity:.4;cursor:default}
 .badtag{display:inline-block;text-decoration:none;background:#e03131;color:#fff;border-radius:4px;padding:0 6px;font-size:11px;font-weight:700}
 .tag{display:inline-block;padding:1px 8px;border-radius:99px;background:var(--bar);font-size:12px}
 .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
@@ -45,7 +51,7 @@ tr.bad td:first-child{box-shadow:inset 4px 0 0 #e03131}
 .adminbox{border:2px dashed #f59f00;border-radius:12px;padding:14px;margin-bottom:14px}
 .adminbox input{width:96px;padding:5px 8px;text-align:right}
 .adminbox input.pc{width:58px}
-.adminbox input.name{width:130px;text-align:left}
+.adminbox input.name{width:130px;text-align:start}
 .adminbox button.del{padding:3px 10px;font-size:13px}
 table.plan th,table.plan td{padding:6px 8px;font-size:13px}
 table.plan tr.own td{background:rgba(245,159,0,.10)}
@@ -63,8 +69,8 @@ td.march small{color:var(--sub);font-size:11px}
 .card.total .sub{color:rgba(255,255,255,.85)}
 .card.total .bar{background:rgba(255,255,255,.3)}
 .card.total .bar>i{background:#ffd43b}
-.section>h2{border-left:5px solid var(--accent);padding-left:10px}
-h2.slot{background:var(--bar);border-left:5px solid #f59f00;border-radius:6px;padding:6px 10px}
+.section>h2{border-inline-start:5px solid var(--accent);padding-inline-start:10px}
+h2.slot{background:var(--bar);border-inline-start:5px solid #f59f00;border-radius:6px;padding:6px 10px}
 th{background:var(--bar)}
 th small{font-weight:400}
 tr:hover td{background:rgba(121,80,242,.06)}
@@ -74,37 +80,47 @@ tr:hover td{background:rgba(121,80,242,.06)}
 .tier.t10{background:#f59f00;color:#fff}
 .tier.t9{background:#2f9e44;color:#fff}
 .troopline{font-size:13px;margin:4px 0}
-.card.leader{border-left:5px solid #f59f00;background:linear-gradient(180deg,rgba(245,159,0,.10),transparent 60%),var(--card)}
+.card.leader{border-inline-start:5px solid #f59f00;background:linear-gradient(180deg,rgba(245,159,0,.10),transparent 60%),var(--card)}
 .lname{font-weight:700;font-size:16px;color:#e8590c}
 .names small{color:var(--accent);font-weight:700}
-.msg{border-left:5px solid var(--accent)}
+.msg{border-inline-start:5px solid var(--accent)}
+.langs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.langs button{font-size:14px;padding:6px 12px;border-radius:99px}
+.langs button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
 .names span{background:var(--bar);border-radius:6px;padding:2px 8px;font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <div class="langs" id="langs"></div>
   <div class="top hero">
     <div>
-      <h1>700서버 KvK 참여 현황</h1>
+      <h1 id="tTitle">700서버 KvK 참여 현황</h1>
       <div class="sub" id="stamp">불러오는 중…</div>
     </div>
     <div>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLScrbdptVwUimJm__NIvVjMpaIyJM4cDCQWe2SGEQr4Sc1WHfQ/viewform" target="_blank" rel="noopener"><button>설문 작성하기</button></a>
-      <a href="troops.html"><button>병사 정보 입력</button></a>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLScrbdptVwUimJm__NIvVjMpaIyJM4cDCQWe2SGEQr4Sc1WHfQ/viewform" target="_blank" rel="noopener"><button id="bSurvey">설문 작성하기</button></a>
+      <a href="troops.html"><button id="bTroops">병사 정보 입력</button></a>
       <button class="primary" id="reload">새로 고침</button>
     </div>
   </div>
   <div id="msg"></div>
   <div class="grid" id="cards"></div>
 
+  <div class="card section" id="badBox" style="display:none">
+    <h2 id="hBad"></h2>
+    <div class="sub" style="margin-bottom:10px" id="dBad"></div>
+    <div class="scroll"><table id="badTable"></table></div>
+  </div>
+
   <div class="card section">
-    <h2>시간대별 참여 가능 인원 (UTC · 괄호는 한국 시간)</h2>
+    <h2 id="hSlots"></h2>
     <div class="scroll"><table id="slotTable"></table></div>
   </div>
 
   <div class="card section">
-    <h2>집결 편성</h2>
-    <div class="sub" style="margin-bottom:10px">집결장마다 정한 수용 인원과 병과 비율에 맞춰, 그 시간대에 참여 가능한 집결원을 병과 레벨이 높은 순으로 자동 배치한 결과입니다. 수용 인원에는 집결장 본인 병력이 들어 있습니다. 출정 인원수는 본인이 입력한 펫 버프 OFF 값을 쓰고, 입력하지 않은 사람은 기본값으로 계산합니다.</div>
+    <h2 id="hRally"></h2>
+    <div class="sub" style="margin-bottom:10px" id="dRally"></div>
     <div class="filters">
       <select id="rAlly"></select>
     </div>
@@ -113,18 +129,19 @@ tr:hover td{background:rgba(121,80,242,.06)}
   </div>
 
   <div class="card section">
-    <h2>응답자 명단</h2>
+    <h2 id="hResp"></h2>
     <div class="filters">
       <select id="fAlly"></select>
       <select id="fSlot"></select>
-      <input id="fName" placeholder="닉네임 찾기">
+      <input id="fName">
     </div>
     <div class="scroll"><table id="respTable"></table></div>
+    <div class="pager" id="pager"></div>
   </div>
 
   <div class="card section">
-    <h2>아직 응답하지 않은 연맹원</h2>
-    <div class="sub" style="margin-bottom:10px">게임 ID 로 조회한 닉네임(없으면 설문에 적은 닉네임)이 명단 닉네임과 같은 사람을 응답한 것으로 봅니다. 명단을 받은 뒤 닉네임을 바꿨으면 여기에 남아 있을 수 있습니다.</div>
+    <h2 id="hMissing"></h2>
+    <div class="sub" style="margin-bottom:10px" id="dMissing"></div>
     <div id="missing"></div>
   </div>
 </div>
@@ -135,16 +152,143 @@ tr:hover td{background:rgba(121,80,242,.06)}
 const SHEET_ID = "1fwh4GmuMnzgylvhzoALqD0KIK5ssld-Ghs3U4Loul4E";
 const GID = "952911154";
 const ROSTER = {"NeX":{"name":"Nextus","count":94,"members":[["Duby 1988",1244155432,"TG8"],["WoNI o0@",1015907290,"TG8"],["Yui",866241032,"TG8"],["DA기부천사",805364170,"TG8"],["ᴮᴼˢˢ化神ᴳᵒᵈ",726956123,"TG8"],["Noblesse",712852396,"TG8"],["Clacy的小窩",698196727,"TG8"],["나뭇잎마을Namu",626444794,"TG8"],["윤&연 MVP forever~",621832730,"TG8"],["필 piil",619807957,"TG8"],["Deputy",610449444,"TG7"],["24CM",601246164,"TG8"],["Jugy",572194478,"TG8"],["ROBiÏiN",564722618,"TG8"],["클레오빡Dora",556823959,"TG8"],["서아대디_SeoA Daddy",546389189,"TG8"],["엽기 Rabbit",528253492,"TG7"],["Far",523482212,"TG8"],["Yoshimori",521880659,"TG8"],["사랑ⒾⒸⓎᵇᵃᵇᵉˢ",515961951,"TG8"],["乂v12乂",509697351,"TG8"],["NanaMingB",498068616,"TG8"],["CoCoMa 꼬꼬마",496964388,"TG8"],["마루나 Maruna",496395864,"TG8"],["Jain",493605977,"TG8"],["chenlq",490805823,"TG7-4"],["Gluck",488334803,"TG8"],["안녕 Hi",465427745,"TG7"],["SeoA",461043906,"TG7"],["#145Bahtraz#417",451957698,"TG7-3"],["qwer0192",446364491,"TG8"],["Ash Burn",439772856,"TG7"],["여왕 JOKOWI",438917380,"TG7"],["20CM",436968194,"TG7"],["Lordwaise679",426856634,"TG7-3"],["Pedja",426468542,"TG7"],["kamilerzs",425605549,"TG7-3"],["offonoff",422155245,"TG8"],["Ludus",421797342,"TG7-4"],["Skybreaker",414685243,"TG7-3"],["OM【 ﾌㄖҜㄖ山丨】",400907027,"TG7"],["소악마 eso",400756461,"TG8"],["WIXILL",399290731,"TG8"],["ALEX 블루라곤",399255934,"TG7"],["BingSu",398071445,"TG7"],["이웃집또터러Totoro",395855865,"TG6"],["Hina",390676969,"TG8"],["쿠쿠닷_CuCu",386436328,"TG6"],["TOMORO",384557414,"TG7"],["Ermin",382456360,"TG7-3"],["Ducky綠豆掀人",379399705,"TG6-4"],["월드사나이MAN",377683716,"TG7-3"],["보배드림BD",369371260,"TG7"],["GamMu 감감무",368635074,"TG7"],["Mr_MA_마블리ᴷᴼᴿ",368374098,"TG7-1"],["onemore",366690509,"TG7-1"],["SUPERNOVA",365845867,"TG5-4"],["헤르메스_Hermes",358987704,"TG7-1"],["아샷추 AddShot",357072292,"TG7-1"],["Bhokaal",355064729,"TG7-2"],["Divine 디바인",354299711,"TG7"],["또또짱DoDo",353728005,"TG7"],["siapa",352958826,"TG7"],["NextUs",348056035,"TG6"],["wangwang",347130049,"TG7"],["제임스딘777_Dean",338974556,"TG7"],["SuPeRr",319079620,"TG6"],["야간다이빙",317711451,"TG6-3"],["optimushyeonjin",316836908,"TG7"],["121006",316820439,"TG8"],["STM399",315114339,"TG6"],["PHILIP _ 필리비",313911253,"TG7"],["dj철민",313416914,"TG5"],["bro",303348385,"TG6"],["garden5",300928709,"TG6-2"],["아서스 Arthas",296359121,"TG6"],["Liner",289594583,"TG6"],["jiwoo",288653179,"TG6"],["JR_04",282557176,"TG6"],["耶耶耶耶耶耶ya",279245511,"TG6"],["ewenew",277992928,"TG6-2"],["포크볼 forkball",274071112,"TG6-1"],["uooowa",271453048,"TG6"],["El Chapo",263377129,"TG5-4"],["豈耶Kevin",254198481,"TG6"],["elbesmy",238854903,"TG6-2"],["콜모고로프 T0",231829499,"TG5-2"],["ShotMonarch",223996157,"TG5-1"],["binibinipapa",223170997,"TG6-3"],["가나초코 ghana",222468020,"TG5-3"],["13Moon",220256327,"TG4-4"],["King IronMace Ye",193045049,"TG5"],["CoCoMa 꼬꼬마부인",179391243,"TG5"],["Airsprite",154322579,"TG4-3"]]},"NvA":{"name":"Nova","count":98,"members":[["Lotto",648898207,"TG8"],["Captain Q ᴷᴼᴿ",642928942,"TG8"],["༒HoneyYuLᴷᴼᴿ༒",638431530,"TG8"],["방울찡 ᴷᴼᴿ",613225049,"TG8"],["JayChangᵀᵂ",605864683,"TG8"],["조유리YURI",574880095,"TG8"],["sudong01",571616502,"TG8"],["Daigo",564627856,"TG8"],["Dokdo_Shrimpᴷᴼᴿ",554073393,"TG8"],["General 대조영ᴷᴼᴿ",531186195,"TG8"],["Frogᴷᴼᴿ",497647659,"TG8"],["Marchᴷᴼᴿ",490560982,"TG8"],["Cacaca",476859456,"TG8"],["mina",475168881,"TG8"],["아메리카노 Americano",451174712,"TG8"],["༺ཌ࿅AttiLLaᵀᴿ࿅ད༻",438110392,"TG7-3"],["晚睡覺SleepySwim ᶻᶻ",436090654,"TG8"],["Sadako030",434487966,"TG7"],["Muscle Rabbit",432436178,"TG7"],["DeadwooD",428397309,"TG8"],["Akira",416286671,"TG6-3"],["사조성sajo",409757694,"TG8"],["SS4",393794034,"TG8"],["DongDong",388958570,"TG8"],["Namirᴮᵁᴸ",387039495,"TG8"],["SEKSEKTR32",385779449,"TG7-4"],["TTÜN",384410399,"TG7"],["EKSELANSWS",384358196,"TG7"],["Aquarius",380063832,"TG8"],["A R E 135",377644115,"TG6-2"],["RyaN 캥",375191926,"TG7-2"],["n00b4lyf",374038395,"TG7-2"],["DracheN",370344783,"TG7-2"],["DwaejiGukbap",366081890,"TG7-3"],["드럼 Drumd",365274802,"TG8"],["Mamba Out",362346787,"TG7"],["BuLSaR",361096534,"TG7-2"],["༺Abu Salem ༻",356467284,"TG8"],["세종대왕 King Sejong",350183604,"TG7-1"],["iMommy",346540810,"TG6"],["DaddyCat",345408915,"TG6"],["Jadieᴮᵁᴸ",342817573,"TG7"],["담비찡 Dambi ᴷᴼᴿ",340879623,"TG7-1"],["noid",336155027,"TG6"],["ShriMCMV",335331070,"TG8"],["Spartan Warrior",334430095,"TG7-4"],["John2",334110396,"TG6"],["Grace莓頌",332498522,"TG7"],["DIABLO ᵀᴿ",331586709,"TG7"],["카시스Cassisᴷᴼᴿ",331383365,"TG7"],["JJigaeᴷᴼᴿ",329285761,"TG7"],["Lord RonJustin",320827597,"TG5"],["포차코 Pochaco",319295046,"TG7-1"],["Duran",318944470,"TG7-4"],["WoodKing",316752063,"TG7"],["TwoPark",309942357,"TG6"],["Bozza",309677662,"TG6"],["white",299734620,"TG7-2"],["DaeHan H",299127234,"TG6"],["도깨비 Specter",296216886,"TG5"],["Black체리",289773357,"TG6"],["DevilsDoPray",288130579,"TG6-3"],["SAJABARAM",284506446,"TG7"],["Hideonbush",283512771,"TG7"],["라현은우천사_Rara",282325878,"TG6"],["WTD",281204189,"TG7"],["창12chang",280767956,"TG8"],["mirinai",279664549,"TG7"],["Hajin_papa",279653719,"TG6"],["FIRST 처음부터",278535988,"TG6"],["Stephy Baby",277784334,"TG5-4"],["winterqueen",273484892,"TG6-3"],["Buble",270112237,"TG6"],["0628",256414509,"TG6-4"],["126",244661534,"TG6"],["L0rdSl3nd3r",241787223,"TG5"],["Volde",240461537,"TG6"],["Bokja/김복자",238698644,"TG6"],["Kerryae33",238135111,"TG6"],["King너굴이",235939023,"TG6-1"],["ToBeOrNotToBe",235839352,"TG6-4"],["Covervis",235455231,"TG6"],["냉이나물 wawa",233957925,"TG5-4"],["juba 515",232307263,"TG5"],["porori",231973815,"TG5"],["Arturᴮᵁᴸ",229710648,"TG5-2"],["GAMJA",226175886,"TG5"],["Safeer AlSham",226157483,"TG5-2"],["Fantasma",209938434,"TG5"],["Noodlerama!",199185954,"TG5"],["Skychakra",198255508,"TG5-2"],["Sangsom1",196200382,"TG5"],["냥냥Punch",195430846,"TG5"],["타이거 tiger",194398077,"TG5-1"],["milesmorales1610",172867485,"TG5"],["ǝʞɐɔdnɔ ı̣uı̣ɯ",161322526,"TG4"],["DDOKBARO",161111217,"TG4-1"],["Mahmood",153018023,"TG3-1"]]},"AEH":{"name":"華人陽光幼兒園","count":94,"members":[["小昇昇son",538206622,"TG8"],["Jz Crimson",500613948,"TG8"],["思念是一種病 思樂是一種冰ᴸᴵᴺ",458308552,"TG8"],["Feng 狂風",457489392,"TG8"],["鹽邊x",447507946,"TG7"],["山健 久武澤",444311201,"TG8"],["新世紀福德正神TudiGong",438940069,"TG6-1"],["豆乾先生 Chi",431260174,"TG8"],["JianSharon平凡人",430126088,"TG7"],["安娜膩Hanna",415019029,"TG8"],["迅猛龍Dragon",404205598,"TG8"],["Imsorryᴾᴵᴳ",404194061,"TG8"],["MozBah",398087635,"TG7"],["咖哩魚蛋Fish",385966187,"TG7"],["Fish 說話的小魚",382897036,"TG6-1"],["M I T 嚕嚕米",380715986,"TG7"],["婕晞Jess",370622310,"TG7"],["快使用雙截棍CHOU",368968560,"TG7-4"],["嘎抓roach",363388738,"TG8"],["CAT6966",360372290,"TG7"],["半糖微冰 WEI",360330553,"TG7"],["台灣BinbOn",358090752,"TG7-1"],["Green",357289882,"TG6"],["黑輪小姐 siao",353192715,"TG7"],["PARADISE ~ ᴷᴵˢˢ",348253230,"TG7"],["胡不歸",345132942,"TG8"],["PRECIOUS～ᴰᴿᴱᴬᴹ",341822981,"TG7-1"],["酱板鸭",339683825,"TG6-1"],["睡觉的时候不会困",336735291,"TG6"],["保力達 JUI",331899176,"TG6"],["芒果金煌我是 Mango",331112060,"TG7"],["【和平】༒ ᴬᴹᴬᴺᴵ ༒",325136735,"TG6"],["halahoo 哈啦呼",324101563,"TG5-4"],["奈思老大·YU",323756036,"TG6"],["Chanel N°5",318604150,"TG7"],["Benno",317459550,"TG7"],["Biu須說幹話",313063898,"TG6-4"],["JING",308381017,"TG6"],["湯姆貓",305496235,"TG6"],["JayZ",305121627,"TG5"],["World Peace",303531487,"TG5"],["Lin",299855419,"TG6"],["0o偷你o0",291089851,"TG6-3"],["一休方丈 Ikkyu",280123366,"TG7"],["蚵仔寶寶",275828878,"TG5-4"],["SunnySunny",274595982,"TG4-3"],["快樂斑馬。HZ",273377667,"TG6"],["༻ʚ Meat 肉ɞ༺",272847140,"TG5"],["pink moon",271283302,"TG6"],["kking5528",265815466,"TG5-4"],["新竹狗熊",264732249,"TG6"],["The vast sky",263611391,"TG5"],["伞妮流Sunny",263473874,"TG5-1"],["～ᴍᴏꜱᴛᴀɴ°魔斯坦°～",263094723,"TG6"],["Panpan 高不可潘",256251457,"TG6"],["Manman",252281942,"TG5-4"],["我很好我很棒Huei",239435950,"TG6"],["Denno 蔥三小",238650745,"TG5"],["我什麼都不會只會聊天講乾話",237569867,"TG5-2"],["路寶Joanna",236412287,"TG5"],["神創彗星_Star",220837853,"TG7"],["埃及貓 Egyptian Cat",219702157,"TG5"],["小橘子 Orange",209510715,"TG5"],["Wulfy ฅʕ·͡ᴥ፝֟·ʔฅ",209038123,"TG3"],["Meowxl",208437568,"TG5"],["Elena餃子",196418566,"TG5"],["非常菜 S",194900164,"TG5-2"],["曹氏鸭脖",182331025,"TG4"],["姬拉布Tsai",178028042,"TG4"],["Gary",173730596,"TG5-3"],["糖果雞腿",171515707,"TG3"],["小利特Drew",157593768,"TG6"],["FAFO",156945089,"TG4-3"],["雞皮甜不辣",154844369,"TG4"],["八級小狂風",125909057,"TG3-1"],["CianTW",121480622,"TG5"],["珽身而出",102224593,"TG3"],["Alumi",101833372,"TG4"],["心太軟",83331161,"TG2-4"],["黑糖珍珠 pearl",81118498,"TC29"],["똥싸고손안씻음YO",71909650,"TC29"],["红焖羊蝎子",68478654,"TG1"],["春日部の大美女 野原 美伢",67953108,"TC30"],["洽洽瓜子",65377451,"TC30"],["野原向日葵",65114337,"TG1"],["情非得已",59139243,"TG2-2"],["咳嗽用斯斯",43454670,"TG1"],["古顧估",43040927,"TC30-3"],["sleepy farmer",35972710,"TC28"],["大冰棍",20167272,"TC22"],["小太子奶",8685740,"TC24"],["Moonlitz Reach",4397616,"TC22"],["给我鲜椒鸡",2429454,"TC17"],["李慕慕",512115,"TC9"]]},"LoV":{"name":"LoV","count":97,"members":[["McGills",408968619,"TG7"],["Senpei",392601380,"TG7"],["BlejdRunner",375848255,"TG6"],["Lord 2571 sr",374523830,"TG7"],["Hecto",334453220,"TG6"],["ΓΙΑΝΝΗΣ",326859273,"TG6"],["Sid",326381957,"TG6-2"],["fatlard",312219388,"TG6"],["KAAN Abdullah 07",305457800,"TG5"],["Fjord",300975155,"TG6"],["littlebook",293749870,"TG6"],["kameni28",288603669,"TG6"],["Lord alarue",281557757,"TG5"],["JOLESBAT",268213865,"TG5-1"],["Let Me Be Sad",260262659,"TG5-1"],["Aydinandirin",256402421,"TG5-2"],["giaca08",256322502,"TG5"],["Tenebrix",251143496,"TG3-1"],["WB94",240923448,"TG4"],["Mystogan",237406875,"TG5-4"],["Mission possible",235042059,"TG6-3"],["lord106299571",233713952,"TG5-4"],["Jeco",232967820,"TG5-2"],["Mabuhay",226788101,"TG5"],["꧁༺Loνє༻꧂",226207466,"TG7"],["Twin1453",224837096,"TG5-3"],["LordJosephBurky",222458079,"TG5-1"],["Frederick",221322670,"TG6-2"],["Peridot",217302798,"TG5"],["Veliona",216803007,"TG4-2"],["bluepepper",213737245,"TG5"],["Aysu",206211098,"TG4-4"],["HadSkype",202603793,"TG3"],["Dude",196409335,"TG5-3"],["소미 도하",196385100,"TG5"],["Naples_Ag4in",193842966,"TG4"],["lionel 72",193695329,"TG5"],["followerofRagosh",185030040,"TG4"],["DaMaRq8",184323527,"TG4-1"],["silent hill",184145937,"TG5"],["Chuck nuck",182702395,"TG5"],["Boyz01",171021685,"TG4"],["AllyM",169375030,"TG5"],["ВІКТОР",168261139,"TG5"],["JoིJoྀ ༶JOY༶",166535336,"TG3"],["BRALMAVAPA",165065836,"TG4-1"],["louie mar",164335564,"TG5"],["NitroxX",163443405,"TG5"],["TadejPec",161289988,"TG5"],["Algetic",156342772,"TG4-2"],["Andreea",154432953,"TG4"],["El3Andlib",153169071,"TG5"],["Laura",152853830,"TG4"],["돈키호테",150490419,"TG4"],["Jacksonalt8",147104691,"TG3-3"],["Marshal kuwait",144838949,"TG4"],["e7andy",141642595,"TG4-1"],["HOT",141515343,"TG4-1"],["Nims_Noms_peace",140357322,"TG3-3"],["Vikingsalé",138651272,"TG4"],["Bdancercosplay",135089929,"TG5-2"],["Viker",130087523,"TG4"],["Cake",129431248,"TG4"],["Baba Yaga",129343737,"TG4"],["myin",127006032,"TG3-1"],["Trond",126016864,"TG6-3"],["Veldanava",124623786,"TG4"],["HadSkype 2",124274146,"TG1"],["Daow 4i20",122127522,"TG2"],["༻BlazE༺࿐",121396923,"TG4"],["omcmge",120707315,"TG4"],["ᴺᵛᴬSomedayᴮᵁᴸ",119193649,"TG4"],["Murrano ツ",118902169,"TG3"],["༺ Loνє ฅʕ·͡ᴥ፝֟·ʔ",115726408,"TG3-3"],["Cidelion",115698752,"TG5"],["Kelly lau",115439983,"TG4"],["دحّام",115366503,"TG3"],["Thanis",114793670,"TC30"],["ʟᴜɴᴀʀᴀ ᥫ᭡",114172458,"TG3"],["Albahti",108414119,"TG3"],["COZMAN",105870263,"TG2-4"],["007빵",103622879,"TG1"],["محمد فرحات 99",100362340,"TG2"],["Leo1001",93634502,"TG5"],["R4d3k",89738969,"TG1-2"],["DayOne oR OneDay",89133788,"TG2"],["Danies",73876466,"TG1"],["༻Hana༺",71875689,"TC29"],["JokerVerde",67477197,"TG3"],["༻ Lσνє ༺ ᴸᵒᵛ",65490632,"TC30"],["LittleEmpress",65402608,"TC30"],["sonia26",61531076,"TC29"],["SummerMrsh",56749309,"TC30"],["FURY",55200367,"TC28"],["Throne",54875334,"TC30-2"],["ηιєнαѕн · 니해쉬",50843034,"TC29"],["BiggusDikkus",46089055,"TC26"]]}};
-const SLOTS = [
-  ["12:00~13:00", "한국 21~22시"], ["13:00~14:00", "한국 22~23시"], ["14:00~15:00", "한국 23~24시"],
-  ["15:00~16:00", "한국 00~01시"], ["16:00~17:00", "한국 01~02시"], ["17:00~17:30", "한국 02~02:30"]
-];
+const SLOTS = [["12:00~13:00", 12, 13], ["13:00~14:00", 13, 14], ["14:00~15:00", 14, 15], ["15:00~16:00", 15, 16], ["16:00~17:00", 16, 17], ["17:00~17:30", 17, 17.5]];
 const ALLIES = Object.keys(ROSTER);
 const $ = id => document.getElementById(id);
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 const norm = s => String(s || "").normalize("NFKC").replace(/\s+/g, "").toLowerCase();
 const fmt = n => n == null ? "" : Number(n).toLocaleString("ko-KR");
 const pct = (a, b) => b ? Math.round(a / b * 1000) / 10 : 0;
+
+// 화면 글. 언어마다 같은 열쇠를 둔다. {0} {1} 자리에 값이 들어간다
+const LANGS = ["ko", "en", "zh", "ar", "tr"];
+const TZ = {ko: ["한국", 9], en: null, zh: ["台灣", 8], ar: ["UTC+3", 3], tr: ["Türkiye", 3]};
+const LOCALE = {ko: "ko-KR", en: "en-GB", zh: "zh-TW", ar: "en-GB", tr: "tr-TR"};
+const I18N = {
+  ko: {name: "한국어", title: "700서버 KvK 참여 현황", loading: "불러오는 중…", bSurvey: "설문 작성하기", bTroops: "병사 정보 입력", bReload: "새로 고침",
+    hSlots: "시간대별 참여 가능 인원 (UTC · 괄호는 한국 시간)", hRally: "집결 편성",
+    dRally: "집결장마다 정한 수용 인원과 병과 비율에 맞춰, 그 시간대에 참여 가능한 집결원을 병과 레벨이 높은 순으로 자동 배치한 결과입니다. 수용 인원에는 집결장 본인 병력이 들어 있습니다. 출정 인원수는 본인이 입력한 펫 버프 OFF 값을 쓰고, 입력하지 않은 사람은 기본값으로 계산합니다.",
+    hResp: "응답자 명단", findName: "닉네임 찾기", hMissing: "아직 응답하지 않은 연맹원",
+    dMissing: "게임 ID 로 조회한 닉네임(없으면 설문에 적은 닉네임)이 명단 닉네임과 같은 사람을 응답한 것으로 봅니다. 명단을 받은 뒤 닉네임을 바꿨으면 여기에 남아 있을 수 있습니다.",
+    total: "전체 참여율", people: "{0} / {1}명", thSlot: "시간대", thSum: "합계", thRatio: "비율", fullJoin: "FULL 참여", allDay: "(전 시간)",
+    thLeader: "집결장", thAlly: "연맹", thNick: "닉네임", thNowAlly: "현재 연맹", thId: "게임 ID", thMystic: "시련", thPower: "전투력", thBuilding: "건물",
+    thMarch: "출정 인원수", thRallyCap: "집결 인원수", petSub: "펫 버프 OFF / ON", inf: "보병", cav: "기병", arc: "궁병", troopSub: "병사 · 훈련소", thTime: "제출 시각",
+    survey: "(설문: {0})", noId: "ID 없음", preLookup: "(ID 조회 전)", diffAlly: "≠ 설문", noResp: "해당하는 응답이 없습니다.", leftN: "{0}명 남음",
+    fAllyAll: "연맹 전체", fSlotAll: "시간대 전체",
+    noPlan: "{0} 연맹은 아직 집결 편성이 정해지지 않았습니다.", noPlanAdmin: " 아래 응답자 명단에서 ☆ 를 눌러 집결장을 고르세요.",
+    saved: "편성 저장: {0}", unsaved: "저장하지 않은 변경이 있습니다", notSaved: "아직 저장하지 않았습니다",
+    slotHead: "집결장 {0}명 · 집결원 {1}명", noLeader: "이 시간대에 참여 가능한 집결장이 없습니다. 집결원 {0}명이 남습니다.",
+    capLine: "수용 {0} · 비율 보병 {1} / 기병 {2} / 궁병 {3} · 채움 {4} ({5}%) · 집결원 {6}명",
+    thSender: "보내는 사람", leaderSelf: "집결장 본인", defMarch: "(출정 기본값)", fillTarget: "채움 / 목표", short: "부족 {0}", rest: "배치되지 않고 남는 집결원 {0}명: ",
+    aTitle: "편성 설정 (관리자)",
+    aDesc: "아래 응답자 명단(시련 높은 순)에서 ☆ 를 눌러 집결장을 넣고, 수용 인원과 병과 비율을 정한 뒤 저장하세요. 저장은 지금 고른 연맹({0})만 됩니다. 관리자 링크를 가진 사람은 누구나 설정할 수 있고, 연맹마다 마지막에 저장한 내용이 적용됩니다.",
+    aBy: "저장하는 사람", aDef: "출정 인원수를 안 넣은 사람의 기본값", aLeaderCol: "집결장 ({0})", aOwnMarch: "본인 출정", aCap: "수용 인원", aSelfInput: "본인 입력 {0}",
+    aDel: "빼기", aNone: "{0} 연맹에 고른 집결장이 없습니다.", aSave: "{0} 편성 저장", aNeedName: "저장하는 사람 이름을 적어 주세요.", aSaving: "저장하는 중…",
+    aSaved: "저장했습니다. 모두에게 이 편성이 보입니다.", aFail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 눌러 주세요.",
+    stamp: "응답 {0}명 · {1} 기준", stampBad: " · 아이디 오류 {0}건(위 명단 · 참여율에서 제외)", stampTail: " · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값({0})",
+    hBad: "아이디 오류인 사람 명단", dBad: "게임 ID 가 없거나 숫자가 아니어서 누구인지 확인할 수 없는 응답입니다. 참여율과 집결 편성에 들어가지 않습니다. 해당하는 분은 설문을 다시 작성해 주세요.", thTyped: "입력한 ID", thLang: "언어", pageInfo: "{0}–{1} / {2}명", prev: "이전", next: "다음",
+    loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
+  en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Fill in the survey", bTroops: "Enter my troop info", bReload: "Refresh",
+    hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
+    dRally: "For each rally leader, the joiners available in that time slot are placed automatically, highest troop level first, to match the leader's rally capacity and troop ratio. The capacity includes the leader's own troops. March size is the pet buff OFF value each player entered; players who did not enter one are counted with the default value.",
+    hResp: "Respondents", findName: "Find a nickname", hMissing: "Members who have not answered yet",
+    dMissing: "A member counts as answered when the nickname looked up by game ID (or the nickname typed in the survey) matches the roster nickname. If you changed your nickname after the roster was taken, you may still appear here.",
+    total: "Overall participation", people: "{0} / {1}", thSlot: "Time slot", thSum: "Total", thRatio: "Share", fullJoin: "FULL participation", allDay: "(all slots)",
+    thLeader: "Leader", thAlly: "Alliance", thNick: "Nickname", thNowAlly: "Current alliance", thId: "Game ID", thMystic: "Mystic Trial", thPower: "Power", thBuilding: "Town Center",
+    thMarch: "March size", thRallyCap: "Rally capacity", petSub: "Pet buff OFF / ON", inf: "Infantry", cav: "Cavalry", arc: "Archer", troopSub: "Troop · Camp", thTime: "Submitted",
+    survey: "(survey: {0})", noId: "No ID", preLookup: "(ID not looked up yet)", diffAlly: "≠ survey", noResp: "No matching responses.", leftN: "{0} left",
+    fAllyAll: "All alliances", fSlotAll: "All time slots",
+    noPlan: "No rally plan has been set for {0} yet.", noPlanAdmin: " Press ☆ in the respondent list below to pick rally leaders.",
+    saved: "Plan saved: {0}", unsaved: "There are unsaved changes", notSaved: "Not saved yet",
+    slotHead: "{0} leaders · {1} joiners", noLeader: "No rally leader is available in this time slot. {0} joiners are left over.",
+    capLine: "Capacity {0} · Ratio Infantry {1} / Cavalry {2} / Archer {3} · Filled {4} ({5}%) · {6} joiners",
+    thSender: "Sender", leaderSelf: "Leader's own troops", defMarch: "(default march size)", fillTarget: "Filled / Target", short: "Short {0}", rest: "{0} joiners left unassigned: ",
+    aTitle: "Rally settings (admin)",
+    aDesc: "Press ☆ in the respondent list below (sorted by Mystic Trial) to add rally leaders, set the capacity and troop ratio, then save. Saving applies only to the selected alliance ({0}). Anyone with the admin link can edit, and the last save for each alliance is the one in effect.",
+    aBy: "Saved by", aDef: "Default march size for players who did not enter one", aLeaderCol: "Leader ({0})", aOwnMarch: "Own march", aCap: "Capacity", aSelfInput: "Self-reported {0}",
+    aDel: "Remove", aNone: "No rally leader picked for {0}.", aSave: "Save {0} plan", aNeedName: "Please enter the name of the person saving.", aSaving: "Saving…",
+    aSaved: "Saved. Everyone now sees this plan.", aFail: "Could not confirm the save. Please press again in a moment.",
+    stamp: "{0} responses · as of {1}", stampBad: " · {0} with a game ID error (listed above · not counted)", stampTail: " · refreshes every minute · power and Town Center come from the game ID lookup ({0})",
+    hBad: "Responses with a game ID error", dBad: "These responses have no game ID or a non-numeric one, so the player cannot be identified. They are not counted in participation or the rally plan. If this is you, please fill in the survey again.", thTyped: "ID as typed", thLang: "Language", pageInfo: "{0}–{1} / {2}", prev: "Prev", next: "Next",
+    loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
+  zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫問卷", bTroops: "填寫我的士兵資料", bReload: "重新整理",
+    hSlots: "各時段可參加人數（UTC · 括號內為台灣時間）", hRally: "集結編組",
+    dRally: "依照每位集結隊長設定的集結容量與兵種比例，將該時段可參加的集結成員按兵種等級由高到低自動分配的結果。集結容量包含隊長自己的部隊。出征人數使用本人填寫的寵物增益 OFF 數值，未填寫者以預設值計算。",
+    hResp: "回覆名單", findName: "搜尋暱稱", hMissing: "尚未回覆的聯盟成員",
+    dMissing: "以遊戲 ID 查到的暱稱（查不到時用問卷上填的暱稱）與名單暱稱相同者視為已回覆。若在名單建立後改過暱稱，可能仍會留在這裡。",
+    total: "整體參加率", people: "{0} / {1} 人", thSlot: "時段", thSum: "合計", thRatio: "比例", fullJoin: "FULL 全程參加", allDay: "（全部時段）",
+    thLeader: "隊長", thAlly: "聯盟", thNick: "暱稱", thNowAlly: "目前聯盟", thId: "遊戲 ID", thMystic: "神秘試煉", thPower: "戰力", thBuilding: "城鎮中心",
+    thMarch: "出征人數", thRallyCap: "集結人數", petSub: "寵物增益 OFF / ON", inf: "步兵", cav: "騎兵", arc: "弓兵", troopSub: "士兵 · 訓練營", thTime: "提交時間",
+    survey: "（問卷：{0}）", noId: "無 ID", preLookup: "（ID 尚未查詢）", diffAlly: "≠ 問卷", noResp: "沒有符合的回覆。", leftN: "剩 {0} 人",
+    fAllyAll: "全部聯盟", fSlotAll: "全部時段",
+    noPlan: "{0} 聯盟尚未設定集結編組。", noPlanAdmin: " 請在下方回覆名單按 ☆ 選擇集結隊長。",
+    saved: "編組儲存：{0}", unsaved: "有尚未儲存的變更", notSaved: "尚未儲存",
+    slotHead: "隊長 {0} 人 · 成員 {1} 人", noLeader: "此時段沒有可參加的集結隊長，剩下 {0} 位成員。",
+    capLine: "容量 {0} · 比例 步兵 {1} / 騎兵 {2} / 弓兵 {3} · 已填 {4}（{5}%）· 成員 {6} 人",
+    thSender: "派兵者", leaderSelf: "隊長本人", defMarch: "（出征預設值）", fillTarget: "已填 / 目標", short: "不足 {0}", rest: "未分配的成員 {0} 人：",
+    aTitle: "編組設定（管理員）",
+    aDesc: "在下方回覆名單（依神秘試煉由高到低）按 ☆ 加入集結隊長，設定集結容量與兵種比例後儲存。只會儲存目前選擇的聯盟（{0}）。持有管理員連結的人都可以設定，每個聯盟以最後一次儲存的內容為準。",
+    aBy: "儲存者", aDef: "未填出征人數者的預設值", aLeaderCol: "隊長（{0}）", aOwnMarch: "本人出征", aCap: "集結容量", aSelfInput: "本人填寫 {0}",
+    aDel: "移除", aNone: "{0} 聯盟尚未選擇集結隊長。", aSave: "儲存 {0} 編組", aNeedName: "請填寫儲存者名稱。", aSaving: "儲存中…",
+    aSaved: "已儲存，所有人都會看到這份編組。", aFail: "無法確認儲存，請稍後再按一次。",
+    stamp: "回覆 {0} 人 · {1}", stampBad: " · ID 有誤 {0} 筆（見上方名單 · 不計入參加率）", stampTail: " · 每分鐘自動更新 · 戰力與城鎮中心為遊戲 ID 查詢值（{0}）",
+    hBad: "ID 有誤的名單", dBad: "這些回覆沒有遊戲 ID 或 ID 不是數字，無法確認是誰。不計入參加率與集結編組。如果是你，請重新填寫問卷。", thTyped: "填寫的 ID", thLang: "語言", pageInfo: "{0}–{1} / {2} 人", prev: "上一頁", next: "下一頁",
+    loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
+  ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "املأ الاستبيان", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
+    hSlots: "عدد المتاحين في كل فترة (UTC · بين القوسين توقيت UTC+3)", hRally: "خطة الحشود",
+    dRally: "لكل قائد حشد، يتم توزيع الأعضاء المتاحين في تلك الفترة تلقائيًا بحسب أعلى مستوى للجنود، وفق سعة الحشد ونسبة أنواع الجنود التي حددها القائد. السعة تشمل جنود القائد نفسه. حجم المسيرة هو القيمة التي أدخلها اللاعب مع تعزيز الحيوان الأليف OFF، ومن لم يدخلها يُحسب بالقيمة الافتراضية.",
+    hResp: "قائمة المجيبين", findName: "ابحث عن اسم", hMissing: "أعضاء لم يجيبوا بعد",
+    dMissing: "يُعتبر العضو مجيبًا إذا طابق الاسم المستخرج من معرف اللعبة (أو الاسم المكتوب في الاستبيان) الاسم الموجود في القائمة. إذا غيّرت اسمك بعد إعداد القائمة فقد تبقى هنا.",
+    total: "نسبة المشاركة الكلية", people: "{0} / {1}", thSlot: "الفترة", thSum: "المجموع", thRatio: "النسبة", fullJoin: "مشاركة كاملة FULL", allDay: "(كل الفترات)",
+    thLeader: "القائد", thAlly: "التحالف", thNick: "الاسم", thNowAlly: "التحالف الحالي", thId: "معرف اللعبة", thMystic: "التجربة الغامضة", thPower: "القوة", thBuilding: "مركز المدينة",
+    thMarch: "حجم المسيرة", thRallyCap: "سعة الحشد", petSub: "تعزيز الحيوان الأليف OFF / ON", inf: "مشاة", cav: "فرسان", arc: "رماة", troopSub: "الجنود · المعسكر", thTime: "وقت الإرسال",
+    survey: "(الاستبيان: {0})", noId: "بدون معرف", preLookup: "(لم يتم البحث عن المعرف بعد)", diffAlly: "≠ الاستبيان", noResp: "لا توجد إجابات مطابقة.", leftN: "بقي {0}",
+    fAllyAll: "كل التحالفات", fSlotAll: "كل الفترات",
+    noPlan: "لم تُحدد خطة الحشود لتحالف {0} بعد.", noPlanAdmin: " اضغط ☆ في قائمة المجيبين أدناه لاختيار قادة الحشود.",
+    saved: "تم حفظ الخطة: {0}", unsaved: "توجد تغييرات غير محفوظة", notSaved: "لم يتم الحفظ بعد",
+    slotHead: "القادة {0} · الأعضاء {1}", noLeader: "لا يوجد قائد حشد متاح في هذه الفترة. بقي {0} من الأعضاء.",
+    capLine: "السعة {0} · النسبة مشاة {1} / فرسان {2} / رماة {3} · تم ملء {4} ({5}%) · الأعضاء {6}",
+    thSender: "المرسل", leaderSelf: "جنود القائد نفسه", defMarch: "(القيمة الافتراضية للمسيرة)", fillTarget: "المملوء / الهدف", short: "ينقص {0}", rest: "أعضاء لم يتم توزيعهم ({0}): ",
+    aTitle: "إعدادات الحشود (المشرف)",
+    aDesc: "اضغط ☆ في قائمة المجيبين أدناه (مرتبة حسب التجربة الغامضة) لإضافة قادة الحشود، ثم حدد السعة ونسبة أنواع الجنود واحفظ. الحفظ يخص التحالف المحدد فقط ({0}). كل من يملك رابط المشرف يستطيع التعديل، ويُعتمد آخر حفظ لكل تحالف.",
+    aBy: "اسم من يحفظ", aDef: "حجم المسيرة الافتراضي لمن لم يدخله", aLeaderCol: "القائد ({0})", aOwnMarch: "مسيرته", aCap: "السعة", aSelfInput: "أدخلها بنفسه {0}",
+    aDel: "إزالة", aNone: "لم يتم اختيار قائد حشد لتحالف {0}.", aSave: "حفظ خطة {0}", aNeedName: "اكتب اسم من يقوم بالحفظ.", aSaving: "جارٍ الحفظ…",
+    aSaved: "تم الحفظ. الجميع يرى هذه الخطة الآن.", aFail: "تعذر تأكيد الحفظ. اضغط مرة أخرى بعد قليل.",
+    stamp: "{0} إجابة · حتى {1}", stampBad: " · {0} إجابة بخطأ في المعرف (في القائمة أعلاه · غير محسوبة)", stampTail: " · تحديث تلقائي كل دقيقة · القوة ومركز المدينة من البحث بمعرف اللعبة ({0})",
+    hBad: "قائمة من لديهم خطأ في المعرف", dBad: "هذه الإجابات بلا معرف لعبة أو بمعرف غير رقمي، لذلك لا يمكن معرفة صاحبها. لا تُحسب في نسبة المشاركة ولا في خطة الحشود. إذا كنت أحدهم فأعد ملء الاستبيان.", thTyped: "المعرف المكتوب", thLang: "اللغة", pageInfo: "{0}–{1} / {2}", prev: "السابق", next: "التالي",
+    loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
+  tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Anketi doldur", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
+    hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · parantez içi Türkiye saati)", hRally: "Ralli planı",
+    dRally: "Her ralli lideri için, o saat diliminde katılabilen üyeler liderin belirlediği ralli kapasitesine ve asker oranına göre, en yüksek asker seviyesinden başlanarak otomatik yerleştirilir. Kapasiteye liderin kendi askerleri dahildir. Sefer kapasitesi olarak oyuncunun girdiği evcil hayvan takviyesi KAPALI (OFF) değeri kullanılır; girmeyenler varsayılan değerle hesaplanır.",
+    hResp: "Yanıt verenler", findName: "Takma ad ara", hMissing: "Henüz yanıt vermeyen üyeler",
+    dMissing: "Oyun ID ile bulunan takma ad (yoksa ankete yazılan takma ad) listedeki takma adla aynıysa üye yanıt vermiş sayılır. Liste alındıktan sonra takma adınızı değiştirdiyseniz burada görünmeye devam edebilirsiniz.",
+    total: "Toplam katılım", people: "{0} / {1}", thSlot: "Saat dilimi", thSum: "Toplam", thRatio: "Oran", fullJoin: "FULL tam katılım", allDay: "(tüm saatler)",
+    thLeader: "Lider", thAlly: "İttifak", thNick: "Takma ad", thNowAlly: "Şimdiki ittifak", thId: "Oyun ID", thMystic: "Mistik Deneme", thPower: "Güç", thBuilding: "Şehir Merkezi",
+    thMarch: "Sefer kapasitesi", thRallyCap: "Ralli kapasitesi", petSub: "Evcil hayvan takviyesi OFF / ON", inf: "Piyade", cav: "Süvari", arc: "Okçu", troopSub: "Asker · Kamp", thTime: "Gönderim zamanı",
+    survey: "(anket: {0})", noId: "ID yok", preLookup: "(ID henüz sorgulanmadı)", diffAlly: "≠ anket", noResp: "Eşleşen yanıt yok.", leftN: "{0} kişi kaldı",
+    fAllyAll: "Tüm ittifaklar", fSlotAll: "Tüm saat dilimleri",
+    noPlan: "{0} ittifakı için henüz ralli planı belirlenmedi.", noPlanAdmin: " Ralli liderlerini seçmek için aşağıdaki listede ☆ işaretine basın.",
+    saved: "Plan kaydedildi: {0}", unsaved: "Kaydedilmemiş değişiklikler var", notSaved: "Henüz kaydedilmedi",
+    slotHead: "{0} lider · {1} katılımcı", noLeader: "Bu saat diliminde katılabilen ralli lideri yok. {0} katılımcı boşta kalıyor.",
+    capLine: "Kapasite {0} · Oran Piyade {1} / Süvari {2} / Okçu {3} · Dolan {4} (%{5}) · {6} katılımcı",
+    thSender: "Gönderen", leaderSelf: "Liderin kendi askerleri", defMarch: "(varsayılan sefer kapasitesi)", fillTarget: "Dolan / Hedef", short: "Eksik {0}", rest: "Yerleştirilmeyen {0} katılımcı: ",
+    aTitle: "Ralli ayarları (yönetici)",
+    aDesc: "Aşağıdaki listede (Mistik Deneme sırasına göre) ☆ işaretine basarak ralli liderlerini ekleyin, kapasiteyi ve asker oranını belirleyip kaydedin. Kayıt yalnızca seçili ittifak ({0}) için yapılır. Yönetici bağlantısına sahip herkes ayarlayabilir; her ittifak için son kayıt geçerlidir.",
+    aBy: "Kaydeden", aDef: "Sefer kapasitesi girmeyenler için varsayılan değer", aLeaderCol: "Lider ({0})", aOwnMarch: "Kendi seferi", aCap: "Kapasite", aSelfInput: "Kendi girdiği {0}",
+    aDel: "Çıkar", aNone: "{0} ittifakı için seçilmiş ralli lideri yok.", aSave: "{0} planını kaydet", aNeedName: "Lütfen kaydeden kişinin adını yazın.", aSaving: "Kaydediliyor…",
+    aSaved: "Kaydedildi. Bu planı artık herkes görüyor.", aFail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar basın.",
+    stamp: "{0} yanıt · {1} itibarıyla", stampBad: " · ID hatası olan {0} yanıt (yukarıdaki liste · katılıma sayılmaz)", stampTail: " · her dakika otomatik yenilenir · güç ve Şehir Merkezi oyun ID sorgusundan ({0})",
+    hBad: "ID hatası olanların listesi", dBad: "Bu yanıtlarda Oyun ID yok ya da rakam değil; bu yüzden kimin olduğu belirlenemiyor. Katılıma ve ralli planına sayılmaz. Bu sizseniz lütfen anketi yeniden doldurun.", thTyped: "Yazılan ID", thLang: "Dil", pageInfo: "{0}–{1} / {2}", prev: "Önceki", next: "Sonraki",
+    loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
+};
+let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0;
+const PER_PAGE = 10;
+const tx = (k, ...a) => {
+  const v = I18N[LANG] && I18N[LANG][k] != null ? I18N[LANG][k] : I18N.ko[k];
+  return String(v == null ? k : v).replace(/\{(\d)\}/g, (m, n) => a[+n] == null ? "" : a[+n]);
+};
+const hm = (h, off) => String((Math.floor(h) + off) % 24).padStart(2, "0") + ":" + (h % 1 ? "30" : "00");
+const slotLocal = i => { const z = TZ[LANG]; return z ? z[0] + " " + hm(SLOTS[i][1], z[1]) + "~" + hm(SLOTS[i][2], z[1]) : ""; };
 let DATA = [];
 let BAD_ID = 0, BAD = [];
 const LOOKUP = typeof PLAYERS === "undefined" ? {} : PLAYERS;
@@ -228,7 +372,7 @@ function troopCells(p) {
 function troopLine(p) {
   const t = troops(p);
   if (!t) return "";
-  return '<div class="troopline">' + ["보병", "기병", "궁병"].map((n, i) => n + ' <span class="tier t' + t[i][1] + '">T' + t[i][1] + '</span>').join(" ") + '</div>';
+  return '<div class="troopline">' + [tx("inf"), tx("cav"), tx("arc")].map((n, i) => n + ' <span class="tier t' + t[i][1] + '">T' + t[i][1] + '</span>').join(" ") + '</div>';
 }
 function troopMini(p) {
   const t = troops(p);
@@ -328,36 +472,53 @@ function build(rows) {
 
 function render() {
   const total = ALLIES.reduce((s, a) => s + ROSTER[a].count, 0);
-  let cards = '<div class="card total"><div class="sub">전체 참여율</div><div class="big">' + pct(DATA.length, total) + '%</div><div class="sub">' + DATA.length + ' / ' + total + '명</div><div class="bar"><i style="width:' + Math.min(100, pct(DATA.length, total)) + '%"></i></div></div>';
+  let cards = '<div class="card total"><div class="sub">' + tx("total") + '</div><div class="big">' + pct(DATA.length, total) + '%</div><div class="sub">' + tx("people", DATA.length, total) + '</div><div class="bar"><i style="width:' + Math.min(100, pct(DATA.length, total)) + '%"></i></div></div>';
   ALLIES.forEach(a => {
     const n = DATA.filter(p => p.ally === a).length, c = ROSTER[a].count;
-    cards += '<div class="card" style="border-top:5px solid ' + col(a) + '"><div class="sub"><b style="color:' + col(a) + '">' + esc(a) + '</b> · ' + esc(ROSTER[a].name) + '</div><div class="big" style="color:' + col(a) + '">' + pct(n, c) + '%</div><div class="sub">' + n + ' / ' + c + '명</div><div class="bar"><i style="width:' + Math.min(100, pct(n, c)) + '%;background:' + col(a) + '"></i></div></div>';
+    cards += '<div class="card" style="border-top:5px solid ' + col(a) + '"><div class="sub"><b style="color:' + col(a) + '">' + esc(a) + '</b> · ' + esc(ROSTER[a].name) + '</div><div class="big" style="color:' + col(a) + '">' + pct(n, c) + '%</div><div class="sub">' + tx("people", n, c) + '</div><div class="bar"><i style="width:' + Math.min(100, pct(n, c)) + '%;background:' + col(a) + '"></i></div></div>';
   });
   $("cards").innerHTML = cards;
 
-  let st = '<tr><th>시간대</th>' + ALLIES.map(a => '<th class="n" style="color:' + col(a) + '">' + esc(a) + '</th>').join("") + '<th class="n">합계</th><th>비율</th></tr>';
+  let st = '<tr><th>' + tx("thSlot") + '</th>' + ALLIES.map(a => '<th class="n" style="color:' + col(a) + '">' + esc(a) + '</th>').join("") + '<th class="n">' + tx("thSum") + '</th><th>' + tx("thRatio") + '</th></tr>';
   const rowFor = (label, test) => {
     const all = DATA.filter(test).length;
     return '<tr><td>' + label + '</td>' + ALLIES.map(a => { const k = DATA.filter(p => p.ally === a && test(p)).length; return '<td class="n"' + (k ? ' style="font-weight:700;color:' + col(a) + '"' : ' style="color:var(--sub)"') + '>' + k + '</td>'; }).join("") +
       '<td class="n"><b>' + all + '</b></td><td style="min-width:120px"><div class="bar" style="margin:0"><i style="width:' + pct(all, DATA.length || 1) + '%"></i></div></td></tr>';
   };
-  st += rowFor('<b>FULL 참여</b> <span class="sub">(전 시간)</span>', p => p.full);
-  SLOTS.forEach((s, i) => { st += rowFor(esc(s[0]) + ' <span class="sub">(' + esc(s[1]) + ')</span>', p => p.slots[i]); });
+  st += rowFor('<b>' + tx("fullJoin") + '</b> <span class="sub">' + tx("allDay") + '</span>', p => p.full);
+  SLOTS.forEach((s, i) => { st += rowFor(esc(s[0]) + (slotLocal(i) ? ' <span class="sub">(' + esc(slotLocal(i)) + ')</span>' : ''), p => p.slots[i]); });
   $("slotTable").innerHTML = st;
 
   const fa = $("fAlly").value, fs = $("fSlot").value, fn = norm($("fName").value);
-  const shown = DATA.concat(BAD).filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
-  let rt = '<tr><th class="c">집결장</th><th>연맹</th><th>닉네임</th><th>현재 연맹</th><th class="n">게임 ID</th><th class="n">시련</th><th class="n">전투력</th><th>건물</th><th class="n">출정 인원수<br><small>펫 버프 OFF / ON</small></th><th class="n">집결 인원수<br><small>펫 버프 OFF / ON</small></th><th class="c">보병<br><small>병사 · 훈련소</small></th><th class="c">기병<br><small>병사 · 훈련소</small></th><th class="c">궁병<br><small>병사 · 훈련소</small></th><th class="c">FULL</th>' +
-    SLOTS.map(s => '<th class="c">' + s[0].slice(0, 2) + '시</th>').join("") + '<th>제출 시각</th></tr>';
-  shown.forEach(p => {
-    rt += '<tr' + (p.bad ? ' class="bad"' : '') + '><td class="c">' + (p.bad ? '' : IS_ADMIN ? '<button class="star' + (isLeader(p) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (isLeader(p) ? '★' : '☆') + '</button>' : (isLeader(p) ? '<span class="star on">★</span>' : '')) + '</td><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">(설문: ' + esc(p.name) + ')</span>' : '') + (p.bad ? ' <span class="badtag">ID 없음</span>' : p.matched ? "" : ' <span class="sub">(ID 조회 전)</span>') +
-      '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">≠ 설문</span>' : '') : '') + '</td><td class="n">' + esc(p.bad ? (p.id.length > 24 ? p.id.slice(0, 24) + "…" : p.id) : p.id) +
+  const slotTh = SLOTS.map(s => '<th class="c">' + s[0].slice(0, 5) + '</th>').join("");
+  const slotTd = p => '<td class="c">' + (p.full ? '<span class="dot full">★</span>' : '<span class="no">·</span>') + '</td>' + p.slots.map(v => '<td class="c">' + (v ? '<span class="dot">●</span>' : '<span class="no">·</span>') + '</td>').join("");
+  $("badBox").style.display = BAD.length ? "" : "none";
+  $("badTable").innerHTML = '<tr><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th>' + tx("thTyped") + '</th><th>' + tx("thLang") + '</th><th class="c">FULL</th>' + slotTh + '<th>' + tx("thTime") + '</th></tr>' +
+    BAD.map(p => '<tr class="bad"><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.name) + '</td><td>' + (p.id ? esc(p.id.length > 40 ? p.id.slice(0, 40) + "…" : p.id) : '<span class="badtag">' + tx("noId") + '</span>') + '</td><td>' + esc(p.lang) + '</td>' + slotTd(p) + '<td>' + esc(p.time) + '</td></tr>').join("");
+
+  const shown = DATA.filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
+  const pet = '<br><small>' + tx("petSub") + '</small>', ts = '<br><small>' + tx("troopSub") + '</small>';
+  let rt = '<tr><th class="c">' + tx("thLeader") + '</th><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th>' + tx("thNowAlly") + '</th><th class="n">' + tx("thId") + '</th><th class="n">' + tx("thMystic") + '</th><th class="n">' + tx("thPower") + '</th><th>' + tx("thBuilding") + '</th><th class="n">' + tx("thMarch") + pet + '</th><th class="n">' + tx("thRallyCap") + pet + '</th><th class="c">' + tx("inf") + ts + '</th><th class="c">' + tx("cav") + ts + '</th><th class="c">' + tx("arc") + ts + '</th><th class="c">FULL</th>' +
+    slotTh + '<th>' + tx("thTime") + '</th></tr>';
+  const pages = Math.max(1, Math.ceil(shown.length / PER_PAGE));
+  if (PAGE >= pages) PAGE = pages - 1;
+  const from = PAGE * PER_PAGE, view = shown.slice(from, from + PER_PAGE);
+  view.forEach(p => {
+    rt += '<tr><td class="c">' + (IS_ADMIN ? '<button class="star' + (isLeader(p) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (isLeader(p) ? '★' : '☆') + '</button>' : (isLeader(p) ? '<span class="star on">★</span>' : '')) + '</td><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
+      '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n">' + esc(p.id) +
       '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH[p.id] ? '<b>' + fmt(MARCH[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (MARCH_ON[p.id] ? fmt(MARCH_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') +
-      '</td><td class="n march">' + (RALLY[p.id] ? '<b>' + fmt(RALLY[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (RALLY_ON[p.id] ? fmt(RALLY_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') + '</td>' + troopCells(p) + '<td class="c">' + (p.full ? '<span class="dot full">★</span>' : '<span class="no">·</span>') + '</td>' +
-      p.slots.map(v => '<td class="c">' + (v ? '<span class="dot">●</span>' : '<span class="no">·</span>') + '</td>').join("") + '<td class="sub">' + esc(p.time) + '</td></tr>';
+      '</td><td class="n march">' + (RALLY[p.id] ? '<b>' + fmt(RALLY[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (RALLY_ON[p.id] ? fmt(RALLY_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') + '</td>' + troopCells(p) + slotTd(p) + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
-  if (!shown.length) rt += '<tr><td colspan="21" class="sub">해당하는 응답이 없습니다.</td></tr>';
+  if (!shown.length) rt += '<tr><td colspan="21" class="sub">' + tx("noResp") + '</td></tr>';
   $("respTable").innerHTML = rt;
+  let pg = "";
+  if (pages > 1) {
+    const btn = (k, label, cls) => '<button data-p="' + k + '"' + (cls ? ' class="' + cls + '"' : '') + (k < 0 || k >= pages ? ' disabled' : '') + '>' + label + '</button>';
+    const nums = [];
+    for (let k = 0; k < pages; k++) if (k === 0 || k === pages - 1 || Math.abs(k - PAGE) <= 2) nums.push(k);
+    pg = btn(PAGE - 1, tx("prev")) + nums.map((k, j) => (j && k - nums[j - 1] > 1 ? '<span class="sub">…</span>' : '') + btn(k, k + 1, k === PAGE ? "on" : "")).join("") + btn(PAGE + 1, tx("next"));
+  }
+  $("pager").innerHTML = pg + (shown.length ? ' <span class="sub">' + tx("pageInfo", from + 1, from + view.length, shown.length) + '</span>' : '');
 
   renderRally();
 
@@ -366,7 +527,7 @@ function render() {
     const done = new Set();
     DATA.forEach(p => { done.add(norm(p.name)); if (p.gname) done.add(norm(p.gname)); });
     const left = ROSTER[a].members.filter(m => !done.has(norm(m[0])));
-    ms += '<h2 style="margin-top:14px;border-left-color:' + col(a) + '"><span style="color:' + col(a) + '">' + esc(a) + '</span> <span class="sub">' + left.length + '명 남음</span></h2><div class="names">' + left.map(m => '<span>' + esc(m[0]) + '</span>').join("") + '</div>';
+    ms += '<h2 style="margin-top:14px;border-inline-start-color:' + col(a) + '"><span style="color:' + col(a) + '">' + esc(a) + '</span> <span class="sub">' + tx("leftN", left.length) + '</span></h2><div class="names">' + left.map(m => '<span>' + esc(m[0]) + '</span>').join("") + '</div>';
   });
   $("missing").innerHTML = ms;
 }
@@ -406,28 +567,28 @@ function alloc(a, i) {
 function renderRally() {
   const a = $("rAlly").value || ALLIES[0];
   if (!leadersOf(a).length) {
-    $("rally").innerHTML = '<div class="sub">' + esc(a) + ' 연맹은 아직 집결 편성이 정해지지 않았습니다.' + (IS_ADMIN ? ' 아래 응답자 명단에서 ☆ 를 눌러 집결장을 고르세요.' : '') + '</div>';
+    $("rally").innerHTML = '<div class="sub">' + tx("noPlan", esc(a)) + (IS_ADMIN ? tx("noPlanAdmin") : '') + '</div>';
     return;
   }
   const nm = p => esc(p.gname || p.name);
   const line = (label, v, cls) => '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + label + '</td>' + v.map(x => '<td class="n">' + (x ? fmt(x) : '<span class="no">·</span>') + '</td>').join("") + '<td class="n"><b>' + fmt(v[0] + v[1] + v[2]) + '</b></td></tr>';
-  const meta = cfgNow().A[a] || {};
-  let h = meta.at ? '<div class="sub" style="margin-bottom:6px">편성 저장: ' + esc(meta.at) + (meta.by ? ' · ' + esc(meta.by) : '') + (IS_ADMIN && DIRTY[a] ? ' · <b style="color:var(--warn)">저장하지 않은 변경이 있습니다</b>' : '') + '</div>' : (IS_ADMIN && DIRTY[a] ? '<div class="sub" style="margin-bottom:6px"><b style="color:var(--warn)">아직 저장하지 않았습니다</b></div>' : "");
+  const meta = cfgNow().A[a] || {}, defTag = ' <span class="sub">' + tx("defMarch") + '</span>';
+  let h = meta.at ? '<div class="sub" style="margin-bottom:6px">' + tx("saved", esc(meta.at)) + (meta.by ? ' · ' + esc(meta.by) : '') + (IS_ADMIN && DIRTY[a] ? ' · <b style="color:var(--warn)">' + tx("unsaved") + '</b>' : '') + '</div>' : (IS_ADMIN && DIRTY[a] ? '<div class="sub" style="margin-bottom:6px"><b style="color:var(--warn)">' + tx("notSaved") + '</b></div>' : "");
   SLOTS.forEach((s, i) => {
     const r = alloc(a, i);
-    h += '<h2 class="slot" style="margin-top:18px">' + esc(s[0]) + ' <span class="sub">(' + esc(s[1]) + ') · 집결장 ' + r.rallies.length + '명 · 집결원 ' + r.joiners + '명</span></h2>';
-    if (!r.rallies.length) { h += '<div class="sub">이 시간대에 참여 가능한 집결장이 없습니다. 집결원 ' + r.joiners + '명이 남습니다.</div>'; return; }
+    h += '<h2 class="slot" style="margin-top:18px">' + esc(s[0]) + ' <span class="sub">' + (slotLocal(i) ? '(' + esc(slotLocal(i)) + ') · ' : '· ') + tx("slotHead", r.rallies.length, r.joiners) + '</span></h2>';
+    if (!r.rallies.length) { h += '<div class="sub">' + tx("noLeader", r.joiners) + '</div>'; return; }
     h += r.rallies.map(x => {
       const filled = x.target.map((v, t) => v - x.need[t]), tot = filled[0] + filled[1] + filled[2];
       return '<div class="card leader" style="margin-bottom:10px"><div class="lname">★ ' + nm(x.p) + '</div>' + troopLine(x.p) +
-        '<div class="sub">수용 ' + fmt(x.cap) + ' · 비율 보병 ' + x.r[0] + ' / 기병 ' + x.r[1] + ' / 궁병 ' + x.r[2] + ' · 채움 ' + fmt(tot) + ' (' + pct(tot, x.cap || 1) + '%) · 집결원 ' + x.members.length + '명</div>' +
-        '<div class="scroll"><table class="plan"><tr><th>보내는 사람</th><th class="n">보병</th><th class="n">기병</th><th class="n">궁병</th><th class="n">합계</th></tr>' +
-        line('<b>집결장 본인</b>' + (MARCH[x.p.id] ? '' : ' <span class="sub">(출정 기본값)</span>'), x.own, "own") +
-        x.members.map(m => line(nm(m.p) + troopMini(m.p) + (MARCH[m.p.id] ? '' : ' <span class="sub">(출정 기본값)</span>'), m.send)).join("") +
-        '<tr class="sum"><td>채움 / 목표</td>' + [0, 1, 2].map(t => '<td class="n">' + fmt(filled[t]) + ' / ' + fmt(x.target[t]) + (x.need[t] ? '<br><span class="short">부족 ' + fmt(x.need[t]) + '</span>' : '') + '</td>').join("") +
+        '<div class="sub">' + tx("capLine", fmt(x.cap), x.r[0], x.r[1], x.r[2], fmt(tot), pct(tot, x.cap || 1), x.members.length) + '</div>' +
+        '<div class="scroll"><table class="plan"><tr><th>' + tx("thSender") + '</th><th class="n">' + tx("inf") + '</th><th class="n">' + tx("cav") + '</th><th class="n">' + tx("arc") + '</th><th class="n">' + tx("thSum") + '</th></tr>' +
+        line('<b>' + tx("leaderSelf") + '</b>' + (MARCH[x.p.id] ? '' : defTag), x.own, "own") +
+        x.members.map(m => line(nm(m.p) + troopMini(m.p) + (MARCH[m.p.id] ? '' : defTag), m.send)).join("") +
+        '<tr class="sum"><td>' + tx("fillTarget") + '</td>' + [0, 1, 2].map(t => '<td class="n">' + fmt(filled[t]) + ' / ' + fmt(x.target[t]) + (x.need[t] ? '<br><span class="short">' + tx("short", fmt(x.need[t])) + '</span>' : '') + '</td>').join("") +
         '<td class="n">' + fmt(tot) + ' / ' + fmt(x.cap) + '</td></tr></table></div></div>';
     }).join("");
-    if (r.rest.length) h += '<div class="sub">배치되지 않고 남는 집결원 ' + r.rest.length + '명: ' + r.rest.map(nm).join(", ") + '</div>';
+    if (r.rest.length) h += '<div class="sub">' + tx("rest", r.rest.length) + r.rest.map(nm).join(", ") + '</div>';
   });
   $("rally").innerHTML = h;
 }
@@ -442,20 +603,20 @@ function renderAdmin() {
   try { by = localStorage.getItem("k700by") || ""; } catch (e) {}
   const who = id => { const p = DATA.find(x => x.id === id); return p ? esc(p.gname || p.name) : esc(id); };
   const info = id => DATA.find(x => x.id === id) || {};
-  let h = '<div class="adminbox"><div class="lname">편성 설정 (관리자)</div>' +
-    '<div class="sub" style="margin:4px 0 10px">아래 응답자 명단(시련 높은 순)에서 ☆ 를 눌러 집결장을 넣고, 수용 인원과 병과 비율을 정한 뒤 저장하세요. 저장은 지금 고른 연맹(' + esc(a) + ')만 됩니다. 관리자 링크를 가진 사람은 누구나 설정할 수 있고, 연맹마다 마지막에 저장한 내용이 적용됩니다.</div>' +
-    '<label>저장하는 사람 <input id="aBy" class="name" maxlength="20" value="' + esc(by) + '"></label> &nbsp; ' +
-    '<label>출정 인원수를 안 넣은 사람의 기본값 <input id="aDef" inputmode="numeric" value="' + esc(box0.def) + '"></label>';
+  let h = '<div class="adminbox"><div class="lname">' + tx("aTitle") + '</div>' +
+    '<div class="sub" style="margin:4px 0 10px">' + tx("aDesc", esc(a)) + '</div>' +
+    '<label>' + tx("aBy") + ' <input id="aBy" class="name" maxlength="20" value="' + esc(by) + '"></label> &nbsp; ' +
+    '<label>' + tx("aDef") + ' <input id="aDef" inputmode="numeric" value="' + esc(box0.def) + '"></label>';
   if (ls.length) {
-    h += '<div class="scroll" style="margin-top:10px"><table class="plan"><tr><th>집결장 (' + esc(a) + ')</th><th class="n">시련</th><th class="n">본인 출정</th><th class="n">수용 인원</th><th class="n">보병 %</th><th class="n">기병 %</th><th class="n">궁병 %</th><th></th></tr>' +
+    h += '<div class="scroll" style="margin-top:10px"><table class="plan"><tr><th>' + tx("aLeaderCol", esc(a)) + '</th><th class="n">' + tx("thMystic") + '</th><th class="n">' + tx("aOwnMarch") + '</th><th class="n">' + tx("aCap") + '</th><th class="n">' + tx("inf") + ' %</th><th class="n">' + tx("cav") + ' %</th><th class="n">' + tx("arc") + ' %</th><th></th></tr>' +
       ls.map((l, k) => '<tr><td>★ ' + who(l.id) + '</td><td class="n">' + fmt(info(l.id).mystic) + '</td><td class="n">' + fmt(MARCH[l.id] || box0.def) + '</td>' +
-        '<td class="n"><input data-k="' + k + '" data-f="cap" inputmode="numeric" value="' + esc(l.cap) + '">' + (RALLY[l.id] ? '<br><small class="sub">본인 입력 ' + fmt(RALLY[l.id]) + '</small>' : '') + '</td>' +
+        '<td class="n"><input data-k="' + k + '" data-f="cap" inputmode="numeric" value="' + esc(l.cap) + '">' + (RALLY[l.id] ? '<br><small class="sub">' + tx("aSelfInput", fmt(RALLY[l.id])) + '</small>' : '') + '</td>' +
         [0, 1, 2].map(t => '<td class="n"><input class="pc" data-k="' + k + '" data-f="r' + t + '" inputmode="numeric" value="' + esc(l.r[t]) + '"></td>').join("") +
-        '<td><button class="del" data-k="' + k + '">빼기</button></td></tr>').join("") + '</table></div>';
+        '<td><button class="del" data-k="' + k + '">' + tx("aDel") + '</button></td></tr>').join("") + '</table></div>';
   } else {
-    h += '<div class="sub" style="margin-top:10px">' + esc(a) + ' 연맹에 고른 집결장이 없습니다.</div>';
+    h += '<div class="sub" style="margin-top:10px">' + tx("aNone", esc(a)) + '</div>';
   }
-  h += '<div style="margin-top:10px"><button class="primary" id="aSave">' + esc(a) + ' 편성 저장</button> <span class="sub" id="aMsg"></span></div></div>';
+  h += '<div style="margin-top:10px"><button class="primary" id="aSave">' + tx("aSave", esc(a)) + '</button> <span class="sub" id="aMsg"></span></div></div>';
   box.innerHTML = h;
 }
 
@@ -463,9 +624,9 @@ function renderAdmin() {
 async function saveConfig() {
   const msg = $("aMsg"), a = $("rAlly").value || ALLIES[0], box = DRAFT.A[a] || blank();
   const by = ($("aBy").value || "").trim(), stamp = Date.now(), at = new Date().toLocaleString("sv-SE").slice(0, 16);
-  if (!by) { msg.textContent = "저장하는 사람 이름을 적어 주세요."; $("aBy").focus(); return; }
+  if (!by) { msg.textContent = tx("aNeedName"); $("aBy").focus(); return; }
   const rows = box.leaders.length ? box.leaders : [null];
-  msg.textContent = "저장하는 중…";
+  msg.textContent = tx("aSaving");
   for (const l of rows) {
     const body = new URLSearchParams();
     body.append(CF.batch, String(stamp)); body.append(CF.at, at); body.append(CF.by, by); body.append(CF.ally, a);
@@ -485,12 +646,12 @@ async function saveConfig() {
       if (got && got.batch === stamp && got.leaders.length === box.leaders.length) {
         CFG = c; DIRTY[a] = false; syncDraft();
         renderAdmin(); render();
-        $("aMsg").textContent = "저장했습니다. 모두에게 이 편성이 보입니다.";
+        $("aMsg").textContent = tx("aSaved");
         return;
       }
     } catch (e) {}
   }
-  msg.textContent = "저장을 확인하지 못했습니다. 잠시 뒤 다시 눌러 주세요.";
+  msg.textContent = tx("aFail");
 }
 
 async function initAdmin() {
@@ -505,8 +666,18 @@ async function initAdmin() {
   if (q.get("admin")) history.replaceState(null, "", location.pathname);
 }
 
+function renderStamp() {
+  if (LOAD_ERR) {
+    $("stamp").textContent = tx("loadFail");
+    $("msg").innerHTML = '<div class="msg err">' + esc(tx("loadFailMsg")) + '</div>';
+    return;
+  }
+  if (!LOADED_AT) { $("stamp").textContent = tx("loading"); return; }
+  $("stamp").textContent = tx("stamp", DATA.length, LOADED_AT.toLocaleString(LOCALE[LANG])) + (BAD_ID ? tx("stampBad", BAD_ID) : "") + tx("stampTail", typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT);
+}
+
 async function load() {
-  $("stamp").textContent = "불러오는 중…";
+  $("stamp").textContent = tx("loading");
   try {
     const first = !DATA.length;
     try {
@@ -519,20 +690,44 @@ async function load() {
     DATA = build(await fetchRows());
     if (first) { const a = ALLIES.find(x => DATA.some(p => p.ally === x)); if (a) $("rAlly").value = a; }
     $("msg").innerHTML = "";
-    $("stamp").textContent = "응답 " + DATA.length + "명 · " + new Date().toLocaleString("ko-KR") + " 기준" + (BAD_ID ? " · 게임 ID 없는 응답 " + BAD_ID + "건(붉은 줄 · 참여율에서 제외)" : "") + " · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값(" + (typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT) + ")";
+    LOADED_AT = new Date(); LOAD_ERR = false;
+    renderStamp();
     render();
     const cur = $("rAlly").value || ALLIES[0];
     if (firstDraft || first || (IS_ADMIN && !DIRTY[cur] && !$("admin").contains(document.activeElement))) renderAdmin();
   } catch (e) {
-    $("stamp").textContent = "불러오지 못했습니다";
-    $("msg").innerHTML = '<div class="msg err">응답 시트를 읽지 못했습니다. 시트가 "링크가 있는 모든 사용자 · 뷰어"로 공유되어 있어야 이 화면에 숫자가 나옵니다.</div>';
+    LOAD_ERR = true;
+    renderStamp();
   }
 }
 
-$("fAlly").innerHTML = '<option value="">연맹 전체</option>' + ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
-$("fSlot").innerHTML = '<option value="">시간대 전체</option><option value="full">FULL 참여</option>' + SLOTS.map((s, i) => '<option value="' + i + '">' + s[0] + '</option>').join("");
-["fAlly", "fSlot"].forEach(id => $(id).addEventListener("change", render));
-$("fName").addEventListener("input", render);
+// 언어를 바꾸면 고정 글과 표를 그 언어로 다시 그린다. 고른 언어는 이 기기에 기억한다
+function setLang(l) {
+  LANG = I18N[l] ? l : "en";
+  try { localStorage.setItem("k700lang", LANG); } catch (e) {}
+  document.documentElement.lang = LANG === "zh" ? "zh-Hant" : LANG;
+  document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr";
+  document.title = tx("title");
+  $("langs").innerHTML = LANGS.map(k => '<button data-l="' + k + '"' + (k === LANG ? ' class="on"' : '') + '>' + I18N[k].name + '</button>').join("");
+  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
+  $("fName").placeholder = tx("findName");
+  const fa = $("fAlly").value, fs = $("fSlot").value;
+  $("fAlly").innerHTML = '<option value="">' + tx("fAllyAll") + '</option>' + ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
+  $("fSlot").innerHTML = '<option value="">' + tx("fSlotAll") + '</option><option value="full">' + tx("fullJoin") + '</option>' + SLOTS.map((s, i) => '<option value="' + i + '">' + s[0] + '</option>').join("");
+  $("fAlly").value = fa || ""; $("fSlot").value = fs || "";
+  renderStamp();
+  if (LOADED_AT && !LOAD_ERR) { render(); renderAdmin(); }
+}
+$("langs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setLang(b.getAttribute("data-l")); });
+
+["fAlly", "fSlot"].forEach(id => $(id).addEventListener("change", () => { PAGE = 0; render(); }));
+$("fName").addEventListener("input", () => { PAGE = 0; render(); });
+$("pager").addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b || b.disabled) return;
+  PAGE = +b.getAttribute("data-p") || 0;
+  render();
+});
 $("reload").addEventListener("click", load);
 $("rAlly").innerHTML = ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
 $("rAlly").addEventListener("change", () => { renderAdmin(); renderRally(); });
@@ -570,6 +765,12 @@ $("admin").addEventListener("click", e => {
   renderAdmin();
   render();
 });
+(function () {
+  let l = "";
+  try { l = localStorage.getItem("k700lang") || ""; } catch (e) {}
+  if (!I18N[l]) { const nav = (navigator.language || "en").toLowerCase(); l = LANGS.find(k => nav.indexOf(k) === 0) || "en"; }
+  setLang(l);
+})();
 initAdmin().then(load, load);
 setInterval(load, 60000);
 </script>

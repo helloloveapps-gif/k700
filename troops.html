@@ -147,11 +147,13 @@ const T = {
 const $ = id => document.getElementById(id);
 const nav = (navigator.language || "en").toLowerCase();
 let lang = nav.indexOf("ko") === 0 ? "ko" : nav.indexOf("zh") === 0 ? "zh" : nav.indexOf("ar") === 0 ? "ar" : nav.indexOf("tr") === 0 ? "tr" : "en";
+try { const saved = localStorage.getItem("k700lang"); if (saved && T[saved]) lang = saved; } catch (e) {}
 const tiers = [10, 10, 10];
 
 function setLang(l) {
   lang = l;
   const t = T[l];
+  try { localStorage.setItem("k700lang", l); } catch (e) {}
   document.documentElement.lang = l === "zh" ? "zh-Hant" : l;
   document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
   $("langs").innerHTML = Object.keys(T).map(k => '<button data-l="' + k + '"' + (k === l ? ' class="on"' : '') + '>' + T[k].name + '</button>').join("");
