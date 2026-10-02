@@ -76,6 +76,7 @@ tr:hover td{background:rgba(121,80,242,.06)}
     </div>
     <div>
       <a href="https://docs.google.com/forms/d/e/1FAIpQLScrbdptVwUimJm__NIvVjMpaIyJM4cDCQWe2SGEQr4Sc1WHfQ/viewform" target="_blank" rel="noopener"><button>설문 작성하기</button></a>
+      <a href="troops.html"><button>병사 정보 입력</button></a>
       <button class="primary" id="reload">새로 고침</button>
     </div>
   </div>
@@ -136,7 +137,26 @@ const LOOKUP = typeof PLAYERS === "undefined" ? {} : PLAYERS;
 const SOLD = typeof SOLDIERS === "undefined" ? {} : SOLDIERS;
 const COLORS = {NeX: "#3b5bdb", NvA: "#f76707", AEH: "#2f9e44", LoV: "#d6336c"};
 const col = a => COLORS[a] || "#7950f2";
-const troops = p => (SOLD[p.id] && SOLD[p.id].s) || null;
+const TROOP_GID = "404058685";
+let SELF = {};
+const troops = p => SELF[p.id] || (SOLD[p.id] && SOLD[p.id].s) || null;
+
+// 병사 정보 설문(본인 입력). 같은 ID 는 마지막 줄만, 훈련소 레벨이 TG 보다 높은 줄은 버린다
+async function loadSelf() {
+  const r = await fetch("https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?gid=" + TROOP_GID + "&headers=1&tqx=out:csv&_=" + Date.now());
+  const rows = parseCsv(await r.text());
+  const h = rows[0] || [], col = n => h.findIndex(x => String(x).trim() === n);
+  const ci = {id: col("game_id"), tg: col("tg"), c: ["inf_camp number", "cav_camp number", "arc_camp number"].map(col), t: ["inf_tier number", "cav_tier number", "arc_tier number"].map(col)};
+  const out = {};
+  rows.slice(1).forEach(row => {
+    const id = String(row[ci.id] || "").trim(), tg = parseInt(row[ci.tg], 10);
+    if (!/^[0-9]{5,12}$/.test(id) || !(tg >= 0 && tg <= 8)) return;
+    const s = [0, 1, 2].map(i => [parseInt(row[ci.c[i]], 10), parseInt(row[ci.t[i]], 10)]);
+    if (s.some(x => !(x[0] >= 0 && x[0] <= tg) || (x[1] !== 10 && x[1] !== 11))) return;
+    out[id] = s;
+  });
+  return out;
+}
 function troopCells(p) {
   const t = troops(p);
   if (!t) return '<td class="c no">·</td><td class="c no">·</td><td class="c no">·</td>';
@@ -319,6 +339,7 @@ async function load() {
   $("stamp").textContent = "불러오는 중…";
   try {
     const first = !DATA.length;
+    try { SELF = await loadSelf(); } catch (e) {}
     DATA = build(await fetchRows());
     if (first) { const a = ALLIES.find(x => DATA.some(p => p.ally === x)); if (a) $("rAlly").value = a; }
     $("msg").innerHTML = "";

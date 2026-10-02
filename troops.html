@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>700 KvK · My Troops</title>
+<style>
+:root{--bg:#e9edf7;--card:#fff;--ink:#1c2230;--sub:#667085;--line:#d9deea;--accent:#5f3dc4;--bar:#dfe4f3;--warn:#e03131;--ok:#2f9e44}
+@media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b202b;--ink:#e8ebf2;--sub:#98a2b3;--line:#2b3242;--accent:#9775fa;--bar:#2a3145;--warn:#ff6b6b;--ok:#51cf66}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Malgun Gothic","Apple SD Gothic Neo","Microsoft JhengHei","Segoe UI",system-ui,sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 60px}
+.hero{background:linear-gradient(120deg,#1b2a80 0%,#5f3dc4 55%,#d6336c 100%);color:#fff;border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:0 6px 20px rgba(60,40,160,.25)}
+.hero h1{font-size:22px;margin:0 0 6px}
+.hero p{margin:0;font-size:14px;opacity:.9}
+.langs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.langs button{font:inherit;font-size:14px;padding:6px 12px;border-radius:99px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.langs button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:12px}
+label.t{display:block;font-weight:700;margin-bottom:8px}
+.hint{color:var(--sub);font-size:13px;margin-top:6px}
+input[type=text],select{font:inherit;width:100%;padding:11px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.row{display:grid;grid-template-columns:72px 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.row .n{font-weight:700}
+.row.head{color:var(--sub);font-size:13px;margin-bottom:4px}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;font:inherit;padding:10px 0;border:none;background:var(--card);color:var(--ink);cursor:pointer}
+.seg button.on.t10{background:#f59f00;color:#fff;font-weight:700}
+.seg button.on.t11{background:#e03131;color:#fff;font-weight:700}
+.submit{font:inherit;font-size:17px;font-weight:700;width:100%;padding:14px;border-radius:12px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+.submit:disabled{opacity:.5}
+.msg{margin-top:12px;padding:12px;border-radius:10px;font-weight:700;display:none}
+.msg.ok{display:block;background:rgba(47,158,68,.15);color:var(--ok)}
+.msg.err{display:block;background:rgba(224,49,49,.12);color:var(--warn)}
+.msg.wait{display:block;background:var(--bar);color:var(--ink);font-weight:400}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="langs" id="langs"></div>
+  <div class="hero"><h1 id="tTitle"></h1><p id="tDesc"></p></div>
+
+  <div class="card">
+    <label class="t" id="tId" for="gid"></label>
+    <input type="text" id="gid" inputmode="numeric" autocomplete="off" maxlength="12">
+    <div class="hint" id="tIdHint"></div>
+  </div>
+
+  <div class="card">
+    <label class="t" id="tTg" for="tg"></label>
+    <select id="tg"></select>
+    <div class="hint" id="tTgHint"></div>
+  </div>
+
+  <div class="card">
+    <div class="row head"><span></span><span id="tCamp"></span><span id="tTier"></span></div>
+    <div class="row"><span class="n" id="tInf"></span><select id="c0"></select><div class="seg" id="s0"></div></div>
+    <div class="row"><span class="n" id="tCav"></span><select id="c1"></select><div class="seg" id="s1"></div></div>
+    <div class="row"><span class="n" id="tArc"></span><select id="c2"></select><div class="seg" id="s2"></div></div>
+    <div class="hint" id="tCampHint"></div>
+  </div>
+
+  <button class="submit" id="send"></button>
+  <div class="msg" id="msg"></div>
+  <p class="hint" style="text-align:center;margin-top:18px"><a href="./" id="tBack"></a></p>
+</div>
+<script>
+const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfAnxDTxK2o8l1F6yTpPvlZ-4toOYDxLqcgEs5F8wDUeWY95w/formResponse";
+const SHEET = "https://docs.google.com/spreadsheets/d/1fwh4GmuMnzgylvhzoALqD0KIK5ssld-Ghs3U4Loul4E/gviz/tq?gid=404058685&headers=1&tqx=out:csv";
+const F = {id: "entry.1548665780", tg: "entry.723988649", lang: "entry.1865700227",
+  c: ["entry.1338838138", "entry.757655290", "entry.659383205"],
+  t: ["entry.671815691", "entry.1113601858", "entry.1129483053"]};
+const T = {
+  ko: {name: "한국어", title: "내 병사 정보 입력", desc: "700서버 KvK 집결 편성에 쓰입니다. 다시 제출하면 마지막 값이 반영됩니다.",
+    id: "게임 ID (숫자만)", idHint: "게임 프로필에 있는 숫자 ID 입니다. 닉네임이 아닙니다.", tg: "내 타운센터 TG 레벨", tg0: "TG 없음 (TC30 이하)",
+    tgHint: "훈련소 레벨은 TG 레벨보다 높게 고를 수 없습니다.", camp: "훈련소 레벨", tier: "순금 병사", inf: "보병", cav: "기병", arc: "궁병",
+    campHint: "훈련소 레벨은 0~8 입니다. 순금 병사는 T10 / T11 중에서 고르세요.", send: "제출", sending: "보내는 중…",
+    ok: "저장되었습니다. 감사합니다!", fail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 제출해 주세요.", errId: "게임 ID는 숫자만 입력하세요 (6~12자리).", back: "참여 현황 보기"},
+  en: {name: "English", title: "My Troop Info", desc: "Used for Kingdom 700 KvK rally planning. If you submit again, the latest entry is used.",
+    id: "Game ID (numbers only)", idHint: "The numeric ID on your in-game profile, not your nickname.", tg: "My Town Center TG level", tg0: "No TG (TC30 or lower)",
+    tgHint: "Camp levels cannot be higher than your TG level.", camp: "Camp level", tier: "Truegold troops", inf: "Infantry", cav: "Cavalry", arc: "Archer",
+    campHint: "Camp level is 0-8. Choose T10 or T11 for each troop type.", send: "Submit", sending: "Sending…",
+    ok: "Saved. Thank you!", fail: "Could not confirm the save. Please submit again in a moment.", errId: "Game ID must be numbers only (6-12 digits).", back: "View participation board"},
+  zh: {name: "繁體中文", title: "我的士兵資料", desc: "用於 700 服 KvK 集結編組。重複提交時以最後一次為準。",
+    id: "遊戲 ID（只填數字）", idHint: "遊戲個人資料中的數字 ID，不是暱稱。", tg: "我的城鎮中心 TG 等級", tg0: "沒有 TG（TC30 以下）",
+    tgHint: "訓練營等級不能高於 TG 等級。", camp: "訓練營等級", tier: "純金士兵", inf: "步兵", cav: "騎兵", arc: "弓兵",
+    campHint: "訓練營等級為 0~8。純金士兵請選 T10 或 T11。", send: "提交", sending: "傳送中…",
+    ok: "已儲存，謝謝！", fail: "無法確認是否儲存，請稍後再提交一次。", errId: "遊戲 ID 只能填數字（6~12 位）。", back: "查看參加狀況"},
+  ar: {name: "العربية", title: "معلومات جنودي", desc: "تُستخدم لتنظيم الحشود في KvK للمملكة 700. إذا أرسلت مرة أخرى فسيُعتمد آخر إرسال.",
+    id: "رقم ID اللاعب (أرقام فقط)", idHint: "الرقم الموجود في ملفك داخل اللعبة، وليس اسمك.", tg: "مستوى TG لمركز المدينة", tg0: "بدون TG (TC30 أو أقل)",
+    tgHint: "لا يمكن أن يكون مستوى المعسكر أعلى من مستوى TG.", camp: "مستوى المعسكر", tier: "جنود الذهب الخالص", inf: "المشاة", cav: "الفرسان", arc: "الرماة",
+    campHint: "مستوى المعسكر من 0 إلى 8. اختر T10 أو T11 لكل نوع.", send: "إرسال", sending: "جارٍ الإرسال…",
+    ok: "تم الحفظ. شكرًا لك!", fail: "تعذّر تأكيد الحفظ. حاول الإرسال مرة أخرى بعد قليل.", errId: "رقم ID يجب أن يكون أرقامًا فقط (6 إلى 12 رقمًا).", back: "عرض لوحة المشاركة"}
+};
+const $ = id => document.getElementById(id);
+const nav = (navigator.language || "en").toLowerCase();
+let lang = nav.indexOf("ko") === 0 ? "ko" : nav.indexOf("zh") === 0 ? "zh" : nav.indexOf("ar") === 0 ? "ar" : "en";
+const tiers = [10, 10, 10];
+
+function setLang(l) {
+  lang = l;
+  const t = T[l];
+  document.documentElement.lang = l === "zh" ? "zh-Hant" : l;
+  document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+  $("langs").innerHTML = Object.keys(T).map(k => '<button data-l="' + k + '"' + (k === l ? ' class="on"' : '') + '>' + T[k].name + '</button>').join("");
+  $("tTitle").textContent = t.title; $("tDesc").textContent = t.desc;
+  $("tId").textContent = t.id; $("tIdHint").textContent = t.idHint;
+  $("tTg").textContent = t.tg; $("tTgHint").textContent = t.tgHint;
+  $("tCamp").textContent = t.camp; $("tTier").textContent = t.tier;
+  $("tInf").textContent = t.inf; $("tCav").textContent = t.cav; $("tArc").textContent = t.arc;
+  $("tCampHint").textContent = t.campHint; $("send").textContent = t.send; $("tBack").textContent = t.back;
+  const cur = $("tg").value;
+  $("tg").innerHTML = [0, 1, 2, 3, 4, 5, 6, 7, 8].map(v => '<option value="' + v + '">' + (v ? "TG" + v : t.tg0) + '</option>').join("");
+  $("tg").value = cur || "0";
+  $("msg").className = "msg";
+}
+
+// 훈련소 레벨은 TG 레벨까지만 고를 수 있다
+function limitCamps() {
+  const tg = +$("tg").value;
+  [0, 1, 2].forEach(i => {
+    const el = $("c" + i), cur = Math.min(+el.value || 0, tg);
+    el.innerHTML = Array.from({length: tg + 1}, (_, v) => '<option value="' + v + '">' + v + '</option>').join("");
+    el.value = String(cur);
+  });
+}
+
+function drawTiers() {
+  [0, 1, 2].forEach(i => {
+    $("s" + i).innerHTML = [10, 11].map(v => '<button type="button" data-i="' + i + '" data-v="' + v + '" class="t' + v + (tiers[i] === v ? ' on' : '') + '">T' + v + '</button>').join("");
+  });
+}
+
+function say(kind, text) { $("msg").className = "msg " + kind; $("msg").textContent = text; }
+
+async function countRows(id) {
+  const txt = await fetch(SHEET + "&_=" + Date.now()).then(r => r.text());
+  return txt.split("\n").filter(x => x.indexOf('"' + id + '"') >= 0).length;
+}
+
+// 제출 전보다 이 ID 의 줄이 늘었으면 저장된 것
+async function saved(id, before) {
+  for (let k = 0; k < 8; k++) {
+    await new Promise(r => setTimeout(r, 2500));
+    try { if (await countRows(id) > before) return true; } catch (e) {}
+  }
+  return false;
+}
+
+async function send() {
+  const t = T[lang], id = $("gid").value.trim();
+  if (!/^[0-9]{6,12}$/.test(id)) { say("err", t.errId); $("gid").focus(); return; }
+  const tg = +$("tg").value, camps = [0, 1, 2].map(i => Math.min(+$("c" + i).value || 0, tg));
+  const body = new URLSearchParams();
+  body.append(F.id, id); body.append(F.tg, String(tg)); body.append(F.lang, lang);
+  camps.forEach((c, i) => body.append(F.c[i], String(c)));
+  tiers.forEach((v, i) => body.append(F.t[i], String(v)));
+  $("send").disabled = true; say("wait", t.sending);
+  let before = 0;
+  try { before = await countRows(id); } catch (e) {}
+  try { await fetch(FORM, {method: "POST", mode: "no-cors", body}); } catch (e) {}
+  const ok = await saved(id, before);
+  say(ok ? "ok" : "err", ok ? t.ok : t.fail);
+  $("send").disabled = false;
+}
+
+$("langs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setLang(b.getAttribute("data-l")); });
+$("tg").addEventListener("change", limitCamps);
+$("gid").addEventListener("input", () => { $("gid").value = $("gid").value.replace(/[^0-9]/g, ""); });
+document.addEventListener("click", e => {
+  const b = e.target.closest(".seg button");
+  if (!b) return;
+  tiers[+b.getAttribute("data-i")] = +b.getAttribute("data-v");
+  drawTiers();
+});
+$("send").addEventListener("click", send);
+setLang(lang); limitCamps(); drawTiers();
+</script>
+</body>
+</html>
