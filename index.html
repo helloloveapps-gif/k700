@@ -562,7 +562,7 @@ function render() {
   $("badTable").innerHTML = '<tr><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th>' + tx("thTyped") + '</th><th>' + tx("thLang") + '</th><th class="c">FULL</th>' + slotTh + '<th>' + tx("thTime") + '</th></tr>' +
     BAD.map(p => '<tr class="bad"><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.name) + '</td><td>' + (p.id ? esc(p.id.length > 40 ? p.id.slice(0, 40) + "…" : p.id) : '<span class="badtag">' + tx("noId") + '</span>') + '</td><td>' + esc(p.lang) + '</td>' + slotTd(p) + '<td>' + esc(p.time) + '</td></tr>').join("");
 
-  const ftg = +$("fTg").value || 0, fm = +String($("fMystic").value || "").replace(/[^0-9]/g, "") || 0, fc = [0, 1, 2].map(k => +$("fCamp" + k).value || 0);
+  const ftg = +$("fTg").value || 0, fm = +String($("fMystic").value || "").replace(/[^0-9]/g, "") || 0, fc = [0, 1, 2].map(k => +($("fCamp" + k) || {}).value || 0);
   const more = p => {
     if (ftg) { const m = /^TG([0-9])/.exec(p.tc || ""); if (!m || +m[1] < ftg) return false; }
     if (fm && !((p.mystic || 0) >= fm)) return false;
@@ -850,7 +850,7 @@ function setLang(l) {
   $("fAlly").innerHTML = '<option value="">' + tx("fAllyAll") + '</option>' + ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
   $("fSlot").innerHTML = '<option value="">' + tx("fSlotAll") + '</option><option value="full">' + tx("fullJoin") + '</option>' + SLOTS.map((s, i) => '<option value="' + i + '">' + s[0] + '</option>').join("");
   $("fAlly").value = fa || ""; $("fSlot").value = fs || "";
-  const keepTg = $("fTg").value, keepCamp = [0, 1, 2].map(k => $("fCamp" + k).value);
+  const keepTg = $("fTg").value, keepCamp = [0, 1, 2].map(k => ($("fCamp" + k) || {}).value);
   $("fTg").innerHTML = '<option value="">' + tx("fTgAll") + '</option>' + [8, 7, 6, 5, 4, 3, 2, 1].map(n => '<option value="' + n + '">' + (n === 8 ? "TG8" : tx("fTgMin", n)) + '</option>').join("");
   $("fTg").value = keepTg || "";
   $("fTroops").innerHTML = ["inf", "cav", "arc"].map((n, k) => '<div class="fgrp"><b>' + tx(n) + '</b><select id="fCamp' + k + '"><option value="">' + tx("fCampAll") + '</option>' +
