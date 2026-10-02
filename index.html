@@ -131,6 +131,7 @@ const norm = s => String(s || "").normalize("NFKC").replace(/\s+/g, "").toLowerC
 const fmt = n => n == null ? "" : Number(n).toLocaleString("ko-KR");
 const pct = (a, b) => b ? Math.round(a / b * 1000) / 10 : 0;
 let DATA = [];
+let BAD_ID = 0;
 const LOOKUP = typeof PLAYERS === "undefined" ? {} : PLAYERS;
 const SOLD = typeof SOLDIERS === "undefined" ? {} : SOLDIERS;
 const COLORS = {NeX: "#3b5bdb", NvA: "#f76707", AEH: "#2f9e44", LoV: "#d6336c"};
@@ -208,6 +209,7 @@ async function fetchRows() {
 
 function build(rows) {
   const byId = new Map();
+  BAD_ID = 0;
   const head = rows[0] || [];
   const langCol = head.findIndex(h => String(h).indexOf("Language") >= 0);
   rows.slice(1).forEach(row => {
@@ -217,8 +219,9 @@ function build(rows) {
     if (f.length < 4) return;
     const r = [row[0], f[0], f[1], f[2], f[3]];
     const ally = String(r[1] || "").trim().split(" ")[0];
-    const id = String(r[2] || "").replace(/[^0-9]/g, "") || norm(r[3]);
-    if (!ally || !id) return;
+    const id = /^[0-9]{5,12}$/.test(String(r[2] || "").trim()) ? String(r[2]).trim() : "";
+    if (!ally) return;
+    if (!id) { BAD_ID++; return; }
     const ans = String(r[4] || "");
     const full = ans.indexOf("FULL") >= 0;
     const picks = ans.split(", ").map(x => x.trim());
@@ -319,7 +322,7 @@ async function load() {
     DATA = build(await fetchRows());
     if (first) { const a = ALLIES.find(x => DATA.some(p => p.ally === x)); if (a) $("rAlly").value = a; }
     $("msg").innerHTML = "";
-    $("stamp").textContent = "응답 " + DATA.length + "명 · " + new Date().toLocaleString("ko-KR") + " 기준 · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값(" + (typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT) + ")";
+    $("stamp").textContent = "응답 " + DATA.length + "명 · " + new Date().toLocaleString("ko-KR") + " 기준" + (BAD_ID ? " · 게임 ID 가 숫자가 아닌 응답 " + BAD_ID + "건 제외" : "") + " · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값(" + (typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT) + ")";
     render();
   } catch (e) {
     $("stamp").textContent = "불러오지 못했습니다";
