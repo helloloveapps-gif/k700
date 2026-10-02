@@ -895,17 +895,20 @@ async function initAdmin() {
 }
 
 function renderStamp() {
+  $("stamp").style.display = "";
   if (LOAD_ERR) {
     $("stamp").textContent = tx("loadFail");
     $("msg").innerHTML = '<div class="msg err">' + esc(tx("loadFailMsg")) + '</div>';
     return;
   }
   if (!LOADED_AT) { $("stamp").textContent = tx("loading"); return; }
-  $("stamp").textContent = tx("stamp", DATA.length, LOADED_AT.toLocaleString(LOCALE[LANG])) + (BAD_ID ? tx("stampBad", BAD_ID) : "") + tx("stampTail", typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT);
+  // 평소에는 제목 아래 글을 비운다(숫자는 아래 카드에 있다). 풍선 도움말로만 남긴다
+  $("stamp").textContent = ""; $("stamp").style.display = "none";
+  $("tTitle").title = tx("stamp", DATA.length, LOADED_AT.toLocaleString(LOCALE[LANG])) + (BAD_ID ? tx("stampBad", BAD_ID) : "") + tx("stampTail", typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT);
 }
 
 async function load() {
-  $("stamp").textContent = tx("loading");
+  if (!LOADED_AT) $("stamp").textContent = tx("loading");
   try {
     const first = !DATA.length;
     try {
