@@ -238,19 +238,19 @@ details.tbl summary{cursor:pointer;color:var(--sub);font-size:13px;margin-bottom
 .seg{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;max-width:460px;margin-bottom:12px;padding:4px;background:var(--bar);border-radius:12px}
 .seg button{min-height:32px;padding:0 2px;border:none;border-radius:8px;background:none;font-size:13px;font-weight:600;color:var(--sub)}
 .seg button.on{background:var(--accent);color:#fff}
-/* 연맹 고르기는 눈에 띄게, 병과 필터는 색으로 구분: 보병 파랑 · 기병 주황 · 궁병 초록 */
-#fAlly{border:2px solid var(--accent);background:var(--accent);color:#fff;font-weight:700}
+/* 연맹 고르기는 노란 칸으로 눈에 띄게, 병과 필터는 색 딱지로 구분: 보병 파랑 · 기병 주황 · 궁병 초록 */
+#fAlly{border:2px solid #f08c00;background:#ffd43b;color:#1c2230;font-weight:800}
 #fAlly option{background:var(--card);color:var(--ink);font-weight:400}
-.fgrp.k0{border-color:#1c7ed6;border-inline-start:5px solid #1c7ed6;background:rgba(28,126,214,.12)}
-.fgrp.k1{border-color:#e8590c;border-inline-start:5px solid #e8590c;background:rgba(232,89,12,.12)}
-.fgrp.k2{border-color:#2f9e44;border-inline-start:5px solid #2f9e44;background:rgba(47,158,68,.12)}
-.fgrp.k0>b{color:#1c7ed6}
-.fgrp.k1>b{color:#e8590c}
-.fgrp.k2>b{color:#2f9e44}
+.fgrp.k0{border:2px solid #1c7ed6;background:rgba(28,126,214,.20)}
+.fgrp.k1{border:2px solid #e8590c;background:rgba(232,89,12,.20)}
+.fgrp.k2{border:2px solid #2f9e44;background:rgba(47,158,68,.20)}
+.fgrp>b{color:#fff !important;border-radius:8px;padding:4px 10px;min-width:0;text-align:center}
+.fgrp.k0>b{background:#1c7ed6}
+.fgrp.k1>b{background:#e8590c}
+.fgrp.k2>b{background:#2f9e44}
 .fgrp.k0 select{border-color:#1c7ed6}
 .fgrp.k1 select{border-color:#e8590c}
 .fgrp.k2 select{border-color:#2f9e44}
-@media (prefers-color-scheme:dark){.fgrp.k0>b{color:#74c0fc}.fgrp.k1>b{color:#ffa94d}.fgrp.k2>b{color:#69db7c}}
 #fName{border:2px solid #f59f00;background:rgba(255,212,59,.18);font-weight:600}
 #fName::placeholder{color:#e8590c;opacity:1}
 /* 단추 · 입력칸 크기 통일 */
