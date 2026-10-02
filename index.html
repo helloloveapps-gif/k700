@@ -90,6 +90,9 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 .stats input{width:100% !important;min-width:0;min-height:30px !important;padding:0 6px !important;font-weight:700;font-size:15px}
 .stats .hot{background:rgba(245,159,0,.18)}
 #repText{display:block;width:100%;height:58vh;min-height:240px;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--bar);color:var(--ink);font:13px/1.55 "Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif;white-space:pre;overflow:auto;resize:vertical}
+.arow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line)}
+.arow label{display:flex;align-items:center;gap:6px;margin:0}
+#aReset{color:var(--warn);border-color:var(--warn)}
 .modebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
 .arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .tw{position:absolute;transform:translate(-50%,-50%);z-index:3;min-width:30px;height:26px;padding:0 7px;border-radius:99px;border:2px dashed #ff6b6b;background:rgba(224,49,49,.28);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;text-shadow:0 1px 2px #000;white-space:nowrap}
@@ -198,6 +201,9 @@ h1,h2,.sub,label,th,td,.msg{word-break:keep-all}
   .adminbox .frow{grid-template-columns:1fr auto}
   .adminbox .frow>b{grid-column:1/-1}
   .modebar button{flex:1}
+  .arow label{flex:1 1 100%}
+  .arow label input{flex:1;width:auto !important;min-width:0}
+  .arow button{flex:1}
   .adminbox input.name,.warset input.memo{width:130px}
   .pager button{padding:4px 9px}
 }
@@ -421,6 +427,7 @@ const I18N = {
     capSplit: "{0} = 본인 {1} + 집결원 {2}", defNote: "＊ 출정 인원수를 입력하지 않아 기본값으로 계산한 사람", fullOk: "✔ 다 채움", nJoin: "집결원 {0}명",
     nth: "{0}번 집결장", needJoin: "필요 집결원", pressPlace: "이 집결장은 아직 배치하지 않았습니다. 위 배치 단추를 누르세요.",
     bReport: "📋 보고서", repTitle: "📋 보고서 — 복사해서 붙여 넣으세요", bCopy: "전체 복사", copied: "복사했습니다.", copyManual: "글을 전부 선택했습니다. 길게 눌러(또는 Ctrl+C) 복사하세요.", repLeader: "집결장", repMember: "집결원",
+    bReset: "↺ 배치 초기화", resetAsk: "{0} 연맹의 집결장과 배치를 모두 지울까요? (저장을 눌러야 모두에게 반영됩니다)", resetDone: "초기화했습니다. 저장을 눌러야 모두에게 반영됩니다.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -458,6 +465,7 @@ const I18N = {
     capSplit: "{0} = leader {1} + joiners {2}", defNote: "＊ No march size entered, so the default value was used", fullOk: "✔ Full", nJoin: "{0} joiners",
     nth: "Leader {0}", needJoin: "Joiners needed", pressPlace: "This leader has not been placed yet. Press a Place button above.",
     bReport: "📋 Report", repTitle: "📋 Report — copy and paste", bCopy: "Copy all", copied: "Copied.", copyManual: "All text is selected. Long-press (or Ctrl+C) to copy.", repLeader: "Leader", repMember: "Joiner",
+    bReset: "↺ Reset placement", resetAsk: "Clear all rally leaders and the placement for {0}? (It applies to everyone only after you press Save.)", resetDone: "Reset. Press Save to apply it for everyone.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -495,6 +503,7 @@ const I18N = {
     capSplit: "{0} = 隊長 {1} + 成員 {2}", defNote: "＊ 未填出征人數，以預設值計算", fullOk: "✔ 已填滿", nJoin: "成員 {0} 人",
     nth: "第 {0} 隊長", needJoin: "需要的成員", pressPlace: "這位隊長尚未配置，請按上方的配置按鈕。",
     bReport: "📋 報告", repTitle: "📋 報告 — 複製後貼上", bCopy: "全部複製", copied: "已複製。", copyManual: "已全選文字，請長按（或 Ctrl+C）複製。", repLeader: "隊長", repMember: "成員",
+    bReset: "↺ 重設配置", resetAsk: "要清除 {0} 聯盟的所有隊長與配置嗎？（按下儲存後才會套用到所有人）", resetDone: "已重設。按下儲存後才會套用到所有人。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -532,6 +541,7 @@ const I18N = {
     capSplit: "{0} = القائد {1} + الأعضاء {2}", defNote: "＊ لم يُدخل حجم المسيرة فاستُخدمت القيمة الافتراضية", fullOk: "✔ مكتمل", nJoin: "الأعضاء {0}",
     nth: "القائد {0}", needJoin: "المطلوب من الأعضاء", pressPlace: "لم يتم توزيع هذا القائد بعد. اضغط زر التوزيع في الأعلى.",
     bReport: "📋 تقرير", repTitle: "📋 تقرير — انسخه والصقه", bCopy: "نسخ الكل", copied: "تم النسخ.", copyManual: "تم تحديد النص كله. اضغط مطولًا (أو Ctrl+C) للنسخ.", repLeader: "القائد", repMember: "عضو",
+    bReset: "↺ إعادة ضبط التوزيع", resetAsk: "هل تريد حذف جميع القادة والتوزيع لتحالف {0}؟ (لا يُطبَّق على الجميع إلا بعد الضغط على حفظ)", resetDone: "تمت إعادة الضبط. اضغط حفظ ليُطبَّق على الجميع.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -569,6 +579,7 @@ const I18N = {
     capSplit: "{0} = lider {1} + katılımcılar {2}", defNote: "＊ Sefer kapasitesi girilmediği için varsayılan değer kullanıldı", fullOk: "✔ Dolu", nJoin: "{0} katılımcı",
     nth: "{0}. lider", needJoin: "Gereken katılımcı", pressPlace: "Bu lider henüz yerleştirilmedi. Yukarıdaki yerleşim düğmesine basın.",
     bReport: "📋 Rapor", repTitle: "📋 Rapor — kopyalayıp yapıştırın", bCopy: "Tümünü kopyala", copied: "Kopyalandı.", copyManual: "Tüm metin seçildi. Kopyalamak için uzun basın (veya Ctrl+C).", repLeader: "Lider", repMember: "Katılımcı",
+    bReset: "↺ Yerleşimi sıfırla", resetAsk: "{0} ittifakının tüm liderleri ve yerleşimi silinsin mi? (Herkese yansıması için Kaydet'e basmalısınız.)", resetDone: "Sıfırlandı. Herkese yansıması için Kaydet'e basın.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1043,7 +1054,6 @@ function renderAdmin() {
     '<div class="frow" style="margin-bottom:10px"><b>' + tx("aPick") + '</b><select id="aPick"><option value="">' + tx("aPickHint") + '</option>' +
       DATA.filter(p => p.ally === a && !isLeader(p)).map(p => '<option value="' + esc(p.id) + '">' + esc(p.gname || p.name) + (p.mystic ? ' · ' + tx("optMystic", fmt(p.mystic)) : '') + (RALLY_ON[p.id] || RALLY[p.id] ? ' · ' + tx("optRally", fmt(RALLY_ON[p.id] || RALLY[p.id])) : '') + '</option>').join("") +
       '</select><button id="aAdd">' + tx("aAdd") + '</button></div>' +
-    '<label class="line">' + tx("aBy") + ' <input id="aBy" class="name" maxlength="20" value="' + esc(ME.n || by) + '"' + (ME.n ? ' readonly' : '') + '></label>' +
     '<label class="line">' + tx("aDef") + ' <input id="aDef" inputmode="numeric" value="' + esc(box0.def) + '"></label>';
   if (ls.length) {
     const k = SELK[a] = Math.min(SELK[a] || 0, ls.length - 1), l = ls[k];
@@ -1060,7 +1070,9 @@ function renderAdmin() {
   } else {
     h += '<div class="sub" style="margin-top:10px">' + tx("aNone", esc(a)) + '</div>';
   }
-  h += '<div style="margin-top:12px"><button class="primary" id="aSave">' + tx("aSave", esc(a)) + '</button> <span class="sub" id="aMsg"></span></div></div>';
+  h += '<div class="arow"><label>' + tx("aBy") + ' <input id="aBy" class="name" maxlength="20" value="' + esc(ME.n || by) + '"' + (ME.n ? ' readonly' : '') + '></label>' +
+    '<button class="primary" id="aSave">' + tx("aSave", esc(a)) + '</button><button class="repb">' + tx("bReport") + '</button><button id="aReset">' + tx("bReset") + '</button></div>' +
+    '<div class="sub" id="aMsg" style="margin-top:6px"></div></div>';
   box.innerHTML = h;
 }
 
@@ -1433,6 +1445,17 @@ const pickTab = e => {
 };
 $("admin").addEventListener("click", e => {
   if (pickTab(e)) return;
+  if (e.target.closest("button.repb")) { openReport(); return; }
+  if (e.target.id === "aReset") {
+    const a = $("rAlly").value || ALLIES[0];
+    if (!DRAFT || !can(a) || !confirm(tx("resetAsk", a))) return;
+    const box = DRAFT.A[a] || (DRAFT.A[a] = blank());
+    box.leaders = []; SELK[a] = 0; DIRTY[a] = true;
+    PLAN[a] = JSON.parse(JSON.stringify(box));
+    renderAdmin(); render();
+    $("aMsg").textContent = tx("resetDone");
+    return;
+  }
   if (e.target.id === "aSave") { saveConfig(); return; }
   if (e.target.id === "aAdd") {
     const id = $("aPick").value, a = $("rAlly").value || ALLIES[0];
