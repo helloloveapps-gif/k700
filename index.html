@@ -69,9 +69,9 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 .ttl .tr.own{background:rgba(245,159,0,.10)}
 .ttl .tr.sum{background:var(--bar);font-weight:700}
 .ttl .tr small{color:var(--accent);font-weight:700}
-.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex:1 1 100%}
-.fgrid label{display:flex;align-items:center;gap:6px;margin:0;font-size:13px}
-.fgrid input{flex:1;min-width:0;width:auto !important}
+.fgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;flex:1 1 100%;min-width:0}
+.fgrid label{display:flex;align-items:center;gap:6px;margin:0;font-size:13px;min-width:0;white-space:nowrap}
+.fgrid input{flex:1 1 0;min-width:0;width:0 !important;padding:0 6px}
 .lrow.form>b{flex:1 1 100%}
 .adminbox label.line{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin-top:8px}
 .modebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
