@@ -107,6 +107,7 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 #meBar .sub{flex:1 1 100%;font-size:12px}
 #meBar .who2{font-weight:700}
 #meBar .sp{flex:1}
+#meRole{background:#7950f2;border-color:#7950f2;color:#fff;font-weight:800}
 tr.mine td{background:rgba(121,80,242,.16)}
 .modebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
 .arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
@@ -467,11 +468,12 @@ const I18N = {
     bReset: "↺ 배치 초기화", resetAsk: "{0} 연맹의 집결장과 배치를 모두 지울까요? (저장을 눌러야 모두에게 반영됩니다)", resetDone: "초기화했습니다. 저장을 눌러야 모두에게 반영됩니다.",
     inapp: "카카오톡 같은 앱 안의 브라우저로 열었습니다. 여기서는 작성 화면이 안 열리거나 저장이 안 될 수 있으니 크롬 · 사파리 같은 일반 브라우저로 여세요.", bOpenOut: "다른 브라우저로 열기", inappHint: "화면 위나 아래의 ⋮ (또는 공유) 메뉴에서 '다른 브라우저로 열기'를 누르세요.",
     mAtk: "공격", mDef: "수비", bConfirm: "✅ {0} 배치 확정", bUnconfirm: "{0} 확정 취소", confYes: "✅ 확정됨: {0}", confNo: "아직 확정 전입니다 (확정해야 각자 역할이 보입니다)",
-    roleTitle: "{0} 님의 역할", roleNo: "{0} 연맹은 아직 배치가 확정되지 않았습니다.", roleLeader: "{0}번 집결장 — 본인이 집결장", roleMember: "{0}번 집결장 ({1}) 의 집결원", roleIdle: "대기 — 이 시간대에는 배치 없음", roleAway: "불참 — 참여 가능 시간이 아님",
+    roleTitle: "🎯 {0} 님의 임무", roleNo: "{0} 연맹은 아직 배치가 확정되지 않았습니다.", roleLeader: "{0}번 집결장 — 본인이 집결장", roleMember: "{0}번 집결장 ({1}) 의 집결원", roleIdle: "대기 — 이 시간대에는 배치 없음", roleAway: "불참 — 참여 가능 시간이 아님",
     roleHint: "닉네임을 누르면 그 사람이 어느 집결장에서 무엇을 하는지 나옵니다(배치를 확정한 연맹만).", roleSend: "보낼 병력",
     absent: "불참", absentN: " · 불참 {0}명",
     idBad: "ID 형식 오류", idProb: "ID 문제",
-    meTitle: "👤 내 게임 ID", mePh: "게임 ID 숫자 (비밀번호 없음)", meOk: "확인", meChange: "바꾸기", meRole: "내 역할 보기", meUnknown: "아직 응답이 없는 ID", meHint: "ID만 넣으면 됩니다(비밀번호 없음). 이 기기에서는 참여 시간 · 병사 정보 화면에 자동으로 채워집니다.", meBadId: "게임 ID는 숫자 7~12자리입니다.",
+    meTitle: "👤 내 게임 ID", mePh: "게임 ID 숫자 (비밀번호 없음)", meOk: "확인", meChange: "바꾸기", meRole: "🎯 임무", meUnknown: "아직 응답이 없는 ID", meHint: "ID만 넣으면 됩니다(비밀번호 없음). 이 기기에서는 참여 시간 · 병사 정보 화면에 자동으로 채워집니다.", meBadId: "게임 ID는 숫자 7~12자리입니다.",
+    meNoAns: "이 ID로 낸 참여 시간 응답이 아직 없습니다. 위 '참여 시간 작성'에서 먼저 내 주세요.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -512,11 +514,12 @@ const I18N = {
     bReset: "↺ Reset placement", resetAsk: "Clear all rally leaders and the placement for {0}? (It applies to everyone only after you press Save.)", resetDone: "Reset. Press Save to apply it for everyone.",
     inapp: "You opened this inside an app's built-in browser (such as KakaoTalk). The forms may not open or save here, so please open it in a normal browser like Chrome or Safari.", bOpenOut: "Open in another browser", inappHint: "Use the ⋮ (or share) menu at the top or bottom and choose 'Open in another browser'.",
     mAtk: "attack", mDef: "defence", bConfirm: "✅ Confirm {0} placement", bUnconfirm: "Cancel {0} confirmation", confYes: "✅ Confirmed: {0}", confNo: "Not confirmed yet (roles show only after confirming)",
-    roleTitle: "Role of {0}", roleNo: "The placement for {0} has not been confirmed yet.", roleLeader: "Leader {0} — you lead this rally", roleMember: "Joiner in leader {0}'s rally ({1})", roleIdle: "Standby — not placed in this time slot", roleAway: "Away — not an available time",
+    roleTitle: "🎯 Mission of {0}", roleNo: "The placement for {0} has not been confirmed yet.", roleLeader: "Leader {0} — you lead this rally", roleMember: "Joiner in leader {0}'s rally ({1})", roleIdle: "Standby — not placed in this time slot", roleAway: "Away — not an available time",
     roleHint: "Tap a nickname to see which rally that player is in and what to send (confirmed alliances only).", roleSend: "Troops to send",
     absent: "Not joining", absentN: " · {0} not joining",
     idBad: "Invalid ID", idProb: "ID problem",
-    meTitle: "👤 My game ID", mePh: "Game ID number (no password)", meOk: "OK", meChange: "Change", meRole: "My role", meUnknown: "No answer yet for this ID", meHint: "Just enter your ID (no password). On this device it fills in the time survey and troop form for you.", meBadId: "A game ID is 7-12 digits.",
+    meTitle: "👤 My game ID", mePh: "Game ID number (no password)", meOk: "OK", meChange: "Change", meRole: "🎯 Mission", meUnknown: "No answer yet for this ID", meHint: "Just enter your ID (no password). On this device it fills in the time survey and troop form for you.", meBadId: "A game ID is 7-12 digits.",
+    meNoAns: "There is no time-survey answer for this ID yet. Please fill in 'Enter my KvK time' first.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -557,11 +560,12 @@ const I18N = {
     bReset: "↺ 重設配置", resetAsk: "要清除 {0} 聯盟的所有隊長與配置嗎？（按下儲存後才會套用到所有人）", resetDone: "已重設。按下儲存後才會套用到所有人。",
     inapp: "你是在應用程式（例如 KakaoTalk）內建的瀏覽器開啟的。這裡可能無法開啟或儲存表單，請改用 Chrome、Safari 等一般瀏覽器。", bOpenOut: "用其他瀏覽器開啟", inappHint: "請在畫面上方或下方的 ⋮（或分享）選單選擇「用其他瀏覽器開啟」。",
     mAtk: "進攻", mDef: "防守", bConfirm: "✅ 確定{0}配置", bUnconfirm: "取消{0}確定", confYes: "✅ 已確定：{0}", confNo: "尚未確定（確定後才會顯示各人的任務）",
-    roleTitle: "{0} 的任務", roleNo: "{0} 聯盟的配置尚未確定。", roleLeader: "第 {0} 隊長 — 你是集結隊長", roleMember: "第 {0} 隊長（{1}）的集結成員", roleIdle: "待命 — 此時段沒有配置", roleAway: "不參加 — 不是可參加的時段",
+    roleTitle: "🎯 {0} 的任務", roleNo: "{0} 聯盟的配置尚未確定。", roleLeader: "第 {0} 隊長 — 你是集結隊長", roleMember: "第 {0} 隊長（{1}）的集結成員", roleIdle: "待命 — 此時段沒有配置", roleAway: "不參加 — 不是可參加的時段",
     roleHint: "點暱稱可以看到那位成員在哪個集結、要派什麼兵（只限已確定配置的聯盟）。", roleSend: "要派的兵力",
     absent: "不參加", absentN: " · 不參加 {0} 人",
     idBad: "ID 格式錯誤", idProb: "ID 問題",
-    meTitle: "👤 我的遊戲 ID", mePh: "遊戲 ID 數字（不需要密碼）", meOk: "確定", meChange: "更改", meRole: "查看我的任務", meUnknown: "這個 ID 還沒有回覆", meHint: "只要輸入 ID（不需要密碼）。在這台裝置上，參加時間與士兵資料畫面會自動帶入。", meBadId: "遊戲 ID 是 7~12 位數字。",
+    meTitle: "👤 我的遊戲 ID", mePh: "遊戲 ID 數字（不需要密碼）", meOk: "確定", meChange: "更改", meRole: "🎯 任務", meUnknown: "這個 ID 還沒有回覆", meHint: "只要輸入 ID（不需要密碼）。在這台裝置上，參加時間與士兵資料畫面會自動帶入。", meBadId: "遊戲 ID 是 7~12 位數字。",
+    meNoAns: "這個 ID 還沒有填寫參加時間，請先按上方的「填寫參加時間」。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -602,11 +606,12 @@ const I18N = {
     bReset: "↺ إعادة ضبط التوزيع", resetAsk: "هل تريد حذف جميع القادة والتوزيع لتحالف {0}؟ (لا يُطبَّق على الجميع إلا بعد الضغط على حفظ)", resetDone: "تمت إعادة الضبط. اضغط حفظ ليُطبَّق على الجميع.",
     inapp: "لقد فتحت الصفحة داخل متصفح أحد التطبيقات (مثل KakaoTalk). قد لا تُفتح النماذج أو لا تُحفظ هنا، لذا افتحها في متصفح عادي مثل Chrome أو Safari.", bOpenOut: "فتح في متصفح آخر", inappHint: "استخدم قائمة ⋮ (أو المشاركة) في أعلى أو أسفل الشاشة واختر «فتح في متصفح آخر».",
     mAtk: "الهجوم", mDef: "الدفاع", bConfirm: "✅ تأكيد توزيع {0}", bUnconfirm: "إلغاء تأكيد {0}", confYes: "✅ تم التأكيد: {0}", confNo: "لم يتم التأكيد بعد (تظهر الأدوار بعد التأكيد فقط)",
-    roleTitle: "دور {0}", roleNo: "لم يتم تأكيد توزيع تحالف {0} بعد.", roleLeader: "القائد {0} — أنت قائد هذا الحشد", roleMember: "عضو في حشد القائد {0} ({1})", roleIdle: "انتظار — لا يوجد توزيع في هذه الفترة", roleAway: "غير مشارك — ليست فترة متاحة",
+    roleTitle: "🎯 مهمة {0}", roleNo: "لم يتم تأكيد توزيع تحالف {0} بعد.", roleLeader: "القائد {0} — أنت قائد هذا الحشد", roleMember: "عضو في حشد القائد {0} ({1})", roleIdle: "انتظار — لا يوجد توزيع في هذه الفترة", roleAway: "غير مشارك — ليست فترة متاحة",
     roleHint: "اضغط على الاسم لترى في أي حشد يشارك اللاعب وماذا يرسل (للتحالفات المؤكدة فقط).", roleSend: "الجنود المطلوب إرسالهم",
     absent: "غير مشارك", absentN: " · غير مشارك {0}",
     idBad: "معرف غير صالح", idProb: "مشكلة المعرف",
-    meTitle: "👤 معرف لعبتي", mePh: "رقم معرف اللعبة (بدون كلمة مرور)", meOk: "تأكيد", meChange: "تغيير", meRole: "دوري", meUnknown: "لا توجد إجابة لهذا المعرف بعد", meHint: "أدخل معرفك فقط (بدون كلمة مرور). على هذا الجهاز سيُملأ تلقائيًا في استبيان الوقت ونموذج الجنود.", meBadId: "معرف اللعبة من 7 إلى 12 رقمًا.",
+    meTitle: "👤 معرف لعبتي", mePh: "رقم معرف اللعبة (بدون كلمة مرور)", meOk: "تأكيد", meChange: "تغيير", meRole: "🎯 المهمة", meUnknown: "لا توجد إجابة لهذا المعرف بعد", meHint: "أدخل معرفك فقط (بدون كلمة مرور). على هذا الجهاز سيُملأ تلقائيًا في استبيان الوقت ونموذج الجنود.", meBadId: "معرف اللعبة من 7 إلى 12 رقمًا.",
+    meNoAns: "لا توجد إجابة على استبيان الوقت لهذا المعرف بعد. املأ «أدخل وقت المشاركة» أولًا.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -647,11 +652,12 @@ const I18N = {
     bReset: "↺ Yerleşimi sıfırla", resetAsk: "{0} ittifakının tüm liderleri ve yerleşimi silinsin mi? (Herkese yansıması için Kaydet'e basmalısınız.)", resetDone: "Sıfırlandı. Herkese yansıması için Kaydet'e basın.",
     inapp: "Sayfayı bir uygulamanın (ör. KakaoTalk) içindeki tarayıcıda açtınız. Formlar burada açılmayabilir veya kaydedilmeyebilir; lütfen Chrome veya Safari gibi normal bir tarayıcıda açın.", bOpenOut: "Başka tarayıcıda aç", inappHint: "Ekranın üstündeki veya altındaki ⋮ (ya da paylaş) menüsünden 'Başka tarayıcıda aç'ı seçin.",
     mAtk: "saldırı", mDef: "savunma", bConfirm: "✅ {0} yerleşimini onayla", bUnconfirm: "{0} onayını iptal et", confYes: "✅ Onaylandı: {0}", confNo: "Henüz onaylanmadı (roller yalnızca onaydan sonra görünür)",
-    roleTitle: "{0} — görev", roleNo: "{0} ittifakının yerleşimi henüz onaylanmadı.", roleLeader: "{0}. lider — ralliyi siz yönetiyorsunuz", roleMember: "{0}. liderin ({1}) rallisinde katılımcı", roleIdle: "Beklemede — bu saat diliminde yerleşim yok", roleAway: "Katılmıyor — uygun saat değil",
+    roleTitle: "🎯 {0} — görevler", roleNo: "{0} ittifakının yerleşimi henüz onaylanmadı.", roleLeader: "{0}. lider — ralliyi siz yönetiyorsunuz", roleMember: "{0}. liderin ({1}) rallisinde katılımcı", roleIdle: "Beklemede — bu saat diliminde yerleşim yok", roleAway: "Katılmıyor — uygun saat değil",
     roleHint: "Bir oyuncunun hangi rallide ne göndereceğini görmek için takma ada dokunun (yalnızca onaylanmış ittifaklar).", roleSend: "Gönderilecek asker",
     absent: "Katılmıyor", absentN: " · {0} katılmıyor",
     idBad: "Geçersiz ID", idProb: "ID sorunu",
-    meTitle: "👤 Oyun ID'm", mePh: "Oyun ID numarası (şifre yok)", meOk: "Tamam", meChange: "Değiştir", meRole: "Görevim", meUnknown: "Bu ID için henüz yanıt yok", meHint: "Yalnızca ID'nizi girin (şifre yok). Bu cihazda zaman anketi ve asker formuna otomatik doldurulur.", meBadId: "Oyun ID 7-12 haneli bir sayıdır.",
+    meTitle: "👤 Oyun ID'm", mePh: "Oyun ID numarası (şifre yok)", meOk: "Tamam", meChange: "Değiştir", meRole: "🎯 Görev", meUnknown: "Bu ID için henüz yanıt yok", meHint: "Yalnızca ID'nizi girin (şifre yok). Bu cihazda zaman anketi ve asker formuna otomatik doldurulur.", meBadId: "Oyun ID 7-12 haneli bir sayıdır.",
+    meNoAns: "Bu ID için henüz zaman anketi yanıtı yok. Önce 'Katılım saatini gir'i doldurun.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1193,7 +1199,7 @@ function renderMe() {
   }
   const p = DATA.find(x => x.id === id);
   box.innerHTML = '<b class="t">👤</b><span class="who2">' + (p ? esc(p.gname || p.name) + ' <span class="sub" style="font-weight:400">(' + esc(p.ally) + ')</span>' : '<span class="sub">' + tx("meUnknown") + '</span>') + '</span><span class="sp"></span>' +
-    (p ? '<button id="meRole">' + tx("meRole") + '</button>' : '') + '<button id="meChange">' + tx("meChange") + '</button>';
+'<button id="meRole">' + tx("meRole") + '</button><button id="meChange">' + tx("meChange") + '</button>';
 }
 $("meBar").addEventListener("click", e => {
   const t = e.target.closest("button");
@@ -1214,7 +1220,12 @@ $("meBar").addEventListener("input", e => { if (e.target.id === "meIn") e.target
 
 function openRole(id) {
   const p = DATA.find(x => x.id === id);
-  if (!p) return;
+  if (!p) {
+    $("hRole").textContent = tx("roleTitle", "👤");
+    $("roleBody").innerHTML = '<div class="msg">' + tx("meNoAns") + '</div>';
+    $("role").style.display = "flex";
+    return;
+  }
   $("hRole").textContent = tx("roleTitle", p.gname || p.name);
   $("roleBody").innerHTML = roleHtml(p);
   $("role").style.display = "flex";
