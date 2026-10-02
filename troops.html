@@ -33,12 +33,24 @@ input[type=text],select{font:inherit;font-size:15px;width:100%;height:42px;paddi
 .nrow input.act{border-color:var(--accent);box-shadow:0 0 0 2px rgba(121,80,242,.25)}
 .onbtn{font:inherit;color:inherit;text-align:start;background:none;border:1px dashed var(--sub);border-radius:10px;height:42px;padding:0 8px;justify-content:center;cursor:pointer}
 .buffs{background:var(--bar);border-radius:10px;padding:10px;margin-bottom:8px}
-.brow{display:grid;grid-template-columns:76px 1fr;gap:8px;align-items:center;margin-bottom:8px;font-size:12px;font-weight:700}
+.brow{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;margin-bottom:8px;font-size:12px;font-weight:700}
 .dseg{display:flex;height:38px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .dseg button{flex:1;font:inherit;font-size:13px;padding:0;border:none;background:var(--card);color:var(--ink);cursor:pointer}
 .dseg button.on{background:var(--accent);color:#fff;font-weight:700}
 .buffs select{height:38px;font-size:14px}
 .buffs .hint{margin:0;text-align:end;font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink)}
+/* 버프 부분은 색으로 구분: ON = 초록, 다이아 = 파랑, 펫 = 주황 */
+.onbtn{background:rgba(47,158,68,.16);border:1px solid var(--ok)}
+.onbtn small{color:var(--ok) !important}
+#m1,#r1{border-color:var(--ok);background:rgba(47,158,68,.10)}
+.buffs{background:rgba(47,158,68,.10);border:1px solid rgba(47,158,68,.45);border-inline-start:4px solid var(--ok)}
+.brow.dia span{color:#1c7ed6}
+.brow.pet span{color:#e8590c}
+.dseg{border-color:#1c7ed6}
+.dseg button.on{background:#1c7ed6}
+.buffs select{border-color:#f59f00;background:rgba(245,159,0,.12);font-weight:700}
+.buffs .hint:not(:empty){background:var(--ok);color:#fff;border-radius:8px;padding:7px 10px}
+@media (prefers-color-scheme:dark){.brow.dia span{color:#74c0fc}.brow.pet span{color:#ffa94d}}
 [hidden]{display:none !important}
 .pad{display:grid;grid-template-columns:repeat(3,1fr) 46px;gap:6px}
 .pad button{font:inherit;font-size:12px;font-weight:700;height:36px;padding:0;border-radius:8px;border:1px solid var(--line);background:var(--bar);color:var(--ink);cursor:pointer;white-space:nowrap}
@@ -278,8 +290,8 @@ function drawBuffs() {
   const t = T[lang];
   ["m", "r"].forEach(k => {
     const b = BUFF[k];
-    $("b" + k).innerHTML = (k === "m" ? '<div class="brow"><span>' + t.bDia + '</span><div class="dseg" data-k="m">' + [0, 10, 20].map(v => '<button type="button" data-v="' + v + '"' + (b.dia === v ? ' class="on"' : '') + '>' + (v ? v + "%" : t.none) + '</button>').join("") + '</div></div>' : '') +
-      '<div class="brow"><span>' + t.bPet + '</span><select data-k="' + k + '"><option value="0">' + t.none + '</option>' + PETS[k].map(v => '<option value="' + v + '"' + (b.pet === v ? ' selected' : '') + '>+' + fmtN(v) + '</option>').join("") + '</select></div>' +
+    $("b" + k).innerHTML = (k === "m" ? '<div class="brow dia"><span>💎 ' + t.bDia + '</span><div class="dseg" data-k="m">' + [0, 10, 20].map(v => '<button type="button" data-v="' + v + '"' + (b.dia === v ? ' class="on"' : '') + '>' + (v ? v + "%" : t.none) + '</button>').join("") + '</div></div>' : '') +
+      '<div class="brow pet"><span>🐾 ' + t.bPet + '</span><select data-k="' + k + '"><option value="0">' + t.none + '</option>' + PETS[k].map(v => '<option value="' + v + '"' + (b.pet === v ? ' selected' : '') + '>+' + fmtN(v) + '</option>').join("") + '</select></div>' +
       '<div class="hint" id="f' + k + '"></div>';
     calc(k);
   });
