@@ -1,5 +1,5 @@
 // 게임 ID 로 조회한 값 (jeabslist.com). 키 = 게임 ID, n = 게임 닉네임, a = 현재 연맹, tc = 타운센터 레벨, p = 전투력
-const PLAYERS_AT = "2026-10-02 08:39 KST";
+const PLAYERS_AT = "2026-10-02 17:39 KST";
 const PLAYERS = {
   "101538075": {n: "Donnloveᴮᵁᴸ", a: "nva", tc: 70, p: 651700084},
   "124305366": {n: "Dokdo_Shrimpᴷᴼᴿ", a: "NvA", tc: 70, p: 554103633},
