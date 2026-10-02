@@ -51,6 +51,14 @@ tr.bad td:first-child{box-shadow:inset 4px 0 0 #e03131}
 .hr.on .hn{background:#f59f00;border-color:#f59f00;color:#fff}
 .hr .tag{font-weight:700;font-size:13px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)}
 .warset select{padding:5px 8px}
+.lcard{border:1px solid var(--line);border-inline-start:4px solid #f59f00;border-radius:10px;padding:10px;margin-top:10px;background:var(--card)}
+.lhead{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.lhead .sp{flex:1}
+.lrow{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:8px;font-size:13px}
+.lrow>b{min-width:124px}
+.need.bad{color:#fff;background:var(--warn);border-radius:8px;padding:6px 10px}
+.need{flex:1 1 100%;color:var(--accent);font-weight:700;font-variant-numeric:tabular-nums}
+.modebar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0 12px}
 .arrows{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .tw{position:absolute;transform:translate(-50%,-50%);z-index:3;min-width:30px;height:26px;padding:0 7px;border-radius:99px;border:2px dashed #ff6b6b;background:rgba(224,49,49,.28);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;text-shadow:0 1px 2px #000;white-space:nowrap}
 .tw.on{border-style:solid;background:rgba(224,49,49,.85)}
@@ -337,7 +345,7 @@ const LOCALE = {ko: "ko-KR", en: "en-GB", zh: "zh-TW", ar: "en-GB", tr: "tr-TR"}
 const I18N = {
   ko: {name: "한국어", title: "700서버 KvK 참여 현황", loading: "불러오는 중…", bSurvey: "참여 시간 작성", bTroops: "병사 정보 입력", bReload: "새로 고침",
     hSlots: "시간대별 참여 가능 인원 (UTC · 작은 글씨는 한국 시간)", hRally: "집결 편성",
-    dRally: "집결장마다 정한 수용 인원과 병과 비율에 맞춰, 그 시간대에 참여 가능한 집결원을 병과 레벨이 높은 순으로 자동 배치한 결과입니다. 수용 인원에는 집결장 본인 병력이 들어 있습니다. 출정 인원수는 본인이 입력한 버프 OFF 값을 쓰고, 입력하지 않은 사람은 기본값으로 계산합니다.",
+    dRally: "연맹마다 집결장을 정하고, 집결장의 최종 집결 인원수와 공격 · 수비 포메이션(보병 · 기병 · 궁병 비율)에 맞춰 그 시간대에 참여 가능한 집결원을 병과 레벨이 높은 순으로 자동 배치합니다. 집결장이 여럿이면 첫째 집결장을 먼저 채우고, 남은 인원으로 다음 집결장을 채웁니다. 인원수에는 집결장 본인 병력이 들어 있고, 출정 인원수는 버프 OFF 값(없으면 기본값)을 씁니다.",
     hResp: "응답자 명단", findName: "닉네임 찾기", hMissing: "아직 응답하지 않은 연맹원",
     dMissing: "게임 ID 로 대조합니다. 명단 닉네임에 연결된 게임 ID 가 응답에 있으면 응답한 것으로 봅니다. 점선으로 표시된 사람은 아직 게임 ID 를 몰라 닉네임으로만 대조했습니다(닉네임을 바꿨으면 여기에 남을 수 있습니다).", missStat: "{0}명 남음 · 게임 ID 연결 {1}/{2}명",
     total: "전체 참여율", people: "{0} / {1}명", thSlot: "시간대", thSum: "합계", thRatio: "비율", fullJoin: "FULL 참여", allDay: "(전 시간)",
@@ -345,13 +353,13 @@ const I18N = {
     thMarch: "출정 인원수", thRallyCap: "집결 인원수", petSub: "버프 OFF / ON", inf: "보병", cav: "기병", arc: "궁병", troopSub: "병사 · 훈련소", thTime: "제출 시각",
     survey: "(설문: {0})", noId: "ID 없음", preLookup: "(ID 조회 전)", diffAlly: "≠ 설문", noResp: "해당하는 응답이 없습니다.",
     fAllyAll: "연맹 전체", fSlotAll: "시간대 전체",
-    noPlan: "{0} 연맹은 아직 집결 편성이 정해지지 않았습니다.", noPlanAdmin: " 위 '집결장 추가'에서 집결장을 고르세요.",
+    noPlan: "{0} 연맹은 아직 집결 편성이 정해지지 않았습니다.", noPlanAdmin: " 위 '집결장 추가'에서 집결장을 고른 뒤 배치 단추를 누르세요.",
     saved: "편성 저장: {0}", unsaved: "저장하지 않은 변경이 있습니다", notSaved: "아직 저장하지 않았습니다",
     slotHead: "집결장 {0}명 · 집결원 {1}명", noLeader: "이 시간대에 참여 가능한 집결장이 없습니다. 집결원 {0}명이 남습니다.",
     capLine: "수용 {0} · 비율 보병 {1} / 기병 {2} / 궁병 {3} · 채움 {4} ({5}%) · 집결원 {6}명",
     thSender: "보내는 사람", leaderSelf: "집결장 본인", defMarch: "(출정 기본값)", fillTarget: "채움 / 목표", short: "부족 {0}", rest: "배치되지 않고 남는 집결원 {0}명: ",
     aTitle: "편성 설정 (관리자)",
-    aDesc: "'집결장 추가'에서 사람을 골라 넣고(시련 높은 순), 수용 인원과 병과 비율을 정한 뒤 저장하세요. 수용 인원은 본인이 입력한 집결 인원수로 채워지며 고칠 수 있습니다. 저장은 지금 고른 연맹({0})만 됩니다. 관리자 링크를 가진 사람은 누구나 설정할 수 있고, 연맹마다 마지막에 저장한 내용이 적용됩니다.",
+    aDesc: "① '집결장 추가'로 집결장을 넣습니다(시련 높은 순, 위에 있을수록 먼저 채움). ② 최종 집결 인원수와 공격 · 수비 포메이션을 정하면 필요한 병과별 인원이 나옵니다. ③ 아래 '공격 배치' · '수비 배치'를 누르면 시간대별 자동 배치가 나옵니다. ④ 저장하면 모두에게 보입니다. 저장은 지금 고른 연맹({0})만 됩니다.",
     aBy: "저장하는 사람", aDef: "출정 인원수를 안 넣은 사람의 기본값", aLeaderCol: "집결장 ({0})", aOwnMarch: "본인 출정", aCap: "수용 인원", aSelfInput: "본인 입력 {0}",
     aDel: "빼기", aNone: "{0} 연맹에 고른 집결장이 없습니다.", aSave: "{0} 편성 저장", aNeedName: "저장하는 사람 이름을 적어 주세요.", aSaving: "저장하는 중…",
     aSaved: "저장했습니다. 모두에게 이 편성이 보입니다.", aFail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 눌러 주세요.",
@@ -363,10 +371,12 @@ const I18N = {
     sAll: "전체", sTable: "표로 보기",
     twC: "센터", twN: "북", twE: "동", twS: "남", twW: "서", thTarget: "공격 목표", warDrag: "연맹 딱지를 타워(센터 · 동 · 서 · 남 · 북)로 끌어다 놓으면 공격 목표가 정해집니다. 빈 곳에 놓으면 지워집니다.",
     noRight: "{0} 연맹은 내 링크로 설정할 권한이 없습니다. 보기만 됩니다.",
+    bAtk: "⚔ 공격 배치", bDef: "🛡 수비 배치", stale: "설정이 바뀌었습니다. 배치 단추를 눌러 다시 계산하세요.", fAtk: "⚔ 공격 포메이션", fDef: "🛡 수비 포메이션", capFinal: "최종 집결 인원수", needLine: "필요 → 보병 {0} · 기병 {1} · 궁병 {2}", selfBoth: "본인 입력 OFF {0} / ON {1}", aUp: "위로", modeNow: "{0} 기준",
+    sumBad: "합계 {0} — 보병 + 기병 + 궁병 합이 정확히 10(또는 100)이어야 합니다.", sumBlock: "포메이션 합이 10(또는 100)이 아닌 집결장이 있습니다. 고친 뒤 다시 누르세요.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
-    dRally: "For each rally leader, the joiners available in that time slot are placed automatically, highest troop level first, to match the leader's rally capacity and troop ratio. The capacity includes the leader's own troops. March size is the buff OFF value each player entered; players who did not enter one are counted with the default value.",
+    dRally: "Each alliance names its rally leaders. For each leader, the joiners available in a time slot are placed automatically, highest troop level first, to match the leader's final rally capacity and the attack or defence formation (infantry / cavalry / archer ratio). With several leaders, the first is filled first and the next ones use whoever is left. The capacity includes the leader's own troops; march size is the buff OFF value (or the default).",
     hResp: "Respondents", findName: "Find a nickname", hMissing: "Members who have not answered yet",
     dMissing: "Matching is done by game ID. A roster member counts as answered when the game ID linked to that nickname is among the responses. Members shown with a dashed outline have no known game ID yet and are matched by nickname only (if they changed their nickname they may still appear here).", missStat: "{0} left · game ID linked for {1}/{2}",
     total: "Overall participation", people: "{0} / {1}", thSlot: "Time slot", thSum: "Total", thRatio: "Share", fullJoin: "FULL participation", allDay: "(all slots)",
@@ -374,13 +384,13 @@ const I18N = {
     thMarch: "March size", thRallyCap: "Rally capacity", petSub: "Buff OFF / ON", inf: "Infantry", cav: "Cavalry", arc: "Archer", troopSub: "Troop · Camp", thTime: "Submitted",
     survey: "(survey: {0})", noId: "No ID", preLookup: "(ID not looked up yet)", diffAlly: "≠ survey", noResp: "No matching responses.",
     fAllyAll: "All alliances", fSlotAll: "All time slots",
-    noPlan: "No rally plan has been set for {0} yet.", noPlanAdmin: " Pick rally leaders with 'Add a rally leader' above.",
+    noPlan: "No rally plan has been set for {0} yet.", noPlanAdmin: " Pick rally leaders with 'Add a rally leader' above, then press a Place button.",
     saved: "Plan saved: {0}", unsaved: "There are unsaved changes", notSaved: "Not saved yet",
     slotHead: "{0} leaders · {1} joiners", noLeader: "No rally leader is available in this time slot. {0} joiners are left over.",
     capLine: "Capacity {0} · Ratio Infantry {1} / Cavalry {2} / Archer {3} · Filled {4} ({5}%) · {6} joiners",
     thSender: "Sender", leaderSelf: "Leader's own troops", defMarch: "(default march size)", fillTarget: "Filled / Target", short: "Short {0}", rest: "{0} joiners left unassigned: ",
     aTitle: "Rally settings (admin)",
-    aDesc: "Add rally leaders with 'Add a rally leader' (sorted by Mystic Trial), set the capacity and troop ratio, then save. Capacity is filled in from the rally capacity each leader reported and can be edited. Saving applies only to the selected alliance ({0}). Anyone with the admin link can edit, and the last save for each alliance is the one in effect.",
+    aDesc: "① Add rally leaders with 'Add a rally leader' (by Mystic Trial; higher in the list is filled first). ② Set the final rally capacity and the attack / defence formations to see the troops needed per type. ③ Press 'Place attack' or 'Place defence' below for the automatic placement per time slot. ④ Save to show it to everyone. Saving applies only to the selected alliance ({0}).",
     aBy: "Saved by", aDef: "Default march size for players who did not enter one", aLeaderCol: "Leader ({0})", aOwnMarch: "Own march", aCap: "Capacity", aSelfInput: "Self-reported {0}",
     aDel: "Remove", aNone: "No rally leader picked for {0}.", aSave: "Save {0} plan", aNeedName: "Please enter the name of the person saving.", aSaving: "Saving…",
     aSaved: "Saved. Everyone now sees this plan.", aFail: "Could not confirm the save. Please press again in a moment.",
@@ -392,10 +402,12 @@ const I18N = {
     sAll: "All", sTable: "View as table",
     twC: "Center", twN: "North", twE: "East", twS: "South", twW: "West", thTarget: "Attack target", warDrag: "Drag an alliance badge onto a tower (Center, East, West, South, North) to set its attack target. Drop it on empty space to clear it.",
     noRight: "Your link does not have the right to edit {0}. View only.",
+    bAtk: "⚔ Place attack", bDef: "🛡 Place defence", stale: "Settings changed. Press a Place button to recalculate.", fAtk: "⚔ Attack formation", fDef: "🛡 Defence formation", capFinal: "Final rally capacity", needLine: "Needed → Infantry {0} · Cavalry {1} · Archer {2}", selfBoth: "Self-reported OFF {0} / ON {1}", aUp: "Up", modeNow: "{0}",
+    sumBad: "Total {0} — infantry + cavalry + archer must add up to exactly 10 (or 100).", sumBlock: "A leader has a formation that does not add up to 10 (or 100). Fix it and press again.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
-    dRally: "依照每位集結隊長設定的集結容量與兵種比例，將該時段可參加的集結成員按兵種等級由高到低自動分配的結果。集結容量包含隊長自己的部隊。出征人數使用本人填寫的增益 OFF 數值，未填寫者以預設值計算。",
+    dRally: "各聯盟選出集結隊長，依隊長的最終集結人數與進攻 · 防守陣型（步兵 · 騎兵 · 弓兵比例），把該時段可參加的成員按兵種等級由高到低自動分配。有多位隊長時，先填滿第一位，再用剩下的人填下一位。人數包含隊長自己的部隊，出征人數使用增益 OFF 的數值（沒有則用預設值）。",
     hResp: "回覆名單", findName: "搜尋暱稱", hMissing: "尚未回覆的聯盟成員",
     dMissing: "以遊戲 ID 比對。名單暱稱所連結的遊戲 ID 出現在回覆中即視為已回覆。以虛線顯示的人尚未知道遊戲 ID，只能用暱稱比對（若改過暱稱可能仍會留在這裡）。", missStat: "剩 {0} 人 · 已連結遊戲 ID {1}/{2} 人",
     total: "整體參加率", people: "{0} / {1} 人", thSlot: "時段", thSum: "合計", thRatio: "比例", fullJoin: "FULL 全程參加", allDay: "（全部時段）",
@@ -403,13 +415,13 @@ const I18N = {
     thMarch: "出征人數", thRallyCap: "集結人數", petSub: "增益 OFF / ON", inf: "步兵", cav: "騎兵", arc: "弓兵", troopSub: "士兵 · 訓練營", thTime: "提交時間",
     survey: "（問卷：{0}）", noId: "無 ID", preLookup: "（ID 尚未查詢）", diffAlly: "≠ 問卷", noResp: "沒有符合的回覆。",
     fAllyAll: "全部聯盟", fSlotAll: "全部時段",
-    noPlan: "{0} 聯盟尚未設定集結編組。", noPlanAdmin: " 請用上方的「新增集結隊長」選擇隊長。",
+    noPlan: "{0} 聯盟尚未設定集結編組。", noPlanAdmin: " 請用上方的「新增集結隊長」選擇隊長，再按配置按鈕。",
     saved: "編組儲存：{0}", unsaved: "有尚未儲存的變更", notSaved: "尚未儲存",
     slotHead: "隊長 {0} 人 · 成員 {1} 人", noLeader: "此時段沒有可參加的集結隊長，剩下 {0} 位成員。",
     capLine: "容量 {0} · 比例 步兵 {1} / 騎兵 {2} / 弓兵 {3} · 已填 {4}（{5}%）· 成員 {6} 人",
     thSender: "派兵者", leaderSelf: "隊長本人", defMarch: "（出征預設值）", fillTarget: "已填 / 目標", short: "不足 {0}", rest: "未分配的成員 {0} 人：",
     aTitle: "編組設定（管理員）",
-    aDesc: "用「新增集結隊長」加入隊長（依神秘試煉由高到低），設定集結容量與兵種比例後儲存。容量會先帶入本人填寫的集結人數，可以修改。只會儲存目前選擇的聯盟（{0}）。持有管理員連結的人都可以設定，每個聯盟以最後一次儲存的內容為準。",
+    aDesc: "① 用「新增集結隊長」加入隊長（依神秘試煉排序，越上面越先填滿）。② 設定最終集結人數與進攻 · 防守陣型後，會顯示各兵種需要的人數。③ 按下方「進攻配置」或「防守配置」即可看到各時段的自動配置。④ 儲存後所有人都看得到。只會儲存目前選擇的聯盟（{0}）。",
     aBy: "儲存者", aDef: "未填出征人數者的預設值", aLeaderCol: "隊長（{0}）", aOwnMarch: "本人出征", aCap: "集結容量", aSelfInput: "本人填寫 {0}",
     aDel: "移除", aNone: "{0} 聯盟尚未選擇集結隊長。", aSave: "儲存 {0} 編組", aNeedName: "請填寫儲存者名稱。", aSaving: "儲存中…",
     aSaved: "已儲存，所有人都會看到這份編組。", aFail: "無法確認儲存，請稍後再按一次。",
@@ -421,10 +433,12 @@ const I18N = {
     sAll: "全部", sTable: "以表格檢視",
     twC: "中央", twN: "北", twE: "東", twS: "南", twW: "西", thTarget: "攻擊目標", warDrag: "把聯盟標籤拖到塔（中央 · 東 · 西 · 南 · 北）上即可設定攻擊目標，放到空白處則清除。",
     noRight: "你的連結沒有設定 {0} 聯盟的權限，僅供檢視。",
+    bAtk: "⚔ 進攻配置", bDef: "🛡 防守配置", stale: "設定已變更，請按配置按鈕重新計算。", fAtk: "⚔ 進攻陣型", fDef: "🛡 防守陣型", capFinal: "最終集結人數", needLine: "需要 → 步兵 {0} · 騎兵 {1} · 弓兵 {2}", selfBoth: "本人填寫 OFF {0} / ON {1}", aUp: "上移", modeNow: "{0}",
+    sumBad: "合計 {0} — 步兵 + 騎兵 + 弓兵必須剛好等於 10（或 100）。", sumBlock: "有隊長的陣型合計不是 10（或 100），請修正後再按一次。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
-    dRally: "لكل قائد حشد، يتم توزيع الأعضاء المتاحين في تلك الفترة تلقائيًا بحسب أعلى مستوى للجنود، وفق سعة الحشد ونسبة أنواع الجنود التي حددها القائد. السعة تشمل جنود القائد نفسه. حجم المسيرة هو القيمة التي أدخلها اللاعب مع التعزيز OFF، ومن لم يدخلها يُحسب بالقيمة الافتراضية.",
+    dRally: "يحدد كل تحالف قادة حشوده. لكل قائد يتم توزيع الأعضاء المتاحين في الفترة تلقائيًا بحسب أعلى مستوى للجنود، وفق سعة الحشد النهائية وتشكيلة الهجوم أو الدفاع (نسبة المشاة / الفرسان / الرماة). عند وجود عدة قادة يُملأ الأول أولًا ثم يُستخدم الباقون للقائد التالي. السعة تشمل جنود القائد نفسه، وحجم المسيرة هو قيمة OFF (أو القيمة الافتراضية).",
     hResp: "قائمة المجيبين", findName: "ابحث عن اسم", hMissing: "أعضاء لم يجيبوا بعد",
     dMissing: "المطابقة تتم بمعرف اللعبة. يُعتبر العضو مجيبًا إذا كان معرف اللعبة المرتبط باسمه موجودًا في الإجابات. من يظهر بإطار متقطع لا نعرف معرف لعبته بعد، وتمت مطابقته بالاسم فقط (إذا غيّر اسمه فقد يبقى هنا).", missStat: "بقي {0} · معرف اللعبة مرتبط لـ {1}/{2}",
     total: "نسبة المشاركة الكلية", people: "{0} / {1}", thSlot: "الفترة", thSum: "المجموع", thRatio: "النسبة", fullJoin: "مشاركة كاملة FULL", allDay: "(كل الفترات)",
@@ -432,13 +446,13 @@ const I18N = {
     thMarch: "حجم المسيرة", thRallyCap: "سعة الحشد", petSub: "التعزيز OFF / ON", inf: "مشاة", cav: "فرسان", arc: "رماة", troopSub: "الجنود · المعسكر", thTime: "وقت الإرسال",
     survey: "(الاستبيان: {0})", noId: "بدون معرف", preLookup: "(لم يتم البحث عن المعرف بعد)", diffAlly: "≠ الاستبيان", noResp: "لا توجد إجابات مطابقة.",
     fAllyAll: "كل التحالفات", fSlotAll: "كل الفترات",
-    noPlan: "لم تُحدد خطة الحشود لتحالف {0} بعد.", noPlanAdmin: " اختر قادة الحشود من «إضافة قائد حشد» في الأعلى.",
+    noPlan: "لم تُحدد خطة الحشود لتحالف {0} بعد.", noPlanAdmin: " اختر قادة الحشود من «إضافة قائد حشد» في الأعلى ثم اضغط زر التوزيع.",
     saved: "تم حفظ الخطة: {0}", unsaved: "توجد تغييرات غير محفوظة", notSaved: "لم يتم الحفظ بعد",
     slotHead: "القادة {0} · الأعضاء {1}", noLeader: "لا يوجد قائد حشد متاح في هذه الفترة. بقي {0} من الأعضاء.",
     capLine: "السعة {0} · النسبة مشاة {1} / فرسان {2} / رماة {3} · تم ملء {4} ({5}%) · الأعضاء {6}",
     thSender: "المرسل", leaderSelf: "جنود القائد نفسه", defMarch: "(القيمة الافتراضية للمسيرة)", fillTarget: "المملوء / الهدف", short: "ينقص {0}", rest: "أعضاء لم يتم توزيعهم ({0}): ",
     aTitle: "إعدادات الحشود (المشرف)",
-    aDesc: "أضف قادة الحشود من «إضافة قائد حشد» (مرتبين حسب التجربة الغامضة)، ثم حدد السعة ونسبة أنواع الجنود واحفظ. تُملأ السعة من سعة الحشد التي أدخلها القائد ويمكن تعديلها. الحفظ يخص التحالف المحدد فقط ({0}). كل من يملك رابط المشرف يستطيع التعديل، ويُعتمد آخر حفظ لكل تحالف.",
+    aDesc: "① أضف قادة الحشود من «إضافة قائد حشد» (حسب التجربة الغامضة، والأعلى في القائمة يُملأ أولًا). ② حدد سعة الحشد النهائية وتشكيلتي الهجوم والدفاع لتظهر الأعداد المطلوبة لكل نوع. ③ اضغط «توزيع الهجوم» أو «توزيع الدفاع» في الأسفل لعرض التوزيع التلقائي لكل فترة. ④ احفظ ليراه الجميع. الحفظ يخص التحالف المحدد فقط ({0}).",
     aBy: "اسم من يحفظ", aDef: "حجم المسيرة الافتراضي لمن لم يدخله", aLeaderCol: "القائد ({0})", aOwnMarch: "مسيرته", aCap: "السعة", aSelfInput: "أدخلها بنفسه {0}",
     aDel: "إزالة", aNone: "لم يتم اختيار قائد حشد لتحالف {0}.", aSave: "حفظ خطة {0}", aNeedName: "اكتب اسم من يقوم بالحفظ.", aSaving: "جارٍ الحفظ…",
     aSaved: "تم الحفظ. الجميع يرى هذه الخطة الآن.", aFail: "تعذر تأكيد الحفظ. اضغط مرة أخرى بعد قليل.",
@@ -450,10 +464,12 @@ const I18N = {
     sAll: "الكل", sTable: "عرض كجدول",
     twC: "الوسط", twN: "شمال", twE: "شرق", twS: "جنوب", twW: "غرب", thTarget: "هدف الهجوم", warDrag: "اسحب شارة التحالف إلى أحد الأبراج (الوسط، الشرق، الغرب، الجنوب، الشمال) لتحديد هدف الهجوم. أفلتها في مكان فارغ لإلغائه.",
     noRight: "رابطك لا يملك صلاحية تعديل تحالف {0}. للعرض فقط.",
+    bAtk: "⚔ توزيع الهجوم", bDef: "🛡 توزيع الدفاع", stale: "تغيّرت الإعدادات. اضغط زر التوزيع لإعادة الحساب.", fAtk: "⚔ تشكيلة الهجوم", fDef: "🛡 تشكيلة الدفاع", capFinal: "سعة الحشد النهائية", needLine: "المطلوب ← مشاة {0} · فرسان {1} · رماة {2}", selfBoth: "أدخلها بنفسه OFF {0} / ON {1}", aUp: "أعلى", modeNow: "{0}",
+    sumBad: "المجموع {0} — يجب أن يساوي مجموع المشاة + الفرسان + الرماة 10 بالضبط (أو 100).", sumBlock: "توجد تشكيلة مجموعها ليس 10 (أو 100). صحّحها ثم اضغط مرة أخرى.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
-    dRally: "Her ralli lideri için, o saat diliminde katılabilen üyeler liderin belirlediği ralli kapasitesine ve asker oranına göre, en yüksek asker seviyesinden başlanarak otomatik yerleştirilir. Kapasiteye liderin kendi askerleri dahildir. Sefer kapasitesi olarak oyuncunun girdiği takviye KAPALI (OFF) değeri kullanılır; girmeyenler varsayılan değerle hesaplanır.",
+    dRally: "Her ittifak ralli liderlerini belirler. Her lider için, o saat diliminde katılabilen üyeler nihai ralli kapasitesine ve saldırı ya da savunma dizilişine (piyade / süvari / okçu oranı) göre, en yüksek asker seviyesinden başlanarak otomatik yerleştirilir. Birden çok lider varsa önce ilki doldurulur, kalanlar sonraki lidere verilir. Kapasiteye liderin kendi askerleri dahildir; sefer kapasitesi olarak OFF değeri (yoksa varsayılan) kullanılır.",
     hResp: "Yanıt verenler", findName: "Takma ad ara", hMissing: "Henüz yanıt vermeyen üyeler",
     dMissing: "Eşleştirme Oyun ID ile yapılır. Listedeki takma ada bağlı Oyun ID yanıtlar arasındaysa üye yanıt vermiş sayılır. Kesik çizgili gösterilenlerin Oyun ID'si henüz bilinmiyor; yalnızca takma adla eşleştirildi (takma adını değiştirdiyse burada kalabilir).", missStat: "{0} kişi kaldı · Oyun ID bağlı {1}/{2}",
     total: "Toplam katılım", people: "{0} / {1}", thSlot: "Saat dilimi", thSum: "Toplam", thRatio: "Oran", fullJoin: "FULL tam katılım", allDay: "(tüm saatler)",
@@ -461,13 +477,13 @@ const I18N = {
     thMarch: "Sefer kapasitesi", thRallyCap: "Ralli kapasitesi", petSub: "Takviye OFF / ON", inf: "Piyade", cav: "Süvari", arc: "Okçu", troopSub: "Asker · Kamp", thTime: "Gönderim zamanı",
     survey: "(anket: {0})", noId: "ID yok", preLookup: "(ID henüz sorgulanmadı)", diffAlly: "≠ anket", noResp: "Eşleşen yanıt yok.",
     fAllyAll: "Tüm ittifaklar", fSlotAll: "Tüm saat dilimleri",
-    noPlan: "{0} ittifakı için henüz ralli planı belirlenmedi.", noPlanAdmin: " Ralli liderlerini yukarıdaki 'Ralli lideri ekle' ile seçin.",
+    noPlan: "{0} ittifakı için henüz ralli planı belirlenmedi.", noPlanAdmin: " Yukarıdaki 'Ralli lideri ekle' ile liderleri seçin, sonra yerleşim düğmesine basın.",
     saved: "Plan kaydedildi: {0}", unsaved: "Kaydedilmemiş değişiklikler var", notSaved: "Henüz kaydedilmedi",
     slotHead: "{0} lider · {1} katılımcı", noLeader: "Bu saat diliminde katılabilen ralli lideri yok. {0} katılımcı boşta kalıyor.",
     capLine: "Kapasite {0} · Oran Piyade {1} / Süvari {2} / Okçu {3} · Dolan {4} (%{5}) · {6} katılımcı",
     thSender: "Gönderen", leaderSelf: "Liderin kendi askerleri", defMarch: "(varsayılan sefer kapasitesi)", fillTarget: "Dolan / Hedef", short: "Eksik {0}", rest: "Yerleştirilmeyen {0} katılımcı: ",
     aTitle: "Ralli ayarları (yönetici)",
-    aDesc: "'Ralli lideri ekle' ile liderleri ekleyin (Mistik Deneme sırasıyla), kapasiteyi ve asker oranını belirleyip kaydedin. Kapasite, liderin girdiği ralli kapasitesiyle doldurulur ve değiştirilebilir. Kayıt yalnızca seçili ittifak ({0}) için yapılır. Yönetici bağlantısına sahip herkes ayarlayabilir; her ittifak için son kayıt geçerlidir.",
+    aDesc: "① 'Ralli lideri ekle' ile liderleri ekleyin (Mistik Deneme sırasıyla; üstteki önce doldurulur). ② Nihai ralli kapasitesini ve saldırı / savunma dizilişlerini belirleyin; tür başına gereken asker görünür. ③ Aşağıdaki 'Saldırı yerleşimi' veya 'Savunma yerleşimi'ne basın; saat dilimine göre otomatik yerleşim çıkar. ④ Kaydedince herkes görür. Kayıt yalnızca seçili ittifak ({0}) için yapılır.",
     aBy: "Kaydeden", aDef: "Sefer kapasitesi girmeyenler için varsayılan değer", aLeaderCol: "Lider ({0})", aOwnMarch: "Kendi seferi", aCap: "Kapasite", aSelfInput: "Kendi girdiği {0}",
     aDel: "Çıkar", aNone: "{0} ittifakı için seçilmiş ralli lideri yok.", aSave: "{0} planını kaydet", aNeedName: "Lütfen kaydeden kişinin adını yazın.", aSaving: "Kaydediliyor…",
     aSaved: "Kaydedildi. Bu planı artık herkes görüyor.", aFail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar basın.",
@@ -479,6 +495,8 @@ const I18N = {
     sAll: "Tümü", sTable: "Tablo olarak göster",
     twC: "Merkez", twN: "Kuzey", twE: "Doğu", twS: "Güney", twW: "Batı", thTarget: "Saldırı hedefi", warDrag: "Saldırı hedefini belirlemek için ittifak rozetini bir kulenin (Merkez, Doğu, Batı, Güney, Kuzey) üzerine sürükleyin. Boş bir yere bırakırsanız hedef silinir.",
     noRight: "Bağlantınızın {0} ittifakını düzenleme yetkisi yok. Yalnızca görüntüleme.",
+    bAtk: "⚔ Saldırı yerleşimi", bDef: "🛡 Savunma yerleşimi", stale: "Ayarlar değişti. Yeniden hesaplamak için yerleşim düğmesine basın.", fAtk: "⚔ Saldırı dizilişi", fDef: "🛡 Savunma dizilişi", capFinal: "Nihai ralli kapasitesi", needLine: "Gereken → Piyade {0} · Süvari {1} · Okçu {2}", selfBoth: "Kendi girdiği OFF {0} / ON {1}", aUp: "Yukarı", modeNow: "{0}",
+    sumBad: "Toplam {0} — piyade + süvari + okçu tam olarak 10 (veya 100) etmelidir.", sumBlock: "Dizilişi 10 (veya 100) etmeyen bir lider var. Düzeltip tekrar basın.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -519,6 +537,23 @@ const leadersOf = a => ((cfgNow().A[a] || {}).leaders || []);
 const isLeader = p => leadersOf(p.ally).some(l => l.id === p.id);
 const marchOf = p => MARCH[p.id] || +((cfgNow().A[p.ally] || {}).def) || 100000;
 const blank = () => ({def: 100000, leaders: [], by: "", at: ""});
+// 포메이션: r = 공격 비율, d = 수비 비율(보병 · 기병 · 궁병). 화면은 RMODE 로 둘 중 하나를 그린다
+let RMODE = "atk";
+const PLAN = {};   // 관리자가 「배치」를 누른 때의 설정 사본(연맹별). 없으면 저장된 설정으로 그린다
+const ratioOf = (l, mode) => (mode === "def" ? l.d : l.r) || (mode === "def" ? [5, 2, 3] : [6, 4, 0]);
+const planBox = a => (IS_ADMIN && PLAN[a]) || CFG.A[a] || blank();
+// 인원수를 비율대로 나눈다. 내림한 뒤 남는 몫은 비율이 가장 큰 병과에 주어, 세 병과 합이 인원수와 정확히 같게(넘치지 않게) 한다
+const ratioSum = r => (+r[0] || 0) + (+r[1] || 0) + (+r[2] || 0);
+const ratioOk = r => ratioSum(r) === 10 || ratioSum(r) === 100;
+const needOf = (cap, r) => {
+  const c = Math.max(0, Math.floor(+cap || 0)), v = [0, 1, 2].map(k => Math.max(0, +r[k] || 0)), sum = v[0] + v[1] + v[2];
+  if (!sum) return [0, 0, 0];
+  const n = v.map(x => Math.floor(c * x / sum)), top = v.indexOf(Math.max(v[0], v[1], v[2]));
+  n[top] += c - (n[0] + n[1] + n[2]);
+  return n;
+};
+const boxOk = b => ((b || {}).leaders || []).every(l => ratioOk(ratioOf(l, "atk")) && ratioOk(ratioOf(l, "def")));
+const newLeader = id => ({id, cap: RALLY_ON[id] || RALLY[id] || 180000, r: [6, 4, 0], d: [5, 2, 3]});
 
 // 편성 설정 탭(구글 드라이브 응답 시트의 셋째 탭). 연맹마다 가장 최근에 저장한 묶음만 쓴다
 async function loadConfig() {
@@ -544,7 +579,10 @@ async function loadConfig() {
     if (!last[a] || b > last[a].batch) last[a] = {batch: b, def: num(row[ci.def]) || 100000, leaders: [], by: String(row[ci.by] || "").trim(), at: String(row[ci.at] || "").trim()};
     if (b !== last[a].batch) return;
     const id = String(row[ci.lid] || "").trim();
-    if (/^[0-9]{5,12}$/.test(id) && !last[a].leaders.some(l => l.id === id)) last[a].leaders.push({id, cap: num(row[ci.cap]), r: ci.r.map(c => num(row[c]))});
+    if (/^[0-9]{5,12}$/.test(id) && !last[a].leaders.some(l => l.id === id)) {
+      const dm = /\[D:(\d+)\/(\d+)\/(\d+)\]/.exec(String(row[ci.lname] || ""));
+      last[a].leaders.push({id, cap: num(row[ci.cap]), r: ci.r.map(c => num(row[c])), d: dm ? [+dm[1], +dm[2], +dm[3]] : [5, 2, 3]});
+    }
   });
   return {A: last, map};
 }
@@ -783,55 +821,59 @@ function renderChart() {
   $("slotChart").innerHTML = h;
 }
 
-// 한 시간대의 자동 배치. 수용 인원 × 비율 = 병과별 목표, 집결장 본인 병력을 먼저 빼고 병과 레벨이 높은 집결원부터 채운다
-function alloc(a, i) {
+// 한 시간대의 자동 배치. 인원수 × 포메이션 비율 = 병과별 목표. 집결장 본인 병력을 먼저 넣고,
+// 집결장 순서대로 하나씩 다 채운 뒤 남은 사람으로 다음 집결장을 채운다. 한 집결 안에서는 가장 모자란 병과에 그 병과 레벨이 가장 높은 사람부터
+function alloc(a, i, mode) {
   const mem = DATA.filter(p => p.ally === a && p.slots[i]);
-  const all = leadersOf(a), lids = new Set(all.map(l => l.id));
+  const box = planBox(a), all = box.leaders || [], lids = new Set(all.map(l => l.id));
+  const march = p => MARCH[p.id] || +box.def || 100000;
   const lv = (p, t) => { const s = troops(p); return s ? s[t][1] * 100 + s[t][0] : 0; };
   const rallies = all.map(l => ({l, p: mem.find(p => p.id === l.id)})).filter(x => x.p).map(x => {
-    const cap = Math.max(0, +x.l.cap || 0), r = [0, 1, 2].map(k => Math.max(0, +(x.l.r || [])[k] || 0)), sum = r[0] + r[1] + r[2] || 1;
-    const target = r.map(v => Math.round(cap * v / sum));
-    const ownAll = Math.min(marchOf(x.p), cap), own = r.map(v => Math.round(ownAll * v / sum));
+    const cap = Math.max(0, +x.l.cap || 0), r = ratioOf(x.l, mode).map(v => Math.max(0, +v || 0));
+    const target = needOf(cap, r), own = needOf(Math.min(march(x.p), cap), r);
     return {p: x.p, cap, r, target, own, need: target.map((v, t) => Math.max(0, v - own[t])), members: []};
   });
-  const pool = mem.filter(p => !lids.has(p.id)).map(p => ({p, rem: marchOf(p), used: false}));
-  for (;;) {
-    const free = pool.filter(m => !m.used);
-    if (!free.length) break;
-    let R = null, most = 0;
-    rallies.forEach(x => { const n = x.need[0] + x.need[1] + x.need[2]; if (n > most) { most = n; R = x; } });
-    if (!R) break;
-    let t = 0;
-    [1, 2].forEach(k => { if (R.need[k] > R.need[t]) t = k; });
-    free.sort((x, y) => lv(y.p, t) - lv(x.p, t) || (y.p.power || 0) - (x.p.power || 0));
-    const m = free[0], send = [0, 0, 0];
-    m.used = true;
-    [t].concat([0, 1, 2].filter(k => k !== t).sort((x, y) => lv(m.p, y) - lv(m.p, x))).forEach(k => {
-      const g = Math.min(m.rem, R.need[k]);
-      if (g > 0) { send[k] = g; m.rem -= g; R.need[k] -= g; }
-    });
-    R.members.push({p: m.p, send});
-  }
+  const pool = mem.filter(p => !lids.has(p.id)).map(p => ({p, rem: march(p), used: false}));
+  rallies.forEach(R => {
+    for (;;) {
+      const free = pool.filter(m => !m.used);
+      if (!free.length || R.need[0] + R.need[1] + R.need[2] <= 0) break;
+      let t = 0;
+      [1, 2].forEach(k => { if (R.need[k] > R.need[t]) t = k; });
+      free.sort((x, y) => lv(y.p, t) - lv(x.p, t) || (y.p.power || 0) - (x.p.power || 0));
+      const m = free[0], send = [0, 0, 0];
+      m.used = true;
+      [t].concat([0, 1, 2].filter(k => k !== t).sort((x, y) => lv(m.p, y) - lv(m.p, x))).forEach(k => {
+        const g = Math.min(m.rem, R.need[k]);
+        if (g > 0) { send[k] = g; m.rem -= g; R.need[k] -= g; }
+      });
+      R.members.push({p: m.p, send});
+    }
+  });
   return {rallies, rest: pool.filter(m => !m.used).map(m => m.p), joiners: pool.length};
 }
 
 function renderRally() {
-  const a = $("rAlly").value || ALLIES[0];
-  if (!leadersOf(a).length) {
-    $("rally").innerHTML = '<div class="sub">' + tx("noPlan", esc(a)) + (IS_ADMIN ? tx("noPlanAdmin") : '') + '</div>';
+  const a = $("rAlly").value || ALLIES[0], box = planBox(a), ls = box.leaders || [];
+  const editing = IS_ADMIN && DRAFT && can(a);
+  const stale = editing && JSON.stringify(ls) !== JSON.stringify((DRAFT.A[a] || {}).leaders || []);
+  const bar = '<div class="modebar"><button class="modeb' + (RMODE === "atk" ? ' primary' : '') + '" data-mode="atk">' + tx("bAtk") + '</button><button class="modeb' + (RMODE === "def" ? ' primary' : '') + '" data-mode="def">' + tx("bDef") + '</button>' +
+    '<b style="color:var(--warn)" id="rallyMsg">' + (stale ? tx("stale") : '') + '</b></div>';
+  if (!ls.length) {
+    $("rally").innerHTML = (editing ? bar : '') + '<div class="sub">' + tx("noPlan", esc(a)) + (editing ? tx("noPlanAdmin") : '') + '</div>';
     return;
   }
   const nm = p => esc(p.gname || p.name);
   const line = (label, v, cls) => '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + label + '</td>' + v.map(x => '<td class="n">' + (x ? fmt(x) : '<span class="no">·</span>') + '</td>').join("") + '<td class="n"><b>' + fmt(v[0] + v[1] + v[2]) + '</b></td></tr>';
-  const meta = cfgNow().A[a] || {}, defTag = ' <span class="sub">' + tx("defMarch") + '</span>';
-  let h = meta.at ? '<div class="sub" style="margin-bottom:6px">' + tx("saved", esc(meta.at)) + (meta.by ? ' · ' + esc(meta.by) : '') + (IS_ADMIN && DIRTY[a] ? ' · <b style="color:var(--warn)">' + tx("unsaved") + '</b>' : '') + '</div>' : (IS_ADMIN && DIRTY[a] ? '<div class="sub" style="margin-bottom:6px"><b style="color:var(--warn)">' + tx("notSaved") + '</b></div>' : "");
+  const meta = CFG.A[a] || {}, defTag = ' <span class="sub">' + tx("defMarch") + '</span>';
+  let h = bar + (meta.at ? '<div class="sub" style="margin-bottom:6px">' + tx("saved", esc(meta.at)) + (meta.by ? ' · ' + esc(meta.by) : '') + (editing && DIRTY[a] ? ' · <b style="color:var(--warn)">' + tx("unsaved") + '</b>' : '') + '</div>' : (editing && DIRTY[a] ? '<div class="sub" style="margin-bottom:6px"><b style="color:var(--warn)">' + tx("notSaved") + '</b></div>' : ""));
   SLOTS.forEach((s, i) => {
-    const r = alloc(a, i);
+    const r = alloc(a, i, RMODE);
     h += '<h2 class="slot" style="margin-top:18px">' + esc(s[0]) + ' <span class="sub">' + (slotLocal(i) ? '(' + esc(slotLocal(i)) + ') · ' : '· ') + tx("slotHead", r.rallies.length, r.joiners) + '</span></h2>';
     if (!r.rallies.length) { h += '<div class="sub">' + tx("noLeader", r.joiners) + '</div>'; return; }
-    h += r.rallies.map(x => {
+    h += r.rallies.map((x, n) => {
       const filled = x.target.map((v, t) => v - x.need[t]), tot = filled[0] + filled[1] + filled[2];
-      return '<div class="card leader" style="margin-bottom:10px"><div class="lname">★ ' + nm(x.p) + '</div>' + troopLine(x.p) +
+      return '<div class="card leader" style="margin-bottom:10px"><div class="lname">' + (n + 1) + '. ★ ' + nm(x.p) + '</div>' + troopLine(x.p) +
         '<div class="sub">' + tx("capLine", fmt(x.cap), x.r[0], x.r[1], x.r[2], fmt(tot), pct(tot, x.cap || 1), x.members.length) + '</div>' +
         '<div class="scroll"><table class="plan"><tr><th>' + tx("thSender") + '</th><th class="n">' + tx("inf") + '</th><th class="n">' + tx("cav") + '</th><th class="n">' + tx("arc") + '</th><th class="n">' + tx("thSum") + '</th></tr>' +
         line('<b>' + tx("leaderSelf") + '</b>' + (MARCH[x.p.id] ? '' : defTag), x.own, "own") +
@@ -844,34 +886,39 @@ function renderRally() {
   $("rally").innerHTML = h;
 }
 
-// 관리자 편성 설정 (관리자 링크로 들어왔을 때만)
+// 관리자 편성 설정 (관리자 링크로 들어왔을 때만). 집결장마다 카드 하나: 최종 집결 인원수, 공격 · 수비 포메이션과 필요 병력
+function needText(l, mode) { const r = ratioOf(l, mode), n = needOf(l.cap, r); return ratioOk(r) ? tx("needLine", fmt(n[0]), fmt(n[1]), fmt(n[2])) : tx("sumBad", ratioSum(r)); }
+const needCls = (l, mode) => "need" + (ratioOk(ratioOf(l, mode)) ? "" : " bad");
 function renderAdmin() {
   const box = $("admin");
   if (!IS_ADMIN || !DRAFT) { box.innerHTML = ""; return; }
-  if (!can($("rAlly").value || ALLIES[0])) { box.innerHTML = '<div class="msg">' + tx("noRight", esc($("rAlly").value || ALLIES[0])) + '</div>'; return; }
-  const a = $("rAlly").value || ALLIES[0], ls = leadersOf(a);
-  const box0 = DRAFT.A[a] || (DRAFT.A[a] = blank());
+  const a = $("rAlly").value || ALLIES[0];
+  if (!can(a)) { box.innerHTML = '<div class="msg">' + tx("noRight", esc(a)) + '</div>'; return; }
+  const ls = leadersOf(a), box0 = DRAFT.A[a] || (DRAFT.A[a] = blank());
+  ls.forEach(l => { if (!l.r) l.r = [6, 4, 0]; if (!l.d) l.d = [5, 2, 3]; });
   let by = "";
   try { by = localStorage.getItem("k700by") || ""; } catch (e) {}
   const who = id => { const p = DATA.find(x => x.id === id); return p ? esc(p.gname || p.name) : esc(id); };
   const info = id => DATA.find(x => x.id === id) || {};
+  const three = (k, f, v) => [0, 1, 2].map(t => tx(["inf", "cav", "arc"][t]) + ' <input class="pc" data-k="' + k + '" data-f="' + f + t + '" inputmode="numeric" maxlength="3" value="' + esc(v[t]) + '">').join(" ");
   let h = '<div class="adminbox"><div class="lname">' + tx("aTitle") + '</div>' +
     '<div class="sub" style="margin:4px 0 10px">' + tx("aDesc", esc(a)) + '</div>' +
     '<div class="frow" style="margin-bottom:10px"><b>' + tx("aPick") + '</b><select id="aPick"><option value="">' + tx("aPickHint") + '</option>' +
-      DATA.filter(p => p.ally === a && !isLeader(p)).map(p => '<option value="' + esc(p.id) + '">' + esc(p.gname || p.name) + (p.mystic ? ' · ' + tx("optMystic", fmt(p.mystic)) : '') + (RALLY[p.id] ? ' · ' + tx("optRally", fmt(RALLY[p.id])) : '') + '</option>').join("") +
+      DATA.filter(p => p.ally === a && !isLeader(p)).map(p => '<option value="' + esc(p.id) + '">' + esc(p.gname || p.name) + (p.mystic ? ' · ' + tx("optMystic", fmt(p.mystic)) : '') + (RALLY_ON[p.id] || RALLY[p.id] ? ' · ' + tx("optRally", fmt(RALLY_ON[p.id] || RALLY[p.id])) : '') + '</option>').join("") +
       '</select><button id="aAdd">' + tx("aAdd") + '</button></div>' +
     '<label>' + tx("aBy") + ' <input id="aBy" class="name" maxlength="20" value="' + esc(ME.n || by) + '"' + (ME.n ? ' readonly' : '') + '></label> &nbsp; ' +
     '<label>' + tx("aDef") + ' <input id="aDef" inputmode="numeric" value="' + esc(box0.def) + '"></label>';
   if (ls.length) {
-    h += '<div class="scroll" style="margin-top:10px"><table class="plan"><tr><th>' + tx("aLeaderCol", esc(a)) + '</th><th class="n">' + tx("thMystic") + '</th><th class="n">' + tx("aOwnMarch") + '</th><th class="n">' + tx("aCap") + '</th><th class="n">' + tx("inf") + ' %</th><th class="n">' + tx("cav") + ' %</th><th class="n">' + tx("arc") + ' %</th><th></th></tr>' +
-      ls.map((l, k) => '<tr><td>★ ' + who(l.id) + '</td><td class="n">' + fmt(info(l.id).mystic) + '</td><td class="n">' + fmt(MARCH[l.id] || box0.def) + '</td>' +
-        '<td class="n"><input data-k="' + k + '" data-f="cap" inputmode="numeric" value="' + esc(l.cap) + '">' + (RALLY[l.id] ? '<br><small class="sub">' + tx("aSelfInput", fmt(RALLY[l.id])) + '</small>' : '') + '</td>' +
-        [0, 1, 2].map(t => '<td class="n"><input class="pc" data-k="' + k + '" data-f="r' + t + '" inputmode="numeric" value="' + esc(l.r[t]) + '"></td>').join("") +
-        '<td><button class="del" data-k="' + k + '">' + tx("aDel") + '</button></td></tr>').join("") + '</table></div>';
+    h += ls.map((l, k) => '<div class="lcard"><div class="lhead"><span class="lname">' + (k + 1) + '. ★ ' + who(l.id) + '</span><span class="sub">' + tx("thMystic") + ' ' + (fmt(info(l.id).mystic) || '·') + ' · ' + tx("aOwnMarch") + ' ' + fmt(MARCH[l.id] || box0.def) + '</span><span class="sp"></span>' +
+        (k ? '<button class="del up" data-up="' + k + '">▲ ' + tx("aUp") + '</button>' : '') + '<button class="del" data-k="' + k + '">' + tx("aDel") + '</button></div>' +
+      '<div class="lrow"><b>' + tx("capFinal") + '</b><input data-k="' + k + '" data-f="cap" inputmode="numeric" maxlength="8" value="' + esc(l.cap) + '">' +
+        (RALLY[l.id] ? '<small class="sub">' + tx("selfBoth", fmt(RALLY[l.id]), RALLY_ON[l.id] ? fmt(RALLY_ON[l.id]) : '·') + '</small>' : '') + '</div>' +
+      '<div class="lrow"><b>' + tx("fAtk") + '</b>' + three(k, "r", l.r) + '<span class="' + needCls(l, "atk") + '" id="nr' + k + '">' + needText(l, "atk") + '</span></div>' +
+      '<div class="lrow"><b>' + tx("fDef") + '</b>' + three(k, "d", l.d) + '<span class="' + needCls(l, "def") + '" id="nd' + k + '">' + needText(l, "def") + '</span></div></div>').join("");
   } else {
     h += '<div class="sub" style="margin-top:10px">' + tx("aNone", esc(a)) + '</div>';
   }
-  h += '<div style="margin-top:10px"><button class="primary" id="aSave">' + tx("aSave", esc(a)) + '</button> <span class="sub" id="aMsg"></span></div></div>';
+  h += '<div style="margin-top:12px"><button class="primary" id="aSave">' + tx("aSave", esc(a)) + '</button> <span class="sub" id="aMsg"></span></div></div>';
   box.innerHTML = h;
 }
 
@@ -984,6 +1031,7 @@ async function saveConfig() {
   if (!can(a)) return;
   const by = ($("aBy").value || "").trim(), stamp = Date.now(), at = new Date().toLocaleString("sv-SE").slice(0, 16);
   if (!by) { msg.textContent = tx("aNeedName"); $("aBy").focus(); return; }
+  if (!boxOk(box)) { msg.textContent = tx("sumBlock"); return; }
   const rows = box.leaders.length ? box.leaders : [null];
   msg.textContent = tx("aSaving");
   for (const l of rows) {
@@ -992,7 +1040,7 @@ async function saveConfig() {
     body.append(CF.def, String(+box.def || 100000)); body.append(CF.admin, ME.h);
     if (l) {
       const p = DATA.find(x => x.id === l.id);
-      body.append(CF.lid, l.id); body.append(CF.lname, p ? (p.gname || p.name) : "");
+      body.append(CF.lid, l.id); body.append(CF.lname, (p ? (p.gname || p.name) : "") + " [D:" + ratioOf(l, "def").map(v => +v || 0).join("/") + "]");
       body.append(CF.cap, String(+l.cap || 0));
       [0, 1, 2].forEach(t => body.append(CF.r[t], String(+l.r[t] || 0)));
     }
@@ -1003,7 +1051,7 @@ async function saveConfig() {
     try {
       const c = await loadConfig(), got = c.A[a];
       if (got && got.batch === stamp && got.leaders.length === box.leaders.length) {
-        CFG = c; DIRTY[a] = false; syncDraft();
+        CFG = c; DIRTY[a] = false; delete PLAN[a]; syncDraft();
         renderAdmin(); render();
         $("aMsg").textContent = tx("aSaved");
         return;
@@ -1181,6 +1229,18 @@ $("pager").addEventListener("click", e => {
 $("reload").addEventListener("click", load);
 $("rAlly").innerHTML = ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
 $("rAlly").addEventListener("change", () => { renderAdmin(); renderRally(); });
+// 「공격 배치」 · 「수비 배치」: 그 포메이션으로 다시 그린다. 관리자는 지금 고친 설정으로 계산한다
+$("rally").addEventListener("click", e => {
+  const b = e.target.closest("button.modeb");
+  if (!b) return;
+  RMODE = b.getAttribute("data-mode") === "def" ? "def" : "atk";
+  const a = $("rAlly").value || ALLIES[0];
+  if (IS_ADMIN && DRAFT && can(a)) {
+    if (!boxOk(DRAFT.A[a])) { renderRally(); const m = $("rallyMsg"); if (m) m.textContent = tx("sumBlock"); return; }
+    PLAN[a] = JSON.parse(JSON.stringify(DRAFT.A[a] || blank()));
+  }
+  renderRally();
+});
 $("respTable").addEventListener("click", e => {
   const b = e.target.closest("button.star");
   if (!b || !IS_ADMIN || !DRAFT) return;
@@ -1189,7 +1249,7 @@ $("respTable").addEventListener("click", e => {
   const box = DRAFT.A[p.ally] || (DRAFT.A[p.ally] = blank());
   DIRTY[p.ally] = true;
   const k = box.leaders.findIndex(l => l.id === p.id);
-  if (k >= 0) box.leaders.splice(k, 1); else box.leaders.push({id: p.id, cap: RALLY[p.id] || 180000, r: [50, 20, 30]});
+  if (k >= 0) box.leaders.splice(k, 1); else box.leaders.push(newLeader(p.id));
   $("rAlly").value = p.ally;
   renderAdmin();
   render();
@@ -1202,7 +1262,10 @@ $("admin").addEventListener("input", e => {
   else if (el.dataset.f) {
     const l = leadersOf($("rAlly").value || ALLIES[0])[+el.dataset.k];
     if (!l) return;
-    if (el.dataset.f === "cap") l.cap = v; else l.r[+el.dataset.f.slice(1)] = v;
+    const k = +el.dataset.k, f = el.dataset.f;
+    if (f === "cap") l.cap = v; else (f[0] === "d" ? l.d : l.r)[+f.slice(1)] = v;
+    if ($("nr" + k)) { $("nr" + k).textContent = needText(l, "atk"); $("nr" + k).className = needCls(l, "atk"); }
+    if ($("nd" + k)) { $("nd" + k).textContent = needText(l, "def"); $("nd" + k).className = needCls(l, "def"); }
   } else return;
   renderRally();
 });
@@ -1212,9 +1275,15 @@ $("admin").addEventListener("click", e => {
     const id = $("aPick").value, a = $("rAlly").value || ALLIES[0];
     if (!id || !DRAFT) return;
     const box = DRAFT.A[a] || (DRAFT.A[a] = blank());
-    if (!box.leaders.some(l => l.id === id)) box.leaders.push({id, cap: RALLY[id] || 180000, r: [50, 20, 30]});
+    if (!box.leaders.some(l => l.id === id)) box.leaders.push(newLeader(id));
     DIRTY[a] = true;
     renderAdmin(); render();
+    return;
+  }
+  const up = e.target.closest("button.up");
+  if (up) {
+    const ls = leadersOf($("rAlly").value || ALLIES[0]), k = +up.getAttribute("data-up");
+    if (k > 0 && ls[k]) { const x = ls[k]; ls[k] = ls[k - 1]; ls[k - 1] = x; DIRTY[$("rAlly").value || ALLIES[0]] = true; renderAdmin(); render(); }
     return;
   }
   const d = e.target.closest("button.del");
