@@ -113,6 +113,7 @@ tr:hover td{background:rgba(121,80,242,.06)}
 .langs button{font-size:14px;padding:6px 12px;border-radius:99px}
 .langs button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
 .names span{background:var(--bar);border-radius:6px;padding:2px 8px;font-size:13px}
+.names span.noid{background:none;border:1px dashed var(--sub);color:var(--sub)}
 </style>
 </head>
 <body>
@@ -214,11 +215,11 @@ const I18N = {
     hSlots: "시간대별 참여 가능 인원 (UTC · 괄호는 한국 시간)", hRally: "집결 편성",
     dRally: "집결장마다 정한 수용 인원과 병과 비율에 맞춰, 그 시간대에 참여 가능한 집결원을 병과 레벨이 높은 순으로 자동 배치한 결과입니다. 수용 인원에는 집결장 본인 병력이 들어 있습니다. 출정 인원수는 본인이 입력한 펫 버프 OFF 값을 쓰고, 입력하지 않은 사람은 기본값으로 계산합니다.",
     hResp: "응답자 명단", findName: "닉네임 찾기", hMissing: "아직 응답하지 않은 연맹원",
-    dMissing: "게임 ID 로 조회한 닉네임(없으면 설문에 적은 닉네임)이 명단 닉네임과 같은 사람을 응답한 것으로 봅니다. 명단을 받은 뒤 닉네임을 바꿨으면 여기에 남아 있을 수 있습니다.",
+    dMissing: "게임 ID 로 대조합니다. 명단 닉네임에 연결된 게임 ID 가 응답에 있으면 응답한 것으로 봅니다. 점선으로 표시된 사람은 아직 게임 ID 를 몰라 닉네임으로만 대조했습니다(닉네임을 바꿨으면 여기에 남을 수 있습니다).", missStat: "{0}명 남음 · 게임 ID 연결 {1}/{2}명",
     total: "전체 참여율", people: "{0} / {1}명", thSlot: "시간대", thSum: "합계", thRatio: "비율", fullJoin: "FULL 참여", allDay: "(전 시간)",
     thLeader: "집결장", thAlly: "연맹", thNick: "닉네임", thNowAlly: "현재 연맹", thId: "게임 ID", thMystic: "시련", thPower: "전투력", thBuilding: "건물",
     thMarch: "출정 인원수", thRallyCap: "집결 인원수", petSub: "펫 버프 OFF / ON", inf: "보병", cav: "기병", arc: "궁병", troopSub: "병사 · 훈련소", thTime: "제출 시각",
-    survey: "(설문: {0})", noId: "ID 없음", preLookup: "(ID 조회 전)", diffAlly: "≠ 설문", noResp: "해당하는 응답이 없습니다.", leftN: "{0}명 남음",
+    survey: "(설문: {0})", noId: "ID 없음", preLookup: "(ID 조회 전)", diffAlly: "≠ 설문", noResp: "해당하는 응답이 없습니다.",
     fAllyAll: "연맹 전체", fSlotAll: "시간대 전체",
     noPlan: "{0} 연맹은 아직 집결 편성이 정해지지 않았습니다.", noPlanAdmin: " 아래 응답자 명단에서 ☆ 를 눌러 집결장을 고르세요.",
     saved: "편성 저장: {0}", unsaved: "저장하지 않은 변경이 있습니다", notSaved: "아직 저장하지 않았습니다",
@@ -239,11 +240,11 @@ const I18N = {
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
     dRally: "For each rally leader, the joiners available in that time slot are placed automatically, highest troop level first, to match the leader's rally capacity and troop ratio. The capacity includes the leader's own troops. March size is the pet buff OFF value each player entered; players who did not enter one are counted with the default value.",
     hResp: "Respondents", findName: "Find a nickname", hMissing: "Members who have not answered yet",
-    dMissing: "A member counts as answered when the nickname looked up by game ID (or the nickname typed in the survey) matches the roster nickname. If you changed your nickname after the roster was taken, you may still appear here.",
+    dMissing: "Matching is done by game ID. A roster member counts as answered when the game ID linked to that nickname is among the responses. Members shown with a dashed outline have no known game ID yet and are matched by nickname only (if they changed their nickname they may still appear here).", missStat: "{0} left · game ID linked for {1}/{2}",
     total: "Overall participation", people: "{0} / {1}", thSlot: "Time slot", thSum: "Total", thRatio: "Share", fullJoin: "FULL participation", allDay: "(all slots)",
     thLeader: "Leader", thAlly: "Alliance", thNick: "Nickname", thNowAlly: "Current alliance", thId: "Game ID", thMystic: "Mystic Trial", thPower: "Power", thBuilding: "Town Center",
     thMarch: "March size", thRallyCap: "Rally capacity", petSub: "Pet buff OFF / ON", inf: "Infantry", cav: "Cavalry", arc: "Archer", troopSub: "Troop · Camp", thTime: "Submitted",
-    survey: "(survey: {0})", noId: "No ID", preLookup: "(ID not looked up yet)", diffAlly: "≠ survey", noResp: "No matching responses.", leftN: "{0} left",
+    survey: "(survey: {0})", noId: "No ID", preLookup: "(ID not looked up yet)", diffAlly: "≠ survey", noResp: "No matching responses.",
     fAllyAll: "All alliances", fSlotAll: "All time slots",
     noPlan: "No rally plan has been set for {0} yet.", noPlanAdmin: " Press ☆ in the respondent list below to pick rally leaders.",
     saved: "Plan saved: {0}", unsaved: "There are unsaved changes", notSaved: "Not saved yet",
@@ -264,11 +265,11 @@ const I18N = {
     hSlots: "各時段可參加人數（UTC · 括號內為台灣時間）", hRally: "集結編組",
     dRally: "依照每位集結隊長設定的集結容量與兵種比例，將該時段可參加的集結成員按兵種等級由高到低自動分配的結果。集結容量包含隊長自己的部隊。出征人數使用本人填寫的寵物增益 OFF 數值，未填寫者以預設值計算。",
     hResp: "回覆名單", findName: "搜尋暱稱", hMissing: "尚未回覆的聯盟成員",
-    dMissing: "以遊戲 ID 查到的暱稱（查不到時用問卷上填的暱稱）與名單暱稱相同者視為已回覆。若在名單建立後改過暱稱，可能仍會留在這裡。",
+    dMissing: "以遊戲 ID 比對。名單暱稱所連結的遊戲 ID 出現在回覆中即視為已回覆。以虛線顯示的人尚未知道遊戲 ID，只能用暱稱比對（若改過暱稱可能仍會留在這裡）。", missStat: "剩 {0} 人 · 已連結遊戲 ID {1}/{2} 人",
     total: "整體參加率", people: "{0} / {1} 人", thSlot: "時段", thSum: "合計", thRatio: "比例", fullJoin: "FULL 全程參加", allDay: "（全部時段）",
     thLeader: "隊長", thAlly: "聯盟", thNick: "暱稱", thNowAlly: "目前聯盟", thId: "遊戲 ID", thMystic: "神秘試煉", thPower: "戰力", thBuilding: "城鎮中心",
     thMarch: "出征人數", thRallyCap: "集結人數", petSub: "寵物增益 OFF / ON", inf: "步兵", cav: "騎兵", arc: "弓兵", troopSub: "士兵 · 訓練營", thTime: "提交時間",
-    survey: "（問卷：{0}）", noId: "無 ID", preLookup: "（ID 尚未查詢）", diffAlly: "≠ 問卷", noResp: "沒有符合的回覆。", leftN: "剩 {0} 人",
+    survey: "（問卷：{0}）", noId: "無 ID", preLookup: "（ID 尚未查詢）", diffAlly: "≠ 問卷", noResp: "沒有符合的回覆。",
     fAllyAll: "全部聯盟", fSlotAll: "全部時段",
     noPlan: "{0} 聯盟尚未設定集結編組。", noPlanAdmin: " 請在下方回覆名單按 ☆ 選擇集結隊長。",
     saved: "編組儲存：{0}", unsaved: "有尚未儲存的變更", notSaved: "尚未儲存",
@@ -289,11 +290,11 @@ const I18N = {
     hSlots: "عدد المتاحين في كل فترة (UTC · بين القوسين توقيت UTC+3)", hRally: "خطة الحشود",
     dRally: "لكل قائد حشد، يتم توزيع الأعضاء المتاحين في تلك الفترة تلقائيًا بحسب أعلى مستوى للجنود، وفق سعة الحشد ونسبة أنواع الجنود التي حددها القائد. السعة تشمل جنود القائد نفسه. حجم المسيرة هو القيمة التي أدخلها اللاعب مع تعزيز الحيوان الأليف OFF، ومن لم يدخلها يُحسب بالقيمة الافتراضية.",
     hResp: "قائمة المجيبين", findName: "ابحث عن اسم", hMissing: "أعضاء لم يجيبوا بعد",
-    dMissing: "يُعتبر العضو مجيبًا إذا طابق الاسم المستخرج من معرف اللعبة (أو الاسم المكتوب في الاستبيان) الاسم الموجود في القائمة. إذا غيّرت اسمك بعد إعداد القائمة فقد تبقى هنا.",
+    dMissing: "المطابقة تتم بمعرف اللعبة. يُعتبر العضو مجيبًا إذا كان معرف اللعبة المرتبط باسمه موجودًا في الإجابات. من يظهر بإطار متقطع لا نعرف معرف لعبته بعد، وتمت مطابقته بالاسم فقط (إذا غيّر اسمه فقد يبقى هنا).", missStat: "بقي {0} · معرف اللعبة مرتبط لـ {1}/{2}",
     total: "نسبة المشاركة الكلية", people: "{0} / {1}", thSlot: "الفترة", thSum: "المجموع", thRatio: "النسبة", fullJoin: "مشاركة كاملة FULL", allDay: "(كل الفترات)",
     thLeader: "القائد", thAlly: "التحالف", thNick: "الاسم", thNowAlly: "التحالف الحالي", thId: "معرف اللعبة", thMystic: "التجربة الغامضة", thPower: "القوة", thBuilding: "مركز المدينة",
     thMarch: "حجم المسيرة", thRallyCap: "سعة الحشد", petSub: "تعزيز الحيوان الأليف OFF / ON", inf: "مشاة", cav: "فرسان", arc: "رماة", troopSub: "الجنود · المعسكر", thTime: "وقت الإرسال",
-    survey: "(الاستبيان: {0})", noId: "بدون معرف", preLookup: "(لم يتم البحث عن المعرف بعد)", diffAlly: "≠ الاستبيان", noResp: "لا توجد إجابات مطابقة.", leftN: "بقي {0}",
+    survey: "(الاستبيان: {0})", noId: "بدون معرف", preLookup: "(لم يتم البحث عن المعرف بعد)", diffAlly: "≠ الاستبيان", noResp: "لا توجد إجابات مطابقة.",
     fAllyAll: "كل التحالفات", fSlotAll: "كل الفترات",
     noPlan: "لم تُحدد خطة الحشود لتحالف {0} بعد.", noPlanAdmin: " اضغط ☆ في قائمة المجيبين أدناه لاختيار قادة الحشود.",
     saved: "تم حفظ الخطة: {0}", unsaved: "توجد تغييرات غير محفوظة", notSaved: "لم يتم الحفظ بعد",
@@ -314,11 +315,11 @@ const I18N = {
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · parantez içi Türkiye saati)", hRally: "Ralli planı",
     dRally: "Her ralli lideri için, o saat diliminde katılabilen üyeler liderin belirlediği ralli kapasitesine ve asker oranına göre, en yüksek asker seviyesinden başlanarak otomatik yerleştirilir. Kapasiteye liderin kendi askerleri dahildir. Sefer kapasitesi olarak oyuncunun girdiği evcil hayvan takviyesi KAPALI (OFF) değeri kullanılır; girmeyenler varsayılan değerle hesaplanır.",
     hResp: "Yanıt verenler", findName: "Takma ad ara", hMissing: "Henüz yanıt vermeyen üyeler",
-    dMissing: "Oyun ID ile bulunan takma ad (yoksa ankete yazılan takma ad) listedeki takma adla aynıysa üye yanıt vermiş sayılır. Liste alındıktan sonra takma adınızı değiştirdiyseniz burada görünmeye devam edebilirsiniz.",
+    dMissing: "Eşleştirme Oyun ID ile yapılır. Listedeki takma ada bağlı Oyun ID yanıtlar arasındaysa üye yanıt vermiş sayılır. Kesik çizgili gösterilenlerin Oyun ID'si henüz bilinmiyor; yalnızca takma adla eşleştirildi (takma adını değiştirdiyse burada kalabilir).", missStat: "{0} kişi kaldı · Oyun ID bağlı {1}/{2}",
     total: "Toplam katılım", people: "{0} / {1}", thSlot: "Saat dilimi", thSum: "Toplam", thRatio: "Oran", fullJoin: "FULL tam katılım", allDay: "(tüm saatler)",
     thLeader: "Lider", thAlly: "İttifak", thNick: "Takma ad", thNowAlly: "Şimdiki ittifak", thId: "Oyun ID", thMystic: "Mistik Deneme", thPower: "Güç", thBuilding: "Şehir Merkezi",
     thMarch: "Sefer kapasitesi", thRallyCap: "Ralli kapasitesi", petSub: "Evcil hayvan takviyesi OFF / ON", inf: "Piyade", cav: "Süvari", arc: "Okçu", troopSub: "Asker · Kamp", thTime: "Gönderim zamanı",
-    survey: "(anket: {0})", noId: "ID yok", preLookup: "(ID henüz sorgulanmadı)", diffAlly: "≠ anket", noResp: "Eşleşen yanıt yok.", leftN: "{0} kişi kaldı",
+    survey: "(anket: {0})", noId: "ID yok", preLookup: "(ID henüz sorgulanmadı)", diffAlly: "≠ anket", noResp: "Eşleşen yanıt yok.",
     fAllyAll: "Tüm ittifaklar", fSlotAll: "Tüm saat dilimleri",
     noPlan: "{0} ittifakı için henüz ralli planı belirlenmedi.", noPlanAdmin: " Ralli liderlerini seçmek için aşağıdaki listede ☆ işaretine basın.",
     saved: "Plan kaydedildi: {0}", unsaved: "Kaydedilmemiş değişiklikler var", notSaved: "Henüz kaydedilmedi",
@@ -598,11 +599,16 @@ function render() {
   renderRally();
 
   let ms = "";
+  // 명단 닉네임 → 게임 ID (병사 명단 · ID 조회값에서 아는 만큼). ID 를 알면 ID 로, 모르면 닉네임으로 대조한다
+  const idOf = {}, answered = new Set(DATA.map(p => p.id)), done = new Set();
+  Object.keys(SOLD).forEach(id => { if (SOLD[id].n) idOf[norm(SOLD[id].n)] = id; });
+  Object.keys(LOOKUP).forEach(id => { if (LOOKUP[id].n) idOf[norm(LOOKUP[id].n)] = id; });
+  DATA.forEach(p => { done.add(norm(p.name)); if (p.gname) done.add(norm(p.gname)); });
   ALLIES.forEach(a => {
-    const done = new Set();
-    DATA.forEach(p => { done.add(norm(p.name)); if (p.gname) done.add(norm(p.gname)); });
-    const left = ROSTER[a].members.filter(m => !done.has(norm(m[0])));
-    ms += '<h2 style="margin-top:14px;border-inline-start-color:' + col(a) + '"><span style="color:' + col(a) + '">' + esc(a) + '</span> <span class="sub">' + tx("leftN", left.length) + '</span></h2><div class="names">' + left.map(m => '<span>' + esc(m[0]) + '</span>').join("") + '</div>';
+    const mem = ROSTER[a].members, known = mem.filter(m => idOf[norm(m[0])]).length;
+    const left = mem.filter(m => { const id = idOf[norm(m[0])]; return id ? !answered.has(id) : !done.has(norm(m[0])); });
+    ms += '<h2 style="margin-top:14px;border-inline-start-color:' + col(a) + '"><span style="color:' + col(a) + '">' + esc(a) + '</span> <span class="sub">' + tx("missStat", left.length, known, mem.length) + '</span></h2><div class="names">' +
+      left.map(m => { const id = idOf[norm(m[0])]; return '<span' + (id ? ' title="' + esc(id) + '"' : ' class="noid"') + '>' + esc(m[0]) + '</span>'; }).join("") + '</div>';
   });
   $("missing").innerHTML = ms;
 }
