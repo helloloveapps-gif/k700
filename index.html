@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex">
 <title>700서버 KvK 참여 현황</title>
 <style>
-:root{--bg:#f4f5f7;--card:#fff;--ink:#1c2230;--sub:#667085;--line:#e3e6ec;--accent:#3b5bdb;--ok:#2f9e44;--warn:#e8590c;--bar:#dfe4f3}
+:root{--bg:#e9edf7;--card:#fff;--ink:#1c2230;--sub:#667085;--line:#e3e6ec;--accent:#3b5bdb;--ok:#2f9e44;--warn:#e8590c;--bar:#dfe4f3}
 @media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b202b;--ink:#e8ebf2;--sub:#98a2b3;--line:#2b3242;--accent:#7b93ff;--ok:#51cf66;--warn:#ff922b;--bar:#2a3145}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif}
@@ -38,13 +38,38 @@ td.c,th.c{text-align:center}
 .msg.err{border:1px solid var(--warn)}
 .names{display:flex;flex-wrap:wrap;gap:6px}
 .star{border:none;background:none;padding:0 4px;font-size:18px;color:var(--sub)}
-.star.on{color:var(--warn)}
+.star.on{color:#f59f00}
+.hero{background:linear-gradient(120deg,#1b2a80 0%,#5f3dc4 55%,#d6336c 100%);color:#fff;border-radius:16px;padding:22px 20px;box-shadow:0 6px 20px rgba(60,40,160,.25)}
+.hero h1{font-size:24px}
+.hero .sub{color:rgba(255,255,255,.85)}
+.hero button{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.45);color:#fff}
+.hero button.primary{background:#ffd43b;border-color:#ffd43b;color:#1c2230;font-weight:700}
+.card{box-shadow:0 2px 8px rgba(30,40,90,.06)}
+.card.total{background:linear-gradient(135deg,#3b5bdb,#7950f2);border:none;color:#fff}
+.card.total .sub{color:rgba(255,255,255,.85)}
+.card.total .bar{background:rgba(255,255,255,.3)}
+.card.total .bar>i{background:#ffd43b}
+.section>h2{border-left:5px solid var(--accent);padding-left:10px}
+h2.slot{background:var(--bar);border-left:5px solid #f59f00;border-radius:6px;padding:6px 10px}
+th{background:var(--bar)}
+th small{font-weight:400}
+tr:hover td{background:rgba(121,80,242,.06)}
+.dot.full{color:#f59f00}
+.tier{display:inline-block;min-width:34px;padding:1px 6px;border-radius:6px;font-weight:700;font-size:13px;background:var(--bar)}
+.tier.t11{background:#e03131;color:#fff}
+.tier.t10{background:#f59f00;color:#fff}
+.tier.t9{background:#2f9e44;color:#fff}
+.troopline{font-size:13px;margin:4px 0}
+.card.leader{border-left:5px solid #f59f00;background:linear-gradient(180deg,rgba(245,159,0,.10),transparent 60%),var(--card)}
+.lname{font-weight:700;font-size:16px;color:#e8590c}
+.names small{color:var(--accent);font-weight:700}
+.msg{border-left:5px solid var(--accent)}
 .names span{background:var(--bar);border-radius:6px;padding:2px 8px;font-size:13px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="top">
+  <div class="top hero">
     <div>
       <h1>700서버 KvK 참여 현황</h1>
       <div class="sub" id="stamp">불러오는 중…</div>
@@ -64,7 +89,7 @@ td.c,th.c{text-align:center}
 
   <div class="card section">
     <h2>집결 편성</h2>
-    <div class="sub" style="margin-bottom:10px">아래 응답자 명단에서 ☆ 를 누르면 집결장으로 지정됩니다. 같은 시간대에 참여 가능한 연맹원을 전투력 순으로 집결장에게 고르게 나눕니다. 지정한 뒤 "편성 링크 복사"로 받은 주소를 공지하면 누구나 같은 편성을 봅니다.</div>
+    <div class="sub" style="margin-bottom:10px">아래 응답자 명단에서 ☆ 를 누르면 집결장으로 지정됩니다. 이름 옆 작은 숫자는 보병·기병·궁병 병사 레벨입니다. 같은 시간대에 참여 가능한 연맹원을 전투력 순으로 집결장에게 고르게 나눕니다. 지정한 뒤 "편성 링크 복사"로 받은 주소를 공지하면 누구나 같은 편성을 봅니다.</div>
     <div class="filters">
       <select id="rAlly"></select>
       <button id="copyLink">편성 링크 복사</button>
@@ -90,6 +115,7 @@ td.c,th.c{text-align:center}
   </div>
 </div>
 <script src="players.js"></script>
+<script src="soldiers.js"></script>
 <script>
 const SHEET_ID = "1fwh4GmuMnzgylvhzoALqD0KIK5ssld-Ghs3U4Loul4E";
 const GID = "952911154";
@@ -106,6 +132,24 @@ const fmt = n => n == null ? "" : Number(n).toLocaleString("ko-KR");
 const pct = (a, b) => b ? Math.round(a / b * 1000) / 10 : 0;
 let DATA = [];
 const LOOKUP = typeof PLAYERS === "undefined" ? {} : PLAYERS;
+const SOLD = typeof SOLDIERS === "undefined" ? {} : SOLDIERS;
+const COLORS = {NeX: "#3b5bdb", NvA: "#f76707", AEH: "#2f9e44", LoV: "#d6336c"};
+const col = a => COLORS[a] || "#7950f2";
+const troops = p => (SOLD[p.id] && SOLD[p.id].s) || null;
+function troopCells(p) {
+  const t = troops(p);
+  if (!t) return '<td class="c no">·</td><td class="c no">·</td><td class="c no">·</td>';
+  return t.map(x => '<td class="c"><span class="tier t' + x[1] + '">T' + x[1] + '</span> <span class="sub">' + x[0] + '</span></td>').join("");
+}
+function troopLine(p) {
+  const t = troops(p);
+  if (!t) return "";
+  return '<div class="troopline">' + ["보병", "기병", "궁병"].map((n, i) => n + ' <span class="tier t' + t[i][1] + '">T' + t[i][1] + '</span>').join(" ") + '</div>';
+}
+function troopMini(p) {
+  const t = troops(p);
+  return t ? ' <small>' + t.map(x => x[1]).join("·") + '</small>' : "";
+}
 function tcLabel(v) {
   if (v == null) return "";
   if (v <= 30) return "TC" + v;
@@ -198,17 +242,17 @@ function build(rows) {
 
 function render() {
   const total = ALLIES.reduce((s, a) => s + ROSTER[a].count, 0);
-  let cards = '<div class="card"><div class="sub">전체 참여율</div><div class="big">' + pct(DATA.length, total) + '%</div><div class="sub">' + DATA.length + ' / ' + total + '명</div><div class="bar"><i style="width:' + Math.min(100, pct(DATA.length, total)) + '%"></i></div></div>';
+  let cards = '<div class="card total"><div class="sub">전체 참여율</div><div class="big">' + pct(DATA.length, total) + '%</div><div class="sub">' + DATA.length + ' / ' + total + '명</div><div class="bar"><i style="width:' + Math.min(100, pct(DATA.length, total)) + '%"></i></div></div>';
   ALLIES.forEach(a => {
     const n = DATA.filter(p => p.ally === a).length, c = ROSTER[a].count;
-    cards += '<div class="card"><div class="sub">' + esc(a) + ' · ' + esc(ROSTER[a].name) + '</div><div class="big">' + pct(n, c) + '%</div><div class="sub">' + n + ' / ' + c + '명</div><div class="bar"><i style="width:' + Math.min(100, pct(n, c)) + '%"></i></div></div>';
+    cards += '<div class="card" style="border-top:5px solid ' + col(a) + '"><div class="sub"><b style="color:' + col(a) + '">' + esc(a) + '</b> · ' + esc(ROSTER[a].name) + '</div><div class="big" style="color:' + col(a) + '">' + pct(n, c) + '%</div><div class="sub">' + n + ' / ' + c + '명</div><div class="bar"><i style="width:' + Math.min(100, pct(n, c)) + '%;background:' + col(a) + '"></i></div></div>';
   });
   $("cards").innerHTML = cards;
 
-  let st = '<tr><th>시간대</th>' + ALLIES.map(a => '<th class="n">' + esc(a) + '</th>').join("") + '<th class="n">합계</th><th>비율</th></tr>';
+  let st = '<tr><th>시간대</th>' + ALLIES.map(a => '<th class="n" style="color:' + col(a) + '">' + esc(a) + '</th>').join("") + '<th class="n">합계</th><th>비율</th></tr>';
   const rowFor = (label, test) => {
     const all = DATA.filter(test).length;
-    return '<tr><td>' + label + '</td>' + ALLIES.map(a => '<td class="n">' + DATA.filter(p => p.ally === a && test(p)).length + '</td>').join("") +
+    return '<tr><td>' + label + '</td>' + ALLIES.map(a => { const k = DATA.filter(p => p.ally === a && test(p)).length; return '<td class="n"' + (k ? ' style="font-weight:700;color:' + col(a) + '"' : ' style="color:var(--sub)"') + '>' + k + '</td>'; }).join("") +
       '<td class="n"><b>' + all + '</b></td><td style="min-width:120px"><div class="bar" style="margin:0"><i style="width:' + pct(all, DATA.length || 1) + '%"></i></div></td></tr>';
   };
   st += rowFor('<b>FULL 참여</b> <span class="sub">(전 시간)</span>', p => p.full);
@@ -217,15 +261,15 @@ function render() {
 
   const fa = $("fAlly").value, fs = $("fSlot").value, fn = norm($("fName").value);
   const shown = DATA.filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
-  let rt = '<tr><th class="c">집결장</th><th>연맹</th><th>닉네임</th><th>현재 연맹</th><th class="n">게임 ID</th><th class="n">전투력</th><th>건물</th><th class="c">FULL</th>' +
+  let rt = '<tr><th class="c">집결장</th><th>연맹</th><th>닉네임</th><th>현재 연맹</th><th class="n">게임 ID</th><th class="n">전투력</th><th>건물</th><th class="c">보병<br><small>병사 · 훈련소</small></th><th class="c">기병<br><small>병사 · 훈련소</small></th><th class="c">궁병<br><small>병사 · 훈련소</small></th><th class="c">FULL</th>' +
     SLOTS.map(s => '<th class="c">' + s[0].slice(0, 2) + '시</th>').join("") + '<th>제출 시각</th></tr>';
   shown.forEach(p => {
-    rt += '<tr><td class="c"><button class="star' + (LEADERS.has(p.key) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (LEADERS.has(p.key) ? '★' : '☆') + '</button></td><td><span class="tag">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">(설문: ' + esc(p.name) + ')</span>' : '') + (p.matched ? "" : ' <span class="sub">(ID 조회 전)</span>') +
+    rt += '<tr><td class="c"><button class="star' + (LEADERS.has(p.key) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (LEADERS.has(p.key) ? '★' : '☆') + '</button></td><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">(설문: ' + esc(p.name) + ')</span>' : '') + (p.matched ? "" : ' <span class="sub">(ID 조회 전)</span>') +
       '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">≠ 설문</span>' : '') : '') + '</td><td class="n">' + esc(p.id) +
-      '</td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="c">' + (p.full ? '<span class="dot">●</span>' : '<span class="no">·</span>') + '</td>' +
+      '</td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td>' + troopCells(p) + '<td class="c">' + (p.full ? '<span class="dot full">★</span>' : '<span class="no">·</span>') + '</td>' +
       p.slots.map(v => '<td class="c">' + (v ? '<span class="dot">●</span>' : '<span class="no">·</span>') + '</td>').join("") + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
-  if (!shown.length) rt += '<tr><td colspan="15" class="sub">해당하는 응답이 없습니다.</td></tr>';
+  if (!shown.length) rt += '<tr><td colspan="18" class="sub">해당하는 응답이 없습니다.</td></tr>';
   $("respTable").innerHTML = rt;
 
   renderRally();
@@ -235,7 +279,7 @@ function render() {
     const done = new Set();
     DATA.forEach(p => { done.add(norm(p.name)); if (p.gname) done.add(norm(p.gname)); });
     const left = ROSTER[a].members.filter(m => !done.has(norm(m[0])));
-    ms += '<h2 style="margin-top:14px">' + esc(a) + ' <span class="sub">' + left.length + '명 남음</span></h2><div class="names">' + left.map(m => '<span>' + esc(m[0]) + '</span>').join("") + '</div>';
+    ms += '<h2 style="margin-top:14px;border-left-color:' + col(a) + '"><span style="color:' + col(a) + '">' + esc(a) + '</span> <span class="sub">' + left.length + '명 남음</span></h2><div class="names">' + left.map(m => '<span>' + esc(m[0]) + '</span>').join("") + '</div>';
   });
   $("missing").innerHTML = ms;
 }
@@ -254,7 +298,7 @@ function renderRally() {
   SLOTS.forEach((s, i) => {
     const ls = leaders.filter(p => p.slots[i]);
     const ms = others.filter(p => p.slots[i]).sort(byPower);
-    h += '<h2 style="margin-top:18px">' + esc(s[0]) + ' <span class="sub">(' + esc(s[1]) + ') · 집결장 ' + ls.length + '명 · 집결원 ' + ms.length + '명</span></h2>';
+    h += '<h2 class="slot" style="margin-top:18px">' + esc(s[0]) + ' <span class="sub">(' + esc(s[1]) + ') · 집결장 ' + ls.length + '명 · 집결원 ' + ms.length + '명</span></h2>';
     if (!ls.length) { h += '<div class="sub">이 시간대에 참여 가능한 집결장이 없습니다. 집결원 ' + ms.length + '명이 남습니다.</div>'; return; }
     const groups = ls.map(() => []);
     ms.forEach((p, k) => {
@@ -262,8 +306,8 @@ function renderRally() {
       groups[round % 2 ? ls.length - 1 - pos : pos].push(p);
     });
     h += '<div class="grid" style="margin-bottom:0">' + ls.map((l, j) =>
-      '<div class="card"><div><b>★ ' + esc(l.gname || l.name) + '</b></div><div class="sub">' + (l.power ? '전투력 ' + fmt(l.power) + ' · ' : '') + '집결원 ' + groups[j].length + '명 (' + pct(groups[j].length, ms.length || 1) + '%)</div>' +
-      '<div class="names" style="margin-top:8px">' + (groups[j].map(p => '<span>' + esc(p.gname || p.name) + '</span>').join("") || '<span class="sub">배정된 집결원 없음</span>') + '</div></div>').join("") + '</div>';
+      '<div class="card leader"><div class="lname">★ ' + esc(l.gname || l.name) + '</div>' + troopLine(l) + '<div class="sub">' + (l.power ? '전투력 ' + fmt(l.power) + ' · ' : '') + '집결원 ' + groups[j].length + '명 (' + pct(groups[j].length, ms.length || 1) + '%)</div>' +
+      '<div class="names" style="margin-top:8px">' + (groups[j].map(p => '<span>' + esc(p.gname || p.name) + troopMini(p) + '</span>').join("") || '<span class="sub">배정된 집결원 없음</span>') + '</div></div>').join("") + '</div>';
   });
   $("rally").innerHTML = h;
 }
