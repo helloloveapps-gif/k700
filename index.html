@@ -442,7 +442,7 @@ function build(rows) {
     if (f.length < 3) return;
     const r = f.length === 3 ? [row[0], f[0], "", f[1], f[2]] : [row[0], f[0], f[1], f[2], f[3]];
     const ally = String(r[1] || "").trim().split(" ")[0];
-    const id = /^[0-9]{5,12}$/.test(String(r[2] || "").trim()) ? String(r[2]).trim() : "";
+    const id = /^[0-9]{7,12}$/.test(String(r[2] || "").trim()) ? String(r[2]).trim() : "";
     if (!ally) return;
     const ans = String(r[4] || "");
     const full = ans.indexOf("FULL") >= 0;
