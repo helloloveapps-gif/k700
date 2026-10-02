@@ -36,6 +36,20 @@ tr.bad td{background:rgba(224,49,49,.10);color:#c92a2a;text-decoration:line-thro
 tr.bad td:first-child{box-shadow:inset 4px 0 0 #e03131}
 #badBox{border:2px solid #e03131}
 #badBox>h2{border-inline-start-color:#e03131;color:#e03131}
+.modal{position:fixed;inset:0;background:rgba(10,12,30,.62);display:flex;align-items:flex-start;justify-content:center;padding:20px 12px;overflow:auto;z-index:50}
+.mbox{background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:680px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.mhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.mhead h2{margin:0;font-size:19px;color:#e8590c}
+.warmap{position:relative;width:100%;max-width:520px;aspect-ratio:1;margin:16px auto;border-radius:50%;border:2px dashed var(--line);background:radial-gradient(circle,var(--bar) 0,var(--bar) 60%,transparent 61%)}
+.warmap .castle{position:absolute;left:50%;top:50%;width:58%;height:58%;transform:translate(-50%,-50%);object-fit:contain;border-radius:14px}
+.warmap .ph{display:none;align-items:center;justify-content:center;font-size:96px}
+.warmap .castle[hidden]+.ph{display:flex}
+.hr{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px}
+.hn{width:26px;height:26px;border-radius:50%;background:var(--card);border:1px solid var(--line);color:var(--sub);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.hr.on .hn{background:#f59f00;border-color:#f59f00;color:#fff}
+.hr .tag{font-weight:700;font-size:13px;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+.warset select{padding:5px 8px}
+.warset input.memo{width:200px;text-align:start}
 .pager{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:12px}
 .pager button{padding:4px 11px;font-size:14px}
 .pager button.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:700}
@@ -101,6 +115,7 @@ tr:hover td{background:rgba(121,80,242,.06)}
     <div>
       <a href="https://docs.google.com/forms/d/e/1FAIpQLScrbdptVwUimJm__NIvVjMpaIyJM4cDCQWe2SGEQr4Sc1WHfQ/viewform" target="_blank" rel="noopener"><button id="bSurvey">설문 작성하기</button></a>
       <a href="troops.html"><button id="bTroops">병사 정보 입력</button></a>
+      <button id="bWar"></button>
       <button class="primary" id="reload">새로 고침</button>
     </div>
   </div>
@@ -134,6 +149,12 @@ tr:hover td{background:rgba(121,80,242,.06)}
       <select id="fAlly"></select>
       <select id="fSlot"></select>
       <input id="fName">
+      <select id="fTg"></select>
+      <input id="fMystic" inputmode="numeric" maxlength="7" style="width:150px">
+      <select id="fInf"></select>
+      <select id="fCav"></select>
+      <select id="fArc"></select>
+      <button id="fReset"></button>
     </div>
     <div class="scroll"><table id="respTable"></table></div>
     <div class="pager" id="pager"></div>
@@ -143,6 +164,13 @@ tr:hover td{background:rgba(121,80,242,.06)}
     <h2 id="hMissing"></h2>
     <div class="sub" style="margin-bottom:10px" id="dMissing"></div>
     <div id="missing"></div>
+  </div>
+</div>
+<div class="modal" id="war" style="display:none">
+  <div class="mbox">
+    <div class="mhead"><h2 id="hWar"></h2><button id="warClose"></button></div>
+    <div class="sub" id="dWar"></div>
+    <div id="warBody"></div>
   </div>
 </div>
 <script src="players.js"></script>
@@ -187,6 +215,8 @@ const I18N = {
     aSaved: "저장했습니다. 모두에게 이 편성이 보입니다.", aFail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 눌러 주세요.",
     stamp: "응답 {0}명 · {1} 기준", stampBad: " · 아이디 오류 {0}건(위 명단 · 참여율에서 제외)", stampTail: " · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값({0})",
     hBad: "아이디 오류인 사람 명단", dBad: "게임 ID 가 없거나 숫자가 아니어서 누구인지 확인할 수 없는 응답입니다. 참여율과 집결 편성에 들어가지 않습니다. 해당하는 분은 설문을 다시 작성해 주세요.", thTyped: "입력한 ID", thLang: "언어", pageInfo: "{0}–{1} / {2}명", prev: "이전", next: "다음",
+    bWar: "⚔ 작전회의실", warTitle: "⚔ 작전회의실 · KvK 연맹 배치", warDesc: "성을 가운데 두고, 시계 방향으로 몇 시 자리에 어느 연맹이 서는지 보여줍니다.", warNone: "아직 배치가 정해지지 않았습니다.", oclock: "{0}시 방향", thDir: "배치 방향", thMemo: "메모", warSet: "배치 설정 (관리자)", warPick: "정하지 않음", warSave: "배치 저장", warSaved: "배치 저장: {0}", warDone: "저장했습니다. 모두에게 이 배치가 보입니다.", close: "닫기",
+    fTgAll: "건물 전체", fTgMin: "TG{0} 이상", fMystic: "시련 점수 이상", fTroopAll: "{0} 전체", fTroopMin: "{0} T10 이상", fTroop11: "{0} T11", fReset: "필터 지우기",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Fill in the survey", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -210,6 +240,8 @@ const I18N = {
     aSaved: "Saved. Everyone now sees this plan.", aFail: "Could not confirm the save. Please press again in a moment.",
     stamp: "{0} responses · as of {1}", stampBad: " · {0} with a game ID error (listed above · not counted)", stampTail: " · refreshes every minute · power and Town Center come from the game ID lookup ({0})",
     hBad: "Responses with a game ID error", dBad: "These responses have no game ID or a non-numeric one, so the player cannot be identified. They are not counted in participation or the rally plan. If this is you, please fill in the survey again.", thTyped: "ID as typed", thLang: "Language", pageInfo: "{0}–{1} / {2}", prev: "Prev", next: "Next",
+    bWar: "⚔ War room", warTitle: "⚔ War room · KvK alliance positions", warDesc: "With the castle in the centre, this shows which alliance stands at which clock position.", warNone: "Positions have not been set yet.", oclock: "{0} o'clock", thDir: "Position", thMemo: "Note", warSet: "Position settings (admin)", warPick: "Not set", warSave: "Save positions", warSaved: "Positions saved: {0}", warDone: "Saved. Everyone now sees these positions.", close: "Close",
+    fTgAll: "Any Town Center", fTgMin: "TG{0} or higher", fMystic: "Mystic Trial at least", fTroopAll: "{0}: any", fTroopMin: "{0} T10 or higher", fTroop11: "{0} T11", fReset: "Clear filters",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫問卷", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 括號內為台灣時間）", hRally: "集結編組",
@@ -233,6 +265,8 @@ const I18N = {
     aSaved: "已儲存，所有人都會看到這份編組。", aFail: "無法確認儲存，請稍後再按一次。",
     stamp: "回覆 {0} 人 · {1}", stampBad: " · ID 有誤 {0} 筆（見上方名單 · 不計入參加率）", stampTail: " · 每分鐘自動更新 · 戰力與城鎮中心為遊戲 ID 查詢值（{0}）",
     hBad: "ID 有誤的名單", dBad: "這些回覆沒有遊戲 ID 或 ID 不是數字，無法確認是誰。不計入參加率與集結編組。如果是你，請重新填寫問卷。", thTyped: "填寫的 ID", thLang: "語言", pageInfo: "{0}–{1} / {2} 人", prev: "上一頁", next: "下一頁",
+    bWar: "⚔ 作戰會議室", warTitle: "⚔ 作戰會議室 · KvK 聯盟配置", warDesc: "以城堡為中心，顯示各聯盟站在幾點鐘方向。", warNone: "尚未設定配置。", oclock: "{0} 點鐘方向", thDir: "配置方向", thMemo: "備註", warSet: "配置設定（管理員）", warPick: "未設定", warSave: "儲存配置", warSaved: "配置儲存：{0}", warDone: "已儲存，所有人都會看到這份配置。", close: "關閉",
+    fTgAll: "全部城鎮中心", fTgMin: "TG{0} 以上", fMystic: "神秘試煉分數以上", fTroopAll: "{0}全部", fTroopMin: "{0} T10 以上", fTroop11: "{0} T11", fReset: "清除篩選",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "املأ الاستبيان", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · بين القوسين توقيت UTC+3)", hRally: "خطة الحشود",
@@ -256,6 +290,8 @@ const I18N = {
     aSaved: "تم الحفظ. الجميع يرى هذه الخطة الآن.", aFail: "تعذر تأكيد الحفظ. اضغط مرة أخرى بعد قليل.",
     stamp: "{0} إجابة · حتى {1}", stampBad: " · {0} إجابة بخطأ في المعرف (في القائمة أعلاه · غير محسوبة)", stampTail: " · تحديث تلقائي كل دقيقة · القوة ومركز المدينة من البحث بمعرف اللعبة ({0})",
     hBad: "قائمة من لديهم خطأ في المعرف", dBad: "هذه الإجابات بلا معرف لعبة أو بمعرف غير رقمي، لذلك لا يمكن معرفة صاحبها. لا تُحسب في نسبة المشاركة ولا في خطة الحشود. إذا كنت أحدهم فأعد ملء الاستبيان.", thTyped: "المعرف المكتوب", thLang: "اللغة", pageInfo: "{0}–{1} / {2}", prev: "السابق", next: "التالي",
+    bWar: "⚔ غرفة العمليات", warTitle: "⚔ غرفة العمليات · مواقع التحالفات في KvK", warDesc: "القلعة في الوسط، ويظهر هنا موقع كل تحالف بحسب اتجاه عقارب الساعة.", warNone: "لم تُحدد المواقع بعد.", oclock: "اتجاه الساعة {0}", thDir: "الموقع", thMemo: "ملاحظة", warSet: "إعداد المواقع (المشرف)", warPick: "غير محدد", warSave: "حفظ المواقع", warSaved: "تم حفظ المواقع: {0}", warDone: "تم الحفظ. الجميع يرى هذه المواقع الآن.", close: "إغلاق",
+    fTgAll: "كل مراكز المدينة", fTgMin: "TG{0} أو أعلى", fMystic: "التجربة الغامضة على الأقل", fTroopAll: "{0}: الكل", fTroopMin: "{0} T10 أو أعلى", fTroop11: "{0} T11", fReset: "مسح التصفية",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Anketi doldur", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · parantez içi Türkiye saati)", hRally: "Ralli planı",
@@ -279,6 +315,8 @@ const I18N = {
     aSaved: "Kaydedildi. Bu planı artık herkes görüyor.", aFail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar basın.",
     stamp: "{0} yanıt · {1} itibarıyla", stampBad: " · ID hatası olan {0} yanıt (yukarıdaki liste · katılıma sayılmaz)", stampTail: " · her dakika otomatik yenilenir · güç ve Şehir Merkezi oyun ID sorgusundan ({0})",
     hBad: "ID hatası olanların listesi", dBad: "Bu yanıtlarda Oyun ID yok ya da rakam değil; bu yüzden kimin olduğu belirlenemiyor. Katılıma ve ralli planına sayılmaz. Bu sizseniz lütfen anketi yeniden doldurun.", thTyped: "Yazılan ID", thLang: "Dil", pageInfo: "{0}–{1} / {2}", prev: "Önceki", next: "Sonraki",
+    bWar: "⚔ Harekât odası", warTitle: "⚔ Harekât odası · KvK ittifak yerleşimi", warDesc: "Kale ortada olacak şekilde, hangi ittifakın saat kaç yönünde duracağını gösterir.", warNone: "Yerleşim henüz belirlenmedi.", oclock: "Saat {0} yönü", thDir: "Yön", thMemo: "Not", warSet: "Yerleşim ayarları (yönetici)", warPick: "Belirlenmedi", warSave: "Yerleşimi kaydet", warSaved: "Yerleşim kaydedildi: {0}", warDone: "Kaydedildi. Bu yerleşimi artık herkes görüyor.", close: "Kapat",
+    fTgAll: "Tüm Şehir Merkezleri", fTgMin: "TG{0} ve üzeri", fMystic: "Mistik Deneme en az", fTroopAll: "{0}: tümü", fTroopMin: "{0} T10 ve üzeri", fTroop11: "{0} T11", fReset: "Filtreleri temizle",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0;
@@ -296,7 +334,7 @@ const SOLD = typeof SOLDIERS === "undefined" ? {} : SOLDIERS;
 const COLORS = {NeX: "#3b5bdb", NvA: "#f76707", AEH: "#2f9e44", LoV: "#d6336c"};
 const col = a => COLORS[a] || "#7950f2";
 const TROOP_GID = "404058685";
-let SELF = {}, MARCH = {}, MARCH_ON = {}, RALLY = {}, RALLY_ON = {}, CFG = {A: {}}, DRAFT = null, DIRTY = {}, IS_ADMIN = false;
+let SELF = {}, MARCH = {}, MARCH_ON = {}, RALLY = {}, RALLY_ON = {}, CFG = {A: {}}, DRAFT = null, DIRTY = {}, IS_ADMIN = false, MAPD = null, MAP_DIRTY = false;
 const CFG_GID = "407041504";
 const CFG_POST = "https://docs.google.com/forms/d/e/1FAIpQLSfAoSbMjHVaMWoe4_ZXJs6G_QJWb2ZHu5Tco_c6kQTvmmcMnA/formResponse";
 const CF = {batch: "entry.1955233304", at: "entry.1704332077", by: "entry.1229364967", ally: "entry.1548076083", lid: "entry.457484191", lname: "entry.983043760",
@@ -315,20 +353,29 @@ async function loadConfig() {
   const r = await fetch("https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?gid=" + CFG_GID + "&headers=1&tqx=out:csv&_=" + Date.now());
   const rows = parseCsv(await r.text());
   const h = rows[0] || [], col = n => h.findIndex(x => String(x).trim() === n + " number");
-  const ci = {batch: col("저장 묶음"), at: col("저장 시각"), by: col("저장한 사람"), ally: col("연맹"), lid: col("집결장 게임 ID"), cap: col("수용 인원"),
+  const ci = {batch: col("저장 묶음"), at: col("저장 시각"), by: col("저장한 사람"), ally: col("연맹"), lid: col("집결장 게임 ID"), lname: col("집결장 닉네임"), cap: col("수용 인원"),
     r: ["보병 비율", "기병 비율", "궁병 비율"].map(col), def: col("출정 기본값"), admin: col("관리자 확인")};
   const num = v => +String(v || "").replace(/[^0-9]/g, "") || 0;
   const last = {};
+  let map = null;
   rows.slice(1).forEach(row => {
     if (!ADMIN_H || String(row[ci.admin] || "").trim() !== ADMIN_H) return;
     const a = String(row[ci.ally] || "").trim(), b = num(row[ci.batch]);
     if (!a || !b) return;
+    if (a === "MAP") {
+      if (map && b <= map.batch) return;
+      try {
+        const P = JSON.parse(String(row[ci.lname] || ""));
+        if (P && typeof P === "object") map = {batch: b, P, by: String(row[ci.by] || "").trim(), at: String(row[ci.at] || "").trim()};
+      } catch (e) {}
+      return;
+    }
     if (!last[a] || b > last[a].batch) last[a] = {batch: b, def: num(row[ci.def]) || 100000, leaders: [], by: String(row[ci.by] || "").trim(), at: String(row[ci.at] || "").trim()};
     if (b !== last[a].batch) return;
     const id = String(row[ci.lid] || "").trim();
     if (/^[0-9]{5,12}$/.test(id) && !last[a].leaders.some(l => l.id === id)) last[a].leaders.push({id, cap: num(row[ci.cap]), r: ci.r.map(c => num(row[c]))});
   });
-  return {A: last};
+  return {A: last, map};
 }
 function syncDraft() {
   if (!DRAFT) DRAFT = {A: {}};
@@ -496,7 +543,14 @@ function render() {
   $("badTable").innerHTML = '<tr><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th>' + tx("thTyped") + '</th><th>' + tx("thLang") + '</th><th class="c">FULL</th>' + slotTh + '<th>' + tx("thTime") + '</th></tr>' +
     BAD.map(p => '<tr class="bad"><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.name) + '</td><td>' + (p.id ? esc(p.id.length > 40 ? p.id.slice(0, 40) + "…" : p.id) : '<span class="badtag">' + tx("noId") + '</span>') + '</td><td>' + esc(p.lang) + '</td>' + slotTd(p) + '<td>' + esc(p.time) + '</td></tr>').join("");
 
-  const shown = DATA.filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
+  const ftg = +$("fTg").value || 0, fm = +String($("fMystic").value || "").replace(/[^0-9]/g, "") || 0, ft = ["fInf", "fCav", "fArc"].map(id => +$(id).value || 0);
+  const more = p => {
+    if (ftg) { const m = /^TG([0-9])/.exec(p.tc || ""); if (!m || +m[1] < ftg) return false; }
+    if (fm && !((p.mystic || 0) >= fm)) return false;
+    if (ft.some(Boolean)) { const t = troops(p); if (!t || ft.some((v, k) => v && t[k][1] < v)) return false; }
+    return true;
+  };
+  const shown = DATA.filter(more).filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
   const pet = '<br><small>' + tx("petSub") + '</small>', ts = '<br><small>' + tx("troopSub") + '</small>';
   let rt = '<tr><th class="c">' + tx("thLeader") + '</th><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th>' + tx("thNowAlly") + '</th><th class="n">' + tx("thId") + '</th><th class="n">' + tx("thMystic") + '</th><th class="n">' + tx("thPower") + '</th><th>' + tx("thBuilding") + '</th><th class="n">' + tx("thMarch") + pet + '</th><th class="n">' + tx("thRallyCap") + pet + '</th><th class="c">' + tx("inf") + ts + '</th><th class="c">' + tx("cav") + ts + '</th><th class="c">' + tx("arc") + ts + '</th><th class="c">FULL</th>' +
     slotTh + '<th>' + tx("thTime") + '</th></tr>';
@@ -620,6 +674,58 @@ function renderAdmin() {
   box.innerHTML = h;
 }
 
+// 작전회의실: 성을 가운데 두고 연맹이 몇 시 방향에 서는지. 배치는 편성 설정 탭에 연맹 = MAP 줄로 쌓고 가장 최근 것만 쓴다
+const mapSaved = () => (CFG.map && CFG.map.P) || {};
+const mapClean = P => { const o = {}; ALLIES.forEach(a => { const v = (P || {})[a] || {}, h = +v.h; o[a] = {h: h >= 1 && h <= 12 ? Math.round(h) : 0, m: String(v.m || "").slice(0, 40)}; }); return o; };
+function renderWar() {
+  const admin = IS_ADMIN && MAPD, P = admin ? MAPD : mapClean(mapSaved()), meta = CFG.map || {};
+  const at = {};
+  ALLIES.forEach(a => { if (P[a].h) (at[P[a].h] = at[P[a].h] || []).push(a); });
+  let h = '<div class="warmap" dir="ltr"><img class="castle" src="castle.png" alt="" onerror="this.hidden=true"><div class="castle ph">🏰</div>';
+  for (let k = 1; k <= 12; k++) {
+    const g = k * Math.PI / 6, x = 50 + 44 * Math.sin(g), y = 50 - 44 * Math.cos(g);
+    h += '<div class="hr' + (at[k] ? ' on' : '') + '" style="left:' + x.toFixed(2) + '%;top:' + y.toFixed(2) + '%"><span class="hn">' + k + '</span>' + (at[k] || []).map(a => '<span class="tag" style="background:' + col(a) + ';color:#fff">' + esc(a) + '</span>').join("") + '</div>';
+  }
+  h += '</div>';
+  if (meta.at) h += '<div class="sub" style="margin-bottom:6px">' + tx("warSaved", esc(meta.at)) + (meta.by ? ' · ' + esc(meta.by) : '') + (admin && MAP_DIRTY ? ' · <b style="color:var(--warn)">' + tx("unsaved") + '</b>' : '') + '</div>';
+  else if (!ALLIES.some(a => P[a].h)) h += '<div class="sub" style="margin-bottom:6px">' + tx("warNone") + '</div>';
+  h += '<div class="scroll"><table class="plan"><tr><th>' + tx("thAlly") + '</th><th>' + tx("thDir") + '</th><th>' + tx("thMemo") + '</th></tr>' +
+    ALLIES.map(a => '<tr><td><span class="tag" style="background:' + col(a) + ';color:#fff">' + esc(a) + '</span> <span class="sub">' + esc(ROSTER[a].name) + '</span></td><td>' + (P[a].h ? '<b>' + tx("oclock", P[a].h) + '</b>' : '<span class="no">·</span>') + '</td><td style="white-space:normal">' + esc(P[a].m) + '</td></tr>').join("") + '</table></div>';
+  if (admin) {
+    let by = "";
+    try { by = localStorage.getItem("k700by") || ""; } catch (e) {}
+    h += '<div class="adminbox warset" style="margin-top:14px"><div class="lname">' + tx("warSet") + '</div>' +
+      '<div class="scroll"><table class="plan"><tr><th>' + tx("thAlly") + '</th><th>' + tx("thDir") + '</th><th>' + tx("thMemo") + '</th></tr>' +
+      ALLIES.map(a => '<tr><td><b style="color:' + col(a) + '">' + esc(a) + '</b></td><td><select data-a="' + esc(a) + '"><option value="0">' + tx("warPick") + '</option>' +
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(k => '<option value="' + k + '"' + (P[a].h === k ? ' selected' : '') + '>' + tx("oclock", k) + '</option>').join("") + '</select></td>' +
+        '<td><input class="memo" maxlength="40" data-m="' + esc(a) + '" value="' + esc(P[a].m) + '"></td></tr>').join("") + '</table></div>' +
+      '<div style="margin-top:10px"><label>' + tx("aBy") + ' <input id="wBy" class="name" maxlength="20" value="' + esc(by) + '"></label> <button class="primary" id="wSave">' + tx("warSave") + '</button> <span class="sub" id="wMsg"></span></div></div>';
+  }
+  $("warBody").innerHTML = h;
+}
+async function saveMap() {
+  const msg = $("wMsg"), by = ($("wBy").value || "").trim(), stamp = Date.now(), at = new Date().toLocaleString("sv-SE").slice(0, 16);
+  if (!by) { msg.textContent = tx("aNeedName"); $("wBy").focus(); return; }
+  msg.textContent = tx("aSaving");
+  const body = new URLSearchParams();
+  body.append(CF.batch, String(stamp)); body.append(CF.at, at); body.append(CF.by, by); body.append(CF.ally, "MAP");
+  body.append(CF.lname, JSON.stringify(mapClean(MAPD))); body.append(CF.admin, ADMIN_H);
+  try { await fetch(CFG_POST, {method: "POST", mode: "no-cors", body}); } catch (e) {}
+  for (let n = 0; n < 8; n++) {
+    await new Promise(r => setTimeout(r, 2500));
+    try {
+      const c = await loadConfig();
+      if (c.map && c.map.batch === stamp) {
+        CFG = c; MAP_DIRTY = false; MAPD = mapClean(mapSaved());
+        renderWar();
+        $("wMsg").textContent = tx("warDone");
+        return;
+      }
+    } catch (e) {}
+  }
+  msg.textContent = tx("aFail");
+}
+
 // 지금 고른 연맹의 설정을 드라이브 시트에 한 줄씩(집결장마다) 쌓는다
 async function saveConfig() {
   const msg = $("aMsg"), a = $("rAlly").value || ALLIES[0], box = DRAFT.A[a] || blank();
@@ -687,6 +793,8 @@ async function load() {
     try { CFG = await loadConfig(); } catch (e) {}
     const firstDraft = IS_ADMIN && !DRAFT;
     if (IS_ADMIN) syncDraft();
+    if (IS_ADMIN && !MAP_DIRTY) MAPD = mapClean(mapSaved());
+    if ($("war").style.display !== "none" && !$("warBody").contains(document.activeElement)) renderWar();
     DATA = build(await fetchRows());
     if (first) { const a = ALLIES.find(x => DATA.some(p => p.ally === x)); if (a) $("rAlly").value = a; }
     $("msg").innerHTML = "";
@@ -709,19 +817,43 @@ function setLang(l) {
   document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr";
   document.title = tx("title");
   $("langs").innerHTML = LANGS.map(k => '<button data-l="' + k + '"' + (k === LANG ? ' class="on"' : '') + '>' + I18N[k].name + '</button>').join("");
-  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
+  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["warClose", "close"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
   $("fName").placeholder = tx("findName");
   const fa = $("fAlly").value, fs = $("fSlot").value;
   $("fAlly").innerHTML = '<option value="">' + tx("fAllyAll") + '</option>' + ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
   $("fSlot").innerHTML = '<option value="">' + tx("fSlotAll") + '</option><option value="full">' + tx("fullJoin") + '</option>' + SLOTS.map((s, i) => '<option value="' + i + '">' + s[0] + '</option>').join("");
   $("fAlly").value = fa || ""; $("fSlot").value = fs || "";
+  const keep = ["fTg", "fInf", "fCav", "fArc"].map(id => $(id).value);
+  $("fTg").innerHTML = '<option value="">' + tx("fTgAll") + '</option>' + [8, 7, 6, 5, 4, 3, 2, 1].map(n => '<option value="' + n + '">' + (n === 8 ? "TG8" : tx("fTgMin", n)) + '</option>').join("");
+  ["fInf", "fCav", "fArc"].forEach((id, k) => { const n = tx(["inf", "cav", "arc"][k]); $(id).innerHTML = '<option value="">' + tx("fTroopAll", n) + '</option><option value="10">' + tx("fTroopMin", n) + '</option><option value="11">' + tx("fTroop11", n) + '</option>'; });
+  ["fTg", "fInf", "fCav", "fArc"].forEach((id, k) => { $(id).value = keep[k] || ""; });
+  $("fMystic").placeholder = tx("fMystic"); $("fReset").textContent = tx("fReset");
   renderStamp();
   if (LOADED_AT && !LOAD_ERR) { render(); renderAdmin(); }
+  if ($("war").style.display !== "none") renderWar();
 }
 $("langs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setLang(b.getAttribute("data-l")); });
 
-["fAlly", "fSlot"].forEach(id => $(id).addEventListener("change", () => { PAGE = 0; render(); }));
-$("fName").addEventListener("input", () => { PAGE = 0; render(); });
+["fAlly", "fSlot", "fTg", "fInf", "fCav", "fArc"].forEach(id => $(id).addEventListener("change", () => { PAGE = 0; render(); }));
+["fName", "fMystic"].forEach(id => $(id).addEventListener("input", () => { PAGE = 0; render(); }));
+$("fReset").addEventListener("click", () => { ["fAlly", "fSlot", "fName", "fTg", "fMystic", "fInf", "fCav", "fArc"].forEach(id => { $(id).value = ""; }); PAGE = 0; render(); });
+$("bWar").addEventListener("click", () => { $("war").style.display = "flex"; renderWar(); });
+$("warClose").addEventListener("click", () => { $("war").style.display = "none"; });
+$("war").addEventListener("click", e => { if (e.target === $("war")) $("war").style.display = "none"; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") $("war").style.display = "none"; });
+$("warBody").addEventListener("change", e => {
+  const a = e.target.getAttribute && e.target.getAttribute("data-a");
+  if (!a || !MAPD || !MAPD[a]) return;
+  MAPD[a].h = +e.target.value || 0; MAP_DIRTY = true;
+  renderWar();
+});
+$("warBody").addEventListener("input", e => {
+  const el = e.target;
+  if (el.id === "wBy") { try { localStorage.setItem("k700by", el.value.trim()); } catch (x) {} return; }
+  const a = el.getAttribute && el.getAttribute("data-m");
+  if (a && MAPD && MAPD[a]) { MAPD[a].m = el.value.slice(0, 40); MAP_DIRTY = true; }
+});
+$("warBody").addEventListener("click", e => { if (e.target.id === "wSave") saveMap(); });
 $("pager").addEventListener("click", e => {
   const b = e.target.closest("button");
   if (!b || b.disabled) return;
