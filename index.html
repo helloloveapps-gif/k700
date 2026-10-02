@@ -38,6 +38,8 @@ tr.bad td:first-child{box-shadow:inset 4px 0 0 #e03131}
 #badBox>h2{border-inline-start-color:#e03131;color:#e03131}
 .modal{position:fixed;inset:0;background:rgba(10,12,30,.62);display:flex;align-items:flex-start;justify-content:center;padding:20px 12px;overflow:auto;z-index:50}
 .mbox{background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:680px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
+.mbox.wide{max-width:820px;padding:14px}
+#popFrame{display:block;width:100%;height:calc(100vh - 130px);min-height:420px;border:0;border-radius:10px;background:#fff}
 .mhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
 .mhead h2{margin:0;font-size:19px;color:#e8590c}
 .warmap{position:relative;width:100%;max-width:520px;aspect-ratio:1;margin:16px auto;border-radius:50%;border:2px dashed var(--line);background:radial-gradient(circle,var(--bar) 0,var(--bar) 60%,transparent 61%)}
@@ -164,6 +166,12 @@ tr:hover td{background:rgba(121,80,242,.06)}
     <h2 id="hMissing"></h2>
     <div class="sub" style="margin-bottom:10px" id="dMissing"></div>
     <div id="missing"></div>
+  </div>
+</div>
+<div class="modal" id="pop" style="display:none">
+  <div class="mbox wide">
+    <div class="mhead"><h2 id="hPop"></h2><button id="popClose"></button></div>
+    <iframe id="popFrame" title="form"></iframe>
   </div>
 </div>
 <div class="modal" id="war" style="display:none">
@@ -817,7 +825,7 @@ function setLang(l) {
   document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr";
   document.title = tx("title");
   $("langs").innerHTML = LANGS.map(k => '<button data-l="' + k + '"' + (k === LANG ? ' class="on"' : '') + '>' + I18N[k].name + '</button>').join("");
-  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["warClose", "close"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
+  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["warClose", "close"], ["popClose", "close"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
   $("fName").placeholder = tx("findName");
   const fa = $("fAlly").value, fs = $("fSlot").value;
   $("fAlly").innerHTML = '<option value="">' + tx("fAllyAll") + '</option>' + ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
@@ -837,10 +845,22 @@ $("langs").addEventListener("click", e => { const b = e.target.closest("button")
 ["fAlly", "fSlot", "fTg", "fInf", "fCav", "fArc"].forEach(id => $(id).addEventListener("change", () => { PAGE = 0; render(); }));
 ["fName", "fMystic"].forEach(id => $(id).addEventListener("input", () => { PAGE = 0; render(); }));
 $("fReset").addEventListener("click", () => { ["fAlly", "fSlot", "fName", "fTg", "fMystic", "fInf", "fCav", "fArc"].forEach(id => { $(id).value = ""; }); PAGE = 0; render(); });
+// 설문 · 병사 정보 입력은 이 화면 위에 팝업으로 띄운다. 닫으면 명단을 다시 읽는다
+const SURVEY_URL = "https://docs.google.com/forms/d/e/1FAIpQLScrbdptVwUimJm__NIvVjMpaIyJM4cDCQWe2SGEQr4Sc1WHfQ/viewform?embedded=true";
+function openPop(url, title) { $("hPop").textContent = title; $("popFrame").src = url; $("pop").style.display = "flex"; }
+function closePop() {
+  if ($("pop").style.display === "none") return;
+  $("pop").style.display = "none"; $("popFrame").src = "about:blank";
+  load();
+}
+$("bSurvey").addEventListener("click", e => { e.preventDefault(); openPop(SURVEY_URL, tx("bSurvey")); });
+$("bTroops").addEventListener("click", e => { e.preventDefault(); openPop("troops.html?embed=1", tx("bTroops")); });
+$("popClose").addEventListener("click", closePop);
+$("pop").addEventListener("click", e => { if (e.target === $("pop")) closePop(); });
 $("bWar").addEventListener("click", () => { $("war").style.display = "flex"; renderWar(); });
 $("warClose").addEventListener("click", () => { $("war").style.display = "none"; });
 $("war").addEventListener("click", e => { if (e.target === $("war")) $("war").style.display = "none"; });
-document.addEventListener("keydown", e => { if (e.key === "Escape") $("war").style.display = "none"; });
+document.addEventListener("keydown", e => { if (e.key === "Escape") { $("war").style.display = "none"; closePop(); } });
 $("warBody").addEventListener("change", e => {
   const a = e.target.getAttribute && e.target.getAttribute("data-a");
   if (!a || !MAPD || !MAPD[a]) return;

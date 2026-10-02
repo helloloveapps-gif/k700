@@ -241,6 +241,7 @@ document.addEventListener("click", e => {
 });
 $("send").addEventListener("click", send);
 setLang(lang); drawTiers();
+if (/[?&]embed=1/.test(location.search)) $("tBack").parentNode.style.display = "none";
 </script>
 </body>
 </html>
