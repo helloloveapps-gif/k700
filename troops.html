@@ -132,11 +132,21 @@ const T = {
     errMarch: "أدخل حجم المسيرة للحالتين OFF و ON بالأرقام. لا يمكن أن يكون ON أقل من OFF.",
     rally: "سعة الحشد (عندما أقود الحشد)", rallyHint: "إذا كنت تستطيع قيادة الحشود فأدخل هذه القيمة. اترك الخانتين فارغتين إذا كنت لا تعرف.",
     errRally: "أدخل سعة الحشد للحالتين OFF و ON بالأرقام، أو اترك الخانتين فارغتين. لا يمكن أن يكون ON أقل من OFF.",
-    errPick: "اختر مستوى TG ومستويات المعسكرات الثلاثة.", errCamp: "مستوى أحد المعسكرات أعلى من مستوى TG لديك. تحقق مرة أخرى.", back: "عرض لوحة المشاركة"}
+    errPick: "اختر مستوى TG ومستويات المعسكرات الثلاثة.", errCamp: "مستوى أحد المعسكرات أعلى من مستوى TG لديك. تحقق مرة أخرى.", back: "عرض لوحة المشاركة"},
+  tr: {name: "Türkçe", title: "Asker Bilgilerim", desc: "700. Krallık KvK ralli planlaması için kullanılır. Tekrar gönderirseniz son gönderiminiz geçerli olur.",
+    id: "Oyun ID (yalnızca rakam)", idHint: "Oyun profilinizdeki sayısal ID. Takma adınız değil.", tg: "Şehir Merkezi TG seviyem", tg0: "TG yok (TC30 veya altı)",
+    tgHint: "Kamp seviyeleri TG seviyenizden yüksek olamaz.", camp: "Kamp seviyesi", tier: "Saf Altın askerler", inf: "Piyade", cav: "Süvari", arc: "Okçu",
+    campHint: "Her kamp için TG1-TG8, her asker türü için T10 veya T11 seçin.", send: "Gönder", sending: "Gönderiliyor…",
+    ok: "Kaydedildi. Teşekkürler!", fail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar gönderin.", errId: "Oyun ID yalnızca rakam olmalıdır (6-12 hane).", pick: "Seçin", none: "Yok",
+    errPick: "Lütfen TG seviyenizi ve üç kamp seviyesini seçin.", errCamp: "Bir kamp seviyesi TG seviyenizden yüksek. Lütfen kontrol edin.",
+    march: "Sefer kapasitesi (bir seferdeki en fazla asker)", off: "Evcil hayvan takviyesi KAPALI (OFF)", on: "Evcil hayvan takviyesi AÇIK (ON)", marchHint: "Ralli planlamasında OFF değeri kullanılır.",
+    errMarch: "Sefer kapasitesini OFF ve ON için rakamla girin. ON, OFF değerinden küçük olamaz.",
+    rally: "Ralli kapasitesi (ralliyi ben yönetirken)", rallyHint: "Ralli yönetebiliyorsanız lütfen doldurun. Bilmiyorsanız iki kutuyu da boş bırakın.",
+    errRally: "Ralli kapasitesini OFF ve ON için rakamla girin ya da ikisini de boş bırakın. ON, OFF değerinden küçük olamaz.", back: "Katılım panosunu görüntüle"}
 };
 const $ = id => document.getElementById(id);
 const nav = (navigator.language || "en").toLowerCase();
-let lang = nav.indexOf("ko") === 0 ? "ko" : nav.indexOf("zh") === 0 ? "zh" : nav.indexOf("ar") === 0 ? "ar" : "en";
+let lang = nav.indexOf("ko") === 0 ? "ko" : nav.indexOf("zh") === 0 ? "zh" : nav.indexOf("ar") === 0 ? "ar" : nav.indexOf("tr") === 0 ? "tr" : "en";
 const tiers = [10, 10, 10];
 
 function setLang(l) {
