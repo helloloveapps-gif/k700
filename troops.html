@@ -252,8 +252,8 @@ const digits = el => +el.value.replace(/[^0-9]/g, "") || 0;
 const put = (el, v) => { el.value = v ? Number(v).toLocaleString("en-US") : ""; };
 function mark() { ["m0", "m1", "r0", "r1"].forEach(id => $(id).classList.toggle("act", ACT[id[0]] === id)); }
 ["m0", "m1", "r0", "r1"].forEach(id => {
-  $(id).addEventListener("input", () => put($(id), Math.min(digits($(id)), NUM[id[0]])));
-  $(id).addEventListener("focus", () => { ACT[id[0]] = id; mark(); });
+  $(id).addEventListener("input", () => { put($(id), Math.min(digits($(id)), NUM[id[0]])); ACT[id[0]] = id; mark(); });
+  ["focus", "click"].forEach(ev => $(id).addEventListener(ev, () => { ACT[id[0]] = id; mark(); }));
 });
 [...document.querySelectorAll(".pad")].forEach(pad => pad.addEventListener("click", e => {
   const b = e.target.closest("button");
