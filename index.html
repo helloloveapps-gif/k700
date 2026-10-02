@@ -39,6 +39,14 @@ td.c,th.c{text-align:center}
 .names{display:flex;flex-wrap:wrap;gap:6px}
 .star{border:none;background:none;padding:0 4px;font-size:18px;color:var(--sub)}
 .star.on{color:#f59f00}
+.adminbox{border:2px dashed #f59f00;border-radius:12px;padding:14px;margin-bottom:14px}
+.adminbox input{width:96px;padding:5px 8px;text-align:right}
+.adminbox input.pc{width:58px}
+.adminbox button.del{padding:3px 10px;font-size:13px}
+table.plan th,table.plan td{padding:6px 8px;font-size:13px}
+table.plan tr.own td{background:rgba(245,159,0,.10)}
+table.plan tr.sum td{font-weight:700;background:var(--bar)}
+.short{color:var(--warn);font-size:12px}
 .hero{background:linear-gradient(120deg,#1b2a80 0%,#5f3dc4 55%,#d6336c 100%);color:#fff;border-radius:16px;padding:22px 20px;box-shadow:0 6px 20px rgba(60,40,160,.25)}
 .hero h1{font-size:24px}
 .hero .sub{color:rgba(255,255,255,.85)}
@@ -90,12 +98,11 @@ tr:hover td{background:rgba(121,80,242,.06)}
 
   <div class="card section">
     <h2>집결 편성</h2>
-    <div class="sub" style="margin-bottom:10px">아래 응답자 명단에서 ☆ 를 누르면 집결장으로 지정됩니다. 이름 옆 작은 숫자는 보병·기병·궁병 병사 레벨입니다. 같은 시간대에 참여 가능한 연맹원을 전투력 순으로 집결장에게 고르게 나눕니다. 지정한 뒤 "편성 링크 복사"로 받은 주소를 공지하면 누구나 같은 편성을 봅니다.</div>
+    <div class="sub" style="margin-bottom:10px">집결장마다 정한 수용 인원과 병과 비율에 맞춰, 그 시간대에 참여 가능한 집결원을 병과 레벨이 높은 순으로 자동 배치한 결과입니다. 수용 인원에는 집결장 본인 병력이 들어 있습니다. 출정 인원수는 본인이 입력한 펫 버프 OFF 값을 쓰고, 입력하지 않은 사람은 기본값으로 계산합니다.</div>
     <div class="filters">
       <select id="rAlly"></select>
-      <button id="copyLink">편성 링크 복사</button>
-      <span class="sub" id="copyMsg"></span>
     </div>
+    <div id="admin"></div>
     <div id="rally"></div>
   </div>
 
@@ -116,6 +123,7 @@ tr:hover td{background:rgba(121,80,242,.06)}
   </div>
 </div>
 <script src="players.js"></script>
+<script src="admin.js"></script>
 <script src="soldiers.js"></script>
 <script>
 const SHEET_ID = "1fwh4GmuMnzgylvhzoALqD0KIK5ssld-Ghs3U4Loul4E";
@@ -138,24 +146,38 @@ const SOLD = typeof SOLDIERS === "undefined" ? {} : SOLDIERS;
 const COLORS = {NeX: "#3b5bdb", NvA: "#f76707", AEH: "#2f9e44", LoV: "#d6336c"};
 const col = a => COLORS[a] || "#7950f2";
 const TROOP_GID = "404058685";
-let SELF = {};
+let SELF = {}, MARCH = {}, CFG = {def: 100000, A: {}}, DRAFT = null, IS_ADMIN = false;
+const ADMIN_H = typeof ADMIN_HASH === "undefined" ? "" : ADMIN_HASH;
+const FORM_POST = "https://docs.google.com/forms/d/e/1FAIpQLSfAnxDTxK2o8l1F6yTpPvlZ-4toOYDxLqcgEs5F8wDUeWY95w/formResponse";
 const troops = p => SELF[p.id] || (SOLD[p.id] && SOLD[p.id].s) || null;
+const cfgNow = () => (IS_ADMIN && DRAFT) ? DRAFT : CFG;
+const leadersOf = a => ((cfgNow().A[a] || {}).leaders || []);
+const isLeader = p => leadersOf(p.ally).some(l => l.id === p.id);
+const marchOf = p => MARCH[p.id] || +cfgNow().def || 100000;
 
-// 병사 정보 설문(본인 입력). 같은 ID 는 마지막 줄만, 훈련소 레벨이 TG 보다 높은 줄은 버린다
+// 병사 정보 설문 탭. 병사 줄: 같은 ID 는 마지막 줄만, 훈련소 레벨이 TG 보다 높은 줄은 버린다. 설정 줄: 관리자 값이 맞는 마지막 줄
 async function loadSelf() {
   const r = await fetch("https://docs.google.com/spreadsheets/d/" + SHEET_ID + "/gviz/tq?gid=" + TROOP_GID + "&headers=1&tqx=out:csv&_=" + Date.now());
   const rows = parseCsv(await r.text());
   const h = rows[0] || [], col = n => h.findIndex(x => String(x).trim() === n);
-  const ci = {id: col("game_id"), tg: col("tg"), c: ["inf_camp number", "cav_camp number", "arc_camp number"].map(col), t: ["inf_tier number", "cav_tier number", "arc_tier number"].map(col)};
-  const out = {};
+  const ci = {id: col("game_id"), tg: col("tg"), m: col("march number"), cfg: col("config number"), c: ["inf_camp number", "cav_camp number", "arc_camp number"].map(col), t: ["inf_tier number", "cav_tier number", "arc_tier number"].map(col)};
+  const out = {}, march = {};
+  let cfg = null;
   rows.slice(1).forEach(row => {
+    const cj = ci.cfg >= 0 ? String(row[ci.cfg] || "").trim() : "";
+    if (cj) {
+      try { const c = JSON.parse(cj); if (c && ADMIN_H && c.k === ADMIN_H && c.A) cfg = c; } catch (e) {}
+      return;
+    }
     const id = String(row[ci.id] || "").trim(), tg = parseInt(row[ci.tg], 10);
     if (!/^[0-9]{5,12}$/.test(id) || !(tg >= 0 && tg <= 8)) return;
     const s = [0, 1, 2].map(i => [parseInt(row[ci.c[i]], 10), parseInt(row[ci.t[i]], 10)]);
     if (s.some(x => !(x[0] >= 0 && x[0] <= tg) || (x[1] !== 10 && x[1] !== 11))) return;
     out[id] = s;
+    const m = ci.m >= 0 ? parseInt(row[ci.m], 10) : NaN;
+    if (m >= 1000 && m <= 3000000) march[id] = m; else delete march[id];
   });
-  return out;
+  return {self: out, march, cfg};
 }
 function troopCells(p) {
   const t = troops(p);
@@ -178,10 +200,6 @@ function tcLabel(v) {
   if (!tg) return "TC30-" + sub;
   return "TG" + tg + (sub ? "-" + sub : "");
 }
-const DEFAULT_LEADERS = [];
-let LEADERS = new Set((location.hash.indexOf("#L=") === 0 ? decodeURIComponent(location.hash.slice(3)).split(",") : DEFAULT_LEADERS).filter(Boolean));
-function saveLeaders() { history.replaceState(null, "", location.pathname + (LEADERS.size ? "#L=" + [...LEADERS].join(",") : "")); }
-
 function parseCsv(text) {
   const rows = []; let row = [], cur = "", q = false;
   for (let i = 0; i < text.length; i++) {
@@ -252,14 +270,14 @@ function build(rows) {
   list.forEach(p => {
     const info = LOOKUP[p.id];
     if (info) {
-      p.power = info.p; p.tc = tcLabel(info.tc); p.gname = info.n; p.gally = info.a || ""; p.matched = true;
+      p.power = info.p; p.tc = tcLabel(info.tc); p.gname = info.n; p.gally = info.a || ""; p.matched = true; p.mystic = info.m || null;
       return;
     }
     let m = null;
     ALLIES.some(a => (m = ROSTER[a].members.find(x => norm(x[0]) === norm(p.name))));
-    p.power = m ? m[1] : null; p.tc = m ? m[2] : ""; p.gname = ""; p.gally = ""; p.matched = false;
+    p.power = m ? m[1] : null; p.tc = m ? m[2] : ""; p.gname = ""; p.gally = ""; p.matched = false; p.mystic = null;
   });
-  list.sort((a, b) => (b.power || 0) - (a.power || 0));
+  list.sort((a, b) => (b.mystic || 0) - (a.mystic || 0) || (b.power || 0) - (a.power || 0));
   return list;
 }
 
@@ -284,15 +302,15 @@ function render() {
 
   const fa = $("fAlly").value, fs = $("fSlot").value, fn = norm($("fName").value);
   const shown = DATA.filter(p => (!fa || p.ally === fa) && (fs === "" || (fs === "full" ? p.full : p.slots[+fs])) && (!fn || (norm(p.name).indexOf(fn) >= 0 || norm(p.gname).indexOf(fn) >= 0)));
-  let rt = '<tr><th class="c">집결장</th><th>연맹</th><th>닉네임</th><th>현재 연맹</th><th class="n">게임 ID</th><th class="n">전투력</th><th>건물</th><th class="c">보병<br><small>병사 · 훈련소</small></th><th class="c">기병<br><small>병사 · 훈련소</small></th><th class="c">궁병<br><small>병사 · 훈련소</small></th><th class="c">FULL</th>' +
+  let rt = '<tr><th class="c">집결장</th><th>연맹</th><th>닉네임</th><th>현재 연맹</th><th class="n">게임 ID</th><th class="n">시련</th><th class="n">전투력</th><th class="n">출정<br><small>펫 버프 OFF</small></th><th>건물</th><th class="c">보병<br><small>병사 · 훈련소</small></th><th class="c">기병<br><small>병사 · 훈련소</small></th><th class="c">궁병<br><small>병사 · 훈련소</small></th><th class="c">FULL</th>' +
     SLOTS.map(s => '<th class="c">' + s[0].slice(0, 2) + '시</th>').join("") + '<th>제출 시각</th></tr>';
   shown.forEach(p => {
-    rt += '<tr><td class="c"><button class="star' + (LEADERS.has(p.key) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (LEADERS.has(p.key) ? '★' : '☆') + '</button></td><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">(설문: ' + esc(p.name) + ')</span>' : '') + (p.matched ? "" : ' <span class="sub">(ID 조회 전)</span>') +
+    rt += '<tr><td class="c">' + (IS_ADMIN ? '<button class="star' + (isLeader(p) ? ' on' : '') + '" data-key="' + esc(p.key) + '">' + (isLeader(p) ? '★' : '☆') + '</button>' : (isLeader(p) ? '<span class="star on">★</span>' : '')) + '</td><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.gname || p.name) + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">(설문: ' + esc(p.name) + ')</span>' : '') + (p.matched ? "" : ' <span class="sub">(ID 조회 전)</span>') +
       '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">≠ 설문</span>' : '') : '') + '</td><td class="n">' + esc(p.id) +
-      '</td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td>' + troopCells(p) + '<td class="c">' + (p.full ? '<span class="dot full">★</span>' : '<span class="no">·</span>') + '</td>' +
+      '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td class="n">' + (MARCH[p.id] ? fmt(MARCH[p.id]) : '<span class="no">·</span>') + '</td><td>' + esc(p.tc) + '</td>' + troopCells(p) + '<td class="c">' + (p.full ? '<span class="dot full">★</span>' : '<span class="no">·</span>') + '</td>' +
       p.slots.map(v => '<td class="c">' + (v ? '<span class="dot">●</span>' : '<span class="no">·</span>') + '</td>').join("") + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
-  if (!shown.length) rt += '<tr><td colspan="18" class="sub">해당하는 응답이 없습니다.</td></tr>';
+  if (!shown.length) rt += '<tr><td colspan="20" class="sub">해당하는 응답이 없습니다.</td></tr>';
   $("respTable").innerHTML = rt;
 
   renderRally();
@@ -307,44 +325,131 @@ function render() {
   $("missing").innerHTML = ms;
 }
 
+// 한 시간대의 자동 배치. 수용 인원 × 비율 = 병과별 목표, 집결장 본인 병력을 먼저 빼고 병과 레벨이 높은 집결원부터 채운다
+function alloc(a, i) {
+  const mem = DATA.filter(p => p.ally === a && p.slots[i]);
+  const all = leadersOf(a), lids = new Set(all.map(l => l.id));
+  const lv = (p, t) => { const s = troops(p); return s ? s[t][1] * 100 + s[t][0] : 0; };
+  const rallies = all.map(l => ({l, p: mem.find(p => p.id === l.id)})).filter(x => x.p).map(x => {
+    const cap = Math.max(0, +x.l.cap || 0), r = [0, 1, 2].map(k => Math.max(0, +(x.l.r || [])[k] || 0)), sum = r[0] + r[1] + r[2] || 1;
+    const target = r.map(v => Math.round(cap * v / sum));
+    const ownAll = Math.min(marchOf(x.p), cap), own = r.map(v => Math.round(ownAll * v / sum));
+    return {p: x.p, cap, r, target, own, need: target.map((v, t) => Math.max(0, v - own[t])), members: []};
+  });
+  const pool = mem.filter(p => !lids.has(p.id)).map(p => ({p, rem: marchOf(p), used: false}));
+  for (;;) {
+    const free = pool.filter(m => !m.used);
+    if (!free.length) break;
+    let R = null, most = 0;
+    rallies.forEach(x => { const n = x.need[0] + x.need[1] + x.need[2]; if (n > most) { most = n; R = x; } });
+    if (!R) break;
+    let t = 0;
+    [1, 2].forEach(k => { if (R.need[k] > R.need[t]) t = k; });
+    free.sort((x, y) => lv(y.p, t) - lv(x.p, t) || (y.p.power || 0) - (x.p.power || 0));
+    const m = free[0], send = [0, 0, 0];
+    m.used = true;
+    [t].concat([0, 1, 2].filter(k => k !== t).sort((x, y) => lv(m.p, y) - lv(m.p, x))).forEach(k => {
+      const g = Math.min(m.rem, R.need[k]);
+      if (g > 0) { send[k] = g; m.rem -= g; R.need[k] -= g; }
+    });
+    R.members.push({p: m.p, send});
+  }
+  return {rallies, rest: pool.filter(m => !m.used).map(m => m.p), joiners: pool.length};
+}
+
 function renderRally() {
   const a = $("rAlly").value || ALLIES[0];
-  const mem = DATA.filter(p => p.ally === a);
-  const byPower = (x, y) => (y.power || 0) - (x.power || 0);
-  const leaders = mem.filter(p => LEADERS.has(p.key)).sort(byPower);
-  const others = mem.filter(p => !LEADERS.has(p.key));
-  if (!leaders.length) {
-    $("rally").innerHTML = '<div class="sub">' + esc(a) + ' 연맹에 지정된 집결장이 아직 없습니다. (응답자 ' + mem.length + '명)</div>';
+  if (!leadersOf(a).length) {
+    $("rally").innerHTML = '<div class="sub">' + esc(a) + ' 연맹은 아직 집결 편성이 정해지지 않았습니다.' + (IS_ADMIN ? ' 아래 응답자 명단에서 ☆ 를 눌러 집결장을 고르세요.' : '') + '</div>';
     return;
   }
-  let h = '<div class="msg">집결장 <b>' + leaders.length + '명</b> · 집결원 <b>' + others.length + '명</b> · 응답자 중 집결장 비율 ' + pct(leaders.length, mem.length) + '% · 집결장 1명당 평균 ' + (Math.round(others.length / leaders.length * 10) / 10) + '명</div>';
+  const nm = p => esc(p.gname || p.name);
+  const line = (label, v, cls) => '<tr' + (cls ? ' class="' + cls + '"' : '') + '><td>' + label + '</td>' + v.map(x => '<td class="n">' + (x ? fmt(x) : '<span class="no">·</span>') + '</td>').join("") + '<td class="n"><b>' + fmt(v[0] + v[1] + v[2]) + '</b></td></tr>';
+  let h = "";
   SLOTS.forEach((s, i) => {
-    const ls = leaders.filter(p => p.slots[i]);
-    const ms = others.filter(p => p.slots[i]).sort(byPower);
-    h += '<h2 class="slot" style="margin-top:18px">' + esc(s[0]) + ' <span class="sub">(' + esc(s[1]) + ') · 집결장 ' + ls.length + '명 · 집결원 ' + ms.length + '명</span></h2>';
-    if (!ls.length) { h += '<div class="sub">이 시간대에 참여 가능한 집결장이 없습니다. 집결원 ' + ms.length + '명이 남습니다.</div>'; return; }
-    const groups = ls.map(() => []);
-    ms.forEach((p, k) => {
-      const round = Math.floor(k / ls.length), pos = k % ls.length;
-      groups[round % 2 ? ls.length - 1 - pos : pos].push(p);
-    });
-    h += '<div class="grid" style="margin-bottom:0">' + ls.map((l, j) =>
-      '<div class="card leader"><div class="lname">★ ' + esc(l.gname || l.name) + '</div>' + troopLine(l) + '<div class="sub">' + (l.power ? '전투력 ' + fmt(l.power) + ' · ' : '') + '집결원 ' + groups[j].length + '명 (' + pct(groups[j].length, ms.length || 1) + '%)</div>' +
-      '<div class="names" style="margin-top:8px">' + (groups[j].map(p => '<span>' + esc(p.gname || p.name) + troopMini(p) + '</span>').join("") || '<span class="sub">배정된 집결원 없음</span>') + '</div></div>').join("") + '</div>';
+    const r = alloc(a, i);
+    h += '<h2 class="slot" style="margin-top:18px">' + esc(s[0]) + ' <span class="sub">(' + esc(s[1]) + ') · 집결장 ' + r.rallies.length + '명 · 집결원 ' + r.joiners + '명</span></h2>';
+    if (!r.rallies.length) { h += '<div class="sub">이 시간대에 참여 가능한 집결장이 없습니다. 집결원 ' + r.joiners + '명이 남습니다.</div>'; return; }
+    h += r.rallies.map(x => {
+      const filled = x.target.map((v, t) => v - x.need[t]), tot = filled[0] + filled[1] + filled[2];
+      return '<div class="card leader" style="margin-bottom:10px"><div class="lname">★ ' + nm(x.p) + '</div>' + troopLine(x.p) +
+        '<div class="sub">수용 ' + fmt(x.cap) + ' · 비율 보병 ' + x.r[0] + ' / 기병 ' + x.r[1] + ' / 궁병 ' + x.r[2] + ' · 채움 ' + fmt(tot) + ' (' + pct(tot, x.cap || 1) + '%) · 집결원 ' + x.members.length + '명</div>' +
+        '<div class="scroll"><table class="plan"><tr><th>보내는 사람</th><th class="n">보병</th><th class="n">기병</th><th class="n">궁병</th><th class="n">합계</th></tr>' +
+        line('<b>집결장 본인</b>' + (MARCH[x.p.id] ? '' : ' <span class="sub">(출정 기본값)</span>'), x.own, "own") +
+        x.members.map(m => line(nm(m.p) + troopMini(m.p) + (MARCH[m.p.id] ? '' : ' <span class="sub">(출정 기본값)</span>'), m.send)).join("") +
+        '<tr class="sum"><td>채움 / 목표</td>' + [0, 1, 2].map(t => '<td class="n">' + fmt(filled[t]) + ' / ' + fmt(x.target[t]) + (x.need[t] ? '<br><span class="short">부족 ' + fmt(x.need[t]) + '</span>' : '') + '</td>').join("") +
+        '<td class="n">' + fmt(tot) + ' / ' + fmt(x.cap) + '</td></tr></table></div></div>';
+    }).join("");
+    if (r.rest.length) h += '<div class="sub">배치되지 않고 남는 집결원 ' + r.rest.length + '명: ' + r.rest.map(nm).join(", ") + '</div>';
   });
   $("rally").innerHTML = h;
+}
+
+// 관리자 편성 설정 (관리자 링크로 들어왔을 때만)
+function renderAdmin() {
+  const box = $("admin");
+  if (!IS_ADMIN || !DRAFT) { box.innerHTML = ""; return; }
+  const a = $("rAlly").value || ALLIES[0], ls = leadersOf(a);
+  const who = id => { const p = DATA.find(x => x.id === id); return p ? esc(p.gname || p.name) : esc(id); };
+  const info = id => DATA.find(x => x.id === id) || {};
+  let h = '<div class="adminbox"><div class="lname">편성 설정 (관리자)</div>' +
+    '<div class="sub" style="margin:4px 0 10px">아래 응답자 명단(시련 높은 순)에서 ☆ 를 눌러 집결장을 넣고, 수용 인원과 병과 비율을 정한 뒤 저장하세요. 저장하면 모두에게 같은 편성이 보입니다.</div>' +
+    '<label>출정 인원수를 안 넣은 사람의 기본값 <input id="aDef" inputmode="numeric" value="' + esc(DRAFT.def) + '"></label>';
+  if (ls.length) {
+    h += '<div class="scroll" style="margin-top:10px"><table class="plan"><tr><th>집결장 (' + esc(a) + ')</th><th class="n">시련</th><th class="n">본인 출정</th><th class="n">수용 인원</th><th class="n">보병 %</th><th class="n">기병 %</th><th class="n">궁병 %</th><th></th></tr>' +
+      ls.map((l, k) => '<tr><td>★ ' + who(l.id) + '</td><td class="n">' + fmt(info(l.id).mystic) + '</td><td class="n">' + fmt(MARCH[l.id] || DRAFT.def) + '</td>' +
+        '<td class="n"><input data-k="' + k + '" data-f="cap" inputmode="numeric" value="' + esc(l.cap) + '"></td>' +
+        [0, 1, 2].map(t => '<td class="n"><input class="pc" data-k="' + k + '" data-f="r' + t + '" inputmode="numeric" value="' + esc(l.r[t]) + '"></td>').join("") +
+        '<td><button class="del" data-k="' + k + '">빼기</button></td></tr>').join("") + '</table></div>';
+  } else {
+    h += '<div class="sub" style="margin-top:10px">' + esc(a) + ' 연맹에 고른 집결장이 없습니다.</div>';
+  }
+  h += '<div style="margin-top:10px"><button class="primary" id="aSave">저장</button> <span class="sub" id="aMsg"></span></div></div>';
+  box.innerHTML = h;
+}
+
+async function saveConfig() {
+  const msg = $("aMsg"), stamp = Date.now();
+  const body = new URLSearchParams();
+  body.append("entry.155379975", JSON.stringify({k: ADMIN_H, t: stamp, def: +DRAFT.def || 100000, A: DRAFT.A}));
+  msg.textContent = "저장하는 중…";
+  try { await fetch(FORM_POST, {method: "POST", mode: "no-cors", body}); } catch (e) {}
+  for (let n = 0; n < 8; n++) {
+    await new Promise(r => setTimeout(r, 2500));
+    try { const r = await loadSelf(); if (r.cfg && r.cfg.t === stamp) { CFG = r.cfg; msg.textContent = "저장했습니다. 모두에게 이 편성이 보입니다."; return; } } catch (e) {}
+  }
+  msg.textContent = "저장을 확인하지 못했습니다. 잠시 뒤 다시 눌러 주세요.";
+}
+
+async function initAdmin() {
+  const q = new URLSearchParams(location.search);
+  let t = q.get("admin") || "";
+  try { if (!t) t = localStorage.getItem("k700admin") || ""; } catch (e) {}
+  if (!t || !ADMIN_H || !window.crypto || !crypto.subtle) return;
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t));
+  if ([...new Uint8Array(d)].map(b => b.toString(16).padStart(2, "0")).join("") !== ADMIN_H) return;
+  IS_ADMIN = true;
+  try { localStorage.setItem("k700admin", t); } catch (e) {}
+  if (q.get("admin")) history.replaceState(null, "", location.pathname);
 }
 
 async function load() {
   $("stamp").textContent = "불러오는 중…";
   try {
     const first = !DATA.length;
-    try { SELF = await loadSelf(); } catch (e) {}
+    try {
+      const r = await loadSelf();
+      SELF = r.self; MARCH = r.march;
+      if (r.cfg) CFG = r.cfg;
+    } catch (e) {}
+    const firstDraft = IS_ADMIN && !DRAFT;
+    if (firstDraft) DRAFT = JSON.parse(JSON.stringify({def: CFG.def || 100000, A: CFG.A || {}}));
     DATA = build(await fetchRows());
     if (first) { const a = ALLIES.find(x => DATA.some(p => p.ally === x)); if (a) $("rAlly").value = a; }
     $("msg").innerHTML = "";
     $("stamp").textContent = "응답 " + DATA.length + "명 · " + new Date().toLocaleString("ko-KR") + " 기준" + (BAD_ID ? " · 게임 ID 가 숫자가 아닌 응답 " + BAD_ID + "건 제외" : "") + " · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값(" + (typeof PLAYERS_AT === "undefined" ? "-" : PLAYERS_AT) + ")";
     render();
+    if (firstDraft || first) renderAdmin();
   } catch (e) {
     $("stamp").textContent = "불러오지 못했습니다";
     $("msg").innerHTML = '<div class="msg err">응답 시트를 읽지 못했습니다. 시트가 "링크가 있는 모든 사용자 · 뷰어"로 공유되어 있어야 이 화면에 숫자가 나옵니다.</div>';
@@ -357,20 +462,38 @@ $("fSlot").innerHTML = '<option value="">시간대 전체</option><option value=
 $("fName").addEventListener("input", render);
 $("reload").addEventListener("click", load);
 $("rAlly").innerHTML = ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
-$("rAlly").addEventListener("change", renderRally);
+$("rAlly").addEventListener("change", () => { renderAdmin(); renderRally(); });
 $("respTable").addEventListener("click", e => {
   const b = e.target.closest("button.star");
-  if (!b) return;
-  const k = b.getAttribute("data-key");
-  if (LEADERS.has(k)) LEADERS.delete(k); else LEADERS.add(k);
-  saveLeaders();
+  if (!b || !IS_ADMIN || !DRAFT) return;
+  const p = DATA.find(x => x.key === b.getAttribute("data-key"));
+  if (!p) return;
+  const box = DRAFT.A[p.ally] || (DRAFT.A[p.ally] = {leaders: []});
+  const k = box.leaders.findIndex(l => l.id === p.id);
+  if (k >= 0) box.leaders.splice(k, 1); else box.leaders.push({id: p.id, cap: 180000, r: [50, 20, 30]});
+  $("rAlly").value = p.ally;
+  renderAdmin();
   render();
 });
-$("copyLink").addEventListener("click", () => {
-  const done = ok => { $("copyMsg").textContent = ok ? "주소를 복사했습니다" : location.href; };
-  if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(() => done(true), () => done(false)); else done(false);
+$("admin").addEventListener("input", e => {
+  const el = e.target, v = +String(el.value).replace(/[^0-9]/g, "") || 0;
+  if (el.id === "aDef") DRAFT.def = v;
+  else if (el.dataset.f) {
+    const l = leadersOf($("rAlly").value || ALLIES[0])[+el.dataset.k];
+    if (!l) return;
+    if (el.dataset.f === "cap") l.cap = v; else l.r[+el.dataset.f.slice(1)] = v;
+  } else return;
+  renderRally();
 });
-load();
+$("admin").addEventListener("click", e => {
+  if (e.target.id === "aSave") { saveConfig(); return; }
+  const d = e.target.closest("button.del");
+  if (!d) return;
+  leadersOf($("rAlly").value || ALLIES[0]).splice(+d.dataset.k, 1);
+  renderAdmin();
+  render();
+});
+initAdmin().then(load, load);
 setInterval(load, 60000);
 </script>
 </body>
