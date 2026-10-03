@@ -101,6 +101,12 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 .ltab.on{background:#f59f00;border-color:#f59f00;color:#fff}
 .ltab.cf{border:2px solid #2f9e44;color:#2f9e44;font-weight:800}
 .ltab.cf.on{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.cfbox{margin:6px 0 10px;border:2px solid #2f9e44;border-radius:12px;padding:6px 10px;background:var(--card)}
+.cfbox>summary{cursor:pointer;font-weight:800;color:#2f9e44;padding:4px 0}
+.cfrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed var(--line);flex-wrap:wrap}
+.cfrow .nm{flex:1 1 140px;min-width:0}
+.cfrow.on .nm b{color:#2f9e44}
+.cfrow button{min-height:32px;padding:0 12px;font-size:13px}
 .cfb{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:800;background:#2f9e44;color:#fff;vertical-align:middle;margin-inline-start:6px}
 .cfb.no{background:transparent;color:var(--sub);border:1px dashed var(--sub);font-weight:600}
 .card.leader.cf,.lcard.cf{border:3px solid #2f9e44 !important;background:linear-gradient(rgba(47,158,68,.07),rgba(47,158,68,.07)),var(--card)}
@@ -523,7 +529,7 @@ const I18N = {
     aTitle: "편성 설정 (관리자)",
     aDesc: "집결장 추가 → 집결장 고르기 → 인원수 · 포메이션 확인 → 공격 / 수비 배치 → 저장 ({0} 연맹만 저장됩니다)",
     aBy: "저장하는 사람", aDef: "출정 인원수를 안 넣은 사람의 기본값", aLeaderCol: "집결장 ({0})", aOwnMarch: "본인 출정", aCap: "수용 인원", aSelfInput: "본인 입력 {0}",
-    aDel: "빼기", aNone: "{0} 연맹에 고른 집결장이 없습니다.", aSave: "{0} 편성 저장", aNeedName: "저장하는 사람 이름을 적어 주세요.", aSaving: "저장하는 중…",
+    aDel: "빼기", aNone: "{0} 연맹에 고른 집결장이 없습니다.", aSave: "📢 {0} 편성 공개", aNeedName: "저장하는 사람 이름을 적어 주세요.", aSaving: "저장하는 중…",
     aSaved: "저장했습니다. 모두에게 이 편성이 보입니다.", aFail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 눌러 주세요.",
     stamp: "응답 {0}명 · {1} 기준", stampBad: " · 아이디 오류 {0}건(위 명단 · 참여율에서 제외)", stampTail: " · 1분마다 자동 갱신 · 전투력·건물은 게임 ID 조회값({0})",
     hBad: "아이디 오류인 사람 명단", dBad: "게임 ID 가 없거나 숫자가 아니어서 누구인지 확인할 수 없는 응답입니다. 참여율과 집결 편성에 들어가지 않습니다. 해당하는 분은 설문을 다시 작성해 주세요.", thTyped: "입력한 ID", thLang: "언어", pageInfo: "{0}–{1} / {2}명", prev: "이전", next: "다음",
@@ -541,7 +547,7 @@ const I18N = {
     capSplit: "{0} = 본인 {1} + 집결원 {2}", defNote: "＊ 출정 인원수를 입력하지 않아 기본값으로 계산한 사람", fullOk: "✔ 다 채움", nJoin: "집결원 {0}명",
     nth: "{0}번 집결장", needJoin: "필요 집결원", pressPlace: "이 집결장은 아직 배치하지 않았습니다. 위 배치 단추를 누르세요.",
     bReport: "📋 보고서", repTitle: "📋 보고서 — 복사해서 붙여 넣으세요", bCopy: "전체 복사", copied: "복사했습니다.", copyManual: "글을 전부 선택했습니다. 길게 눌러(또는 Ctrl+C) 복사하세요.", repLeader: "집결장", repMember: "집결원",
-    bReset: "↺ 배치 초기화", resetAsk: "{0} 연맹의 집결장과 배치를 모두 지울까요? (저장을 눌러야 모두에게 반영됩니다)", resetDone: "초기화했습니다. 저장을 눌러야 모두에게 반영됩니다.",
+    bReset: "↺ 배치 초기화", resetAsk: "{0} 연맹의 집결장 · 집결원 · 확정 · 빠진 사람 목록을 모두 지울까요?", resetDone: "초기화해 저장했습니다.",
     inapp: "카카오톡 같은 앱 안의 브라우저로 열었습니다. 여기서는 작성 화면이 안 열리거나 저장이 안 될 수 있으니 크롬 · 사파리 같은 일반 브라우저로 여세요.", bOpenOut: "다른 브라우저로 열기", inappHint: "화면 위나 아래의 ⋮ (또는 공유) 메뉴에서 '다른 브라우저로 열기'를 누르세요.",
     mAtk: "공격", mDef: "수비", bConfirm: "✅ {0} 배치 확정", bUnconfirm: "{0} 확정 취소", confYes: "✅ 확정됨: {0}", confNo: "아직 확정 전입니다 (확정해야 각자 역할이 보입니다)",
     roleTitle: "🎯 {0} 님의 임무", roleNo: "{0} 연맹은 아직 배치가 확정되지 않았습니다.", roleLeader: "{0}번 집결장 — 본인이 집결장", roleMember: "{0}번 집결장 ({1}) 의 집결원", roleIdle: "대기 — 이 시간대에는 배치 없음", roleAway: "불참 — 참여 가능 시간이 아님",
@@ -562,6 +568,7 @@ const I18N = {
     outPick: "사람 골라서 빼기", bOutAdd: "빼기",
     mvIdle: "대기", mvShort: "부족", swapHead: "{0} ↔ {1} 교체", bSwap: "교체", swapPick: "바꿀 사람 고르기 (뒤 번호 확정 집결)", swapGo: "교체 실행", swapCancel: "취소", swapNone: "뒤 번호 확정 집결에 바꿀 사람이 없습니다.", swapWarn: "⚠ {0}의 출정 인원({1})이 바꿀 자리({2})보다 적어 교체할 수 없습니다.", swapAsk: "{0}\n\n이대로 교체하고 저장할까요?", marchOf: "출정 {0}",
     cfBadge: "🔒 확정됨", cfNot: "확정 전", cfDone: "✅ {0} {1} 확정 완료 — 이제 배치가 고정됩니다.", cfUndone: "{0} {1} 확정을 취소했습니다.",
+    pubNeed: "확정 안 된 집결이 있어 공개할 수 없습니다: {0}", pubNone: "집결장이 없어 공개할 수 없습니다.", pubDone: "✅ {0} {1} 편성을 공개했습니다. 이제 연맹원 모두 자기 임무를 볼 수 있습니다.", pubYes: "📢 공개됨", pubNo: "🔒 공개 전 (연맹원에게 안 보임)", freeRally: "임무가 배정되기까지 개인 랠리는 가능합니다.", resetAsk2: "정말 초기화할까요? 되돌릴 수 없고 바로 저장됩니다.", cfBoxT: "집결장 확정 ({0}/{1})", cfRatio: "배율", bCf: "확정", bUncf: "확정 취소", roleNotPub: "{0} 연맹 편성은 아직 공개 전입니다.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -581,7 +588,7 @@ const I18N = {
     aTitle: "Rally settings (admin)",
     aDesc: "Add leaders → pick a leader → check capacity and formations → Place attack / defence → Save (only {0} is saved)",
     aBy: "Saved by", aDef: "Default march size for players who did not enter one", aLeaderCol: "Leader ({0})", aOwnMarch: "Own march", aCap: "Capacity", aSelfInput: "Self-reported {0}",
-    aDel: "Remove", aNone: "No rally leader picked for {0}.", aSave: "Save {0} plan", aNeedName: "Please enter the name of the person saving.", aSaving: "Saving…",
+    aDel: "Remove", aNone: "No rally leader picked for {0}.", aSave: "📢 Publish {0} plan", aNeedName: "Please enter the name of the person saving.", aSaving: "Saving…",
     aSaved: "Saved. Everyone now sees this plan.", aFail: "Could not confirm the save. Please press again in a moment.",
     stamp: "{0} responses · as of {1}", stampBad: " · {0} with a game ID error (listed above · not counted)", stampTail: " · refreshes every minute · power and Town Center come from the game ID lookup ({0})",
     hBad: "Responses with a game ID error", dBad: "These responses have no game ID or a non-numeric one, so the player cannot be identified. They are not counted in participation or the rally plan. If this is you, please fill in the survey again.", thTyped: "ID as typed", thLang: "Language", pageInfo: "{0}–{1} / {2}", prev: "Prev", next: "Next",
@@ -599,7 +606,7 @@ const I18N = {
     capSplit: "{0} = leader {1} + joiners {2}", defNote: "＊ No march size entered, so the default value was used", fullOk: "✔ Full", nJoin: "{0} joiners",
     nth: "Leader {0}", needJoin: "Joiners needed", pressPlace: "This leader has not been placed yet. Press a Place button above.",
     bReport: "📋 Report", repTitle: "📋 Report — copy and paste", bCopy: "Copy all", copied: "Copied.", copyManual: "All text is selected. Long-press (or Ctrl+C) to copy.", repLeader: "Leader", repMember: "Joiner",
-    bReset: "↺ Reset placement", resetAsk: "Clear all rally leaders and the placement for {0}? (It applies to everyone only after you press Save.)", resetDone: "Reset. Press Save to apply it for everyone.",
+    bReset: "↺ Reset placement", resetAsk: "Clear all rally leaders, members, confirmations and the dropped list for {0}?", resetDone: "Reset and saved.",
     inapp: "You opened this inside an app's built-in browser (such as KakaoTalk). The forms may not open or save here, so please open it in a normal browser like Chrome or Safari.", bOpenOut: "Open in another browser", inappHint: "Use the ⋮ (or share) menu at the top or bottom and choose 'Open in another browser'.",
     mAtk: "attack", mDef: "defence", bConfirm: "✅ Confirm {0} placement", bUnconfirm: "Cancel {0} confirmation", confYes: "✅ Confirmed: {0}", confNo: "Not confirmed yet (roles show only after confirming)",
     roleTitle: "🎯 Mission of {0}", roleNo: "The placement for {0} has not been confirmed yet.", roleLeader: "Leader {0} — you lead this rally", roleMember: "Joiner in leader {0}'s rally ({1})", roleIdle: "Standby — not placed in this time slot", roleAway: "Away — not an available time",
@@ -620,6 +627,7 @@ const I18N = {
     outPick: "Pick a player to drop", bOutAdd: "Drop",
     mvIdle: "standby", mvShort: "short", swapHead: "{0} ↔ {1} swap", bSwap: "Swap", swapPick: "Pick who to swap (later confirmed rallies)", swapGo: "Swap now", swapCancel: "Cancel", swapNone: "No one to swap in the later confirmed rallies.", swapWarn: "⚠ {0}'s march size ({1}) is smaller than the spot ({2}), so the swap is not allowed.", swapAsk: "{0}\n\nSwap and save?", marchOf: "march {0}",
     cfBadge: "🔒 Confirmed", cfNot: "Not confirmed", cfDone: "✅ {0} {1} confirmed — the placement is now locked.", cfUndone: "{0} {1} confirmation cancelled.",
+    pubNeed: "Some rallies are not confirmed, so the plan cannot be published: {0}", pubNone: "There are no rally leaders to publish.", pubDone: "✅ Published the {0} {1} plan. Every member can now see their mission.", pubYes: "📢 Published", pubNo: "🔒 Not published (members cannot see it)", freeRally: "Until a mission is assigned, personal rallies are allowed.", resetAsk2: "Really reset? This cannot be undone and is saved right away.", cfBoxT: "Confirm rally leaders ({0}/{1})", cfRatio: "Ratio", bCf: "Confirm", bUncf: "Cancel", roleNotPub: "The {0} plan has not been published yet.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -639,7 +647,7 @@ const I18N = {
     aTitle: "編組設定（管理員）",
     aDesc: "新增隊長 → 選擇隊長 → 確認人數與陣型 → 進攻 / 防守配置 → 儲存（只儲存 {0} 聯盟）",
     aBy: "儲存者", aDef: "未填出征人數者的預設值", aLeaderCol: "隊長（{0}）", aOwnMarch: "本人出征", aCap: "集結容量", aSelfInput: "本人填寫 {0}",
-    aDel: "移除", aNone: "{0} 聯盟尚未選擇集結隊長。", aSave: "儲存 {0} 編組", aNeedName: "請填寫儲存者名稱。", aSaving: "儲存中…",
+    aDel: "移除", aNone: "{0} 聯盟尚未選擇集結隊長。", aSave: "📢 公開 {0} 編組", aNeedName: "請填寫儲存者名稱。", aSaving: "儲存中…",
     aSaved: "已儲存，所有人都會看到這份編組。", aFail: "無法確認儲存，請稍後再按一次。",
     stamp: "回覆 {0} 人 · {1}", stampBad: " · ID 有誤 {0} 筆（見上方名單 · 不計入參加率）", stampTail: " · 每分鐘自動更新 · 戰力與城鎮中心為遊戲 ID 查詢值（{0}）",
     hBad: "ID 有誤的名單", dBad: "這些回覆沒有遊戲 ID 或 ID 不是數字，無法確認是誰。不計入參加率與集結編組。如果是你，請重新填寫問卷。", thTyped: "填寫的 ID", thLang: "語言", pageInfo: "{0}–{1} / {2} 人", prev: "上一頁", next: "下一頁",
@@ -657,7 +665,7 @@ const I18N = {
     capSplit: "{0} = 隊長 {1} + 成員 {2}", defNote: "＊ 未填出征人數，以預設值計算", fullOk: "✔ 已填滿", nJoin: "成員 {0} 人",
     nth: "第 {0} 隊長", needJoin: "需要的成員", pressPlace: "這位隊長尚未配置，請按上方的配置按鈕。",
     bReport: "📋 報告", repTitle: "📋 報告 — 複製後貼上", bCopy: "全部複製", copied: "已複製。", copyManual: "已全選文字，請長按（或 Ctrl+C）複製。", repLeader: "隊長", repMember: "成員",
-    bReset: "↺ 重設配置", resetAsk: "要清除 {0} 聯盟的所有隊長與配置嗎？（按下儲存後才會套用到所有人）", resetDone: "已重設。按下儲存後才會套用到所有人。",
+    bReset: "↺ 重設配置", resetAsk: "要清除 {0} 聯盟的所有隊長、隊員、確定與退出名單嗎？", resetDone: "已重設並儲存。",
     inapp: "你是在應用程式（例如 KakaoTalk）內建的瀏覽器開啟的。這裡可能無法開啟或儲存表單，請改用 Chrome、Safari 等一般瀏覽器。", bOpenOut: "用其他瀏覽器開啟", inappHint: "請在畫面上方或下方的 ⋮（或分享）選單選擇「用其他瀏覽器開啟」。",
     mAtk: "進攻", mDef: "防守", bConfirm: "✅ 確定{0}配置", bUnconfirm: "取消{0}確定", confYes: "✅ 已確定：{0}", confNo: "尚未確定（確定後才會顯示各人的任務）",
     roleTitle: "🎯 {0} 的任務", roleNo: "{0} 聯盟的配置尚未確定。", roleLeader: "第 {0} 隊長 — 你是集結隊長", roleMember: "第 {0} 隊長（{1}）的集結成員", roleIdle: "待命 — 此時段沒有配置", roleAway: "不參加 — 不是可參加的時段",
@@ -678,6 +686,7 @@ const I18N = {
     outPick: "選擇要退出的人", bOutAdd: "退出",
     mvIdle: "待命", mvShort: "不足", swapHead: "{0} ↔ {1} 交換", bSwap: "交換", swapPick: "選擇要交換的人（後面已確定的集結）", swapGo: "執行交換", swapCancel: "取消", swapNone: "後面已確定的集結中沒有可交換的人。", swapWarn: "⚠ {0} 的出征人數（{1}）少於該位置（{2}），無法交換。", swapAsk: "{0}\n\n要交換並儲存嗎？", marchOf: "出征 {0}",
     cfBadge: "🔒 已確定", cfNot: "未確定", cfDone: "✅ {0} {1} 確定完成 — 配置已固定。", cfUndone: "已取消 {0} {1} 的確定。",
+    pubNeed: "有尚未確定的集結，無法公開：{0}", pubNone: "沒有集結隊長，無法公開。", pubDone: "✅ 已公開 {0} {1} 編組。所有成員現在都能看到自己的任務。", pubYes: "📢 已公開", pubNo: "🔒 未公開（成員看不到）", freeRally: "在分配任務之前，可以進行個人集結。", resetAsk2: "確定要重設嗎？無法復原，且會立即儲存。", cfBoxT: "集結隊長確定（{0}/{1}）", cfRatio: "比例", bCf: "確定", bUncf: "取消確定", roleNotPub: "{0} 聯盟的編組尚未公開。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -697,7 +706,7 @@ const I18N = {
     aTitle: "إعدادات الحشود (المشرف)",
     aDesc: "أضف القادة ← اختر قائدًا ← راجع السعة والتشكيلات ← توزيع الهجوم / الدفاع ← احفظ (يُحفظ تحالف {0} فقط)",
     aBy: "اسم من يحفظ", aDef: "حجم المسيرة الافتراضي لمن لم يدخله", aLeaderCol: "القائد ({0})", aOwnMarch: "مسيرته", aCap: "السعة", aSelfInput: "أدخلها بنفسه {0}",
-    aDel: "إزالة", aNone: "لم يتم اختيار قائد حشد لتحالف {0}.", aSave: "حفظ خطة {0}", aNeedName: "اكتب اسم من يقوم بالحفظ.", aSaving: "جارٍ الحفظ…",
+    aDel: "إزالة", aNone: "لم يتم اختيار قائد حشد لتحالف {0}.", aSave: "📢 نشر خطة {0}", aNeedName: "اكتب اسم من يقوم بالحفظ.", aSaving: "جارٍ الحفظ…",
     aSaved: "تم الحفظ. الجميع يرى هذه الخطة الآن.", aFail: "تعذر تأكيد الحفظ. اضغط مرة أخرى بعد قليل.",
     stamp: "{0} إجابة · حتى {1}", stampBad: " · {0} إجابة بخطأ في المعرف (في القائمة أعلاه · غير محسوبة)", stampTail: " · تحديث تلقائي كل دقيقة · القوة ومركز المدينة من البحث بمعرف اللعبة ({0})",
     hBad: "قائمة من لديهم خطأ في المعرف", dBad: "هذه الإجابات بلا معرف لعبة أو بمعرف غير رقمي، لذلك لا يمكن معرفة صاحبها. لا تُحسب في نسبة المشاركة ولا في خطة الحشود. إذا كنت أحدهم فأعد ملء الاستبيان.", thTyped: "المعرف المكتوب", thLang: "اللغة", pageInfo: "{0}–{1} / {2}", prev: "السابق", next: "التالي",
@@ -715,7 +724,7 @@ const I18N = {
     capSplit: "{0} = القائد {1} + الأعضاء {2}", defNote: "＊ لم يُدخل حجم المسيرة فاستُخدمت القيمة الافتراضية", fullOk: "✔ مكتمل", nJoin: "الأعضاء {0}",
     nth: "القائد {0}", needJoin: "المطلوب من الأعضاء", pressPlace: "لم يتم توزيع هذا القائد بعد. اضغط زر التوزيع في الأعلى.",
     bReport: "📋 تقرير", repTitle: "📋 تقرير — انسخه والصقه", bCopy: "نسخ الكل", copied: "تم النسخ.", copyManual: "تم تحديد النص كله. اضغط مطولًا (أو Ctrl+C) للنسخ.", repLeader: "القائد", repMember: "عضو",
-    bReset: "↺ إعادة ضبط التوزيع", resetAsk: "هل تريد حذف جميع القادة والتوزيع لتحالف {0}؟ (لا يُطبَّق على الجميع إلا بعد الضغط على حفظ)", resetDone: "تمت إعادة الضبط. اضغط حفظ ليُطبَّق على الجميع.",
+    bReset: "↺ إعادة ضبط التوزيع", resetAsk: "هل تريد حذف جميع القادة والأعضاء والتأكيدات وقائمة المنسحبين لتحالف {0}؟", resetDone: "تمت إعادة الضبط والحفظ.",
     inapp: "لقد فتحت الصفحة داخل متصفح أحد التطبيقات (مثل KakaoTalk). قد لا تُفتح النماذج أو لا تُحفظ هنا، لذا افتحها في متصفح عادي مثل Chrome أو Safari.", bOpenOut: "فتح في متصفح آخر", inappHint: "استخدم قائمة ⋮ (أو المشاركة) في أعلى أو أسفل الشاشة واختر «فتح في متصفح آخر».",
     mAtk: "الهجوم", mDef: "الدفاع", bConfirm: "✅ تأكيد توزيع {0}", bUnconfirm: "إلغاء تأكيد {0}", confYes: "✅ تم التأكيد: {0}", confNo: "لم يتم التأكيد بعد (تظهر الأدوار بعد التأكيد فقط)",
     roleTitle: "🎯 مهمة {0}", roleNo: "لم يتم تأكيد توزيع تحالف {0} بعد.", roleLeader: "القائد {0} — أنت قائد هذا الحشد", roleMember: "عضو في حشد القائد {0} ({1})", roleIdle: "انتظار — لا يوجد توزيع في هذه الفترة", roleAway: "غير مشارك — ليست فترة متاحة",
@@ -736,6 +745,7 @@ const I18N = {
     outPick: "اختر لاعبًا لإخراجه", bOutAdd: "إخراج",
     mvIdle: "احتياط", mvShort: "نقص", swapHead: "تبديل {0} ↔ {1}", bSwap: "تبديل", swapPick: "اختر من تبدّله (الحشود المؤكدة اللاحقة)", swapGo: "نفّذ التبديل", swapCancel: "إلغاء", swapNone: "لا يوجد من يمكن تبديله في الحشود المؤكدة اللاحقة.", swapWarn: "⚠ عدد مسيرة {0} ({1}) أقل من المكان ({2})، لذلك لا يمكن التبديل.", swapAsk: "{0}\n\nتبديل وحفظ؟", marchOf: "مسيرة {0}",
     cfBadge: "🔒 مؤكد", cfNot: "غير مؤكد", cfDone: "✅ تم تأكيد {0} {1} — التوزيع ثابت الآن.", cfUndone: "تم إلغاء تأكيد {0} {1}.",
+    pubNeed: "هناك حشود غير مؤكدة، لذلك لا يمكن النشر: {0}", pubNone: "لا يوجد قادة حشود للنشر.", pubDone: "✅ تم نشر خطة {0} {1}. يمكن لكل الأعضاء الآن رؤية مهامهم.", pubYes: "📢 منشورة", pubNo: "🔒 غير منشورة (لا يراها الأعضاء)", freeRally: "إلى أن تُسند مهمة، يُسمح بالحشد الشخصي.", resetAsk2: "هل تريد إعادة الضبط فعلًا؟ لا يمكن التراجع وسيُحفظ فورًا.", cfBoxT: "تأكيد قادة الحشود ({0}/{1})", cfRatio: "النسبة", bCf: "تأكيد", bUncf: "إلغاء", roleNotPub: "لم تُنشر خطة {0} بعد.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -755,7 +765,7 @@ const I18N = {
     aTitle: "Ralli ayarları (yönetici)",
     aDesc: "Lider ekle → lideri seç → kapasite ve dizilişleri kontrol et → Saldırı / Savunma yerleşimi → Kaydet (yalnızca {0} kaydedilir)",
     aBy: "Kaydeden", aDef: "Sefer kapasitesi girmeyenler için varsayılan değer", aLeaderCol: "Lider ({0})", aOwnMarch: "Kendi seferi", aCap: "Kapasite", aSelfInput: "Kendi girdiği {0}",
-    aDel: "Çıkar", aNone: "{0} ittifakı için seçilmiş ralli lideri yok.", aSave: "{0} planını kaydet", aNeedName: "Lütfen kaydeden kişinin adını yazın.", aSaving: "Kaydediliyor…",
+    aDel: "Çıkar", aNone: "{0} ittifakı için seçilmiş ralli lideri yok.", aSave: "📢 {0} planını yayınla", aNeedName: "Lütfen kaydeden kişinin adını yazın.", aSaving: "Kaydediliyor…",
     aSaved: "Kaydedildi. Bu planı artık herkes görüyor.", aFail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar basın.",
     stamp: "{0} yanıt · {1} itibarıyla", stampBad: " · ID hatası olan {0} yanıt (yukarıdaki liste · katılıma sayılmaz)", stampTail: " · her dakika otomatik yenilenir · güç ve Şehir Merkezi oyun ID sorgusundan ({0})",
     hBad: "ID hatası olanların listesi", dBad: "Bu yanıtlarda Oyun ID yok ya da rakam değil; bu yüzden kimin olduğu belirlenemiyor. Katılıma ve ralli planına sayılmaz. Bu sizseniz lütfen anketi yeniden doldurun.", thTyped: "Yazılan ID", thLang: "Dil", pageInfo: "{0}–{1} / {2}", prev: "Önceki", next: "Sonraki",
@@ -773,7 +783,7 @@ const I18N = {
     capSplit: "{0} = lider {1} + katılımcılar {2}", defNote: "＊ Sefer kapasitesi girilmediği için varsayılan değer kullanıldı", fullOk: "✔ Dolu", nJoin: "{0} katılımcı",
     nth: "{0}. lider", needJoin: "Gereken katılımcı", pressPlace: "Bu lider henüz yerleştirilmedi. Yukarıdaki yerleşim düğmesine basın.",
     bReport: "📋 Rapor", repTitle: "📋 Rapor — kopyalayıp yapıştırın", bCopy: "Tümünü kopyala", copied: "Kopyalandı.", copyManual: "Tüm metin seçildi. Kopyalamak için uzun basın (veya Ctrl+C).", repLeader: "Lider", repMember: "Katılımcı",
-    bReset: "↺ Yerleşimi sıfırla", resetAsk: "{0} ittifakının tüm liderleri ve yerleşimi silinsin mi? (Herkese yansıması için Kaydet'e basmalısınız.)", resetDone: "Sıfırlandı. Herkese yansıması için Kaydet'e basın.",
+    bReset: "↺ Yerleşimi sıfırla", resetAsk: "{0} ittifakının tüm liderleri, üyeleri, onayları ve çıkanlar listesi silinsin mi?", resetDone: "Sıfırlandı ve kaydedildi.",
     inapp: "Sayfayı bir uygulamanın (ör. KakaoTalk) içindeki tarayıcıda açtınız. Formlar burada açılmayabilir veya kaydedilmeyebilir; lütfen Chrome veya Safari gibi normal bir tarayıcıda açın.", bOpenOut: "Başka tarayıcıda aç", inappHint: "Ekranın üstündeki veya altındaki ⋮ (ya da paylaş) menüsünden 'Başka tarayıcıda aç'ı seçin.",
     mAtk: "saldırı", mDef: "savunma", bConfirm: "✅ {0} yerleşimini onayla", bUnconfirm: "{0} onayını iptal et", confYes: "✅ Onaylandı: {0}", confNo: "Henüz onaylanmadı (roller yalnızca onaydan sonra görünür)",
     roleTitle: "🎯 {0} — görevler", roleNo: "{0} ittifakının yerleşimi henüz onaylanmadı.", roleLeader: "{0}. lider — ralliyi siz yönetiyorsunuz", roleMember: "{0}. liderin ({1}) rallisinde katılımcı", roleIdle: "Beklemede — bu saat diliminde yerleşim yok", roleAway: "Katılmıyor — uygun saat değil",
@@ -794,6 +804,7 @@ const I18N = {
     outPick: "Çıkarılacak oyuncuyu seçin", bOutAdd: "Çıkar",
     mvIdle: "yedek", mvShort: "eksik", swapHead: "{0} ↔ {1} değişim", bSwap: "Değiştir", swapPick: "Değiştirilecek kişiyi seçin (sonraki onaylı ralliler)", swapGo: "Değiştir", swapCancel: "İptal", swapNone: "Sonraki onaylı rallilerde değiştirilecek kimse yok.", swapWarn: "⚠ {0} sefer sayısı ({1}) yerden ({2}) az, değişim yapılamaz.", swapAsk: "{0}\n\nDeğiştirip kaydedelim mi?", marchOf: "sefer {0}",
     cfBadge: "🔒 Onaylandı", cfNot: "Onaylanmadı", cfDone: "✅ {0} {1} onaylandı — yerleşim artık sabit.", cfUndone: "{0} {1} onayı iptal edildi.",
+    pubNeed: "Onaylanmamış ralliler var, yayınlanamaz: {0}", pubNone: "Yayınlanacak ralli lideri yok.", pubDone: "✅ {0} {1} planı yayınlandı. Artık tüm üyeler görevini görebilir.", pubYes: "📢 Yayında", pubNo: "🔒 Yayında değil (üyeler göremez)", freeRally: "Görev verilene kadar kişisel ralli yapılabilir.", resetAsk2: "Gerçekten sıfırlansın mı? Geri alınamaz ve hemen kaydedilir.", cfBoxT: "Ralli liderlerini onayla ({0}/{1})", cfRatio: "Oran", bCf: "Onayla", bUncf: "İptal", roleNotPub: "{0} planı henüz yayınlanmadı.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -845,10 +856,12 @@ const isLeader = p => leadersOf(p.ally).some(l => l.id === p.id);
 const marchOf = p => MARCH[p.id] || +((cfgNow().A[p.ally] || {}).def) || DEF_MARCH;
 // 기본값: 출정 인원수를 안 넣은 사람은 145,000, 집결 인원수를 안 넣은 집결장은 1,300,000 (이박사님 2026-10-02)
 const DEF_MARCH = 145000, DEF_RALLY = 1300000;
-const blank = () => ({def: DEF_MARCH, leaders: [], by: "", at: "", conf: "", out: []});
+const blank = () => ({def: DEF_MARCH, leaders: [], by: "", at: "", conf: "", out: [], pub: ""});
 const fkOf = mode => mode === "def" ? "fd" : "fa";
 const legacyConf = (b, mode) => String((b || {}).conf || "").indexOf(mode === "def" ? "d" : "a") >= 0;
 const lConf = (b, l, mode) => !!(l && l[fkOf(mode)]) || legacyConf(b, mode);
+// 공개: 연맹원에게 임무를 보여 준다. 예전 방식 확정(conf)은 공개된 것으로 본다
+const isPub = (b, mode) => String((b || {}).pub || "").indexOf(mode === "def" ? "d" : "a") >= 0 || legacyConf(b, mode);
 const hasConf = (b, mode) => legacyConf(b, mode) || ((b || {}).leaders || []).some(l => l[fkOf(mode)]);
 // 확정할 때의 배치를 집결장 하나에 대해 시간대별로 뽑는다: null = 그 시간대에 집결장이 없음
 const freezeOf = (a, l, mode, box) => SLOTS.map((s, i) => { const R = alloc(a, i, mode, box).rallies.find(q => q.p.id === l.id); return R ? {o: R.own.slice(), m: R.members.map(m => [m.p.id].concat(m.send))} : null; });
@@ -913,7 +926,9 @@ async function loadConfig() {
       if (mk && mk[4]) g.conf = mk[4];
       if (mk && mk[5] != null) g.n = +mk[5];
       const L = {id, cap: num(row[ci.cap]), r: ci.r.map(c => num(row[c])), d: mk ? [+mk[1], +mk[2], +mk[3]] : [5, 2, 3]};
-      const fm = /\[F:(\{.*?\})\](?= \[(?:O|D):)/.exec(String(row[ci.lname] || ""));
+      const fm = /\[F:(\{.*?\})\](?= \[(?:O|P|D):)/.exec(String(row[ci.lname] || ""));
+      const pm = /\[P:([ad]+)\]/.exec(String(row[ci.lname] || ""));
+      if (pm) g.pub = pm[1];
       const om = /\[O:([0-9,]+)\]/.exec(String(row[ci.lname] || ""));
       if (om) g.out = om[1].split(",").filter(x => /^[0-9]{7,12}$/.test(x));
       if (fm) { try { const F = JSON.parse(fm[1]); if (Array.isArray(F.a)) L.fa = F.a; if (Array.isArray(F.d)) L.fd = F.d; } catch (e) {} }
@@ -1291,8 +1306,13 @@ function renderRally() {
   const plan = SLOTS.map((s, i) => alloc(a, i, RMODE));
   const dls = editing ? leadersOf(a) : ls, selK = Math.min(SELK[a] || 0, Math.max(0, dls.length - 1)), selId = (dls[selK] || {}).id;
   let h = bar + (editing ? '' : tabsHtml(ls, selK)) + (meta.at ? '<div class="sub" style="margin-bottom:6px">' + tx("saved", esc(meta.at)) + (meta.by ? ' · ' + esc(meta.by) : '') + (editing && DIRTY[a] ? ' · <b style="color:var(--warn)">' + tx("unsaved") + '</b>' : '') + '</div>' : (editing && DIRTY[a] ? '<div class="sub" style="margin-bottom:6px"><b style="color:var(--warn)">' + tx("notSaved") + '</b></div>' : ""));
-  const cl = ls.map((l, n) => l[fkOf(RMODE)] ? n + 1 : 0).filter(Boolean), lg = legacyConf(box, RMODE);
-  h += '<div class="sub" style="margin-bottom:6px"><b style="color:' + (cl.length || lg ? 'var(--ok)' : 'var(--warn)') + '">' + (cl.length ? tx("confList", cl.map(n => tx("nth", n)).join(" · ") + " (" + tx(RMODE === "def" ? "mDef" : "mAtk") + ")") : lg ? tx("confYes", tx(RMODE === "def" ? "mDef" : "mAtk")) : tx("confNo")) + '</b>' + (lg && !cl.length ? ' <span class="sub">' + tx("confLegacy") + '</span>' : '') + '</div>';
+  const cl = ls.map((l, n) => l[fkOf(RMODE)] ? n + 1 : 0).filter(Boolean), lg = legacyConf(box, RMODE), pubd = isPub(box, RMODE);
+  h += '<div class="sub" style="margin-bottom:6px"><b style="color:' + (cl.length || lg ? 'var(--ok)' : 'var(--warn)') + '">' + (cl.length ? tx("confList", cl.map(n => tx("nth", n)).join(" · ") + " (" + tx(RMODE === "def" ? "mDef" : "mAtk") + ")") : lg ? tx("confYes", tx(RMODE === "def" ? "mDef" : "mAtk")) : tx("confNo")) + '</b>' + (lg && !cl.length ? ' <span class="sub">' + tx("confLegacy") + '</span>' : '') + ' <span class="cfb' + (pubd ? '' : ' no') + '">' + tx(pubd ? "pubYes" : "pubNo") + '</span></div>';
+  if (editing) {
+    const dl = (DRAFT.A[a] || {}).leaders || [];
+    h += '<details class="cfbox"' + (CFOPEN ? ' open' : '') + '><summary>' + tx("cfBoxT", dl.filter(l => l[fkOf(RMODE)]).length, dl.length) + '</summary>' +
+      dl.map((l, n) => { const q = DATA.find(x => x.id === l.id), on = !!l[fkOf(RMODE)]; return '<div class="cfrow' + (on ? ' on' : '') + '"><span class="nm">' + tx("nth", n + 1) + ' · <b>' + esc(q ? (q.gname || q.name) : "?") + '</b></span><span class="sub">' + tx("cfRatio") + ' ' + ratioOf(l, RMODE).map(v => +v || 0).join(":") + ' · ' + fmt(+l.cap || 0) + '</span><button class="cfbtn' + (on ? ' off' : ' primary') + '" data-k="' + n + '">' + (on ? tx("bUncf") : '✅ ' + tx("bCf")) + '</button></div>'; }).join("") + '</details>';
+  }
   ls.forEach((l, n) => {
     if (l.id !== selId) return;
     const p = DATA.find(x => x.id === l.id), r = ratioOf(l, RMODE);
@@ -1335,22 +1355,24 @@ function swapPanel(a, lid, i0) {
 // 한 사람의 역할: 확정된 포메이션마다, 시간대별로 어느 집결장에서 무엇을 보내는지 (저장 · 확정된 설정만 쓴다)
 function roleHtml(p) {
   const box = CFG.A[p.ally];
-  if (!box || !(box.leaders || []).length || !(hasConf(box, "atk") || hasConf(box, "def"))) return '<div class="msg">' + tx("roleNo", esc(p.ally)) + '</div>';
+  const free = '<div class="msg" style="color:var(--ok);font-weight:700">🏹 ' + tx("freeRally") + '</div>';
+  if (!box || !(box.leaders || []).length || !(isPub(box, "atk") || isPub(box, "def"))) return '<div class="msg">' + tx("roleNotPub", esc(p.ally)) + '</div>' + free;
+  let any = false;
   const kinds = [tx("inf"), tx("cav"), tx("arc")], z = TZ[LANG];
   const amt = v => [0, 1, 2].filter(t => v[t]).map(t => kinds[t] + ' <b>' + fmt(v[t]) + '</b>').join(' · ') + ' = ' + fmt(v[0] + v[1] + v[2]);
   const range = (i0, i1) => esc(SLOTS[i0][0].slice(0, 5) + '~' + SLOTS[i1][0].slice(6)) + (z ? ' <small>(' + esc(z[0] + ' ' + hm(SLOTS[i0][1], z[1]) + '~' + hm(SLOTS[i1][2], z[1])) + ')</small>' : '');
   let h = '';
   ["atk", "def"].forEach(mode => {
-    if (!hasConf(box, mode)) return;
+    if (!isPub(box, mode)) return;
     const rows = SLOTS.map((s, i) => {
       if (!p.slots[i]) return {k: "away"};
       const pl = alloc(p.ally, i, mode, box);
       for (const R of pl.rallies) {
         if (!lConf(box, box.leaders.find(l => l.id === R.p.id), mode)) continue;
         const num = box.leaders.findIndex(l => l.id === R.p.id) + 1;
-        if (R.p.id === p.id) return {k: "L", num, send: R.own};
+        if (R.p.id === p.id) { any = true; return {k: "L", num, send: R.own}; }
         const m = R.members.find(x => x.p.id === p.id);
-        if (m) return {k: "M", num, lead: R.p.gname || R.p.name, send: m.send};
+        if (m) { any = true; return {k: "M", num, lead: R.p.gname || R.p.name, send: m.send}; }
       }
       return {k: "idle"};
     });
@@ -1365,7 +1387,7 @@ function roleHtml(p) {
       i = j + 1;
     }
   });
-  return h;
+  return (any ? '' : free) + h;
 }
 // 상단 「내 게임 ID」: 비밀번호 없이 ID 만. 이 기기에 기억해 참여 시간 · 병사 정보 화면이 같이 쓴다(k700id). 화면에는 ID 대신 닉네임을 보인다
 const myId = () => { try { return localStorage.getItem("k700id") || ""; } catch (e) { return ""; } };
@@ -1526,8 +1548,8 @@ function renderAdmin() {
     h += '<div class="sub" style="margin-top:10px">' + tx("aNone", esc(a)) + '</div>';
   }
   h += '<div class="arow"><div class="pgrp">' + passMe("aPass") +
-    '<button class="primary" id="aSave">' + tx("aSave", esc(a)) + '</button><button id="aReset">' + tx("bReset") + '</button></div>' +
-    '<div class="ogrp">' + (ls.length ? (() => { const L = ls[SELK[a] || 0], on = !!L[fkOf(RMODE)]; return '<button id="aConf"' + (on ? ' class="off"' : '') + '>' + tx(on ? "bUnconfL" : "bConfL", tx("nth", (SELK[a] || 0) + 1), tx(RMODE === "def" ? "mDef" : "mAtk")) + '</button>'; })() : '') +
+    '<button class="primary" id="aSave">' + tx("aSave", esc(tx(RMODE === "def" ? "mDef" : "mAtk"))) + '</button><button id="aReset">' + tx("bReset") + '</button></div>' +
+    '<div class="ogrp">' +
     '<button class="repb">' + tx("bReport") + '</button></div></div>' +
     '<div class="sub" id="aMsg" style="margin-top:6px"></div></div>';
   box.innerHTML = h;
@@ -1703,7 +1725,7 @@ async function saveConfig1() {
     body.append(CF.def, String(+box.def || DEF_MARCH)); body.append(CF.admin, H);
     if (l) {
       const p = DATA.find(x => x.id === l.id);
-      body.append(CF.lid, l.id); body.append(CF.lname, (p ? (p.gname || p.name) : "") + (l.fa || l.fd ? " [F:" + JSON.stringify({a: l.fa || undefined, d: l.fd || undefined}) + "]" : "") + ((box.out || []).length ? " [O:" + box.out.join(",") + "]" : "") + " [D:" + ratioOf(l, "def").map(v => +v || 0).join("/") + "]" + (box.conf ? " [C:" + box.conf + "]" : "") + " [N:" + box.leaders.length + "]");
+      body.append(CF.lid, l.id); body.append(CF.lname, (p ? (p.gname || p.name) : "") + (l.fa || l.fd ? " [F:" + JSON.stringify({a: l.fa || undefined, d: l.fd || undefined}) + "]" : "") + ((box.out || []).length ? " [O:" + box.out.join(",") + "]" : "") + (box.pub ? " [P:" + box.pub + "]" : "") + " [D:" + ratioOf(l, "def").map(v => +v || 0).join("/") + "]" + (box.conf ? " [C:" + box.conf + "]" : "") + " [N:" + box.leaders.length + "]");
       body.append(CF.cap, String(+l.cap || 0));
       [0, 1, 2].forEach(t => body.append(CF.r[t], String(+l.r[t] || 0)));
     }
@@ -1741,10 +1763,14 @@ async function checkPass(id, scope) {
 }
 function doReset(a) {
   const box = DRAFT.A[a] || (DRAFT.A[a] = blank());
-  box.leaders = []; box.conf = ""; SELK[a] = 0; DIRTY[a] = true;
+  const before = JSON.stringify(box);
+  box.leaders = []; box.conf = ""; box.out = []; box.pub = ""; SELK[a] = 0; DIRTY[a] = true;
   PLAN[a] = JSON.parse(JSON.stringify(box));
   renderAdmin(); render();
-  $("aMsg").style.color = ""; $("aMsg").textContent = tx("resetDone");
+  saveConfig().then(ok => {
+    if (ok) { $("aMsg").style.color = "var(--ok)"; $("aMsg").textContent = tx("resetDone"); return; }
+    const m = $("aMsg").textContent; Object.assign(box, JSON.parse(before)); PLAN[a] = JSON.parse(JSON.stringify(box)); renderAdmin(); render(); $("aMsg").textContent = m || tx("aFail"); $("aMsg").style.color = "var(--warn)";
+  });
 }
 const savedBy = () => { const id = myId(), p = DATA.find(x => x.id === id); return p ? (p.gname || p.name) : ""; };
 
@@ -2031,6 +2057,25 @@ $("reload").addEventListener("click", load);
 $("rAlly").innerHTML = ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
 $("rAlly").addEventListener("change", () => { renderAdmin(); renderRally(); });
 // 「공격 배치」 · 「수비 배치」: 그 포메이션으로 다시 그린다. 관리자는 지금 고친 설정으로 계산한다
+// 집결장 하나 확정 / 취소 (편성표의 「집결장 확정」 상자)
+function confirmLeader(k) {
+  // 확정 = 지금 고른 집결장 하나의 배치를 시간대별로 그대로 저장한다(fa = 공격, fd = 수비). 다시 누르면 확정을 푼다.
+  // 예전 방식(연맹 전체) 확정이 걸려 있던 포메이션은 처음 누를 때 모든 집결장을 지금 배치로 고정해 옮긴다
+  const a = $("rAlly").value || ALLIES[0], box = DRAFT.A[a], f = RMODE === "def" ? "d" : "a", fk = fkOf(RMODE);
+  if (!box || !can(a) || !box.leaders.length || SAVING) return;
+  if (!needPass()) return;
+  if (!boxOk(box)) { $("aMsg").textContent = tx("sumBlock"); return; }
+  const before = JSON.stringify({c: box.conf || "", L: box.leaders});
+  const l = box.leaders[Math.min(k, box.leaders.length - 1)];
+  if (legacyConf(box, RMODE)) {
+    box.conf = String(box.conf || "").replace(f, "");
+    box.leaders.forEach(x => { if (!x[fk]) x[fk] = freezeOf(a, x, RMODE, box); });
+  } else if (l[fk]) delete l[fk];
+  else l[fk] = freezeOf(a, l, RMODE, box);
+  DIRTY[a] = true;
+  const doneMsg = tx(l[fk] ? "cfDone" : "cfUndone", tx("nth", box.leaders.indexOf(l) + 1), tx(RMODE === "def" ? "mDef" : "mAtk"));
+  saveConfig().then(ok => { if (ok) { $("aMsg").style.color = "var(--ok)"; $("aMsg").innerHTML = '<b>' + esc(doneMsg) + '</b>'; return; } if (!ok) { const m = $("aMsg").textContent, B = JSON.parse(before); box.conf = B.c; box.leaders = B.L; renderAdmin(); renderRally(); $("aMsg").textContent = m || tx("aFail"); $("aMsg").style.color = "var(--warn)"; } });
+}
 // 빠짐: 빈자리를 「뒤 번호 확정 집결 가운데 가장 강한 사람」으로 채우고, 그 사람이 빠진 자리를 다시 그 뒤 번호에서 채운다(밀어내기).
 // 맨 끝 빈자리는 남는 인원 중 가장 강한 사람, 없으면 부족으로 남긴다. W = 바꿀 설정의 사본(여기에 바로 고친다). 시간대마다 옮긴 내역을 돌려준다
 const mOf = (W, id) => MARCH[id] || +W.def || DEF_MARCH;
@@ -2096,13 +2141,16 @@ function commitW(a, W, noteText, doneKey) {
 }
 const needPass = () => { if ($("aPass") && $("aPass").value.trim()) return true; $("aMsg").textContent = tx("passNeed"); $("aMsg").style.color = "var(--warn)"; if ($("aPass")) { $("aPass").focus(); $("aPass").scrollIntoView({block: "center"}); } return false; };
 // 수동 교체: 고른 집결원(X)과 뒤 번호 확정 집결의 한 사람(Y)을 맞바꾼다. Y 의 출정 인원이 X 자리보다 적으면 막는다
-let SWAP = null;
+let SWAP = null, CFOPEN = true;
 function swapCands(a, mode, lid, i0) {
   const box = DRAFT.A[a], fk = fkOf(mode), k = box.leaders.findIndex(l => l.id === lid), outs = new Set(box.out || []), c = [];
   box.leaders.forEach((L, j) => { if (j > k && L[fk] && L[fk][i0]) L[fk][i0].m.forEach(e => { if (!outs.has(e[0])) c.push({id: e[0], j}); }); });
   return c;
 }
+$("rally").addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("cfbox")) CFOPEN = e.target.open; }, true);
 $("rally").addEventListener("click", e => {
+  const cb = e.target.closest("button.cfbtn");
+  if (cb) { confirmLeader(+cb.dataset.k); return; }
   const ab = e.target.closest("button.outadd");
   if (ab) {
     const a = $("rAlly").value || ALLIES[0], box = DRAFT && DRAFT.A[a], id = $("outPick").value;
@@ -2250,28 +2298,25 @@ $("admin").addEventListener("click", e => {
     checkPass("aPass", a).then(ok => {
       if (ok.err) { $("aMsg").textContent = tx(ok.err); $("aMsg").style.color = "var(--warn)"; if ($("aPass")) $("aPass").focus(); return; }
       if (!confirm(tx("resetAsk", a))) return;
+      if (!confirm(tx("resetAsk2"))) return;
       doReset(a);
     });
     return;
   }
-  if (e.target.id === "aSave") { saveConfig(); return; }
-  if (e.target.id === "aConf") {
-    // 확정 = 지금 고른 집결장 하나의 배치를 시간대별로 그대로 저장한다(fa = 공격, fd = 수비). 다시 누르면 확정을 푼다.
-    // 예전 방식(연맹 전체) 확정이 걸려 있던 포메이션은 처음 누를 때 모든 집결장을 지금 배치로 고정해 옮긴다
+  if (e.target.id === "aSave") {
     const a = $("rAlly").value || ALLIES[0], box = DRAFT.A[a], f = RMODE === "def" ? "d" : "a", fk = fkOf(RMODE);
-    if (!box || !can(a) || !box.leaders.length || SAVING) return;
-    if (!($("aPass").value || "").trim()) { $("aMsg").textContent = tx("passNeed"); $("aMsg").style.color = "var(--warn)"; $("aPass").focus(); return; }
-    if (!boxOk(box)) { $("aMsg").textContent = tx("sumBlock"); return; }
-    const before = JSON.stringify({c: box.conf || "", L: box.leaders});
-    const l = box.leaders[Math.min(SELK[a] || 0, box.leaders.length - 1)];
-    if (legacyConf(box, RMODE)) {
-      box.conf = String(box.conf || "").replace(f, "");
-      box.leaders.forEach(x => { if (!x[fk]) x[fk] = freezeOf(a, x, RMODE, box); });
-    } else if (l[fk]) delete l[fk];
-    else l[fk] = freezeOf(a, l, RMODE, box);
+    if (!box || !can(a) || SAVING) return;
+    const msg = $("aMsg");
+    if (!box.leaders.length) { msg.textContent = tx("pubNone"); msg.style.color = "var(--warn)"; return; }
+    const not = box.leaders.map((l, n) => l[fk] ? 0 : n + 1).filter(Boolean);
+    if (not.length) { msg.textContent = tx("pubNeed", not.map(n => tx("nth", n)).join(", ")); msg.style.color = "var(--warn)"; CFOPEN = true; renderRally(); const c = document.querySelector("#rally .cfbox"); if (c) c.scrollIntoView({behavior: "smooth", block: "center"}); return; }
+    const before = box.pub || "";
+    box.pub = before.indexOf(f) >= 0 ? before : (before + f).split("").sort().join("");
     DIRTY[a] = true;
-    const doneMsg = tx(l[fk] ? "cfDone" : "cfUndone", tx("nth", box.leaders.indexOf(l) + 1), tx(RMODE === "def" ? "mDef" : "mAtk"));
-    saveConfig().then(ok => { if (ok) { $("aMsg").style.color = "var(--ok)"; $("aMsg").innerHTML = '<b>' + esc(doneMsg) + '</b>'; return; } if (!ok) { const m = $("aMsg").textContent, B = JSON.parse(before); box.conf = B.c; box.leaders = B.L; renderAdmin(); renderRally(); $("aMsg").textContent = m || tx("aFail"); $("aMsg").style.color = "var(--warn)"; } });
+    saveConfig().then(ok => {
+      if (ok) { msg.style.color = "var(--ok)"; msg.innerHTML = '<b>' + esc(tx("pubDone", a, tx(RMODE === "def" ? "mDef" : "mAtk"))) + '</b>'; return; }
+      const m = msg.textContent; box.pub = before; renderAdmin(); renderRally(); msg.textContent = m || tx("aFail"); msg.style.color = "var(--warn)";
+    });
     return;
   }
   if (e.target.id === "aAdd") {
