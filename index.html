@@ -103,8 +103,10 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 .ltab.cf.on{background:#2f9e44;border-color:#2f9e44;color:#fff}
 .cfbox{margin:6px 0 10px;border:2px solid #2f9e44;border-radius:12px;padding:6px 10px;background:var(--card)}
 .cfbox>summary{cursor:pointer;font-weight:800;color:#2f9e44;padding:4px 0}
-.cfrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed var(--line);flex-wrap:wrap}
-.cfrow .nm{flex:1 1 140px;min-width:0}
+.cfrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed var(--line);flex-wrap:nowrap;font-size:13px}
+.cfrow .nm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cfrow .sub{flex:none;white-space:nowrap;font-size:12px}
+.cfrow button{flex:none}
 .cfrow.on .nm b{color:#2f9e44}
 .cfrow button{min-height:32px;padding:0 12px;font-size:13px}
 .cfb{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:800;background:#2f9e44;color:#fff;vertical-align:middle;margin-inline-start:6px}
