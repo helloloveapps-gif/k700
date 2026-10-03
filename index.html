@@ -271,6 +271,7 @@ h1,h2,.sub,label,th,td,.msg{word-break:keep-all}
 .drawer button.item.on{background:var(--accent);color:#fff}
 .drawer button.item:hover{border-color:var(--line)}
 input.pass{width:110px !important;text-align:start;font-weight:700}
+.outb{min-height:0 !important;height:22px;padding:0 8px !important;margin-inline-start:6px;font-size:11px !important;border-radius:6px;background:#fff0f0;border:1px solid #e03131 !important;color:#e03131 !important;flex:none !important}
 .pgrp{display:flex;gap:6px;align-items:center;padding:6px;border:2px solid #7950f2;border-radius:12px;background:rgba(121,80,242,.08)}
 .ogrp{display:flex;gap:8px;flex-wrap:wrap}
 @media (max-width:600px){.pgrp{flex:1 1 100%;min-width:0}.pgrp input.pass{flex:1 1 0;width:0 !important;min-width:0}.pgrp button{flex:none !important;padding:0 8px;font-size:13px}.ogrp{flex:1 1 100%}.ogrp button{flex:1}}
@@ -541,6 +542,7 @@ const I18N = {
     passNeed: "저장하려면 Pass(비밀번호)를 넣으세요.", passBad: "Pass(비밀번호)가 틀렸습니다. 저장하지 않았습니다.",
     hAbsent: "불참 명단", absNone: "불참한 사람이 아직 없습니다.", dAbsent: "참여 시간 설문에서 「불참」을 고른 사람입니다. 참여율과 집결 편성에서 빠집니다.", histT: "병사 입력 기록", histNone: "병사 정보 입력 기록이 없습니다.", histNow: "현재",
     mEnemy: "🛡 적군 서버", hEnemy: "적군 서버 정보", dEnemy: "서버 번호와 Pass를 넣고 검색을 누르면 그 서버 정보를 한 번만 가져와 저장합니다. 한 번 가져온 서버는 다시 가져오지 않고 아래 단추로 바로 봅니다.", eKPh: "서버 번호", eFind: "검색", eSaved: "받아 둔 서버", eNone: "아직 받아 둔 서버가 없습니다.", eReq: "서버 {0} 검색을 접수했습니다. 정보를 한 번 가져오면 이 화면에 자동으로 나타납니다.", eWait: "⏳ 서버 {0} 수집 대기 중", eBadK: "서버 번호는 숫자 1~5자리입니다.", eAt: "수집 {0}", eKing: "왕 {0}", eKvk: "KvK 전투 {0} · 성 점령 {1} · 성 잃음 {2}", eAl: "연맹", ePl: "플레이어 {0}명", eSortM: "시련순", eSortP: "전투력순", eSortT: "성 레벨순", thMembers: "인원", thKills: "처치", thMSum: "시련 합", thPR: "전투력 순위", thKR: "처치 순위", thHR: "영웅 순위", thER: "펫 순위", eRefresh: "새로 받기", eNote: "병사 수는 공개 자료(jeabslist)에 없어 넣지 못했습니다. 연맹원 명단 기준이라 연맹이 없는 사람과 작은 연맹의 미추적 인원은 빠집니다.", eSortK: "처치순",
+    bConfL: "✅ {0} {1} 확정", bUnconfL: "{0} {1} 확정 취소", confList: "✅ 확정: {0}", confLegacy: "예전 방식 확정입니다. 집결마다 다시 확정하면 배치가 고정됩니다.", lockNote: "확정된 집결장은 배치가 고정되어 새 응답이 들어와도 바뀌지 않습니다. 바꾸려면 확정을 취소하세요.", bOut: "빠짐", subAsk: "{0} · {1} 빠짐\n\n{2}\n\n이대로 바꾸고 저장할까요?", subTo: "{0}: → {1} ({2})", subFrom: " — {0}에서 데려옴", subNone: "{0}: 대체할 사람 없음 → 부족으로 남김", subDone: "교체해 저장했습니다.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -593,6 +595,7 @@ const I18N = {
     passNeed: "Enter the Pass (password) to save.", passBad: "Wrong Pass (password). Nothing was saved.",
     hAbsent: "Not joining", absNone: "No one has chosen “Not joining” yet.", dAbsent: "Players who chose “Not joining” in the time survey. They are left out of participation and the rally plan.", histT: "Troop input history", histNone: "No troop input yet.", histNow: "Current",
     mEnemy: "🛡 Enemy server", hEnemy: "Enemy server info", dEnemy: "Enter a server number and the Pass, then press Search. The server's info is collected only once and saved. A saved server is never collected again; open it with the buttons below.", eKPh: "Server number", eFind: "Search", eSaved: "Saved servers", eNone: "No servers saved yet.", eReq: "Search for server {0} received. It will appear here automatically once its info is collected.", eWait: "⏳ Waiting for server {0}", eBadK: "A server number is 1-5 digits.", eAt: "Collected {0}", eKing: "King {0}", eKvk: "KvK battles {0} · castles taken {1} · lost {2}", eAl: "Alliances", ePl: "{0} players", eSortM: "By Trial", eSortP: "By power", eSortT: "By TC level", thMembers: "Members", thKills: "Kills", thMSum: "Trial total", thPR: "Power rank", thKR: "Kill rank", thHR: "Hero rank", thER: "Pet rank", eRefresh: "Refresh", eNote: "Troop counts are not public (jeabslist), so they are not shown. Based on alliance rosters: players without an alliance and untracked members of small alliances are missing.", eSortK: "By kills",
+    bConfL: "✅ Confirm {0} {1}", bUnconfL: "Cancel {0} {1} confirmation", confList: "✅ Confirmed: {0}", confLegacy: "Confirmed the old way. Confirm each leader again to lock the placement.", lockNote: "A confirmed leader's placement is locked and does not change when new answers come in. Cancel the confirmation to change it.", bOut: "Drop", subAsk: "{0} · {1} drops out\n\n{2}\n\nReplace and save?", subTo: "{0}: → {1} ({2})", subFrom: " — taken from {0}", subNone: "{0}: no replacement → left short", subDone: "Replaced and saved.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -645,6 +648,7 @@ const I18N = {
     passNeed: "儲存前請輸入 Pass（密碼）。", passBad: "Pass（密碼）錯誤，沒有儲存。",
     hAbsent: "不參加名單", absNone: "目前沒有人不參加。", dAbsent: "在時間問卷中選擇「不參加」的人，不計入參加率與集結編組。", histT: "兵力輸入紀錄", histNone: "沒有兵力輸入紀錄。", histNow: "目前",
     mEnemy: "🛡 敵方伺服器", hEnemy: "敵方伺服器資訊", dEnemy: "輸入伺服器編號與 Pass 後按「搜尋」，只會抓取一次該伺服器資訊並儲存。已儲存的伺服器不會再抓取，用下方按鈕直接查看。", eKPh: "伺服器編號", eFind: "搜尋", eSaved: "已儲存的伺服器", eNone: "尚未儲存任何伺服器。", eReq: "已收到伺服器 {0} 的搜尋。抓取完成後會自動顯示在這裡。", eWait: "⏳ 等待伺服器 {0}", eBadK: "伺服器編號是 1~5 位數字。", eAt: "收集於 {0}", eKing: "國王 {0}", eKvk: "KvK 戰鬥 {0} · 攻下城堡 {1} · 失去 {2}", eAl: "聯盟", ePl: "玩家 {0} 人", eSortM: "依試煉", eSortP: "依戰力", eSortT: "依城堡等級", thMembers: "人數", thKills: "擊殺", thMSum: "試煉總和", thPR: "戰力排名", thKR: "擊殺排名", thHR: "英雄排名", thER: "寵物排名", eRefresh: "重新抓取", eNote: "士兵數量不公開（jeabslist），因此無法顯示。依聯盟成員名單，沒有聯盟的人與小聯盟未追蹤的成員不包含在內。", eSortK: "依擊殺",
+    bConfL: "✅ 確定 {0} {1}", bUnconfL: "取消 {0} {1} 確定", confList: "✅ 已確定：{0}", confLegacy: "這是舊方式的確定。逐一重新確定集結隊長後，配置就會固定。", lockNote: "已確定的集結隊長配置會固定，有新回覆也不會變。要修改請先取消確定。", bOut: "退出", subAsk: "{0} · {1} 退出\n\n{2}\n\n要替換並儲存嗎？", subTo: "{0}：→ {1}（{2}）", subFrom: "（從 {0} 調來）", subNone: "{0}：沒有替補 → 保持不足", subDone: "已替換並儲存。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -697,6 +701,7 @@ const I18N = {
     passNeed: "أدخل Pass (كلمة المرور) للحفظ.", passBad: "Pass (كلمة المرور) خاطئة. لم يتم الحفظ.",
     hAbsent: "قائمة غير المشاركين", absNone: "لا يوجد غير مشاركين حتى الآن.", dAbsent: "اللاعبون الذين اختاروا «غير مشارك» في استبيان الوقت. لا يُحسبون في المشاركة ولا في خطة الحشود.", histT: "سجل إدخال القوات", histNone: "لا يوجد إدخال للقوات بعد.", histNow: "الحالي",
     mEnemy: "🛡 خادم العدو", hEnemy: "معلومات خادم العدو", dEnemy: "أدخل رقم الخادم وPass ثم اضغط بحث. تُجمع معلومات الخادم مرة واحدة فقط وتُحفظ. الخادم المحفوظ لا يُجمع مرة أخرى؛ افتحه بالأزرار أدناه.", eKPh: "رقم الخادم", eFind: "بحث", eSaved: "الخوادم المحفوظة", eNone: "لا توجد خوادم محفوظة بعد.", eReq: "تم استلام البحث عن الخادم {0}. سيظهر هنا تلقائيًا بعد جمع معلوماته.", eWait: "⏳ بانتظار الخادم {0}", eBadK: "رقم الخادم من 1 إلى 5 أرقام.", eAt: "جُمع {0}", eKing: "الملك {0}", eKvk: "معارك KvK {0} · قلاع مأخوذة {1} · مفقودة {2}", eAl: "التحالفات", ePl: "{0} لاعب", eSortM: "حسب التجربة", eSortP: "حسب القوة", eSortT: "حسب مستوى المركز", thMembers: "الأعضاء", thKills: "القتل", thMSum: "مجموع التجربة", thPR: "ترتيب القوة", thKR: "ترتيب القتل", thHR: "ترتيب الأبطال", thER: "ترتيب الحيوانات", eRefresh: "تحديث", eNote: "أعداد الجنود غير منشورة (jeabslist) لذلك لا تظهر. القائمة مبنية على أعضاء التحالفات: من بلا تحالف والأعضاء غير المتتبعين في التحالفات الصغيرة غير موجودين.", eSortK: "حسب القتل",
+    bConfL: "✅ تأكيد {0} {1}", bUnconfL: "إلغاء تأكيد {0} {1}", confList: "✅ مؤكد: {0}", confLegacy: "هذا تأكيد بالطريقة القديمة. أكّد كل قائد من جديد لتثبيت التوزيع.", lockNote: "توزيع القائد المؤكد ثابت ولا يتغير مع الإجابات الجديدة. ألغِ التأكيد لتغييره.", bOut: "انسحاب", subAsk: "{0} · انسحاب {1}\n\n{2}\n\nاستبدال وحفظ؟", subTo: "{0}: ← {1} ({2})", subFrom: " — من {0}", subNone: "{0}: لا بديل ← يبقى ناقصًا", subDone: "تم الاستبدال والحفظ.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -749,6 +754,7 @@ const I18N = {
     passNeed: "Kaydetmek için Pass'i (şifre) girin.", passBad: "Pass (şifre) yanlış. Kaydedilmedi.",
     hAbsent: "Katılmayanlar", absNone: "Henüz katılmayan yok.", dAbsent: "Zaman anketinde “Katılmıyor” seçenler. Katılım ve ralli planına dahil edilmez.", histT: "Asker giriş geçmişi", histNone: "Henüz asker girişi yok.", histNow: "Güncel",
     mEnemy: "🛡 Düşman sunucu", hEnemy: "Düşman sunucu bilgisi", dEnemy: "Sunucu numarasını ve Pass'i girip Ara'ya basın. Sunucu bilgisi yalnızca bir kez toplanır ve kaydedilir. Kayıtlı sunucu tekrar toplanmaz; aşağıdaki düğmelerle açın.", eKPh: "Sunucu numarası", eFind: "Ara", eSaved: "Kayıtlı sunucular", eNone: "Henüz kayıtlı sunucu yok.", eReq: "Sunucu {0} araması alındı. Bilgisi toplanınca burada otomatik görünecek.", eWait: "⏳ Sunucu {0} bekleniyor", eBadK: "Sunucu numarası 1-5 haneli bir sayıdır.", eAt: "Toplandı {0}", eKing: "Kral {0}", eKvk: "KvK savaş {0} · alınan kale {1} · kaybedilen {2}", eAl: "İttifaklar", ePl: "{0} oyuncu", eSortM: "Denemeye göre", eSortP: "Güce göre", eSortT: "Merkez seviyesine göre", thMembers: "Üye", thKills: "Öldürme", thMSum: "Deneme toplamı", thPR: "Güç sırası", thKR: "Öldürme sırası", thHR: "Kahraman sırası", thER: "Evcil sırası", eRefresh: "Yenile", eNote: "Asker sayıları herkese açık değil (jeabslist), bu yüzden gösterilmiyor. İttifak listelerine göre: ittifaksız oyuncular ve küçük ittifakların takip edilmeyen üyeleri yok.", eSortK: "Öldürmeye göre",
+    bConfL: "✅ {0} {1} onayla", bUnconfL: "{0} {1} onayını iptal et", confList: "✅ Onaylı: {0}", confLegacy: "Eski yöntemle onaylanmış. Yerleşimi sabitlemek için her lideri yeniden onaylayın.", lockNote: "Onaylı liderin yerleşimi sabittir, yeni yanıtlar gelse de değişmez. Değiştirmek için onayı iptal edin.", bOut: "Çıktı", subAsk: "{0} · {1} çıkıyor\n\n{2}\n\nDeğiştirip kaydedelim mi?", subTo: "{0}: → {1} ({2})", subFrom: " — {0} grubundan", subNone: "{0}: yedek yok → eksik kalır", subDone: "Değiştirildi ve kaydedildi.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -801,11 +807,16 @@ const marchOf = p => MARCH[p.id] || +((cfgNow().A[p.ally] || {}).def) || DEF_MAR
 // 기본값: 출정 인원수를 안 넣은 사람은 145,000, 집결 인원수를 안 넣은 집결장은 1,300,000 (이박사님 2026-10-02)
 const DEF_MARCH = 145000, DEF_RALLY = 1300000;
 const blank = () => ({def: DEF_MARCH, leaders: [], by: "", at: "", conf: ""});
-const hasConf = (b, mode) => String((b || {}).conf || "").indexOf(mode === "def" ? "d" : "a") >= 0;
+const fkOf = mode => mode === "def" ? "fd" : "fa";
+const legacyConf = (b, mode) => String((b || {}).conf || "").indexOf(mode === "def" ? "d" : "a") >= 0;
+const lConf = (b, l, mode) => !!(l && l[fkOf(mode)]) || legacyConf(b, mode);
+const hasConf = (b, mode) => legacyConf(b, mode) || ((b || {}).leaders || []).some(l => l[fkOf(mode)]);
+// 확정할 때의 배치를 집결장 하나에 대해 시간대별로 뽑는다: null = 그 시간대에 집결장이 없음
+const freezeOf = (a, l, mode, box) => SLOTS.map((s, i) => { const R = alloc(a, i, mode, box).rallies.find(q => q.p.id === l.id); return R ? {o: R.own.slice(), m: R.members.map(m => [m.p.id].concat(m.send))} : null; });
 // 포메이션: r = 공격 비율, d = 수비 비율(보병 · 기병 · 궁병). 화면은 RMODE 로 둘 중 하나를 그린다
 let RMODE = "atk";
 const SELK = {};   // 연맹별로 지금 고른 집결장 번호(0부터)
-const tabsHtml = (list, k) => '<div class="ltabs">' + list.map((l, i) => { const p = DATA.find(x => x.id === l.id); return '<button class="ltab' + (i === k ? ' on' : '') + '" data-k="' + i + '">' + tx("nth", i + 1) + ' · ' + esc(p ? (p.gname || p.name) : l.id) + '</button>'; }).join("") + '</div>';
+const tabsHtml = (list, k) => '<div class="ltabs">' + list.map((l, i) => { const p = DATA.find(x => x.id === l.id); return '<button class="ltab' + (i === k ? ' on' : '') + '" data-k="' + i + '">' + (l[fkOf(RMODE)] ? '✅ ' : '') + tx("nth", i + 1) + ' · ' + esc(p ? (p.gname || p.name) : l.id) + '</button>'; }).join("") + '</div>';
 const PLAN = {};   // 관리자가 「배치」를 누른 때의 설정 사본(연맹별). 없으면 저장된 설정으로 그린다
 const ratioOf = (l, mode) => (mode === "def" ? l.d : l.r) || (mode === "def" ? [5, 2, 3] : [6, 4, 0]);
 const planBox = a => (IS_ADMIN && PLAN[a]) || CFG.A[a] || blank();
@@ -862,7 +873,10 @@ async function loadConfig() {
       const mk = /\[D:(\d+)\/(\d+)\/(\d+)\](?: \[C:([ad]*)\])?(?: \[N:(\d+)\])?\s*$/.exec(String(row[ci.lname] || ""));
       if (mk && mk[4]) g.conf = mk[4];
       if (mk && mk[5] != null) g.n = +mk[5];
-      g.leaders.push({id, cap: num(row[ci.cap]), r: ci.r.map(c => num(row[c])), d: mk ? [+mk[1], +mk[2], +mk[3]] : [5, 2, 3]});
+      const L = {id, cap: num(row[ci.cap]), r: ci.r.map(c => num(row[c])), d: mk ? [+mk[1], +mk[2], +mk[3]] : [5, 2, 3]};
+      const fm = /\[F:(\{.*?\})\] \[D:/.exec(String(row[ci.lname] || ""));
+      if (fm) { try { const F = JSON.parse(fm[1]); if (Array.isArray(F.a)) L.fa = F.a; if (Array.isArray(F.d)) L.fd = F.d; } catch (e) {} }
+      g.leaders.push(L);
     }
   });
   // 연맹마다 「줄이 다 들어온」 묶음 가운데 가장 최근 것만 쓴다. 저장 도중이거나 한 줄이 빠진 묶음은 건너뛴다
@@ -1168,15 +1182,24 @@ function alloc(a, i, mode, bx) {
   const box = bx || planBox(a), all = box.leaders || [], lids = new Set(all.map(l => l.id));
   const march = p => MARCH[p.id] || +box.def || DEF_MARCH;
   const lv = (p, t) => { const s = troops(p); return s ? s[t][1] * 100 + s[t][0] : 0; };
-  const rallies = all.map(l => ({l, p: mem.find(p => p.id === l.id)})).filter(x => x.p).map(x => {
+  const fk = fkOf(mode), who = id => DATA.find(q => q.id === id) || {id, name: "?", gname: "", slots: [], power: 0};
+  const fixed = new Set();
+  const rallies = all.map(l => ({l, p: mem.find(p => p.id === l.id), fz: l[fk] ? (l[fk][i] || null) : undefined})).filter(x => x.fz !== undefined ? x.fz : x.p).map(x => {
+    if (x.fz) {
+      const cap = Math.max(0, +x.l.cap || 0), r = ratioOf(x.l, mode).map(v => Math.max(0, +v || 0)), target = needOf(cap, r);
+      const own = [0, 1, 2].map(t => +x.fz.o[t] || 0), members = (x.fz.m || []).map(e => ({p: who(e[0]), send: [+e[1] || 0, +e[2] || 0, +e[3] || 0]}));
+      fixed.add(x.l.id); members.forEach(m => fixed.add(m.p.id));
+      return {p: x.p || who(x.l.id), cap, r, target, own, frozen: true, need: target.map((v, t) => Math.max(0, v - own[t] - members.reduce((q, m) => q + m.send[t], 0))), members};
+    }
     const cap = Math.max(0, +x.l.cap || 0), r = ratioOf(x.l, mode).map(v => Math.max(0, +v || 0));
     const target = needOf(cap, r), own = ownSplit(Math.min(march(x.p), cap), r, target);
     return {p: x.p, cap, r, target, own, need: target.map((v, t) => Math.max(0, v - own[t])), members: []};
   });
-  const pool = mem.filter(p => !lids.has(p.id)).map(p => ({p, rem: march(p), used: false}));
+  const pool = mem.filter(p => !lids.has(p.id) && !fixed.has(p.id)).map(p => ({p, rem: march(p), used: false}));
   // 집결장 순서대로, 남은 사람 가운데 「병사 레벨 합이 가장 높아지는」 배치를 구한다(최소 비용 흐름 — 아래 bestFill).
   // 1,000 단위로 끊어 보내고, 끝에 남는 자투리만 한 사람이 채운다
   rallies.forEach(R => {
+    if (R.frozen) return;
     const free = pool.filter(m => !m.used);
     if (!free.length) return;
     const rank = free.slice().sort((x, y) => (y.p.power || 0) - (x.p.power || 0));
@@ -1219,20 +1242,20 @@ function renderRally() {
   const nm = p => esc(p.gname || p.name), z = TZ[LANG], kinds = [tx("inf"), tx("cav"), tx("arc")];
   let usedDef = false;
   const star = p => { if (MARCH[p.id]) return ''; usedDef = true; return '<span class="sub">＊</span>'; };
-  const line = (label, v, cls) => '<div class="tr' + (cls ? ' ' + cls : '') + '"><span>' + label + '</span><span class="amt">' + ([0, 1, 2].filter(t => v[t]).map(t => kinds[t] + ' ' + fmt(v[t])).join(' · ') || '·') + '</span></div>';
+  const line = (label, v, cls, btn) => '<div class="tr' + (cls ? ' ' + cls : '') + '"><span>' + label + (btn || '') + '</span><span class="amt">' + ([0, 1, 2].filter(t => v[t]).map(t => kinds[t] + ' ' + fmt(v[t])).join(' · ') || '·') + '</span></div>';
   // 같은 편성이 이어지는 시간대는 한 덩어리로 묶는다 (12:00~15:00)
   const range = (i0, i1) => esc(SLOTS[i0][0].slice(0, 5) + '~' + SLOTS[i1][0].slice(6)) + (z ? ' <small>(' + esc(z[0] + ' ' + hm(SLOTS[i0][1], z[1]) + '~' + hm(SLOTS[i1][2], z[1])) + ')</small>' : '');
   const meta = CFG.A[a] || {};
   const plan = SLOTS.map((s, i) => alloc(a, i, RMODE));
   const dls = editing ? leadersOf(a) : ls, selK = Math.min(SELK[a] || 0, Math.max(0, dls.length - 1)), selId = (dls[selK] || {}).id;
   let h = bar + (editing ? '' : tabsHtml(ls, selK)) + (meta.at ? '<div class="sub" style="margin-bottom:6px">' + tx("saved", esc(meta.at)) + (meta.by ? ' · ' + esc(meta.by) : '') + (editing && DIRTY[a] ? ' · <b style="color:var(--warn)">' + tx("unsaved") + '</b>' : '') + '</div>' : (editing && DIRTY[a] ? '<div class="sub" style="margin-bottom:6px"><b style="color:var(--warn)">' + tx("notSaved") + '</b></div>' : ""));
-  const okModes = ["atk", "def"].filter(m => hasConf(box, m)).map(m => tx(m === "def" ? "mDef" : "mAtk"));
-  h += '<div class="sub" style="margin-bottom:6px"><b style="color:' + (okModes.length ? 'var(--ok)' : 'var(--warn)') + '">' + (okModes.length ? tx("confYes", okModes.join(" · ")) : tx("confNo")) + '</b></div>';
+  const cl = ls.map((l, n) => l[fkOf(RMODE)] ? n + 1 : 0).filter(Boolean), lg = legacyConf(box, RMODE);
+  h += '<div class="sub" style="margin-bottom:6px"><b style="color:' + (cl.length || lg ? 'var(--ok)' : 'var(--warn)') + '">' + (cl.length ? tx("confList", cl.map(n => tx("nth", n)).join(" · ") + " (" + tx(RMODE === "def" ? "mDef" : "mAtk") + ")") : lg ? tx("confYes", tx(RMODE === "def" ? "mDef" : "mAtk")) : tx("confNo")) + '</b>' + (lg && !cl.length ? ' <span class="sub">' + tx("confLegacy") + '</span>' : '') + '</div>';
   ls.forEach((l, n) => {
     if (l.id !== selId) return;
     const p = DATA.find(x => x.id === l.id), r = ratioOf(l, RMODE);
     const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +box.def || DEF_MARCH, cap);
-    h += '<div class="card leader" style="margin-top:12px;padding:12px"><div class="lname">' + (n + 1) + '. ★ ' + (p ? nm(p) : esc(l.id)) + ' <span class="sub" style="font-weight:400">' + (RMODE === "def" ? '🛡' : '⚔') + ' ' + r.map(v => +v || 0).join(":") + '</span></div>' +
+    h += '<div class="card leader" style="margin-top:12px;padding:12px"><div class="lname">' + (l[fkOf(RMODE)] ? '✅ ' : '') + (n + 1) + '. ★ ' + (p ? nm(p) : esc(l.id)) + ' <span class="sub" style="font-weight:400">' + (RMODE === "def" ? '🛡' : '⚔') + ' ' + r.map(v => +v || 0).join(":") + '</span></div>' + (l[fkOf(RMODE)] ? '<div class="sub" style="color:var(--ok)">' + tx("lockNote") + '</div>' : '') +
       '<div class="sub">' + tx("capSplit", '<b>' + fmt(cap) + '</b>', fmt(own), '<b>' + fmt(cap - own) + '</b>') + '</div>';
     const rows = plan.map(pl => pl.rallies.find(q => q.p.id === l.id) || null);
     const sig = x => x ? JSON.stringify([x.own, x.members.map(m => [m.p.id, m.send]), x.need]) : "away";
@@ -1244,7 +1267,7 @@ function renderRally() {
       else {
         const lack = [0, 1, 2].filter(t => x.need[t]).map(t => kinds[t] + ' ' + fmt(x.need[t])).join(' · ');
         h += '<div class="tb"><div class="th">' + range(i, j) + '<span class="fill" style="color:' + (lack ? 'var(--warn)' : 'var(--ok)') + '">' + tx("nJoin", x.members.length) + ' · ' + (lack ? tx("short", lack) : tx("fullOk")) + '</span></div><div class="ttl">' +
-          line('<b>★ ' + tx("leaderSelf") + '</b>' + star(x.p), x.own, "own") + x.members.map(m => line(nm(m.p) + star(m.p), m.send)).join("") + '</div></div>';
+          line('<b>★ ' + tx("leaderSelf") + '</b>' + star(x.p), x.own, "own") + x.members.map(m => line(nm(m.p) + star(m.p), m.send, "", editing && x.frozen && l[fkOf(RMODE)] ? ' <button class="outb" data-out="' + esc(m.p.id) + '" data-l="' + esc(l.id) + '" data-i0="' + i + '" data-i1="' + j + '">' + tx("bOut") + '</button>' : '')).join("") + '</div></div>';
       }
       i = j + 1;
     }
@@ -1260,7 +1283,7 @@ function renderRally() {
 // 한 사람의 역할: 확정된 포메이션마다, 시간대별로 어느 집결장에서 무엇을 보내는지 (저장 · 확정된 설정만 쓴다)
 function roleHtml(p) {
   const box = CFG.A[p.ally];
-  if (!box || !(box.leaders || []).length || !String(box.conf || "")) return '<div class="msg">' + tx("roleNo", esc(p.ally)) + '</div>';
+  if (!box || !(box.leaders || []).length || !(hasConf(box, "atk") || hasConf(box, "def"))) return '<div class="msg">' + tx("roleNo", esc(p.ally)) + '</div>';
   const kinds = [tx("inf"), tx("cav"), tx("arc")], z = TZ[LANG];
   const amt = v => [0, 1, 2].filter(t => v[t]).map(t => kinds[t] + ' <b>' + fmt(v[t]) + '</b>').join(' · ') + ' = ' + fmt(v[0] + v[1] + v[2]);
   const range = (i0, i1) => esc(SLOTS[i0][0].slice(0, 5) + '~' + SLOTS[i1][0].slice(6)) + (z ? ' <small>(' + esc(z[0] + ' ' + hm(SLOTS[i0][1], z[1]) + '~' + hm(SLOTS[i1][2], z[1])) + ')</small>' : '');
@@ -1271,6 +1294,7 @@ function roleHtml(p) {
       if (!p.slots[i]) return {k: "away"};
       const pl = alloc(p.ally, i, mode, box);
       for (const R of pl.rallies) {
+        if (!lConf(box, box.leaders.find(l => l.id === R.p.id), mode)) continue;
         const num = box.leaders.findIndex(l => l.id === R.p.id) + 1;
         if (R.p.id === p.id) return {k: "L", num, send: R.own};
         const m = R.members.find(x => x.p.id === p.id);
@@ -1444,7 +1468,7 @@ function renderAdmin() {
   }
   h += '<div class="arow"><div class="pgrp">' + passMe("aPass") +
     '<button class="primary" id="aSave">' + tx("aSave", esc(a)) + '</button><button id="aReset">' + tx("bReset") + '</button></div>' +
-    '<div class="ogrp">' + (ls.length ? '<button id="aConf"' + (hasConf(box0, RMODE) ? ' class="off"' : '') + '>' + tx(hasConf(box0, RMODE) ? "bUnconfirm" : "bConfirm", tx(RMODE === "def" ? "mDef" : "mAtk")) + '</button>' : '') +
+    '<div class="ogrp">' + (ls.length ? (() => { const L = ls[SELK[a] || 0], on = !!L[fkOf(RMODE)]; return '<button id="aConf"' + (on ? ' class="off"' : '') + '>' + tx(on ? "bUnconfL" : "bConfL", tx("nth", (SELK[a] || 0) + 1), tx(RMODE === "def" ? "mDef" : "mAtk")) + '</button>'; })() : '') +
     '<button class="repb">' + tx("bReport") + '</button></div></div>' +
     '<div class="sub" id="aMsg" style="margin-top:6px"></div></div>';
   box.innerHTML = h;
@@ -1458,7 +1482,7 @@ const hourXY = (k, r) => { const g = k * Math.PI / 6; return [50 + r * Math.sin(
 let DRAG = null;
 const mapClean = P => { const o = {}; ALLIES.forEach(a => { const v = (P || {})[a] || {}, h = +v.h; o[a] = {h: h >= 1 && h <= 12 ? Math.round(h) : 0, m: String(v.m || "").slice(0, 40), t: "", lt: Object.fromEntries(Object.entries(v.lt || {}).filter(x => /^[0-9]{7,12}$/.test(x[0]) && TOWERS[x[1]]))}; }); return o; };
 // 확정된 연맹의 집결장 = 연맹 딱지 둘레의 번호 방울. 성 쪽을 향해 부채꼴로 놓는다
-const confLeaders = a => { const b = CFG.A[a]; return b && String(b.conf || "") && (b.leaders || []).length ? b.leaders.slice(0, 6) : []; };
+const confLeaders = a => { const b = CFG.A[a]; return b ? (b.leaders || []).filter(l => lConf(b, l, "atk") || lConf(b, l, "def")).slice(0, 6) : []; };
 const bubXY = (h, k, n) => { const c = hourXY(h, 44), g = Math.atan2(50 - c[1], 50 - c[0]) + (n > 1 ? (k / (n - 1) - .5) * 2.2 : 0); return [c[0] + 8.5 * Math.cos(g), c[1] + 8.5 * Math.sin(g)]; };
 // 포물선 화살표: 시작 → 끝을 잇는 2차 곡선, 가운데를 옆으로 띄운다. 끝은 화살촉이 타워에 겹치지 않게 조금 당긴다
 function arcPath(s0, e0, lift) {
@@ -1486,14 +1510,14 @@ function renderWar() {
   }
   ALLIES.filter(a => P[a].h).forEach(a => {
     const ls = confLeaders(a);
-    ls.forEach((l, k) => { const xy = bubXY(P[a].h, k, ls.length); h += '<div class="bub' + (P[a].lt[l.id] ? ' set' : '') + '" data-a="' + esc(a) + '" data-l="' + esc(l.id) + '" data-k="' + k + '" style="left:' + xy[0].toFixed(2) + '%;top:' + xy[1].toFixed(2) + '%;background:' + col(a) + '">' + (k + 1) + '</div>'; });
+    ls.forEach((l, k) => { const xy = bubXY(P[a].h, k, ls.length); h += '<div class="bub' + (P[a].lt[l.id] ? ' set' : '') + '" data-a="' + esc(a) + '" data-l="' + esc(l.id) + '" data-k="' + k + '" style="left:' + xy[0].toFixed(2) + '%;top:' + xy[1].toFixed(2) + '%;background:' + col(a) + '">' + ((CFG.A[a].leaders || []).findIndex(x => x.id === l.id) + 1) + '</div>'; });
   });
   h += '<div class="bubtip" id="bubTip" hidden></div></div>';
   if (ALLIES.some(a => P[a].h && confLeaders(a).length)) h += '<div class="sub" style="margin-bottom:8px">' + tx("bubHint") + '</div>';
   if (meta.at) h += '<div class="sub" style="margin-bottom:6px">' + tx("warSaved", esc(meta.at)) + (meta.by ? ' · ' + esc(meta.by) : '') + (admin && MAP_DIRTY ? ' · <b style="color:var(--warn)">' + tx("unsaved") + '</b>' : '') + '</div>';
   else if (!ALLIES.some(a => P[a].h)) h += '<div class="sub" style="margin-bottom:6px">' + tx("warNone") + '</div>';
   h += '<div class="scroll"><table class="plan"><tr><th>' + tx("thAlly") + '</th><th>' + tx("thDir") + '</th><th>' + tx("thTarget") + '</th><th>' + tx("thMemo") + '</th></tr>' +
-    ALLIES.map(a => '<tr><td><span class="tag" style="background:' + col(a) + ';color:#fff">' + esc(a) + '</span> <span class="sub">' + esc(ROSTER[a].name) + '</span></td><td>' + (P[a].h ? '<b>' + tx("oclock", P[a].h) + '</b>' : '<span class="no">·</span>') + '</td><td>' + (confLeaders(a).filter(l => P[a].lt[l.id]).length ? confLeaders(a).map((l, k) => P[a].lt[l.id] ? '<b>' + (k + 1) + ' → ' + tx("tw" + P[a].lt[l.id]) + '</b>' : '').filter(Boolean).join('<br>') : '<span class="no">·</span>') + '</td><td style="white-space:normal">' + esc(P[a].m) + '</td></tr>').join("") + '</table></div>';
+    ALLIES.map(a => '<tr><td><span class="tag" style="background:' + col(a) + ';color:#fff">' + esc(a) + '</span> <span class="sub">' + esc(ROSTER[a].name) + '</span></td><td>' + (P[a].h ? '<b>' + tx("oclock", P[a].h) + '</b>' : '<span class="no">·</span>') + '</td><td>' + (confLeaders(a).filter(l => P[a].lt[l.id]).length ? confLeaders(a).map((l, k) => P[a].lt[l.id] ? '<b>' + ((CFG.A[a].leaders || []).findIndex(x => x.id === l.id) + 1) + ' → ' + tx("tw" + P[a].lt[l.id]) + '</b>' : '').filter(Boolean).join('<br>') : '<span class="no">·</span>') + '</td><td style="white-space:normal">' + esc(P[a].m) + '</td></tr>').join("") + '</table></div>';
   if (admin) {
     let by = "";
     try { by = localStorage.getItem("k700by") || ""; } catch (e) {}
@@ -1539,7 +1563,7 @@ $("warBody").addEventListener("pointermove", e => {
   [...document.querySelectorAll("#warMap .tw")].forEach(t => t.classList.toggle("hot", t.getAttribute("data-t") === hot));
 });
 function showBubTip(d) {
-  const tip = $("bubTip"), b = CFG.A[d.a], k = +d.el.getAttribute("data-k"), l = (b && b.leaders || [])[k];
+  const tip = $("bubTip"), b = CFG.A[d.a], lid = d.el.getAttribute("data-l"), k = (b && b.leaders || []).findIndex(x => x.id === lid), l = k >= 0 ? b.leaders[k] : null;
   if (!tip || !l) return;
   const p = DATA.find(x => x.id === l.id), P = (IS_ADMIN && MAPD) ? MAPD : mapClean(mapSaved()), t = (P[d.a].lt || {})[l.id];
   tip.textContent = d.a + " · " + tx("nth", k + 1) + " · " + (p ? (p.gname || p.name) : "?") + " → " + (t ? tx("tw" + t) : tx("bubNoTarget"));
@@ -1620,7 +1644,7 @@ async function saveConfig1() {
     body.append(CF.def, String(+box.def || DEF_MARCH)); body.append(CF.admin, H);
     if (l) {
       const p = DATA.find(x => x.id === l.id);
-      body.append(CF.lid, l.id); body.append(CF.lname, (p ? (p.gname || p.name) : "") + " [D:" + ratioOf(l, "def").map(v => +v || 0).join("/") + "]" + (box.conf ? " [C:" + box.conf + "]" : "") + " [N:" + box.leaders.length + "]");
+      body.append(CF.lid, l.id); body.append(CF.lname, (p ? (p.gname || p.name) : "") + (l.fa || l.fd ? " [F:" + JSON.stringify({a: l.fa || undefined, d: l.fd || undefined}) + "]" : "") + " [D:" + ratioOf(l, "def").map(v => +v || 0).join("/") + "]" + (box.conf ? " [C:" + box.conf + "]" : "") + " [N:" + box.leaders.length + "]");
       body.append(CF.cap, String(+l.cap || 0));
       [0, 1, 2].forEach(t => body.append(CF.r[t], String(+l.r[t] || 0)));
     }
@@ -1948,7 +1972,77 @@ $("reload").addEventListener("click", load);
 $("rAlly").innerHTML = ALLIES.map(a => '<option>' + esc(a) + '</option>').join("");
 $("rAlly").addEventListener("change", () => { renderAdmin(); renderRally(); });
 // 「공격 배치」 · 「수비 배치」: 그 포메이션으로 다시 그린다. 관리자는 지금 고친 설정으로 계산한다
+// 대체: 빠진 사람 몫(시간대별 보내던 병력)을 그대로 넘겨받을 한 사람. 남는 인원 → 확정 안 된 집결의 집결원 → 맨 마지막 확정 집결 순.
+// 확정된 다른 집결은 건드리지 않는다(마지막 확정 집결에서 데려오면 그 자리는 부족으로 남긴다)
+function subPlan(a, mode, lid, out, i0, i1) {
+  const box = DRAFT.A[a], march = p => MARCH[p.id] || +box.def || DEF_MARCH;
+  const lv = (p, t) => { const s = troops(p); return s ? s[t][1] * 100 + s[t][0] : 0; };
+  const res = [];
+  let prev = null;
+  for (let i = i0; i <= i1; i++) {
+    const pl = alloc(a, i, mode, box), R = pl.rallies.find(q => q.p.id === lid), m = R && R.members.find(x => x.p.id === out);
+    if (!m) continue;
+    const send = m.send, tot = send[0] + send[1] + send[2];
+    const score = p => [0, 1, 2].reduce((q, t) => q + (send[t] ? lv(p, t) * send[t] : 0), 0);
+    // 앞 번호 집결(우선순위가 높은 집결)에서는 데려오지 않는다 — 이 집결보다 뒤 번호만
+    const after = pl.rallies.slice(pl.rallies.indexOf(R) + 1);
+    const groups = [pl.rest.map(p => ({p, from: null})), after.filter(q => !q.frozen).reverse().flatMap(q => q.members.map(x => ({p: x.p, from: null})))];
+    const lastF = after.filter(q => q.frozen).pop();
+    if (lastF) groups.push(lastF.members.map(x => ({p: x.p, from: lastF.p.id})));
+    // 순서: 남는 인원(다 채움) → 확정 안 된 집결(다 채움) → 남는 인원(일부) → 확정 안 된 집결(일부) → 마지막 확정 집결(다 채움 → 일부)
+    let pick = null, give = send;
+    const full = g => g.filter(c => c.p.id !== out && march(c.p) >= tot).sort((x, y) => (prev && y.p.id === prev) - (prev && x.p.id === prev) || score(y.p) - score(x.p) || (y.p.power || 0) - (x.p.power || 0))[0];
+    const part = g => g.filter(c => c.p.id !== out).sort((x, y) => march(y.p) - march(x.p) || score(y.p) - score(x.p))[0];
+    const tiers = [[0, full], [1, full], [0, part], [1, part], [2, full], [2, part]];
+    for (const [gi, f] of tiers) {
+      if (!groups[gi]) continue;
+      const c = f(groups[gi]);
+      if (!c) continue;
+      pick = c;
+      if (march(c.p) < tot) {
+        let left = march(c.p);
+        give = [0, 0, 0];
+        [0, 1, 2].sort((x, y) => send[y] - send[x]).forEach(t => { const v = Math.min(send[t], left); give[t] = v; left -= v; });
+      }
+      break;
+    }
+    if (pick) prev = pick.p.id;
+    res.push({i, send: give, pick});
+  }
+  return res;
+}
 $("rally").addEventListener("click", e => {
+  const ob = e.target.closest("button.outb");
+  if (ob) {
+    const a = $("rAlly").value || ALLIES[0], box = DRAFT && DRAFT.A[a], fk = fkOf(RMODE);
+    if (!box || !can(a) || SAVING) return;
+    const lid = ob.dataset.l, out = ob.dataset.out, L = box.leaders.find(x => x.id === lid);
+    if (!L || !L[fk]) return;
+    if (!($("aPass") && $("aPass").value.trim())) { $("aMsg").textContent = tx("passNeed"); $("aMsg").style.color = "var(--warn)"; if ($("aPass")) { $("aPass").focus(); $("aPass").scrollIntoView({block: "center"}); } return; }
+    const plan = subPlan(a, RMODE, lid, out, +ob.dataset.i0, +ob.dataset.i1);
+    if (!plan.length) return;
+    const nmOf = id => { const q = DATA.find(x => x.id === id); return q ? (q.gname || q.name) : "?"; }, kinds = [tx("inf"), tx("cav"), tx("arc")];
+    const amt = v => [0, 1, 2].filter(t => v[t]).map(t => kinds[t] + " " + fmt(v[t])).join(" · ");
+    const lines = plan.map(x => x.pick ? tx("subTo", SLOTS[x.i][0], nmOf(x.pick.p.id), amt(x.send)) + (x.pick.from ? tx("subFrom", tx("nth", box.leaders.findIndex(q => q.id === x.pick.from) + 1)) : "") : tx("subNone", SLOTS[x.i][0]));
+    if (!confirm(tx("subAsk", tx("nth", box.leaders.indexOf(L) + 1), nmOf(out), lines.join("\n")))) return;
+    const before = JSON.stringify(box.leaders);
+    plan.forEach(x => {
+      const z = L[fk][x.i];
+      if (!z) return;
+      z.m = z.m.filter(e => e[0] !== out);
+      if (x.pick) {
+        z.m.push([x.pick.p.id].concat(x.send));
+        if (x.pick.from) { const F = box.leaders.find(q => q.id === x.pick.from), y = F && F[fk] && F[fk][x.i]; if (y) y.m = y.m.filter(e => e[0] !== x.pick.p.id); }
+      }
+    });
+    DIRTY[a] = true; PLAN[a] = JSON.parse(JSON.stringify(box));
+    renderRally();
+    saveConfig().then(ok => {
+      if (ok) { $("aMsg").style.color = "var(--ok)"; $("aMsg").textContent = tx("subDone"); return; }
+      const m = $("aMsg").textContent; box.leaders = JSON.parse(before); PLAN[a] = JSON.parse(JSON.stringify(box)); renderAdmin(); renderRally(); $("aMsg").textContent = m || tx("aFail"); $("aMsg").style.color = "var(--warn)";
+    });
+    return;
+  }
   if (pickTab(e)) return;
   if (e.target.closest("button.repb")) { openReport(); return; }
   const b = e.target.closest("button.modeb");
@@ -2023,15 +2117,21 @@ $("admin").addEventListener("click", e => {
   }
   if (e.target.id === "aSave") { saveConfig(); return; }
   if (e.target.id === "aConf") {
-    // 확정 = 지금 설정을 저장하면서 이 포메이션(공격 또는 수비)에 확정 표시를 단다. 다시 누르면 확정을 푼다
-    const a = $("rAlly").value || ALLIES[0], box = DRAFT.A[a], f = RMODE === "def" ? "d" : "a";
+    // 확정 = 지금 고른 집결장 하나의 배치를 시간대별로 그대로 저장한다(fa = 공격, fd = 수비). 다시 누르면 확정을 푼다.
+    // 예전 방식(연맹 전체) 확정이 걸려 있던 포메이션은 처음 누를 때 모든 집결장을 지금 배치로 고정해 옮긴다
+    const a = $("rAlly").value || ALLIES[0], box = DRAFT.A[a], f = RMODE === "def" ? "d" : "a", fk = fkOf(RMODE);
     if (!box || !can(a) || !box.leaders.length || SAVING) return;
     if (!($("aPass").value || "").trim()) { $("aMsg").textContent = tx("passNeed"); $("aMsg").style.color = "var(--warn)"; $("aPass").focus(); return; }
     if (!boxOk(box)) { $("aMsg").textContent = tx("sumBlock"); return; }
-    const before = String(box.conf || "");
-    box.conf = before.indexOf(f) >= 0 ? before.replace(f, "") : (before + f).split("").sort().join("");
+    const before = JSON.stringify({c: box.conf || "", L: box.leaders});
+    const l = box.leaders[Math.min(SELK[a] || 0, box.leaders.length - 1)];
+    if (legacyConf(box, RMODE)) {
+      box.conf = String(box.conf || "").replace(f, "");
+      box.leaders.forEach(x => { if (!x[fk]) x[fk] = freezeOf(a, x, RMODE, box); });
+    } else if (l[fk]) delete l[fk];
+    else l[fk] = freezeOf(a, l, RMODE, box);
     DIRTY[a] = true;
-    saveConfig().then(ok => { if (!ok) { const m = $("aMsg").textContent; box.conf = before; renderAdmin(); renderRally(); $("aMsg").textContent = m || tx("aFail"); $("aMsg").style.color = "var(--warn)"; } });
+    saveConfig().then(ok => { if (!ok) { const m = $("aMsg").textContent, B = JSON.parse(before); box.conf = B.c; box.leaders = B.L; renderAdmin(); renderRally(); $("aMsg").textContent = m || tx("aFail"); $("aMsg").style.color = "var(--warn)"; } });
     return;
   }
   if (e.target.id === "aAdd") {
