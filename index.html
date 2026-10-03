@@ -1350,7 +1350,7 @@ const mapSaved = () => (CFG.map && CFG.map.P) || {};
 const TOWERS = {C: [50, 50], N: [50, 32], E: [76, 52.5], S: [50, 70], W: [24, 52.5]};
 const hourXY = (k, r) => { const g = k * Math.PI / 6; return [50 + r * Math.sin(g), 50 - r * Math.cos(g)]; };
 let DRAG = null;
-const mapClean = P => { const o = {}; ALLIES.forEach(a => { const v = (P || {})[a] || {}, h = +v.h; o[a] = {h: h >= 1 && h <= 12 ? Math.round(h) : 0, m: String(v.m || "").slice(0, 40), t: TOWERS[v.t] ? v.t : "", lt: Object.fromEntries(Object.entries(v.lt || {}).filter(x => /^[0-9]{7,12}$/.test(x[0]) && TOWERS[x[1]]))}; }); return o; };
+const mapClean = P => { const o = {}; ALLIES.forEach(a => { const v = (P || {})[a] || {}, h = +v.h; o[a] = {h: h >= 1 && h <= 12 ? Math.round(h) : 0, m: String(v.m || "").slice(0, 40), t: "", lt: Object.fromEntries(Object.entries(v.lt || {}).filter(x => /^[0-9]{7,12}$/.test(x[0]) && TOWERS[x[1]]))}; }); return o; };
 // 확정된 연맹의 집결장 = 연맹 딱지 둘레의 번호 방울. 성 쪽을 향해 부채꼴로 놓는다
 const confLeaders = a => { const b = CFG.A[a]; return b && String(b.conf || "") && (b.leaders || []).length ? b.leaders.slice(0, 6) : []; };
 const bubXY = (h, k, n) => { const c = hourXY(h, 44), g = Math.atan2(50 - c[1], 50 - c[0]) + (n > 1 ? (k / (n - 1) - .5) * 2.2 : 0); return [c[0] + 8.5 * Math.cos(g), c[1] + 8.5 * Math.sin(g)]; };
@@ -1364,20 +1364,19 @@ function arcPath(s0, e0, lift) {
 function renderWar() {
   const admin = IS_ADMIN && MAPD && can("MAP"), P = admin ? MAPD : mapClean(mapSaved()), meta = CFG.map || {};
   const at = {}, hit = {};
-  ALLIES.forEach(a => { if (P[a].h) { (at[P[a].h] = at[P[a].h] || []).push(a); if (P[a].t) hit[P[a].t] = 1; Object.values(P[a].lt || {}).forEach(t => { hit[t] = 1; }); } });
+  ALLIES.forEach(a => { if (P[a].h) { (at[P[a].h] = at[P[a].h] || []).push(a); Object.values(P[a].lt || {}).forEach(t => { hit[t] = 1; }); } });
   let h = '<div class="warmap" dir="ltr" id="warMap"><img class="castle" src="castle.png" alt="" onerror="this.hidden=true"><div class="castle ph">🏰</div>';
   // 공격 화살표: 연맹 자리 → 목표 타워. 바탕색 테두리를 먼저 그려 성 그림 위에서도 보이게 한다
   h += '<svg class="arrows" viewBox="0 0 100 100"><defs>' + ALLIES.map(a => '<marker id="ah' + esc(a) + '" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="' + col(a) + '"/></marker>').join("") + '</defs>' +
     ALLIES.filter(a => P[a].h).map(a => {
       const arc = (s0, e0, w) => { const dd = arcPath(s0, e0); return '<path d="' + dd + '" fill="none" stroke="#fff" stroke-width="' + (w + 1.1) + '" stroke-linecap="round" opacity=".85"/><path d="' + dd + '" fill="none" stroke="' + col(a) + '" stroke-width="' + w + '" stroke-linecap="round" marker-end="url(#ah' + esc(a) + ')"/>'; };
       const ls = confLeaders(a);
-      return (P[a].t ? arc(hourXY(P[a].h, 36), TOWERS[P[a].t], 1.5) : '') +
-        ls.map((l, k) => P[a].lt[l.id] ? arc(bubXY(P[a].h, k, ls.length), TOWERS[P[a].lt[l.id]], 1.1) : '').join("");
+      return ls.map((l, k) => P[a].lt[l.id] ? arc(bubXY(P[a].h, k, ls.length), TOWERS[P[a].lt[l.id]], 1.1) : '').join("");
     }).join("") + '<path id="dragLine" fill="none" stroke="#ffd43b" stroke-width="1.2" stroke-dasharray="2 2" style="display:none"/></svg>';
   Object.keys(TOWERS).forEach(k => { h += '<div class="tw' + (hit[k] ? ' on' : '') + '" data-t="' + k + '" style="left:' + TOWERS[k][0] + '%;top:' + TOWERS[k][1] + '%">' + tx("tw" + k) + '</div>'; });
   for (let k = 1; k <= 12; k++) {
     const xy = hourXY(k, 44);
-    h += '<div class="hr' + (at[k] ? ' on' : '') + '" style="left:' + xy[0].toFixed(2) + '%;top:' + xy[1].toFixed(2) + '%"><span class="hn">' + k + '</span>' + (at[k] || []).map(a => '<span class="tag' + (admin ? ' drag' : '') + '" data-a="' + esc(a) + '" style="background:' + col(a) + ';color:#fff">' + esc(a) + '</span>').join("") + '</div>';
+    h += '<div class="hr' + (at[k] ? ' on' : '') + '" style="left:' + xy[0].toFixed(2) + '%;top:' + xy[1].toFixed(2) + '%"><span class="hn">' + k + '</span>' + (at[k] || []).map(a => '<span class="tag" data-a="' + esc(a) + '" style="background:' + col(a) + ';color:#fff">' + esc(a) + '</span>').join("") + '</div>';
   }
   ALLIES.filter(a => P[a].h).forEach(a => {
     const ls = confLeaders(a);
@@ -1385,19 +1384,17 @@ function renderWar() {
   });
   h += '<div class="bubtip" id="bubTip" hidden></div></div>';
   if (ALLIES.some(a => P[a].h && confLeaders(a).length)) h += '<div class="sub" style="margin-bottom:8px">' + tx("bubHint") + '</div>';
-  if (admin) h += '<div class="sub" style="margin-bottom:8px">' + tx("warDrag") + '</div>';
   if (meta.at) h += '<div class="sub" style="margin-bottom:6px">' + tx("warSaved", esc(meta.at)) + (meta.by ? ' · ' + esc(meta.by) : '') + (admin && MAP_DIRTY ? ' · <b style="color:var(--warn)">' + tx("unsaved") + '</b>' : '') + '</div>';
   else if (!ALLIES.some(a => P[a].h)) h += '<div class="sub" style="margin-bottom:6px">' + tx("warNone") + '</div>';
   h += '<div class="scroll"><table class="plan"><tr><th>' + tx("thAlly") + '</th><th>' + tx("thDir") + '</th><th>' + tx("thTarget") + '</th><th>' + tx("thMemo") + '</th></tr>' +
-    ALLIES.map(a => '<tr><td><span class="tag" style="background:' + col(a) + ';color:#fff">' + esc(a) + '</span> <span class="sub">' + esc(ROSTER[a].name) + '</span></td><td>' + (P[a].h ? '<b>' + tx("oclock", P[a].h) + '</b>' : '<span class="no">·</span>') + '</td><td>' + (P[a].t ? '<b>→ ' + tx("tw" + P[a].t) + '</b>' : '<span class="no">·</span>') + confLeaders(a).map((l, k) => P[a].lt[l.id] ? '<br><span class="sub">' + (k + 1) + ' → ' + tx("tw" + P[a].lt[l.id]) + '</span>' : '').join("") + '</td><td style="white-space:normal">' + esc(P[a].m) + '</td></tr>').join("") + '</table></div>';
+    ALLIES.map(a => '<tr><td><span class="tag" style="background:' + col(a) + ';color:#fff">' + esc(a) + '</span> <span class="sub">' + esc(ROSTER[a].name) + '</span></td><td>' + (P[a].h ? '<b>' + tx("oclock", P[a].h) + '</b>' : '<span class="no">·</span>') + '</td><td>' + (confLeaders(a).filter(l => P[a].lt[l.id]).length ? confLeaders(a).map((l, k) => P[a].lt[l.id] ? '<b>' + (k + 1) + ' → ' + tx("tw" + P[a].lt[l.id]) + '</b>' : '').filter(Boolean).join('<br>') : '<span class="no">·</span>') + '</td><td style="white-space:normal">' + esc(P[a].m) + '</td></tr>').join("") + '</table></div>';
   if (admin) {
     let by = "";
     try { by = localStorage.getItem("k700by") || ""; } catch (e) {}
     h += '<div class="adminbox warset" style="margin-top:14px"><div class="lname">' + tx("warSet") + '</div>' +
-      '<div class="scroll"><table class="plan"><tr><th>' + tx("thAlly") + '</th><th>' + tx("thDir") + '</th><th>' + tx("thTarget") + '</th><th>' + tx("thMemo") + '</th></tr>' +
+      '<div class="scroll"><table class="plan"><tr><th>' + tx("thAlly") + '</th><th>' + tx("thDir") + '</th><th>' + tx("thMemo") + '</th></tr>' +
       ALLIES.map(a => '<tr><td><b style="color:' + col(a) + '">' + esc(a) + '</b></td><td><select data-a="' + esc(a) + '"><option value="0">' + tx("warPick") + '</option>' +
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(k => '<option value="' + k + '"' + (P[a].h === k ? ' selected' : '') + '>' + tx("oclock", k) + '</option>').join("") + '</select></td>' +
-        '<td><select data-ta="' + esc(a) + '"><option value="">' + tx("warPick") + '</option>' + Object.keys(TOWERS).map(k => '<option value="' + k + '"' + (P[a].t === k ? ' selected' : '') + '>' + tx("tw" + k) + '</option>').join("") + '</select></td>' +
         '<td><input class="memo" maxlength="40" data-m="' + esc(a) + '" value="' + esc(P[a].m) + '"></td></tr>').join("") + '</table></div>' +
       '<div style="margin-top:10px"><label>' + tx("aBy") + ' <input id="wBy" class="name" maxlength="20" value="' + esc(ME.n || by) + '"' + (ME.n ? ' readonly' : '') + '></label> <button class="primary" id="wSave">' + tx("warSave") + '</button> <span class="sub" id="wMsg"></span></div></div>';
   }
