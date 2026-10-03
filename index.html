@@ -249,6 +249,10 @@ h1,h2,.sub,label,th,td,.msg{word-break:keep-all}
 .drawer button.item{width:100%;text-align:start;min-height:46px;font-size:15px;border-color:transparent;background:none}
 .drawer button.item.on{background:var(--accent);color:#fff}
 .drawer button.item:hover{border-color:var(--line)}
+#admBox{margin-top:auto;border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+#admBox b{font-size:14px}
+#admBox input{width:100%;text-align:start}
+#admBox .on{color:var(--ok);font-weight:700;font-size:13px}
 /* 시간대별 막대그래프 */
 .chart{display:flex;align-items:flex-end;gap:8px;margin-top:4px}
 .col{flex:1;min-width:0;position:relative;outline:none}
@@ -398,6 +402,7 @@ select,input{padding:0 10px}
     <div class="dhead"><span id="menuT"></span><button id="menuClose" class="xbtn">✕</button></div>
     <button class="item" data-v="dash" id="mDash"></button>
     <button class="item" data-v="rally" id="mRally"></button>
+    <div id="admBox"></div>
   </div>
 </div>
 <div class="modal" id="pop" style="display:none">
@@ -470,7 +475,7 @@ const I18N = {
     hBad: "아이디 오류인 사람 명단", dBad: "게임 ID 가 없거나 숫자가 아니어서 누구인지 확인할 수 없는 응답입니다. 참여율과 집결 편성에 들어가지 않습니다. 해당하는 분은 설문을 다시 작성해 주세요.", thTyped: "입력한 ID", thLang: "언어", pageInfo: "{0}–{1} / {2}명", prev: "이전", next: "다음",
     bWar: "⚔ 작전회의실", warTitle: "⚔ 작전회의실 · KvK 연맹 배치", warDesc: "성을 가운데 두고, 시계 방향으로 몇 시 자리에 어느 연맹이 서는지 보여줍니다.", warNone: "아직 배치가 정해지지 않았습니다.", oclock: "{0}시 방향", thDir: "배치 방향", thMemo: "메모", warSet: "배치 설정 (관리자)", warPick: "정하지 않음", warSave: "배치 저장", warSaved: "배치 저장: {0}", warDone: "저장했습니다. 모두에게 이 배치가 보입니다.", close: "닫기",
     fTgAll: "건물 전체", fTgMin: "TG{0} 이상", fMystic: "시련 점수 이상", fCampAll: "훈련소 전체", fCampMin: "훈련소 TG{0} 이상", fGold: "순금 병사", fReset: "필터 지우기",
-    menu: "메뉴", mDash: "📊 대시보드", mRally: "⚔ 집결장 전용", aPick: "집결장 추가", aPickHint: "사람 선택 (시련 높은 순)", aAdd: "추가", rallyNote: "집결장 설정은 관리자 링크로 들어온 사람만 바꿀 수 있습니다. 지금은 보기만 됩니다.", optMystic: "시련 {0}", optRally: "집결 {0}",
+    menu: "메뉴", mDash: "📊 대시보드", mRally: "⚔ 집결장 전용", aPick: "집결장 추가", aPickHint: "사람 선택 (시련 높은 순)", aAdd: "추가", rallyNote: "집결장 설정은 관리자 비밀번호를 넣은 사람만 바꿀 수 있습니다(☰ 메뉴 → 🔒 관리자). 지금은 보기만 됩니다.", optMystic: "시련 {0}", optRally: "집결 {0}",
     sAll: "전체", sTable: "표로 보기",
     twC: "센터", twN: "북", twE: "동", twS: "남", twW: "서", thTarget: "공격 목표", warDrag: "연맹 딱지를 타워(센터 · 동 · 서 · 남 · 북)로 끌어다 놓으면 공격 목표가 정해집니다. 빈 곳에 놓으면 지워집니다.",
     noRight: "{0} 연맹은 내 링크로 설정할 권한이 없습니다. 보기만 됩니다.",
@@ -493,6 +498,7 @@ const I18N = {
     meNoAns: "이 ID로 낸 참여 시간 응답이 아직 없습니다. 위 '참여 시간 작성'에서 먼저 내 주세요.",
     bubHint: "확정된 연맹은 딱지 둘레의 번호 방울(1 · 2 · 3 …)이 집결장입니다. 방울을 누르면 누구인지 나오고, 방울을 타워로 끌어다 놓으면 그 집결장의 공격 목표가 됩니다.", bubNoTarget: "목표 없음",
     tagLeaders: "{0} 집결장", noLeaders: "정해진 집결장이 없습니다",
+    admTitle: "🔒 관리자", admPh: "관리자 비밀번호", admOk: "확인", admOn: "✅ 관리자 모드 — 저장할 수 있습니다", admOut: "관리자 나가기", admBad: "비밀번호가 틀렸습니다.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -518,7 +524,7 @@ const I18N = {
     hBad: "Responses with a game ID error", dBad: "These responses have no game ID or a non-numeric one, so the player cannot be identified. They are not counted in participation or the rally plan. If this is you, please fill in the survey again.", thTyped: "ID as typed", thLang: "Language", pageInfo: "{0}–{1} / {2}", prev: "Prev", next: "Next",
     bWar: "⚔ War room", warTitle: "⚔ War room · KvK alliance positions", warDesc: "With the castle in the centre, this shows which alliance stands at which clock position.", warNone: "Positions have not been set yet.", oclock: "{0} o'clock", thDir: "Position", thMemo: "Note", warSet: "Position settings (admin)", warPick: "Not set", warSave: "Save positions", warSaved: "Positions saved: {0}", warDone: "Saved. Everyone now sees these positions.", close: "Close",
     fTgAll: "Any Town Center", fTgMin: "TG{0} or higher", fMystic: "Mystic Trial at least", fCampAll: "Any camp", fCampMin: "Camp TG{0} or higher", fGold: "Pure Gold", fReset: "Clear filters",
-    menu: "Menu", mDash: "📊 Dashboard", mRally: "⚔ Rally leaders", aPick: "Add a rally leader", aPickHint: "Pick a player (by Mystic Trial)", aAdd: "Add", rallyNote: "Only people who came in through the admin link can change the rally settings. You are in view-only mode.", optMystic: "Trial {0}", optRally: "Rally {0}",
+    menu: "Menu", mDash: "📊 Dashboard", mRally: "⚔ Rally leaders", aPick: "Add a rally leader", aPickHint: "Pick a player (by Mystic Trial)", aAdd: "Add", rallyNote: "Only people who entered the admin password can change the rally settings (☰ Menu → 🔒 Admin). You are in view-only mode.", optMystic: "Trial {0}", optRally: "Rally {0}",
     sAll: "All", sTable: "View as table",
     twC: "Center", twN: "North", twE: "East", twS: "South", twW: "West", thTarget: "Attack target", warDrag: "Drag an alliance badge onto a tower (Center, East, West, South, North) to set its attack target. Drop it on empty space to clear it.",
     noRight: "Your link does not have the right to edit {0}. View only.",
@@ -541,6 +547,7 @@ const I18N = {
     meNoAns: "There is no time-survey answer for this ID yet. Please fill in 'Enter my KvK time' first.",
     bubHint: "For confirmed alliances the numbered bubbles (1 · 2 · 3 …) around the badge are the rally leaders. Tap a bubble to see who it is; drag it onto a tower to set that leader's attack target.", bubNoTarget: "No target",
     tagLeaders: "{0} rally leaders", noLeaders: "No rally leaders set",
+    admTitle: "🔒 Admin", admPh: "Admin password", admOk: "OK", admOn: "✅ Admin mode — you can save", admOut: "Leave admin mode", admBad: "Wrong password.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -566,7 +573,7 @@ const I18N = {
     hBad: "ID 有誤的名單", dBad: "這些回覆沒有遊戲 ID 或 ID 不是數字，無法確認是誰。不計入參加率與集結編組。如果是你，請重新填寫問卷。", thTyped: "填寫的 ID", thLang: "語言", pageInfo: "{0}–{1} / {2} 人", prev: "上一頁", next: "下一頁",
     bWar: "⚔ 作戰會議室", warTitle: "⚔ 作戰會議室 · KvK 聯盟配置", warDesc: "以城堡為中心，顯示各聯盟站在幾點鐘方向。", warNone: "尚未設定配置。", oclock: "{0} 點鐘方向", thDir: "配置方向", thMemo: "備註", warSet: "配置設定（管理員）", warPick: "未設定", warSave: "儲存配置", warSaved: "配置儲存：{0}", warDone: "已儲存，所有人都會看到這份配置。", close: "關閉",
     fTgAll: "全部城鎮中心", fTgMin: "TG{0} 以上", fMystic: "神秘試煉分數以上", fCampAll: "全部訓練營", fCampMin: "訓練營 TG{0} 以上", fGold: "純金士兵", fReset: "清除篩選",
-    menu: "選單", mDash: "📊 總覽", mRally: "⚔ 集結隊長專用", aPick: "新增集結隊長", aPickHint: "選擇成員（依神秘試煉排序）", aAdd: "新增", rallyNote: "只有從管理員連結進入的人才能更改集結設定，目前僅供檢視。", optMystic: "試煉 {0}", optRally: "集結 {0}",
+    menu: "選單", mDash: "📊 總覽", mRally: "⚔ 集結隊長專用", aPick: "新增集結隊長", aPickHint: "選擇成員（依神秘試煉排序）", aAdd: "新增", rallyNote: "只有輸入管理員密碼的人才能更改集結設定（☰ 選單 → 🔒 管理員），目前僅供檢視。", optMystic: "試煉 {0}", optRally: "集結 {0}",
     sAll: "全部", sTable: "以表格檢視",
     twC: "中央", twN: "北", twE: "東", twS: "南", twW: "西", thTarget: "攻擊目標", warDrag: "把聯盟標籤拖到塔（中央 · 東 · 西 · 南 · 北）上即可設定攻擊目標，放到空白處則清除。",
     noRight: "你的連結沒有設定 {0} 聯盟的權限，僅供檢視。",
@@ -589,6 +596,7 @@ const I18N = {
     meNoAns: "這個 ID 還沒有填寫參加時間，請先按上方的「填寫參加時間」。",
     bubHint: "已確定的聯盟，標籤周圍的編號泡泡（1 · 2 · 3 …）就是集結隊長。點泡泡可看是誰，把泡泡拖到塔上即設定該隊長的攻擊目標。", bubNoTarget: "沒有目標",
     tagLeaders: "{0} 集結隊長", noLeaders: "尚未設定集結隊長",
+    admTitle: "🔒 管理員", admPh: "管理員密碼", admOk: "確定", admOn: "✅ 管理員模式 — 可以儲存", admOut: "離開管理員模式", admBad: "密碼錯誤。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -614,7 +622,7 @@ const I18N = {
     hBad: "قائمة من لديهم خطأ في المعرف", dBad: "هذه الإجابات بلا معرف لعبة أو بمعرف غير رقمي، لذلك لا يمكن معرفة صاحبها. لا تُحسب في نسبة المشاركة ولا في خطة الحشود. إذا كنت أحدهم فأعد ملء الاستبيان.", thTyped: "المعرف المكتوب", thLang: "اللغة", pageInfo: "{0}–{1} / {2}", prev: "السابق", next: "التالي",
     bWar: "⚔ غرفة العمليات", warTitle: "⚔ غرفة العمليات · مواقع التحالفات في KvK", warDesc: "القلعة في الوسط، ويظهر هنا موقع كل تحالف بحسب اتجاه عقارب الساعة.", warNone: "لم تُحدد المواقع بعد.", oclock: "اتجاه الساعة {0}", thDir: "الموقع", thMemo: "ملاحظة", warSet: "إعداد المواقع (المشرف)", warPick: "غير محدد", warSave: "حفظ المواقع", warSaved: "تم حفظ المواقع: {0}", warDone: "تم الحفظ. الجميع يرى هذه المواقع الآن.", close: "إغلاق",
     fTgAll: "كل مراكز المدينة", fTgMin: "TG{0} أو أعلى", fMystic: "التجربة الغامضة على الأقل", fCampAll: "كل المعسكرات", fCampMin: "المعسكر TG{0} أو أعلى", fGold: "الجنود الذهبيون", fReset: "مسح التصفية",
-    menu: "القائمة", mDash: "📊 لوحة المتابعة", mRally: "⚔ قادة الحشود", aPick: "إضافة قائد حشد", aPickHint: "اختر لاعبًا (حسب التجربة الغامضة)", aAdd: "إضافة", rallyNote: "لا يستطيع تغيير إعدادات الحشود إلا من دخل عبر رابط المشرف. أنت الآن في وضع العرض فقط.", optMystic: "التجربة {0}", optRally: "الحشد {0}",
+    menu: "القائمة", mDash: "📊 لوحة المتابعة", mRally: "⚔ قادة الحشود", aPick: "إضافة قائد حشد", aPickHint: "اختر لاعبًا (حسب التجربة الغامضة)", aAdd: "إضافة", rallyNote: "لا يستطيع تغيير إعدادات الحشود إلا من أدخل كلمة مرور المشرف (☰ القائمة ← 🔒 المشرف). أنت الآن في وضع العرض فقط.", optMystic: "التجربة {0}", optRally: "الحشد {0}",
     sAll: "الكل", sTable: "عرض كجدول",
     twC: "الوسط", twN: "شمال", twE: "شرق", twS: "جنوب", twW: "غرب", thTarget: "هدف الهجوم", warDrag: "اسحب شارة التحالف إلى أحد الأبراج (الوسط، الشرق، الغرب، الجنوب، الشمال) لتحديد هدف الهجوم. أفلتها في مكان فارغ لإلغائه.",
     noRight: "رابطك لا يملك صلاحية تعديل تحالف {0}. للعرض فقط.",
@@ -637,6 +645,7 @@ const I18N = {
     meNoAns: "لا توجد إجابة على استبيان الوقت لهذا المعرف بعد. املأ «أدخل وقت المشاركة» أولًا.",
     bubHint: "في التحالفات المؤكدة، الفقاعات المرقمة (1 · 2 · 3 …) حول الشارة هي قادة الحشود. اضغط الفقاعة لترى من هو، واسحبها إلى برج لتحديد هدف هجوم ذلك القائد.", bubNoTarget: "بلا هدف",
     tagLeaders: "قادة حشود {0}", noLeaders: "لم يُحدد قادة حشود",
+    admTitle: "🔒 المشرف", admPh: "كلمة مرور المشرف", admOk: "تأكيد", admOn: "✅ وضع المشرف — يمكنك الحفظ", admOut: "الخروج من وضع المشرف", admBad: "كلمة المرور خاطئة.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -662,7 +671,7 @@ const I18N = {
     hBad: "ID hatası olanların listesi", dBad: "Bu yanıtlarda Oyun ID yok ya da rakam değil; bu yüzden kimin olduğu belirlenemiyor. Katılıma ve ralli planına sayılmaz. Bu sizseniz lütfen anketi yeniden doldurun.", thTyped: "Yazılan ID", thLang: "Dil", pageInfo: "{0}–{1} / {2}", prev: "Önceki", next: "Sonraki",
     bWar: "⚔ Harekât odası", warTitle: "⚔ Harekât odası · KvK ittifak yerleşimi", warDesc: "Kale ortada olacak şekilde, hangi ittifakın saat kaç yönünde duracağını gösterir.", warNone: "Yerleşim henüz belirlenmedi.", oclock: "Saat {0} yönü", thDir: "Yön", thMemo: "Not", warSet: "Yerleşim ayarları (yönetici)", warPick: "Belirlenmedi", warSave: "Yerleşimi kaydet", warSaved: "Yerleşim kaydedildi: {0}", warDone: "Kaydedildi. Bu yerleşimi artık herkes görüyor.", close: "Kapat",
     fTgAll: "Tüm Şehir Merkezleri", fTgMin: "TG{0} ve üzeri", fMystic: "Mistik Deneme en az", fCampAll: "Tüm kamplar", fCampMin: "Kamp TG{0} ve üzeri", fGold: "Saf Altın", fReset: "Filtreleri temizle",
-    menu: "Menü", mDash: "📊 Pano", mRally: "⚔ Ralli liderleri", aPick: "Ralli lideri ekle", aPickHint: "Oyuncu seçin (Mistik Deneme sırasıyla)", aAdd: "Ekle", rallyNote: "Ralli ayarlarını yalnızca yönetici bağlantısıyla girenler değiştirebilir. Şu anda yalnızca görüntülüyorsunuz.", optMystic: "Deneme {0}", optRally: "Ralli {0}",
+    menu: "Menü", mDash: "📊 Pano", mRally: "⚔ Ralli liderleri", aPick: "Ralli lideri ekle", aPickHint: "Oyuncu seçin (Mistik Deneme sırasıyla)", aAdd: "Ekle", rallyNote: "Ralli ayarlarını yalnızca yönetici şifresini girenler değiştirebilir (☰ Menü → 🔒 Yönetici). Şu anda yalnızca görüntülüyorsunuz.", optMystic: "Deneme {0}", optRally: "Ralli {0}",
     sAll: "Tümü", sTable: "Tablo olarak göster",
     twC: "Merkez", twN: "Kuzey", twE: "Doğu", twS: "Güney", twW: "Batı", thTarget: "Saldırı hedefi", warDrag: "Saldırı hedefini belirlemek için ittifak rozetini bir kulenin (Merkez, Doğu, Batı, Güney, Kuzey) üzerine sürükleyin. Boş bir yere bırakırsanız hedef silinir.",
     noRight: "Bağlantınızın {0} ittifakını düzenleme yetkisi yok. Yalnızca görüntüleme.",
@@ -685,6 +694,7 @@ const I18N = {
     meNoAns: "Bu ID için henüz zaman anketi yanıtı yok. Önce 'Katılım saatini gir'i doldurun.",
     bubHint: "Onaylanmış ittifaklarda rozetin çevresindeki numaralı baloncuklar (1 · 2 · 3 …) ralli liderleridir. Kim olduğunu görmek için baloncuğa dokunun; saldırı hedefi için bir kuleye sürükleyin.", bubNoTarget: "Hedef yok",
     tagLeaders: "{0} ralli liderleri", noLeaders: "Ralli lideri belirlenmedi",
+    admTitle: "🔒 Yönetici", admPh: "Yönetici şifresi", admOk: "Tamam", admOn: "✅ Yönetici modu — kaydedebilirsiniz", admOut: "Yönetici modundan çık", admBad: "Şifre yanlış.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1538,6 +1548,27 @@ async function saveConfig1() {
   return false;
 }
 
+// ☰ 메뉴 아래 「🔒 관리자」: 비밀번호를 넣으면 그 값의 SHA-256 이 admin.js 의 목록에 있을 때만 관리자(저장 가능). 비밀번호는 이 기기에 기억(k700admin)
+function renderAdm() {
+  const box = $("admBox");
+  if (IS_ADMIN) { box.innerHTML = '<b>' + tx("admTitle") + '</b><span class="on">' + tx("admOn") + '</span><button id="admOut">' + tx("admOut") + '</button>'; return; }
+  box.innerHTML = '<b>' + tx("admTitle") + '</b><input id="admPw" type="password" autocomplete="current-password" placeholder="' + esc(tx("admPh")) + '"><button class="primary" id="admOk">' + tx("admOk") + '</button><span class="sub" id="admMsg"></span>';
+}
+async function tryAdmin() {
+  const pw = ($("admPw").value || "").trim();
+  if (!pw || !window.crypto || !crypto.subtle) return;
+  const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw));
+  const hx = [...new Uint8Array(d)].map(b => b.toString(16).padStart(2, "0")).join("");
+  if (!ADMIN_LIST.some(x => x.h === hx)) { $("admMsg").textContent = tx("admBad"); return; }
+  try { localStorage.setItem("k700admin", pw); } catch (e) {}
+  location.reload();
+}
+$("admBox").addEventListener("click", e => {
+  if (e.target.id === "admOk") tryAdmin();
+  else if (e.target.id === "admOut") { try { localStorage.removeItem("k700admin"); } catch (x) {} location.reload(); }
+});
+$("admBox").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "admPw") tryAdmin(); });
+
 async function initAdmin() {
   const q = new URLSearchParams(location.search);
   let t = q.get("admin") || "";
@@ -1622,6 +1653,7 @@ function setLang(l) {
   $("langs").innerHTML = LANGS.map(k => '<button data-l="' + k + '"' + (k === LANG ? ' class="on"' : '') + '>' + I18N[k].name + '</button>').join("");
   [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["sTable", "sTable"], ["roleHint", "roleHint"], ["inappT", "inapp"], ["inappB", "bOpenOut"], ["hRep", "repTitle"], ["repCopy", "bCopy"], ["menuT", "menu"], ["mDash", "mDash"], ["mRally", "mRally"], ["rallyNote", "rallyNote"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
   ["warClose", "popClose", "menuClose", "repClose", "roleClose"].forEach(id => { $(id).title = tx("close"); });
+  renderAdm();
   $("role").style.display = "none";
   if ($("rep").style.display !== "none") openReport();
   $("menuCur").textContent = tx(VIEW === "rally" ? "mRally" : "mDash");
@@ -1842,7 +1874,7 @@ $("admin").addEventListener("click", e => {
   setLang(l);
 })();
 setView(location.hash === "#rally" ? "rally" : "dash");
-initAdmin().then(() => { setView(VIEW); return load(); }, load);
+initAdmin().then(() => { setView(VIEW); renderAdm(); return load(); }, load);
 setInterval(load, 60000);
 </script>
 </body>
