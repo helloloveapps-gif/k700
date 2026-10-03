@@ -902,7 +902,7 @@ async function loadConfig() {
       if (mk && mk[4]) g.conf = mk[4];
       if (mk && mk[5] != null) g.n = +mk[5];
       const L = {id, cap: num(row[ci.cap]), r: ci.r.map(c => num(row[c])), d: mk ? [+mk[1], +mk[2], +mk[3]] : [5, 2, 3]};
-      const fm = /\[F:(\{.*?\})\] \[D:/.exec(String(row[ci.lname] || ""));
+      const fm = /\[F:(\{.*?\})\](?= \[(?:O|D):)/.exec(String(row[ci.lname] || ""));
       const om = /\[O:([0-9,]+)\]/.exec(String(row[ci.lname] || ""));
       if (om) g.out = om[1].split(",").filter(x => /^[0-9]{7,12}$/.test(x));
       if (fm) { try { const F = JSON.parse(fm[1]); if (Array.isArray(F.a)) L.fa = F.a; if (Array.isArray(F.d)) L.fd = F.d; } catch (e) {} }
