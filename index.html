@@ -36,6 +36,11 @@ tr.bad td{background:rgba(224,49,49,.10);color:#c92a2a;text-decoration:line-thro
 tr.bad td:first-child{box-shadow:inset 4px 0 0 #e03131}
 #badBox{border:2px solid #e03131}
 #badBox>h2{border-inline-start-color:#e03131;color:#e03131}
+#absBox{border:2px solid #868e96}
+#absBox>h2{border-inline-start-color:#868e96;color:#868e96}
+.hist td,.hist th{white-space:nowrap}
+.hist tr.now td{background:rgba(64,192,87,.10);font-weight:700}
+.hist .chg{color:#f76707;font-weight:700}
 .modal{position:fixed;inset:0;background:rgba(10,12,30,.62);display:flex;align-items:flex-start;justify-content:center;padding:20px 12px;overflow:auto;z-index:50}
 .mbox{background:var(--card);border-radius:16px;padding:18px;width:100%;max-width:680px;box-shadow:0 10px 40px rgba(0,0,0,.45)}
 .mbox.wide{max-width:820px;padding:14px}
@@ -378,6 +383,12 @@ select,input{padding:0 10px}
     <div class="pager" id="pager"></div>
   </div>
 
+  <div class="card section" id="absBox" style="display:none">
+    <h2 id="hAbsent"></h2>
+    <div class="sub" style="margin-bottom:10px" id="dAbsent"></div>
+    <div class="scroll"><table id="absTable"></table></div>
+  </div>
+
   <div class="card section">
     <h2 id="hMissing"></h2>
     <div class="sub" style="margin-bottom:10px" id="dMissing"></div>
@@ -499,6 +510,7 @@ const I18N = {
     tagLeaders: "{0} 집결장", noLeaders: "정해진 집결장이 없습니다",
     admTitle: "🔒 관리자", admPh: "관리자 비밀번호", admOk: "확인", admOn: "✅ 관리자 모드 — 저장할 수 있습니다", admOut: "관리자 나가기", admBad: "비밀번호가 틀렸습니다.",
     passNeed: "저장하려면 Pass(비밀번호)를 넣으세요.", passBad: "Pass(비밀번호)가 틀렸습니다. 저장하지 않았습니다.",
+    hAbsent: "불참 명단", dAbsent: "참여 시간 설문에서 「불참」을 고른 사람입니다. 참여율과 집결 편성에서 빠집니다.", histT: "병사 입력 기록", histNone: "병사 정보 입력 기록이 없습니다.", histNow: "현재",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -549,6 +561,7 @@ const I18N = {
     tagLeaders: "{0} rally leaders", noLeaders: "No rally leaders set",
     admTitle: "🔒 Admin", admPh: "Admin password", admOk: "OK", admOn: "✅ Admin mode — you can save", admOut: "Leave admin mode", admBad: "Wrong password.",
     passNeed: "Enter the Pass (password) to save.", passBad: "Wrong Pass (password). Nothing was saved.",
+    hAbsent: "Not joining", dAbsent: "Players who chose “Not joining” in the time survey. They are left out of participation and the rally plan.", histT: "Troop input history", histNone: "No troop input yet.", histNow: "Current",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -599,6 +612,7 @@ const I18N = {
     tagLeaders: "{0} 集結隊長", noLeaders: "尚未設定集結隊長",
     admTitle: "🔒 管理員", admPh: "管理員密碼", admOk: "確定", admOn: "✅ 管理員模式 — 可以儲存", admOut: "離開管理員模式", admBad: "密碼錯誤。",
     passNeed: "儲存前請輸入 Pass（密碼）。", passBad: "Pass（密碼）錯誤，沒有儲存。",
+    hAbsent: "不參加名單", dAbsent: "在時間問卷中選擇「不參加」的人，不計入參加率與集結編組。", histT: "兵力輸入紀錄", histNone: "沒有兵力輸入紀錄。", histNow: "目前",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -649,6 +663,7 @@ const I18N = {
     tagLeaders: "قادة حشود {0}", noLeaders: "لم يُحدد قادة حشود",
     admTitle: "🔒 المشرف", admPh: "كلمة مرور المشرف", admOk: "تأكيد", admOn: "✅ وضع المشرف — يمكنك الحفظ", admOut: "الخروج من وضع المشرف", admBad: "كلمة المرور خاطئة.",
     passNeed: "أدخل Pass (كلمة المرور) للحفظ.", passBad: "Pass (كلمة المرور) خاطئة. لم يتم الحفظ.",
+    hAbsent: "قائمة غير المشاركين", dAbsent: "اللاعبون الذين اختاروا «غير مشارك» في استبيان الوقت. لا يُحسبون في المشاركة ولا في خطة الحشود.", histT: "سجل إدخال القوات", histNone: "لا يوجد إدخال للقوات بعد.", histNow: "الحالي",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -699,6 +714,7 @@ const I18N = {
     tagLeaders: "{0} ralli liderleri", noLeaders: "Ralli lideri belirlenmedi",
     admTitle: "🔒 Yönetici", admPh: "Yönetici şifresi", admOk: "Tamam", admOn: "✅ Yönetici modu — kaydedebilirsiniz", admOut: "Yönetici modundan çık", admBad: "Şifre yanlış.",
     passNeed: "Kaydetmek için Pass'i (şifre) girin.", passBad: "Pass (şifre) yanlış. Kaydedilmedi.",
+    hAbsent: "Katılmayanlar", dAbsent: "Zaman anketinde “Katılmıyor” seçenler. Katılım ve ralli planına dahil edilmez.", histT: "Asker giriş geçmişi", histNone: "Henüz asker girişi yok.", histNow: "Güncel",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -728,6 +744,7 @@ const SOLD = typeof SOLDIERS === "undefined" ? {} : SOLDIERS;
 const COLORS = {NeX: "#3b5bdb", NvA: "#f76707", AEH: "#2f9e44", LoV: "#d6336c"};
 const col = a => COLORS[a] || "#7950f2";
 const TROOP_GID = "404058685";
+let HIST = {};
 let SELF = {}, MARCH = {}, MARCH_ON = {}, RALLY = {}, RALLY_ON = {}, CFG = {A: {}}, DRAFT = null, DIRTY = {}, IS_ADMIN = false, MAPD = null, MAP_DIRTY = false;
 const CFG_GID = "407041504";
 const CFG_POST = "https://docs.google.com/forms/d/e/1FAIpQLSfAoSbMjHVaMWoe4_ZXJs6G_QJWb2ZHu5Tco_c6kQTvmmcMnA/formResponse";
@@ -835,7 +852,7 @@ async function loadSelf() {
   const rows = parseCsv(txt);
   const h = rows[0] || [], col = n => h.findIndex(x => String(x).trim() === n);
   const ci = {id: col("game_id"), ui: col("ui_code"), tg: col("tg"), m: col("march number"), mo: col("march_on number"), ra: col("rally number"), rao: col("rally_on number"), cfg: col("config number"), c: ["inf_camp number", "cav_camp number", "arc_camp number"].map(col), t: ["inf_tier number", "cav_tier number", "arc_tier number"].map(col)};
-  const out = {}, march = {}, marchOn = {}, rally = {}, rallyOn = {};
+  const out = {}, march = {}, marchOn = {}, rally = {}, rallyOn = {}, hist = {};
   let cfg = null;
   const kvk = [];
   rows.slice(1).forEach(row => {
@@ -861,8 +878,9 @@ async function loadSelf() {
     const ra = ci.ra >= 0 ? parseInt(row[ci.ra], 10) : NaN, rao = ci.rao >= 0 ? parseInt(row[ci.rao], 10) : NaN;
     if (ra >= 1000 && ra <= 9000000) rally[id] = ra; else delete rally[id];
     if (rao >= 1000 && rao <= 9000000) rallyOn[id] = rao; else delete rallyOn[id];
+    (hist[id] || (hist[id] = [])).push({t: String(row[0] || ""), tg, s, m: march[id] || 0, mo: marchOn[id] || 0, ra: rally[id] || 0, rao: rallyOn[id] || 0});
   });
-  return {self: out, march, marchOn, rally, rallyOn, cfg, kvk};
+  return {self: out, march, marchOn, rally, rallyOn, cfg, kvk, hist};
 }
 function troopCells(p) {
   const t = troops(p);
@@ -1005,6 +1023,12 @@ function render() {
   $("badBox").style.display = BAD.length ? "" : "none";
   $("badTable").innerHTML = '<tr><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th>' + tx("idProb") + '</th><th>' + tx("thLang") + '</th><th class="c">FULL</th>' + slotTh + '<th>' + tx("thTime") + '</th></tr>' +
     BAD.map(p => '<tr class="bad"><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.name) + '</td><td>' + ('<span class="badtag">' + tx(p.id ? "idBad" : "noId") + '</span>') + '</td><td>' + esc(p.lang) + '</td>' + slotTd(p) + '<td>' + esc(p.time) + '</td></tr>').join("");
+
+  const ABS = DATA.filter(p => p.absent).sort((a, b) => ALLIES.indexOf(a.ally) - ALLIES.indexOf(b.ally) || (b.mystic || 0) - (a.mystic || 0));
+  $("absBox").style.display = ABS.length ? "" : "none";
+  $("hAbsent").textContent = tx("hAbsent") + " (" + ABS.length + ")";
+  $("absTable").innerHTML = '<tr><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th class="n">' + tx("thMystic") + '</th><th>' + tx("thBuilding") + '</th><th>' + tx("thTime") + '</th></tr>' +
+    ABS.map(p => '<tr' + (p.id === myId() ? ' class="mine"' : '') + '><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td><button class="who" data-id="' + esc(p.id) + '">' + esc(p.gname || p.name) + '</button></td><td class="n">' + fmt(p.mystic) + '</td><td>' + esc(p.tc) + '</td><td class="sub">' + esc(p.time) + '</td></tr>').join("");
 
   const ftg = +$("fTg").value || 0, fm = +String($("fMystic").value || "").replace(/[^0-9]/g, "") || 0, fc = [0, 1, 2].map(k => +($("fCamp" + k) || {}).value || 0);
   const more = p => {
@@ -1261,16 +1285,31 @@ $("meBar").addEventListener("click", e => {
 $("meBar").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "meIn") $("meOk").click(); });
 $("meBar").addEventListener("input", e => { if (e.target.id === "meIn") e.target.value = e.target.value.replace(/[^0-9]/g, ""); });
 
+function histHtml(id) {
+  const L = HIST[id] || [];
+  let h = '<h3>📜 ' + tx("histT") + (L.length ? ' (' + L.length + ')' : '') + '</h3>';
+  if (!L.length) return h + '<div class="msg">' + tx("histNone") + '</div>';
+  const cell = (v, pv, txt) => '<td class="' + (pv !== undefined && JSON.stringify(v) !== JSON.stringify(pv) ? 'chg ' : '') + 'n">' + txt + '</td>';
+  const pair = (a, b) => (a ? fmt(a) : '·') + ' / ' + (b ? fmt(b) : '·');
+  h += '<div class="scroll"><table class="hist"><tr><th>' + tx("thTime") + '</th><th class="c">' + tx("inf") + '</th><th class="c">' + tx("cav") + '</th><th class="c">' + tx("arc") + '</th><th class="n">' + tx("thMarch") + '<br><small>OFF / ON</small></th><th class="n">' + tx("thRallyCap") + '<br><small>OFF / ON</small></th></tr>';
+  for (let k = L.length - 1; k >= 0; k--) {
+    const x = L[k], q = k ? L[k - 1] : {s: [], m: undefined, mo: undefined, ra: undefined, rao: undefined};
+    h += '<tr' + (k === L.length - 1 ? ' class="now"' : '') + '><td>' + esc(x.t) + (k === L.length - 1 ? ' <small>' + tx("histNow") + '</small>' : '') + '</td>' +
+      [0, 1, 2].map(i => cell(x.s[i], k ? q.s[i] : undefined, 'T' + x.s[i][1] + ' <span class="sub">' + x.s[i][0] + '</span>')).join("") +
+      cell([x.m, x.mo], k ? [q.m, q.mo] : undefined, pair(x.m, x.mo)) + cell([x.ra, x.rao], k ? [q.ra, q.rao] : undefined, pair(x.ra, x.rao)) + '</tr>';
+  }
+  return h + '</table></div>';
+}
 function openRole(id) {
   const p = DATA.find(x => x.id === id);
   if (!p) {
     $("hRole").textContent = tx("roleTitle", "👤");
-    $("roleBody").innerHTML = '<div class="msg">' + tx("meNoAns") + '</div>';
+    $("roleBody").innerHTML = '<div class="msg">' + tx("meNoAns") + '</div>' + histHtml(id);
     $("role").style.display = "flex";
     return;
   }
   $("hRole").textContent = tx("roleTitle", p.gname || p.name);
-  $("roleBody").innerHTML = roleHtml(p);
+  $("roleBody").innerHTML = (p.absent ? '<div class="msg"><span class="badtag" style="background:#868e96">' + tx("absent") + '</span></div>' : roleHtml(p)) + histHtml(id);
   $("role").style.display = "flex";
 }
 
@@ -1613,7 +1652,7 @@ async function load() {
     const first = !DATA.length;
     try {
       const r = await loadSelf();
-      SELF = r.self; MARCH = r.march; MARCH_ON = r.marchOn; RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || [];
+      SELF = r.self; MARCH = r.march; MARCH_ON = r.marchOn; RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || []; HIST = r.hist || {};
     } catch (e) {}
     try { CFG = await loadConfig(); } catch (e) {}
     const firstDraft = IS_ADMIN && !DRAFT;
@@ -1662,7 +1701,7 @@ function setLang(l) {
   document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr";
   document.title = tx("title");
   $("langs").innerHTML = LANGS.map(k => '<button data-l="' + k + '"' + (k === LANG ? ' class="on"' : '') + '>' + I18N[k].name + '</button>').join("");
-  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["sTable", "sTable"], ["roleHint", "roleHint"], ["inappT", "inapp"], ["inappB", "bOpenOut"], ["hRep", "repTitle"], ["repCopy", "bCopy"], ["menuT", "menu"], ["mDash", "mDash"], ["mRally", "mRally"], ["rallyNote", "rallyNote"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
+  [["tTitle", "title"], ["bSurvey", "bSurvey"], ["bTroops", "bTroops"], ["reload", "bReload"], ["hSlots", "hSlots"], ["hRally", "hRally"], ["dRally", "dRally"], ["hResp", "hResp"], ["hMissing", "hMissing"], ["dMissing", "dMissing"], ["hBad", "hBad"], ["dBad", "dBad"], ["hAbsent", "hAbsent"], ["dAbsent", "dAbsent"], ["bWar", "bWar"], ["hWar", "warTitle"], ["dWar", "warDesc"], ["sTable", "sTable"], ["roleHint", "roleHint"], ["inappT", "inapp"], ["inappB", "bOpenOut"], ["hRep", "repTitle"], ["repCopy", "bCopy"], ["menuT", "menu"], ["mDash", "mDash"], ["mRally", "mRally"], ["rallyNote", "rallyNote"]].forEach(x => { $(x[0]).textContent = tx(x[1]); });
   ["warClose", "popClose", "menuClose", "repClose", "roleClose"].forEach(id => { $(id).title = tx("close"); });
   $("role").style.display = "none";
   if ($("rep").style.display !== "none") openReport();
@@ -1789,6 +1828,7 @@ $("rally").addEventListener("click", e => {
     try { first.scrollIntoView({behavior: "smooth", block: "start"}); } catch (x) {}
   }
 });
+$("absTable").addEventListener("click", e => { const w = e.target.closest("button.who"); if (w) openRole(w.getAttribute("data-id")); });
 $("respTable").addEventListener("click", e => {
   const w = e.target.closest("button.who");
   if (w) { openRole(w.getAttribute("data-id")); return; }
