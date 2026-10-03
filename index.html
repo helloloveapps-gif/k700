@@ -543,6 +543,7 @@ const I18N = {
     hAbsent: "불참 명단", absNone: "불참한 사람이 아직 없습니다.", dAbsent: "참여 시간 설문에서 「불참」을 고른 사람입니다. 참여율과 집결 편성에서 빠집니다.", histT: "병사 입력 기록", histNone: "병사 정보 입력 기록이 없습니다.", histNow: "현재",
     mEnemy: "🛡 적군 서버", hEnemy: "적군 서버 정보", dEnemy: "서버 번호와 Pass를 넣고 검색을 누르면 그 서버 정보를 한 번만 가져와 저장합니다. 한 번 가져온 서버는 다시 가져오지 않고 아래 단추로 바로 봅니다.", eKPh: "서버 번호", eFind: "검색", eSaved: "받아 둔 서버", eNone: "아직 받아 둔 서버가 없습니다.", eReq: "서버 {0} 검색을 접수했습니다. 정보를 한 번 가져오면 이 화면에 자동으로 나타납니다.", eWait: "⏳ 서버 {0} 수집 대기 중", eBadK: "서버 번호는 숫자 1~5자리입니다.", eAt: "수집 {0}", eKing: "왕 {0}", eKvk: "KvK 전투 {0} · 성 점령 {1} · 성 잃음 {2}", eAl: "연맹", ePl: "플레이어 {0}명", eSortM: "시련순", eSortP: "전투력순", eSortT: "성 레벨순", thMembers: "인원", thKills: "처치", thMSum: "시련 합", thPR: "전투력 순위", thKR: "처치 순위", thHR: "영웅 순위", thER: "펫 순위", eRefresh: "새로 받기", eNote: "병사 수는 공개 자료(jeabslist)에 없어 넣지 못했습니다. 연맹원 명단 기준이라 연맹이 없는 사람과 작은 연맹의 미추적 인원은 빠집니다.", eSortK: "처치순",
     bConfL: "✅ {0} {1} 확정", bUnconfL: "{0} {1} 확정 취소", confList: "✅ 확정: {0}", confLegacy: "예전 방식 확정입니다. 집결마다 다시 확정하면 배치가 고정됩니다.", lockNote: "확정된 집결장은 배치가 고정되어 새 응답이 들어와도 바뀌지 않습니다. 바꾸려면 확정을 취소하세요.", bOut: "빠짐", subAsk: "{0} · {1} 빠짐\n\n{2}\n\n이대로 바꾸고 저장할까요?", subTo: "{0}: → {1} ({2})", subFrom: " — {0}에서 데려옴", subNone: "{0}: 대체할 사람 없음 → 부족으로 남김", subDone: "교체해 저장했습니다.",
+    ntTitle: "📢 교체 공지 — 복사해서 붙여 넣으세요", ntHead: "📢 [{0} 교체] {1} 빠짐", ntIn: "→ {0} 투입", ntRally: "{0}({1}) · {2}", ntMove: "  ※ {0}에서 이동 — 그 자리는 부족", ntNone: "대체 없음 (부족)",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -596,6 +597,7 @@ const I18N = {
     hAbsent: "Not joining", absNone: "No one has chosen “Not joining” yet.", dAbsent: "Players who chose “Not joining” in the time survey. They are left out of participation and the rally plan.", histT: "Troop input history", histNone: "No troop input yet.", histNow: "Current",
     mEnemy: "🛡 Enemy server", hEnemy: "Enemy server info", dEnemy: "Enter a server number and the Pass, then press Search. The server's info is collected only once and saved. A saved server is never collected again; open it with the buttons below.", eKPh: "Server number", eFind: "Search", eSaved: "Saved servers", eNone: "No servers saved yet.", eReq: "Search for server {0} received. It will appear here automatically once its info is collected.", eWait: "⏳ Waiting for server {0}", eBadK: "A server number is 1-5 digits.", eAt: "Collected {0}", eKing: "King {0}", eKvk: "KvK battles {0} · castles taken {1} · lost {2}", eAl: "Alliances", ePl: "{0} players", eSortM: "By Trial", eSortP: "By power", eSortT: "By TC level", thMembers: "Members", thKills: "Kills", thMSum: "Trial total", thPR: "Power rank", thKR: "Kill rank", thHR: "Hero rank", thER: "Pet rank", eRefresh: "Refresh", eNote: "Troop counts are not public (jeabslist), so they are not shown. Based on alliance rosters: players without an alliance and untracked members of small alliances are missing.", eSortK: "By kills",
     bConfL: "✅ Confirm {0} {1}", bUnconfL: "Cancel {0} {1} confirmation", confList: "✅ Confirmed: {0}", confLegacy: "Confirmed the old way. Confirm each leader again to lock the placement.", lockNote: "A confirmed leader's placement is locked and does not change when new answers come in. Cancel the confirmation to change it.", bOut: "Drop", subAsk: "{0} · {1} drops out\n\n{2}\n\nReplace and save?", subTo: "{0}: → {1} ({2})", subFrom: " — taken from {0}", subNone: "{0}: no replacement → left short", subDone: "Replaced and saved.",
+    ntTitle: "📢 Replacement notice — copy and paste", ntHead: "📢 [{0} change] {1} drops out", ntIn: "→ {0} joins", ntRally: "{0} ({1}) · {2}", ntMove: "  ※ moved from {0} — that spot is now short", ntNone: "no replacement (short)",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -649,6 +651,7 @@ const I18N = {
     hAbsent: "不參加名單", absNone: "目前沒有人不參加。", dAbsent: "在時間問卷中選擇「不參加」的人，不計入參加率與集結編組。", histT: "兵力輸入紀錄", histNone: "沒有兵力輸入紀錄。", histNow: "目前",
     mEnemy: "🛡 敵方伺服器", hEnemy: "敵方伺服器資訊", dEnemy: "輸入伺服器編號與 Pass 後按「搜尋」，只會抓取一次該伺服器資訊並儲存。已儲存的伺服器不會再抓取，用下方按鈕直接查看。", eKPh: "伺服器編號", eFind: "搜尋", eSaved: "已儲存的伺服器", eNone: "尚未儲存任何伺服器。", eReq: "已收到伺服器 {0} 的搜尋。抓取完成後會自動顯示在這裡。", eWait: "⏳ 等待伺服器 {0}", eBadK: "伺服器編號是 1~5 位數字。", eAt: "收集於 {0}", eKing: "國王 {0}", eKvk: "KvK 戰鬥 {0} · 攻下城堡 {1} · 失去 {2}", eAl: "聯盟", ePl: "玩家 {0} 人", eSortM: "依試煉", eSortP: "依戰力", eSortT: "依城堡等級", thMembers: "人數", thKills: "擊殺", thMSum: "試煉總和", thPR: "戰力排名", thKR: "擊殺排名", thHR: "英雄排名", thER: "寵物排名", eRefresh: "重新抓取", eNote: "士兵數量不公開（jeabslist），因此無法顯示。依聯盟成員名單，沒有聯盟的人與小聯盟未追蹤的成員不包含在內。", eSortK: "依擊殺",
     bConfL: "✅ 確定 {0} {1}", bUnconfL: "取消 {0} {1} 確定", confList: "✅ 已確定：{0}", confLegacy: "這是舊方式的確定。逐一重新確定集結隊長後，配置就會固定。", lockNote: "已確定的集結隊長配置會固定，有新回覆也不會變。要修改請先取消確定。", bOut: "退出", subAsk: "{0} · {1} 退出\n\n{2}\n\n要替換並儲存嗎？", subTo: "{0}：→ {1}（{2}）", subFrom: "（從 {0} 調來）", subNone: "{0}：沒有替補 → 保持不足", subDone: "已替換並儲存。",
+    ntTitle: "📢 替換公告 — 複製後貼上", ntHead: "📢 [{0} 替換] {1} 退出", ntIn: "→ {0} 補上", ntRally: "{0}（{1}）· {2}", ntMove: "  ※ 從 {0} 調來 — 該位置不足", ntNone: "沒有替補（不足）",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -702,6 +705,7 @@ const I18N = {
     hAbsent: "قائمة غير المشاركين", absNone: "لا يوجد غير مشاركين حتى الآن.", dAbsent: "اللاعبون الذين اختاروا «غير مشارك» في استبيان الوقت. لا يُحسبون في المشاركة ولا في خطة الحشود.", histT: "سجل إدخال القوات", histNone: "لا يوجد إدخال للقوات بعد.", histNow: "الحالي",
     mEnemy: "🛡 خادم العدو", hEnemy: "معلومات خادم العدو", dEnemy: "أدخل رقم الخادم وPass ثم اضغط بحث. تُجمع معلومات الخادم مرة واحدة فقط وتُحفظ. الخادم المحفوظ لا يُجمع مرة أخرى؛ افتحه بالأزرار أدناه.", eKPh: "رقم الخادم", eFind: "بحث", eSaved: "الخوادم المحفوظة", eNone: "لا توجد خوادم محفوظة بعد.", eReq: "تم استلام البحث عن الخادم {0}. سيظهر هنا تلقائيًا بعد جمع معلوماته.", eWait: "⏳ بانتظار الخادم {0}", eBadK: "رقم الخادم من 1 إلى 5 أرقام.", eAt: "جُمع {0}", eKing: "الملك {0}", eKvk: "معارك KvK {0} · قلاع مأخوذة {1} · مفقودة {2}", eAl: "التحالفات", ePl: "{0} لاعب", eSortM: "حسب التجربة", eSortP: "حسب القوة", eSortT: "حسب مستوى المركز", thMembers: "الأعضاء", thKills: "القتل", thMSum: "مجموع التجربة", thPR: "ترتيب القوة", thKR: "ترتيب القتل", thHR: "ترتيب الأبطال", thER: "ترتيب الحيوانات", eRefresh: "تحديث", eNote: "أعداد الجنود غير منشورة (jeabslist) لذلك لا تظهر. القائمة مبنية على أعضاء التحالفات: من بلا تحالف والأعضاء غير المتتبعين في التحالفات الصغيرة غير موجودين.", eSortK: "حسب القتل",
     bConfL: "✅ تأكيد {0} {1}", bUnconfL: "إلغاء تأكيد {0} {1}", confList: "✅ مؤكد: {0}", confLegacy: "هذا تأكيد بالطريقة القديمة. أكّد كل قائد من جديد لتثبيت التوزيع.", lockNote: "توزيع القائد المؤكد ثابت ولا يتغير مع الإجابات الجديدة. ألغِ التأكيد لتغييره.", bOut: "انسحاب", subAsk: "{0} · انسحاب {1}\n\n{2}\n\nاستبدال وحفظ؟", subTo: "{0}: ← {1} ({2})", subFrom: " — من {0}", subNone: "{0}: لا بديل ← يبقى ناقصًا", subDone: "تم الاستبدال والحفظ.",
+    ntTitle: "📢 إعلان الاستبدال — انسخه والصقه", ntHead: "📢 [تغيير {0}] انسحاب {1}", ntIn: "← ينضم {0}", ntRally: "{0} ({1}) · {2}", ntMove: "  ※ نُقل من {0} — ذلك المكان ناقص الآن", ntNone: "لا بديل (نقص)",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -755,6 +759,7 @@ const I18N = {
     hAbsent: "Katılmayanlar", absNone: "Henüz katılmayan yok.", dAbsent: "Zaman anketinde “Katılmıyor” seçenler. Katılım ve ralli planına dahil edilmez.", histT: "Asker giriş geçmişi", histNone: "Henüz asker girişi yok.", histNow: "Güncel",
     mEnemy: "🛡 Düşman sunucu", hEnemy: "Düşman sunucu bilgisi", dEnemy: "Sunucu numarasını ve Pass'i girip Ara'ya basın. Sunucu bilgisi yalnızca bir kez toplanır ve kaydedilir. Kayıtlı sunucu tekrar toplanmaz; aşağıdaki düğmelerle açın.", eKPh: "Sunucu numarası", eFind: "Ara", eSaved: "Kayıtlı sunucular", eNone: "Henüz kayıtlı sunucu yok.", eReq: "Sunucu {0} araması alındı. Bilgisi toplanınca burada otomatik görünecek.", eWait: "⏳ Sunucu {0} bekleniyor", eBadK: "Sunucu numarası 1-5 haneli bir sayıdır.", eAt: "Toplandı {0}", eKing: "Kral {0}", eKvk: "KvK savaş {0} · alınan kale {1} · kaybedilen {2}", eAl: "İttifaklar", ePl: "{0} oyuncu", eSortM: "Denemeye göre", eSortP: "Güce göre", eSortT: "Merkez seviyesine göre", thMembers: "Üye", thKills: "Öldürme", thMSum: "Deneme toplamı", thPR: "Güç sırası", thKR: "Öldürme sırası", thHR: "Kahraman sırası", thER: "Evcil sırası", eRefresh: "Yenile", eNote: "Asker sayıları herkese açık değil (jeabslist), bu yüzden gösterilmiyor. İttifak listelerine göre: ittifaksız oyuncular ve küçük ittifakların takip edilmeyen üyeleri yok.", eSortK: "Öldürmeye göre",
     bConfL: "✅ {0} {1} onayla", bUnconfL: "{0} {1} onayını iptal et", confList: "✅ Onaylı: {0}", confLegacy: "Eski yöntemle onaylanmış. Yerleşimi sabitlemek için her lideri yeniden onaylayın.", lockNote: "Onaylı liderin yerleşimi sabittir, yeni yanıtlar gelse de değişmez. Değiştirmek için onayı iptal edin.", bOut: "Çıktı", subAsk: "{0} · {1} çıkıyor\n\n{2}\n\nDeğiştirip kaydedelim mi?", subTo: "{0}: → {1} ({2})", subFrom: " — {0} grubundan", subNone: "{0}: yedek yok → eksik kalır", subDone: "Değiştirildi ve kaydedildi.",
+    ntTitle: "📢 Değişiklik duyurusu — kopyalayıp yapıştırın", ntHead: "📢 [{0} değişiklik] {1} çıkıyor", ntIn: "→ {0} giriyor", ntRally: "{0} ({1}) · {2}", ntMove: "  ※ {0} grubundan alındı — orası eksik kaldı", ntNone: "yedek yok (eksik)",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1411,7 +1416,32 @@ function buildReport(a) {
   });
   return out.join("\n");
 }
+function openNotice(text) {
+  $("hRep").textContent = tx("ntTitle");
+  $("repText").value = text;
+  $("repMsg").textContent = "";
+  $("rep").style.display = "flex";
+}
+// 교체 공지: 같은 사람 · 같은 병력이 이어지는 시간대는 한 줄로
+function noticeText(a, L, out, plan, box) {
+  const nmOf = id => { const q = DATA.find(x => x.id === id); return q ? (q.gname || q.name) : "?"; }, kinds = [tx("inf"), tx("cav"), tx("arc")];
+  const amt = v => [0, 1, 2].filter(t => v[t]).map(t => kinds[t] + " " + fmt(v[t])).join(" · ");
+  const num = id => tx("nth", box.leaders.findIndex(q => q.id === id) + 1);
+  const ins = [...new Set(plan.filter(x => x.pick).map(x => x.pick.p.id))].map(nmOf);
+  const out1 = [tx("ntHead", a, nmOf(out)) + (ins.length ? " " + tx("ntIn", ins.join(", ")) : ""), tx("ntRally", num(L.id), nmOf(L.id), tx(RMODE === "def" ? "mDef" : "mAtk"))];
+  const key = x => x.pick ? JSON.stringify([x.pick.p.id, x.send, x.pick.from || ""]) : "none";
+  for (let k = 0; k < plan.length;) {
+    let j = k;
+    while (j + 1 < plan.length && plan[j + 1].i === plan[j].i + 1 && key(plan[j + 1]) === key(plan[k])) j++;
+    const z = TZ[LANG], x = plan[k], when = SLOTS[x.i][0].slice(0, 5) + "~" + SLOTS[plan[j].i][0].slice(6) + (z ? " (" + z[0] + " " + hm(SLOTS[x.i][1], z[1]) + "~" + hm(SLOTS[plan[j].i][2], z[1]) + ")" : "");
+    out1.push(when + " · " + (x.pick ? nmOf(x.pick.p.id) + " · " + amt(x.send) : tx("ntNone")));
+    if (x.pick && x.pick.from) out1.push(tx("ntMove", num(x.pick.from)));
+    k = j + 1;
+  }
+  return out1.join("\n");
+}
 function openReport() {
+  $("hRep").textContent = tx("repTitle");
   $("repText").value = buildReport($("rAlly").value || ALLIES[0]);
   $("repMsg").textContent = "";
   $("rep").style.display = "flex";
@@ -2025,7 +2055,7 @@ $("rally").addEventListener("click", e => {
     const amt = v => [0, 1, 2].filter(t => v[t]).map(t => kinds[t] + " " + fmt(v[t])).join(" · ");
     const lines = plan.map(x => x.pick ? tx("subTo", SLOTS[x.i][0], nmOf(x.pick.p.id), amt(x.send)) + (x.pick.from ? tx("subFrom", tx("nth", box.leaders.findIndex(q => q.id === x.pick.from) + 1)) : "") : tx("subNone", SLOTS[x.i][0]));
     if (!confirm(tx("subAsk", tx("nth", box.leaders.indexOf(L) + 1), nmOf(out), lines.join("\n")))) return;
-    const before = JSON.stringify(box.leaders);
+    const before = JSON.stringify(box.leaders), note = noticeText(a, L, out, plan, box);
     plan.forEach(x => {
       const z = L[fk][x.i];
       if (!z) return;
@@ -2038,7 +2068,7 @@ $("rally").addEventListener("click", e => {
     DIRTY[a] = true; PLAN[a] = JSON.parse(JSON.stringify(box));
     renderRally();
     saveConfig().then(ok => {
-      if (ok) { $("aMsg").style.color = "var(--ok)"; $("aMsg").textContent = tx("subDone"); return; }
+      if (ok) { $("aMsg").style.color = "var(--ok)"; $("aMsg").textContent = tx("subDone"); openNotice(note); return; }
       const m = $("aMsg").textContent; box.leaders = JSON.parse(before); PLAN[a] = JSON.parse(JSON.stringify(box)); renderAdmin(); renderRally(); $("aMsg").textContent = m || tx("aFail"); $("aMsg").style.color = "var(--warn)";
     });
     return;
