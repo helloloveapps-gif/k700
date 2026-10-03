@@ -785,11 +785,11 @@ const needOf = (cap, r) => {
   n[top] += c - (n[0] + n[1] + n[2]);
   return n;
 };
-// 집결장 본인 병력을 비율대로 나누되 1,000 단위로 끊고, 남는 자투리는 비율이 가장 큰 병과에 준다(목표를 넘지 않게)
+// 집결장 본인 병력은 끊지 않고 비율대로 1 단위까지 나눈다. 내림하고 남는 몫은 비율이 가장 큰 병과에 준다(목표를 넘지 않게). 1,000 단위 절삭은 집결원만
 const ownSplit = (own, r, target) => {
   const c = Math.max(0, Math.floor(+own || 0)), v = [0, 1, 2].map(k => Math.max(0, +r[k] || 0)), sum = v[0] + v[1] + v[2];
   if (!sum) return [0, 0, 0];
-  const n = v.map((x, k) => Math.min(target[k], Math.floor(c * x / sum / 1000) * 1000));
+  const n = v.map((x, k) => Math.min(target[k], Math.floor(c * x / sum)));
   let left = c - (n[0] + n[1] + n[2]);
   [0, 1, 2].sort((x, y) => v[y] - v[x]).forEach(k => { const g = Math.min(left, target[k] - n[k]); if (g > 0) { n[k] += g; left -= g; } });
   return n;
