@@ -107,6 +107,16 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 #meBar .sub{flex:1 1 100%;font-size:12px}
 #meBar .who2{font-weight:700}
 #meBar .sp{flex:1}
+/* 응답자 명단: 칸마다 테두리, 바깥 테두리, 줄무늬로 사람마다 구분 */
+.respwrap{border:2px solid var(--line);border-radius:10px;overflow:auto}
+#respTable{border-collapse:collapse}
+#respTable th,#respTable td{border:1px solid var(--line)}
+#respTable tr:first-child th{border-top:none}
+#respTable th:first-child,#respTable td:first-child{border-inline-start:none}
+#respTable th:last-child,#respTable td:last-child{border-inline-end:none}
+#respTable tr:last-child td{border-bottom:none}
+#respTable tr:nth-child(even) td{background:rgba(127,127,127,.06)}
+#respTable tr.mine td{background:rgba(121,80,242,.16)}
 #meBar.in{flex-wrap:nowrap;padding:8px 10px}
 #meBar.in .who2{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #meBar.in button{flex:none;min-height:34px;padding:0 12px;font-size:13px}
@@ -356,7 +366,7 @@ select,input{padding:0 10px}
       <div class="frow" id="fTroops"></div>
     </div>
     <div class="sub" style="margin-bottom:8px" id="roleHint"></div>
-    <div class="scroll"><table id="respTable"></table></div>
+    <div class="scroll respwrap"><table id="respTable"></table></div>
     <div class="pager" id="pager"></div>
   </div>
 
