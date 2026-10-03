@@ -85,8 +85,8 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 .tb .th .fill{margin-inline-start:auto;font-size:12px}
 .tb.away{border-style:dashed}
 .tb.away .th{background:none;font-weight:400;color:var(--sub)}
-.ttl .tr{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 10px;padding:4px 10px;border-top:1px solid var(--line);font-size:12.5px}
-.ttl .amt{margin-inline-start:auto;text-align:end;font-variant-numeric:tabular-nums}
+.ttl .tr{display:flex;flex-wrap:nowrap;align-items:center;gap:0 10px;padding:4px 10px;border-top:1px solid var(--line);font-size:12.5px}
+.ttl .amt{margin-inline-start:auto;text-align:end;flex:none;white-space:nowrap;font-variant-numeric:tabular-nums}
 .ttl .amt b{margin-inline-start:6px}
 .ttl .tr.own{background:rgba(245,159,0,.10)}
 .ttl .tr.sum{background:var(--bar);font-weight:700}
@@ -290,7 +290,9 @@ input.pass{width:110px !important;text-align:start;font-weight:700}
 .swp{display:flex;flex-wrap:wrap;gap:6px;align-items:center;width:100%;margin:6px 0;padding:8px;border:2px solid #f76707;border-radius:10px;background:rgba(247,103,7,.08)}
 .swp select{flex:1 1 200px;min-width:0}
 .swp button{min-height:32px;padding:0 12px;font-size:13px}
-.ttl .tr{flex-wrap:wrap}
+.ttl .lb{display:flex;flex-wrap:wrap;align-items:center;min-width:0;flex:1 1 auto}
+.ttl .nmx{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;max-width:100%}
+.ttl .tr:has(.swp){flex-wrap:wrap}
 .outb{min-height:0 !important;height:22px;padding:0 8px !important;margin-inline-start:6px;font-size:11px !important;border-radius:6px;background:#fff0f0;border:1px solid #e03131 !important;color:#e03131 !important;flex:none !important}
 .pgrp{display:flex;gap:6px;align-items:center;padding:6px;border:2px solid #7950f2;border-radius:12px;background:rgba(121,80,242,.08)}
 .ogrp{display:flex;gap:8px;flex-wrap:wrap}
@@ -1299,7 +1301,7 @@ function renderRally() {
   const nm = p => esc(p.gname || p.name), z = TZ[LANG], kinds = [tx("inf"), tx("cav"), tx("arc")];
   let usedDef = false;
   const star = p => { if (MARCH[p.id]) return ''; usedDef = true; return '<span class="sub">＊</span>'; };
-  const line = (label, v, cls, btn) => '<div class="tr' + (cls ? ' ' + cls : '') + '"><span>' + label + (btn || '') + '</span><span class="amt">' + ([0, 1, 2].filter(t => v[t]).map(t => kinds[t] + ' ' + fmt(v[t])).join(' · ') || '·') + '</span></div>';
+  const line = (label, v, cls, btn) => '<div class="tr' + (cls ? ' ' + cls : '') + '"><span class="lb"><span class="nmx">' + label + '</span>' + (btn || '') + '</span><span class="amt">' + ([0, 1, 2].filter(t => v[t]).map(t => kinds[t] + ' ' + fmt(v[t])).join(' · ') || '·') + '</span></div>';
   // 같은 편성이 이어지는 시간대는 한 덩어리로 묶는다 (12:00~15:00)
   const range = (i0, i1) => esc(SLOTS[i0][0].slice(0, 5) + '~' + SLOTS[i1][0].slice(6)) + (z ? ' <small>(' + esc(z[0] + ' ' + hm(SLOTS[i0][1], z[1]) + '~' + hm(SLOTS[i1][2], z[1])) + ')</small>' : '');
   const meta = CFG.A[a] || {};
