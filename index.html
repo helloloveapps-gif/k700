@@ -99,6 +99,12 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 .ltabs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .ltab{min-height:36px;padding:0 12px;border-radius:99px;font-size:13px}
 .ltab.on{background:#f59f00;border-color:#f59f00;color:#fff}
+.ltab.cf{border:2px solid #2f9e44;color:#2f9e44;font-weight:800}
+.ltab.cf.on{background:#2f9e44;border-color:#2f9e44;color:#fff}
+.cfb{display:inline-block;padding:2px 10px;border-radius:99px;font-size:12px;font-weight:800;background:#2f9e44;color:#fff;vertical-align:middle;margin-inline-start:6px}
+.cfb.no{background:transparent;color:var(--sub);border:1px dashed var(--sub);font-weight:600}
+.card.leader.cf,.lcard.cf{border:3px solid #2f9e44 !important;background:linear-gradient(rgba(47,158,68,.07),rgba(47,158,68,.07)),var(--card)}
+#aConf.off{background:#2f9e44;border-color:#2f9e44;color:#fff}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:8px}
 .stats>div{background:var(--bar);border-radius:10px;padding:8px;min-width:0}
 .stats small{display:block;color:var(--sub);font-size:11px;line-height:1.2;min-height:1.2em}
@@ -555,6 +561,7 @@ const I18N = {
     outTitle: "🚫 빠진 사람 {0}명", outDesc: "풀어 주기 전까지 교체 후보와 자동 배치에 들어가지 않습니다.", bRelease: "풀어주기", relDone: "풀어 줬습니다. 이제 교체 후보에 들어갑니다.",
     outPick: "사람 골라서 빼기", bOutAdd: "빼기",
     mvIdle: "대기", mvShort: "부족", swapHead: "{0} ↔ {1} 교체", bSwap: "교체", swapPick: "바꿀 사람 고르기 (뒤 번호 확정 집결)", swapGo: "교체 실행", swapCancel: "취소", swapNone: "뒤 번호 확정 집결에 바꿀 사람이 없습니다.", swapWarn: "⚠ {0}의 출정 인원({1})이 바꿀 자리({2})보다 적어 교체할 수 없습니다.", swapAsk: "{0}\n\n이대로 교체하고 저장할까요?", marchOf: "출정 {0}",
+    cfBadge: "🔒 확정됨", cfNot: "확정 전", cfDone: "✅ {0} {1} 확정 완료 — 이제 배치가 고정됩니다.", cfUndone: "{0} {1} 확정을 취소했습니다.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -612,6 +619,7 @@ const I18N = {
     outTitle: "🚫 Dropped players: {0}", outDesc: "They are left out of replacements and auto placement until released.", bRelease: "Release", relDone: "Released. They can be picked as replacements again.",
     outPick: "Pick a player to drop", bOutAdd: "Drop",
     mvIdle: "standby", mvShort: "short", swapHead: "{0} ↔ {1} swap", bSwap: "Swap", swapPick: "Pick who to swap (later confirmed rallies)", swapGo: "Swap now", swapCancel: "Cancel", swapNone: "No one to swap in the later confirmed rallies.", swapWarn: "⚠ {0}'s march size ({1}) is smaller than the spot ({2}), so the swap is not allowed.", swapAsk: "{0}\n\nSwap and save?", marchOf: "march {0}",
+    cfBadge: "🔒 Confirmed", cfNot: "Not confirmed", cfDone: "✅ {0} {1} confirmed — the placement is now locked.", cfUndone: "{0} {1} confirmation cancelled.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -669,6 +677,7 @@ const I18N = {
     outTitle: "🚫 已退出 {0} 人", outDesc: "在解除之前，不會被列入替補或自動配置。", bRelease: "解除", relDone: "已解除，現在可以再被選為替補。",
     outPick: "選擇要退出的人", bOutAdd: "退出",
     mvIdle: "待命", mvShort: "不足", swapHead: "{0} ↔ {1} 交換", bSwap: "交換", swapPick: "選擇要交換的人（後面已確定的集結）", swapGo: "執行交換", swapCancel: "取消", swapNone: "後面已確定的集結中沒有可交換的人。", swapWarn: "⚠ {0} 的出征人數（{1}）少於該位置（{2}），無法交換。", swapAsk: "{0}\n\n要交換並儲存嗎？", marchOf: "出征 {0}",
+    cfBadge: "🔒 已確定", cfNot: "未確定", cfDone: "✅ {0} {1} 確定完成 — 配置已固定。", cfUndone: "已取消 {0} {1} 的確定。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -726,6 +735,7 @@ const I18N = {
     outTitle: "🚫 المنسحبون: {0}", outDesc: "لا يدخلون في الاستبدال ولا في التوزيع التلقائي حتى يتم إطلاقهم.", bRelease: "إطلاق", relDone: "تم الإطلاق. يمكن اختيارهم بديلًا من جديد.",
     outPick: "اختر لاعبًا لإخراجه", bOutAdd: "إخراج",
     mvIdle: "احتياط", mvShort: "نقص", swapHead: "تبديل {0} ↔ {1}", bSwap: "تبديل", swapPick: "اختر من تبدّله (الحشود المؤكدة اللاحقة)", swapGo: "نفّذ التبديل", swapCancel: "إلغاء", swapNone: "لا يوجد من يمكن تبديله في الحشود المؤكدة اللاحقة.", swapWarn: "⚠ عدد مسيرة {0} ({1}) أقل من المكان ({2})، لذلك لا يمكن التبديل.", swapAsk: "{0}\n\nتبديل وحفظ؟", marchOf: "مسيرة {0}",
+    cfBadge: "🔒 مؤكد", cfNot: "غير مؤكد", cfDone: "✅ تم تأكيد {0} {1} — التوزيع ثابت الآن.", cfUndone: "تم إلغاء تأكيد {0} {1}.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -783,6 +793,7 @@ const I18N = {
     outTitle: "🚫 Çıkanlar: {0}", outDesc: "Serbest bırakılana kadar yedek seçiminde ve otomatik yerleşimde yer almazlar.", bRelease: "Serbest bırak", relDone: "Serbest bırakıldı. Artık yedek olarak seçilebilir.",
     outPick: "Çıkarılacak oyuncuyu seçin", bOutAdd: "Çıkar",
     mvIdle: "yedek", mvShort: "eksik", swapHead: "{0} ↔ {1} değişim", bSwap: "Değiştir", swapPick: "Değiştirilecek kişiyi seçin (sonraki onaylı ralliler)", swapGo: "Değiştir", swapCancel: "İptal", swapNone: "Sonraki onaylı rallilerde değiştirilecek kimse yok.", swapWarn: "⚠ {0} sefer sayısı ({1}) yerden ({2}) az, değişim yapılamaz.", swapAsk: "{0}\n\nDeğiştirip kaydedelim mi?", marchOf: "sefer {0}",
+    cfBadge: "🔒 Onaylandı", cfNot: "Onaylanmadı", cfDone: "✅ {0} {1} onaylandı — yerleşim artık sabit.", cfUndone: "{0} {1} onayı iptal edildi.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -844,7 +855,7 @@ const freezeOf = (a, l, mode, box) => SLOTS.map((s, i) => { const R = alloc(a, i
 // 포메이션: r = 공격 비율, d = 수비 비율(보병 · 기병 · 궁병). 화면은 RMODE 로 둘 중 하나를 그린다
 let RMODE = "atk";
 const SELK = {};   // 연맹별로 지금 고른 집결장 번호(0부터)
-const tabsHtml = (list, k) => '<div class="ltabs">' + list.map((l, i) => { const p = DATA.find(x => x.id === l.id); return '<button class="ltab' + (i === k ? ' on' : '') + '" data-k="' + i + '">' + (l[fkOf(RMODE)] ? '✅ ' : '') + tx("nth", i + 1) + ' · ' + esc(p ? (p.gname || p.name) : l.id) + '</button>'; }).join("") + '</div>';
+const tabsHtml = (list, k) => '<div class="ltabs">' + list.map((l, i) => { const p = DATA.find(x => x.id === l.id); return '<button class="ltab' + (i === k ? ' on' : '') + (l[fkOf(RMODE)] ? ' cf' : '') + '" data-k="' + i + '">' + (l[fkOf(RMODE)] ? '🔒 ' : '') + tx("nth", i + 1) + ' · ' + esc(p ? (p.gname || p.name) : l.id) + '</button>'; }).join("") + '</div>';
 const PLAN = {};   // 관리자가 「배치」를 누른 때의 설정 사본(연맹별). 없으면 저장된 설정으로 그린다
 const ratioOf = (l, mode) => (mode === "def" ? l.d : l.r) || (mode === "def" ? [5, 2, 3] : [6, 4, 0]);
 const planBox = a => (IS_ADMIN && PLAN[a]) || CFG.A[a] || blank();
@@ -1286,7 +1297,7 @@ function renderRally() {
     if (l.id !== selId) return;
     const p = DATA.find(x => x.id === l.id), r = ratioOf(l, RMODE);
     const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +box.def || DEF_MARCH, cap);
-    h += '<div class="card leader" style="margin-top:12px;padding:12px"><div class="lname">' + (l[fkOf(RMODE)] ? '✅ ' : '') + (n + 1) + '. ★ ' + (p ? nm(p) : esc(l.id)) + ' <span class="sub" style="font-weight:400">' + (RMODE === "def" ? '🛡' : '⚔') + ' ' + r.map(v => +v || 0).join(":") + '</span></div>' + (l[fkOf(RMODE)] ? '<div class="sub" style="color:var(--ok)">' + tx("lockNote") + '</div>' : '') +
+    h += '<div class="card leader' + (l[fkOf(RMODE)] ? ' cf' : '') + '" style="margin-top:12px;padding:12px"><div class="lname">' + (n + 1) + '. ★ ' + (p ? nm(p) : esc(l.id)) + ' <span class="sub" style="font-weight:400">' + (RMODE === "def" ? '🛡' : '⚔') + ' ' + r.map(v => +v || 0).join(":") + '</span>' + (l[fkOf(RMODE)] ? '<span class="cfb">' + tx("cfBadge") + '</span>' : '<span class="cfb no">' + tx("cfNot") + '</span>') + '</div>' + (l[fkOf(RMODE)] ? '<div class="sub" style="color:var(--ok)">' + tx("lockNote") + '</div>' : '') +
       '<div class="sub">' + tx("capSplit", '<b>' + fmt(cap) + '</b>', fmt(own), '<b>' + fmt(cap - own) + '</b>') + '</div>';
     const rows = plan.map(pl => pl.rallies.find(q => q.p.id === l.id) || null);
     const sig = x => x ? JSON.stringify([x.own, x.members.map(m => [m.p.id, m.send]), x.need]) : "away";
@@ -1503,7 +1514,7 @@ function renderAdmin() {
     const k = SELK[a] = Math.min(SELK[a] || 0, ls.length - 1), l = ls[k];
     const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +box0.def || DEF_MARCH, cap);
     h += tabsHtml(ls, k) +
-      '<div class="lcard"><div class="lhead"><span class="lname">' + tx("nth", k + 1) + ' ★ ' + who(l.id) + '</span><span class="sub">' + tx("thMystic") + ' ' + (fmt(info(l.id).mystic) || '·') + '</span><span class="sp"></span>' +
+      '<div class="lcard' + (l[fkOf(RMODE)] ? ' cf' : '') + '"><div class="lhead"><span class="lname">' + tx("nth", k + 1) + ' ★ ' + who(l.id) + (l[fkOf(RMODE)] ? '<span class="cfb">' + tx("cfBadge") + '</span>' : '<span class="cfb no">' + tx("cfNot") + '</span>') + '</span><span class="sub">' + tx("thMystic") + ' ' + (fmt(info(l.id).mystic) || '·') + '</span><span class="sp"></span>' +
         (k ? '<button class="del up" data-up="' + k + '">▲ ' + tx("aUp") + '</button>' : '') + '<button class="del" data-k="' + k + '">' + tx("aDel") + '</button></div>' +
       '<div class="stats"><div><small>' + tx("thRallyCap") + '</small><input data-k="' + k + '" data-f="cap" inputmode="numeric" maxlength="8" value="' + esc(l.cap) + '"></div>' +
         '<div><small>' + tx("aOwnMarch") + (MARCH[l.id] ? '' : ' ＊') + '</small><b id="stOwn">' + fmt(own) + '</b></div>' +
@@ -2259,7 +2270,8 @@ $("admin").addEventListener("click", e => {
     } else if (l[fk]) delete l[fk];
     else l[fk] = freezeOf(a, l, RMODE, box);
     DIRTY[a] = true;
-    saveConfig().then(ok => { if (!ok) { const m = $("aMsg").textContent, B = JSON.parse(before); box.conf = B.c; box.leaders = B.L; renderAdmin(); renderRally(); $("aMsg").textContent = m || tx("aFail"); $("aMsg").style.color = "var(--warn)"; } });
+    const doneMsg = tx(l[fk] ? "cfDone" : "cfUndone", tx("nth", box.leaders.indexOf(l) + 1), tx(RMODE === "def" ? "mDef" : "mAtk"));
+    saveConfig().then(ok => { if (ok) { $("aMsg").style.color = "var(--ok)"; $("aMsg").innerHTML = '<b>' + esc(doneMsg) + '</b>'; return; } if (!ok) { const m = $("aMsg").textContent, B = JSON.parse(before); box.conf = B.c; box.leaders = B.L; renderAdmin(); renderRally(); $("aMsg").textContent = m || tx("aFail"); $("aMsg").style.color = "var(--warn)"; } });
     return;
   }
   if (e.target.id === "aAdd") {
