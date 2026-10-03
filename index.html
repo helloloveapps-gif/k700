@@ -510,7 +510,7 @@ const I18N = {
     tagLeaders: "{0} 집결장", noLeaders: "정해진 집결장이 없습니다",
     admTitle: "🔒 관리자", admPh: "관리자 비밀번호", admOk: "확인", admOn: "✅ 관리자 모드 — 저장할 수 있습니다", admOut: "관리자 나가기", admBad: "비밀번호가 틀렸습니다.",
     passNeed: "저장하려면 Pass(비밀번호)를 넣으세요.", passBad: "Pass(비밀번호)가 틀렸습니다. 저장하지 않았습니다.",
-    hAbsent: "불참 명단", dAbsent: "참여 시간 설문에서 「불참」을 고른 사람입니다. 참여율과 집결 편성에서 빠집니다.", histT: "병사 입력 기록", histNone: "병사 정보 입력 기록이 없습니다.", histNow: "현재",
+    hAbsent: "불참 명단", absNone: "불참한 사람이 아직 없습니다.", dAbsent: "참여 시간 설문에서 「불참」을 고른 사람입니다. 참여율과 집결 편성에서 빠집니다.", histT: "병사 입력 기록", histNone: "병사 정보 입력 기록이 없습니다.", histNow: "현재",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -561,7 +561,7 @@ const I18N = {
     tagLeaders: "{0} rally leaders", noLeaders: "No rally leaders set",
     admTitle: "🔒 Admin", admPh: "Admin password", admOk: "OK", admOn: "✅ Admin mode — you can save", admOut: "Leave admin mode", admBad: "Wrong password.",
     passNeed: "Enter the Pass (password) to save.", passBad: "Wrong Pass (password). Nothing was saved.",
-    hAbsent: "Not joining", dAbsent: "Players who chose “Not joining” in the time survey. They are left out of participation and the rally plan.", histT: "Troop input history", histNone: "No troop input yet.", histNow: "Current",
+    hAbsent: "Not joining", absNone: "No one has chosen “Not joining” yet.", dAbsent: "Players who chose “Not joining” in the time survey. They are left out of participation and the rally plan.", histT: "Troop input history", histNone: "No troop input yet.", histNow: "Current",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -612,7 +612,7 @@ const I18N = {
     tagLeaders: "{0} 集結隊長", noLeaders: "尚未設定集結隊長",
     admTitle: "🔒 管理員", admPh: "管理員密碼", admOk: "確定", admOn: "✅ 管理員模式 — 可以儲存", admOut: "離開管理員模式", admBad: "密碼錯誤。",
     passNeed: "儲存前請輸入 Pass（密碼）。", passBad: "Pass（密碼）錯誤，沒有儲存。",
-    hAbsent: "不參加名單", dAbsent: "在時間問卷中選擇「不參加」的人，不計入參加率與集結編組。", histT: "兵力輸入紀錄", histNone: "沒有兵力輸入紀錄。", histNow: "目前",
+    hAbsent: "不參加名單", absNone: "目前沒有人不參加。", dAbsent: "在時間問卷中選擇「不參加」的人，不計入參加率與集結編組。", histT: "兵力輸入紀錄", histNone: "沒有兵力輸入紀錄。", histNow: "目前",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -663,7 +663,7 @@ const I18N = {
     tagLeaders: "قادة حشود {0}", noLeaders: "لم يُحدد قادة حشود",
     admTitle: "🔒 المشرف", admPh: "كلمة مرور المشرف", admOk: "تأكيد", admOn: "✅ وضع المشرف — يمكنك الحفظ", admOut: "الخروج من وضع المشرف", admBad: "كلمة المرور خاطئة.",
     passNeed: "أدخل Pass (كلمة المرور) للحفظ.", passBad: "Pass (كلمة المرور) خاطئة. لم يتم الحفظ.",
-    hAbsent: "قائمة غير المشاركين", dAbsent: "اللاعبون الذين اختاروا «غير مشارك» في استبيان الوقت. لا يُحسبون في المشاركة ولا في خطة الحشود.", histT: "سجل إدخال القوات", histNone: "لا يوجد إدخال للقوات بعد.", histNow: "الحالي",
+    hAbsent: "قائمة غير المشاركين", absNone: "لا يوجد غير مشاركين حتى الآن.", dAbsent: "اللاعبون الذين اختاروا «غير مشارك» في استبيان الوقت. لا يُحسبون في المشاركة ولا في خطة الحشود.", histT: "سجل إدخال القوات", histNone: "لا يوجد إدخال للقوات بعد.", histNow: "الحالي",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -714,7 +714,7 @@ const I18N = {
     tagLeaders: "{0} ralli liderleri", noLeaders: "Ralli lideri belirlenmedi",
     admTitle: "🔒 Yönetici", admPh: "Yönetici şifresi", admOk: "Tamam", admOn: "✅ Yönetici modu — kaydedebilirsiniz", admOut: "Yönetici modundan çık", admBad: "Şifre yanlış.",
     passNeed: "Kaydetmek için Pass'i (şifre) girin.", passBad: "Pass (şifre) yanlış. Kaydedilmedi.",
-    hAbsent: "Katılmayanlar", dAbsent: "Zaman anketinde “Katılmıyor” seçenler. Katılım ve ralli planına dahil edilmez.", histT: "Asker giriş geçmişi", histNone: "Henüz asker girişi yok.", histNow: "Güncel",
+    hAbsent: "Katılmayanlar", absNone: "Henüz katılmayan yok.", dAbsent: "Zaman anketinde “Katılmıyor” seçenler. Katılım ve ralli planına dahil edilmez.", histT: "Asker giriş geçmişi", histNone: "Henüz asker girişi yok.", histNow: "Güncel",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1025,9 +1025,9 @@ function render() {
     BAD.map(p => '<tr class="bad"><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td>' + esc(p.name) + '</td><td>' + ('<span class="badtag">' + tx(p.id ? "idBad" : "noId") + '</span>') + '</td><td>' + esc(p.lang) + '</td>' + slotTd(p) + '<td>' + esc(p.time) + '</td></tr>').join("");
 
   const ABS = DATA.filter(p => p.absent).sort((a, b) => ALLIES.indexOf(a.ally) - ALLIES.indexOf(b.ally) || (b.mystic || 0) - (a.mystic || 0));
-  $("absBox").style.display = ABS.length ? "" : "none";
+  $("absBox").style.display = "";
   $("hAbsent").textContent = tx("hAbsent") + " (" + ABS.length + ")";
-  $("absTable").innerHTML = '<tr><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th class="n">' + tx("thMystic") + '</th><th>' + tx("thBuilding") + '</th><th>' + tx("thTime") + '</th></tr>' +
+  $("absTable").innerHTML = '<tr><th>' + tx("thAlly") + '</th><th>' + tx("thNick") + '</th><th class="n">' + tx("thMystic") + '</th><th>' + tx("thBuilding") + '</th><th>' + tx("thTime") + '</th></tr>' + (ABS.length ? '' : '<tr><td colspan="5" class="sub c">' + tx("absNone") + '</td></tr>') +
     ABS.map(p => '<tr' + (p.id === myId() ? ' class="mine"' : '') + '><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td><button class="who" data-id="' + esc(p.id) + '">' + esc(p.gname || p.name) + '</button></td><td class="n">' + fmt(p.mystic) + '</td><td>' + esc(p.tc) + '</td><td class="sub">' + esc(p.time) + '</td></tr>').join("");
 
   const ftg = +$("fTg").value || 0, fm = +String($("fMystic").value || "").replace(/[^0-9]/g, "") || 0, fc = [0, 1, 2].map(k => +($("fCamp" + k) || {}).value || 0);
