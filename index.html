@@ -112,6 +112,11 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 #meBar .sub{flex:1 1 100%;font-size:12px}
 #meBar .who2{font-weight:700}
 #meBar .sp{flex:1}
+#meTodo{display:flex;flex-direction:column;gap:6px;margin:-4px 0 12px}
+#meTodo:empty{display:none}
+#meTodo .todo{display:flex;align-items:center;gap:8px;padding:8px 10px;border:2px dashed #f76707;border-radius:12px;background:rgba(247,103,7,.08);font-size:13px;font-weight:700}
+#meTodo .todo span{flex:1;min-width:0}
+#meTodo .todo button{flex:none;min-height:34px;padding:0 12px;font-size:13px;background:#f76707;border-color:#f76707;color:#fff}
 /* 응답자 명단: 칸마다 테두리, 바깥 테두리, 줄무늬로 사람마다 구분 */
 .respwrap{border:2px solid var(--line);border-radius:10px;overflow:auto}
 #respTable{border-collapse:collapse}
@@ -336,6 +341,7 @@ select,input{padding:0 10px}
   </div>
   <div id="inapp"><span id="inappT"></span><button id="inappB"></button><small id="inappH"></small></div>
   <div id="meBar"></div>
+  <div id="meTodo"></div>
   <div class="top hero">
     <div>
       <h1 id="tTitle">700서버 KvK 참여 현황</h1>
@@ -504,7 +510,7 @@ const I18N = {
     roleHint: "닉네임을 누르면 그 사람이 어느 집결장에서 무엇을 하는지 나옵니다(배치를 확정한 연맹만).", roleSend: "보낼 병력",
     absent: "불참", absentN: " · 불참 {0}명",
     idBad: "ID 형식 오류", idProb: "ID 문제",
-    meTitle: "👤 내 게임 ID", mePh: "게임 ID 숫자 (비밀번호 없음)", meOk: "확인", meChange: "변경", meRole: "🎯 임무", meUnknown: "아직 응답이 없는 ID", meHint: "ID만 넣으면 됩니다(비밀번호 없음). 이 기기에서는 참여 시간 · 병사 정보 화면에 자동으로 채워집니다.", meBadId: "게임 ID는 숫자 7~12자리입니다.",
+    todoKvk: "KvK 참여 시간을 아직 작성하지 않으셨습니다.", todoTroop: "병사 정보를 아직 입력하지 않으셨습니다.", meTitle: "👤 내 게임 ID", mePh: "게임 ID 숫자 (비밀번호 없음)", meOk: "확인", meChange: "변경", meRole: "🎯 임무", meUnknown: "아직 응답이 없는 ID", meHint: "ID만 넣으면 됩니다(비밀번호 없음). 이 기기에서는 참여 시간 · 병사 정보 화면에 자동으로 채워집니다.", meBadId: "게임 ID는 숫자 7~12자리입니다.",
     meNoAns: "이 ID로 낸 참여 시간 응답이 아직 없습니다. 위 '참여 시간 작성'에서 먼저 내 주세요.",
     bubHint: "확정된 연맹은 딱지 둘레의 번호 방울(1 · 2 · 3 …)이 집결장입니다. 방울을 누르면 누구인지 나오고, 방울을 타워로 끌어다 놓으면 그 집결장의 공격 목표가 됩니다.", bubNoTarget: "목표 없음",
     tagLeaders: "{0} 집결장", noLeaders: "정해진 집결장이 없습니다",
@@ -555,7 +561,7 @@ const I18N = {
     roleHint: "Tap a nickname to see which rally that player is in and what to send (confirmed alliances only).", roleSend: "Troops to send",
     absent: "Not joining", absentN: " · {0} not joining",
     idBad: "Invalid ID", idProb: "ID problem",
-    meTitle: "👤 My game ID", mePh: "Game ID number (no password)", meOk: "OK", meChange: "Change", meRole: "🎯 Mission", meUnknown: "No answer yet for this ID", meHint: "Just enter your ID (no password). On this device it fills in the time survey and troop form for you.", meBadId: "A game ID is 7-12 digits.",
+    todoKvk: "You have not filled in your KvK time yet.", todoTroop: "You have not entered your troop info yet.", meTitle: "👤 My game ID", mePh: "Game ID number (no password)", meOk: "OK", meChange: "Change", meRole: "🎯 Mission", meUnknown: "No answer yet for this ID", meHint: "Just enter your ID (no password). On this device it fills in the time survey and troop form for you.", meBadId: "A game ID is 7-12 digits.",
     meNoAns: "There is no time-survey answer for this ID yet. Please fill in 'Enter my KvK time' first.",
     bubHint: "For confirmed alliances the numbered bubbles (1 · 2 · 3 …) around the badge are the rally leaders. Tap a bubble to see who it is; drag it onto a tower to set that leader's attack target.", bubNoTarget: "No target",
     tagLeaders: "{0} rally leaders", noLeaders: "No rally leaders set",
@@ -606,7 +612,7 @@ const I18N = {
     roleHint: "點暱稱可以看到那位成員在哪個集結、要派什麼兵（只限已確定配置的聯盟）。", roleSend: "要派的兵力",
     absent: "不參加", absentN: " · 不參加 {0} 人",
     idBad: "ID 格式錯誤", idProb: "ID 問題",
-    meTitle: "👤 我的遊戲 ID", mePh: "遊戲 ID 數字（不需要密碼）", meOk: "確定", meChange: "更改", meRole: "🎯 任務", meUnknown: "這個 ID 還沒有回覆", meHint: "只要輸入 ID（不需要密碼）。在這台裝置上，參加時間與士兵資料畫面會自動帶入。", meBadId: "遊戲 ID 是 7~12 位數字。",
+    todoKvk: "你還沒有填寫 KvK 參加時間。", todoTroop: "你還沒有輸入士兵資料。", meTitle: "👤 我的遊戲 ID", mePh: "遊戲 ID 數字（不需要密碼）", meOk: "確定", meChange: "更改", meRole: "🎯 任務", meUnknown: "這個 ID 還沒有回覆", meHint: "只要輸入 ID（不需要密碼）。在這台裝置上，參加時間與士兵資料畫面會自動帶入。", meBadId: "遊戲 ID 是 7~12 位數字。",
     meNoAns: "這個 ID 還沒有填寫參加時間，請先按上方的「填寫參加時間」。",
     bubHint: "已確定的聯盟，標籤周圍的編號泡泡（1 · 2 · 3 …）就是集結隊長。點泡泡可看是誰，把泡泡拖到塔上即設定該隊長的攻擊目標。", bubNoTarget: "沒有目標",
     tagLeaders: "{0} 集結隊長", noLeaders: "尚未設定集結隊長",
@@ -657,7 +663,7 @@ const I18N = {
     roleHint: "اضغط على الاسم لترى في أي حشد يشارك اللاعب وماذا يرسل (للتحالفات المؤكدة فقط).", roleSend: "الجنود المطلوب إرسالهم",
     absent: "غير مشارك", absentN: " · غير مشارك {0}",
     idBad: "معرف غير صالح", idProb: "مشكلة المعرف",
-    meTitle: "👤 معرف لعبتي", mePh: "رقم معرف اللعبة (بدون كلمة مرور)", meOk: "تأكيد", meChange: "تغيير", meRole: "🎯 المهمة", meUnknown: "لا توجد إجابة لهذا المعرف بعد", meHint: "أدخل معرفك فقط (بدون كلمة مرور). على هذا الجهاز سيُملأ تلقائيًا في استبيان الوقت ونموذج الجنود.", meBadId: "معرف اللعبة من 7 إلى 12 رقمًا.",
+    todoKvk: "لم تملأ وقت مشاركتك في KvK بعد.", todoTroop: "لم تُدخل بيانات جنودك بعد.", meTitle: "👤 معرف لعبتي", mePh: "رقم معرف اللعبة (بدون كلمة مرور)", meOk: "تأكيد", meChange: "تغيير", meRole: "🎯 المهمة", meUnknown: "لا توجد إجابة لهذا المعرف بعد", meHint: "أدخل معرفك فقط (بدون كلمة مرور). على هذا الجهاز سيُملأ تلقائيًا في استبيان الوقت ونموذج الجنود.", meBadId: "معرف اللعبة من 7 إلى 12 رقمًا.",
     meNoAns: "لا توجد إجابة على استبيان الوقت لهذا المعرف بعد. املأ «أدخل وقت المشاركة» أولًا.",
     bubHint: "في التحالفات المؤكدة، الفقاعات المرقمة (1 · 2 · 3 …) حول الشارة هي قادة الحشود. اضغط الفقاعة لترى من هو، واسحبها إلى برج لتحديد هدف هجوم ذلك القائد.", bubNoTarget: "بلا هدف",
     tagLeaders: "قادة حشود {0}", noLeaders: "لم يُحدد قادة حشود",
@@ -708,7 +714,7 @@ const I18N = {
     roleHint: "Bir oyuncunun hangi rallide ne göndereceğini görmek için takma ada dokunun (yalnızca onaylanmış ittifaklar).", roleSend: "Gönderilecek asker",
     absent: "Katılmıyor", absentN: " · {0} katılmıyor",
     idBad: "Geçersiz ID", idProb: "ID sorunu",
-    meTitle: "👤 Oyun ID'm", mePh: "Oyun ID numarası (şifre yok)", meOk: "Tamam", meChange: "Değiştir", meRole: "🎯 Görev", meUnknown: "Bu ID için henüz yanıt yok", meHint: "Yalnızca ID'nizi girin (şifre yok). Bu cihazda zaman anketi ve asker formuna otomatik doldurulur.", meBadId: "Oyun ID 7-12 haneli bir sayıdır.",
+    todoKvk: "KvK katılım saatinizi henüz doldurmadınız.", todoTroop: "Asker bilgilerinizi henüz girmediniz.", meTitle: "👤 Oyun ID'm", mePh: "Oyun ID numarası (şifre yok)", meOk: "Tamam", meChange: "Değiştir", meRole: "🎯 Görev", meUnknown: "Bu ID için henüz yanıt yok", meHint: "Yalnızca ID'nizi girin (şifre yok). Bu cihazda zaman anketi ve asker formuna otomatik doldurulur.", meBadId: "Oyun ID 7-12 haneli bir sayıdır.",
     meNoAns: "Bu ID için henüz zaman anketi yanıtı yok. Önce 'Katılım saatini gir'i doldurun.",
     bubHint: "Onaylanmış ittifaklarda rozetin çevresindeki numaralı baloncuklar (1 · 2 · 3 …) ralli liderleridir. Kim olduğunu görmek için baloncuğa dokunun; saldırı hedefi için bir kuleye sürükleyin.", bubNoTarget: "Hedef yok",
     tagLeaders: "{0} ralli liderleri", noLeaders: "Ralli lideri belirlenmedi",
@@ -1256,8 +1262,18 @@ function roleHtml(p) {
 }
 // 상단 「내 게임 ID」: 비밀번호 없이 ID 만. 이 기기에 기억해 참여 시간 · 병사 정보 화면이 같이 쓴다(k700id). 화면에는 ID 대신 닉네임을 보인다
 const myId = () => { try { return localStorage.getItem("k700id") || ""; } catch (e) { return ""; } };
+function renderTodo(id) {
+  const t = $("meTodo");
+  if (!id || !LOADED_AT) { t.innerHTML = ""; return; }
+  let h = "";
+  if (!DATA.some(x => x.id === id)) h += '<div class="todo"><span>⏰ ' + tx("todoKvk") + '</span><button data-go="bSurvey">' + tx("bSurvey") + '</button></div>';
+  if (!SELF[id]) h += '<div class="todo"><span>⚔️ ' + tx("todoTroop") + '</span><button data-go="bTroops">' + tx("bTroops") + '</button></div>';
+  t.innerHTML = h;
+}
+$("meTodo").addEventListener("click", e => { const b = e.target.closest("button[data-go]"); if (b) $(b.getAttribute("data-go")).click(); });
 function renderMe() {
   const id = myId(), box = $("meBar");
+  renderTodo(id);
   if (!id) {
     box.className = "";
     box.innerHTML = '<b class="t">' + tx("meTitle") + '</b><input id="meIn" inputmode="numeric" maxlength="12" autocomplete="off" placeholder="' + esc(tx("mePh")) + '"><button class="primary" id="meOk">' + tx("meOk") + '</button><span class="sub" id="meMsg">' + tx("meHint") + '</span>';
