@@ -405,6 +405,18 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
 .addrow{display:flex;gap:8px;align-items:center}
 .addrow select{flex:1 1 auto;min-width:0}
 .addrow button{flex:none}
+.tb .th .tmw{display:flex;flex-direction:column;align-items:flex-start;gap:3px;min-width:0}
+.tb .th .tmw .ptag{margin:0}
+.tb.pet{border:2px solid #f76707;box-shadow:0 0 0 3px rgba(247,103,7,.18),0 4px 14px rgba(247,103,7,.25)}
+.tb.pet .th{background:linear-gradient(90deg,#f76707,#ffa94d) !important;color:#fff}
+.tb.pet .th small{color:rgba(255,255,255,.85)}
+.tb.pet .th .fill{color:#fff !important}
+.tb.pet .ptag{background:#fff;color:#e8590c;box-shadow:0 0 8px rgba(255,255,255,.7);animation:petGlow 1.6s ease-in-out infinite}
+.tb.pet .ttl .tr.own{background:rgba(247,103,7,.18)}
+@keyframes petGlow{50%{box-shadow:0 0 14px rgba(255,255,255,1)}}
+@media (max-width:480px){.outb .bt{display:none}.ttl .lb .outb{padding:0 6px !important;margin-inline-start:4px}}
+.capline{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:4px}
+.capin{width:120px !important;min-height:32px !important;font-weight:800;font-size:15px !important;text-align:end;border:2px solid var(--mc,#e8590c) !important;border-radius:8px}
 .petrow{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;border-radius:10px;background:rgba(247,103,7,.10);border:1px solid rgba(247,103,7,.35);font-size:13px;flex-wrap:wrap}
 .petrow b{flex:none;color:#e8590c;white-space:nowrap}
 .petrow select{flex:1 1 120px;min-width:0}
@@ -946,7 +958,7 @@ const leadersOf = a => ((cfgNow().A[a] || {}).leaders || []);
 const isLeader = p => leadersOf(p.ally).some(l => l.id === p.id);
 const marchOf = p => MARCH[p.id] || +((cfgNow().A[p.ally] || {}).def) || DEF_MARCH;
 // 기본값: 출정 인원수를 안 넣은 사람은 145,000, 집결 인원수를 안 넣은 집결장은 1,300,000 (이박사님 2026-10-02)
-const DEF_MARCH = 145000, DEF_RALLY = 1300000;
+const DEF_MARCH = 145000, DEF_RALLY = 1000000;
 const blank = () => ({def: DEF_MARCH, leaders: [], by: "", at: "", conf: "", out: [], pub: "", inc: []});
 // 파견: 연맹 a 의 사람 = 원래 연맹원 중 다른 연맹으로 파견 안 간 사람 + a 로 파견 온 사람. 다른 연맹 설정은 지금 보이는 것(planBox) 기준
 const incBox = (a, box) => (a === ($("rAlly").value || ALLIES[0]) && DRAFT && DRAFT.A[a] ? DRAFT.A[a] : (box || planBox(a)));
@@ -963,7 +975,7 @@ const freezeOf = (a, l, mode, box) => SLOTS.map((s, i) => { const R = alloc(a, i
 // 포메이션: r = 공격 비율, d = 수비 비율(보병 · 기병 · 궁병). 화면은 RMODE 로 둘 중 하나를 그린다
 let RMODE = "atk";
 const SELK = {};   // 연맹별로 지금 고른 집결장 번호(0부터)
-const tabsHtml = (list, k) => '<div class="ltabs">' + list.map((l, i) => { const p = DATA.find(x => x.id === l.id); return '<button class="ltab' + (i === k ? ' on' : '') + (l[fkOf(RMODE)] ? ' cf' : '') + '" data-k="' + i + '">' + (l[fkOf(RMODE)] ? '🔒 ' : '') + '<b>' + (i + 1) + '</b> ' + esc(p ? (p.gname || p.name) : l.id) + '</button>'; }).join("") + '</div>';
+const tabsHtml = (list, k) => '<div class="ltabs">' + list.map((l, i) => { const p = DATA.find(x => x.id === l.id); return '<button class="ltab' + (i === k ? ' on' : '') + (l[fkOf(RMODE)] ? ' cf' : '') + '" data-k="' + i + '">' + (l[fkOf(RMODE)] ? '🔒 ' : '') + '<b>' + (i + 1) + '</b> ' + esc(nameOf(l.id)) + '</button>'; }).join("") + '</div>';
 const PLAN = {};   // 관리자가 「배치」를 누른 때의 설정 사본(연맹별). 없으면 저장된 설정으로 그린다
 const ratioOf = (l, mode) => (mode === "def" ? l.d : l.r) || (mode === "def" ? [5, 2, 3] : [6, 4, 0]);
 const planBox = a => (IS_ADMIN && PLAN[a]) || CFG.A[a] || blank();
@@ -987,7 +999,8 @@ const ownSplit = (own, r, target) => {
   return n;
 };
 const boxOk = b => ((b || {}).leaders || []).every(l => ratioOk(ratioOf(l, "atk")) && ratioOk(ratioOf(l, "def")));
-const newLeader = id => ({id, cap: RALLY[id] || RALLY_ON[id] || DEF_RALLY, capOn: RALLY_ON[id] || RALLY[id] || DEF_RALLY, pet: -1, r: [6, 4, 0], d: [5, 2, 3]});
+const newLeader = id => ({id, cap: DEF_RALLY, capOn: RALLY_ON[id] || RALLY[id] || DEF_RALLY, pet: -1, r: [6, 4, 0], d: [5, 2, 3]});
+const nameOf = id => { const q = DATA.find(x => x.id === id); return q ? (q.gname || q.name) : ((typeof PLAYERS !== "undefined" && PLAYERS[id] && PLAYERS[id].n) || "?"); };
 const petOn = (l, i) => l && l.pet != null && +l.pet >= 0 && (i === +l.pet || i === +l.pet + 1);
 const capAt = (l, i) => Math.max(0, petOn(l, i) ? (+l.capOn || +l.cap || 0) : (+l.cap || 0));
 const petLabel = i => SLOTS[i][0].slice(0, 5) + "~" + SLOTS[Math.min(i + 1, SLOTS.length - 1)][0].slice(6);
@@ -1340,7 +1353,7 @@ function alloc(a, i, mode, bx) {
   const mem = membersOf(a, box).filter(p => p.slots[i]);
   const march = p => MARCH[p.id] || +box.def || DEF_MARCH;
   const lv = (p, t) => { const s = troops(p); return s ? s[t][1] * 100 + s[t][0] : 0; };
-  const fk = fkOf(mode), who = id => DATA.find(q => q.id === id) || {id, name: "?", gname: "", slots: [], power: 0};
+  const fk = fkOf(mode), who = id => DATA.find(q => q.id === id) || {id, name: nameOf(id), gname: "", slots: [], power: 0};
   const fixed = new Set();
   const rallies = all.map(l => ({l, p: mem.find(p => p.id === l.id), fz: l[fk] ? (l[fk][i] || null) : undefined})).filter(x => x.fz !== undefined ? x.fz : x.p).map(x => {
     if (x.fz) {
@@ -1424,8 +1437,8 @@ function renderRally() {
     if (l.id !== selId) return;
     const p = DATA.find(x => x.id === l.id), r = ratioOf(l, RMODE);
     const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +box.def || DEF_MARCH, cap);
-    h += '<div class="card leader' + (l[fkOf(RMODE)] ? ' cf' : '') + '" style="margin-top:12px;padding:12px"><div class="lname">' + (n + 1) + '. ★ ' + (p ? nm(p) : esc(l.id)) + ' <span class="sub" style="font-weight:400">' + (RMODE === "def" ? '🛡' : '⚔') + ' ' + r.map(v => +v || 0).join(":") + '</span>' + (l[fkOf(RMODE)] ? '<span class="cfb">' + tx("cfBadge") + '</span>' : '<span class="cfb no">' + tx("cfNot") + '</span>') + '</div>' + 
-      '<div class="sub">' + tx("capSplit", '<b>' + fmt(cap) + '</b>', fmt(own), '<b>' + fmt(cap - own) + '</b>') + '</div>';
+    h += '<div class="card leader' + (l[fkOf(RMODE)] ? ' cf' : '') + '" style="margin-top:12px;padding:12px"><div class="lname">' + (n + 1) + '. ★ ' + (p ? nm(p) : esc(nameOf(l.id))) + ' <span class="sub" style="font-weight:400">' + (RMODE === "def" ? '🛡' : '⚔') + ' ' + r.map(v => +v || 0).join(":") + '</span>' + (l[fkOf(RMODE)] ? '<span class="cfb">' + tx("cfBadge") + '</span>' : '<span class="cfb no">' + tx("cfNot") + '</span>') + '</div>' + 
+      '<div class="sub capline">' + tx("capSplit", editing && !l[fkOf(RMODE)] ? '<input class="capin" data-l="' + esc(l.id) + '" inputmode="numeric" maxlength="8" value="' + esc(+l.cap || 0) + '">' : '<b>' + fmt(cap) + '</b>', fmt(own), '<b>' + fmt(cap - own) + '</b>') + '</div>';
     const rows = plan.map(pl => pl.rallies.find(q => q.p.id === l.id) || null);
     const sig = x => x ? JSON.stringify([x.own, x.members.map(m => [m.p.id, m.send]), x.need, x.cap]) : "away";
     for (let i = 0; i < rows.length;) {
@@ -1435,8 +1448,8 @@ function renderRally() {
       if (!x) h += '<div class="tb away"><div class="th">' + range(i, j) + '<span class="fill">' + tx("leaderAway") + '</span></div></div>';
       else {
         const lack = [0, 1, 2].filter(t => x.need[t]).map(t => kinds[t] + ' ' + fmt(x.need[t])).join(' · ');
-        h += '<div class="tb"><div class="th">' + range(i, j) + (petOn(l, i) ? '<span class="ptag">' + tx("petTag") + ' ' + fmt(capAt(l, i)) + '</span>' : '') + '<span class="fill" style="color:' + (lack ? 'var(--warn)' : 'var(--ok)') + '">' + tx("nJoin", x.members.length) + ' · ' + (lack ? tx("short", lack) : tx("fullOk")) + '</span></div><div class="ttl">' +
-          line('<b>★ ' + tx("leaderSelf") + '</b>' + star(x.p), x.own, "own") + x.members.map(m => line(nm(m.p) + star(m.p), m.send, "", editing && x.frozen && l[fkOf(RMODE)] ? ' <button class="outb" data-out="' + esc(m.p.id) + '" data-l="' + esc(l.id) + '" data-i0="' + i + '" data-i1="' + j + '">' + tx("bOut") + '</button><button class="outb swb" data-out="' + esc(m.p.id) + '" data-l="' + esc(l.id) + '" data-i0="' + i + '" data-i1="' + j + '">' + tx("bSwap") + '</button>' + (SWAP && SWAP.lid === l.id && SWAP.out === m.p.id && SWAP.i0 === i ? swapPanel(a, l.id, i) : '') : '')).join("") + '</div></div>';
+        h += '<div class="tb' + (petOn(l, i) ? ' pet' : '') + '"><div class="th"><span class="tmw">' + range(i, j) + (petOn(l, i) ? '<span class="ptag">' + tx("petTag") + ' ' + fmt(capAt(l, i)) + '</span>' : '') + '</span><span class="fill" style="color:' + (lack ? 'var(--warn)' : 'var(--ok)') + '">' + tx("nJoin", x.members.length) + ' · ' + (lack ? tx("short", lack) : tx("fullOk")) + '</span></div><div class="ttl">' +
+          line('<b>★ ' + tx("leaderSelf") + '</b>' + star(x.p), x.own, "own") + x.members.map(m => line(nm(m.p) + star(m.p), m.send, "", editing && x.frozen && l[fkOf(RMODE)] ? ' <button class="outb" data-out="' + esc(m.p.id) + '" data-l="' + esc(l.id) + '" data-i0="' + i + '" data-i1="' + j + '">✕<span class="bt"> ' + tx("bOut") + '</span></button><button class="outb swb" data-out="' + esc(m.p.id) + '" data-l="' + esc(l.id) + '" data-i0="' + i + '" data-i1="' + j + '">⇄<span class="bt"> ' + tx("bSwap") + '</span></button>' + (SWAP && SWAP.lid === l.id && SWAP.out === m.p.id && SWAP.i0 === i ? swapPanel(a, l.id, i) : '') : '')).join("") + '</div></div>';
       }
       i = j + 1;
     }
@@ -1588,7 +1601,7 @@ function buildReport(a) {
   const out = ["[" + a + "] " + tx(RMODE === "def" ? "bDef" : "bAtk")];
   ls.forEach((l, n) => {
     const p = DATA.find(x => x.id === l.id), r = ratioOf(l, RMODE);
-    out.push("", "━━ " + tx("nth", n + 1) + " · " + (p ? nm(p) : l.id) + " · " + r.map(v => +v || 0).join(":") + " · " + tx("thRallyCap") + " " + fmt(l.cap) + " ━━");
+    out.push("", "━━ " + tx("nth", n + 1) + " · " + (p ? nm(p) : nameOf(l.id)) + " · " + r.map(v => +v || 0).join(":") + " · " + tx("thRallyCap") + " " + fmt(l.cap) + " ━━");
     const rows = plan.map(pl => pl.rallies.find(q => q.p.id === l.id) || null);
     const sig = x => x ? JSON.stringify([x.own, x.members.map(m => [m.p.id, m.send]), x.need, x.cap]) : "away";
     for (let i = 0; i < rows.length;) {
@@ -1644,15 +1657,14 @@ function renderAdmin() {
   ls.forEach(l => { if (!l.r) l.r = [6, 4, 0]; if (!l.d) l.d = [5, 2, 3]; });
   let by = "";
   try { by = localStorage.getItem("k700by") || ""; } catch (e) {}
-  const who = id => { const p = DATA.find(x => x.id === id); return p ? esc(p.gname || p.name) : esc(id); };
+  const who = id => esc(nameOf(id));
   const info = id => DATA.find(x => x.id === id) || {};
   const three = (k, f, v) => '<div class="fgrid">' + [0, 1, 2].map(t => '<label>' + tx(["inf", "cav", "arc"][t]) + '<input class="pc" data-k="' + k + '" data-f="' + f + t + '" inputmode="numeric" maxlength="3" value="' + esc(v[t]) + '"></label>').join("") + '</div>';
   let h = '<details class="adminbox"' + (ADMOPEN ? ' open' : '') + '><summary>' + tx("aTitle") + ' <span class="sub" style="font-weight:600">· ' + esc(a) + '</span></summary><div class="abody">' +
     '<details class="help"><summary>' + tx("helpT") + '</summary><div class="sub">' + tx("aDesc", esc(a)) + '</div></details>' +
     '<div class="addrow"><select id="aPick"><option value="">' + tx("aPickHint") + '</option>' +
       membersOf(a).filter(p => !p.absent && !box0.leaders.some(l => l.id === p.id)).map(p => '<option value="' + esc(p.id) + '">' + esc(p.gname || p.name) + (p.mystic ? ' · ' + tx("optMystic", fmt(p.mystic)) : '') + (RALLY_ON[p.id] || RALLY[p.id] ? ' · ' + tx("optRally", fmt(RALLY_ON[p.id] || RALLY[p.id])) : '') + '</option>').join("") +
-      '</select><button id="aAdd">＋ ' + tx("aAdd") + '</button></div>' +
-    '<label class="defrow"><span>' + tx("aDef") + '</span><input id="aDef" inputmode="numeric" value="' + esc(box0.def) + '"></label>';
+      '</select><button id="aAdd">＋ ' + tx("aAdd") + '</button></div>';
   if (ls.length) {
     const k = SELK[a] = Math.min(SELK[a] || 0, ls.length - 1), l = ls[k];
     const cap = Math.max(0, +l.cap || 0), own = Math.min(MARCH[l.id] || +box0.def || DEF_MARCH, cap);
@@ -2288,6 +2300,17 @@ function swapCands(a, mode, lid, i0) {
   return c;
 }
 $("admin").addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("adminbox")) ADMOPEN = e.target.open; }, true);
+// 편성표에서 집결 인원수 바로 고치기: 다 쓰고 나면(포커스 빠짐 · Enter) 다시 배치
+$("rally").addEventListener("change", e => {
+  const el = e.target;
+  if (!el.classList || !el.classList.contains("capin")) return;
+  const a = $("rAlly").value || ALLIES[0], box = DRAFT && DRAFT.A[a], L = box && box.leaders.find(x => x.id === el.dataset.l);
+  if (!L) return;
+  L.cap = +String(el.value).replace(/[^0-9]/g, "") || 0;
+  DIRTY[a] = true; PLAN[a] = JSON.parse(JSON.stringify(box));
+  renderAdmin(); renderRally();
+});
+$("rally").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.classList && e.target.classList.contains("capin")) e.target.blur(); });
 $("rally").addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("cfbox")) CFOPEN = e.target.open; }, true);
 $("rally").addEventListener("click", e => {
   const dc = e.target.closest("button.dchip");
