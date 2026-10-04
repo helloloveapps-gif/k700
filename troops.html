@@ -75,6 +75,7 @@ input[type=text],select{font:inherit;font-size:15px;width:100%;height:42px;paddi
 .msg.err{display:block;background:rgba(224,49,49,.12);color:var(--warn)}
 .msg.wait{display:block;background:var(--bar);color:var(--ink);font-weight:400}
 a{color:var(--accent)}
+#savOv{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(10,12,18,.62);padding:16px}#savOv.on{display:flex}#savOv>div{background:var(--card,#fff);color:var(--ink,#1c2230);border-radius:16px;padding:22px 20px;max-width:340px;width:100%;text-align:center;font-weight:700;line-height:1.5;box-shadow:0 10px 40px rgba(0,0,0,.35)}#savOv i{display:block;width:38px;height:38px;margin:0 auto 12px;border:4px solid rgba(121,80,242,.25);border-top-color:#7950f2;border-radius:50%;animation:savSpin .8s linear infinite}@keyframes savSpin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -271,6 +272,17 @@ function drawTiers() {
   });
 }
 
+
+// 저장 중 팝업: 화면을 덮어 다른 조작을 막고, 창을 닫거나 나가려 하면 브라우저가 한 번 더 묻는다
+const SAV_STAY = {"ko": "저장 중입니다… 끝날 때까지 창을 닫거나 나가지 마세요.", "en": "Saving… Please don't close or leave this page until it finishes.", "zh": "儲存中…完成前請不要關閉或離開此頁面。", "ar": "جارٍ الحفظ… يرجى عدم إغلاق الصفحة أو مغادرتها حتى ينتهي.", "tr": "Kaydediliyor… Bitene kadar sayfayı kapatmayın veya ayrılmayın."};
+const savLeave = e => { e.preventDefault(); e.returnValue = ""; return ""; };
+function savBusy(on, lang) {
+  let o = document.getElementById("savOv");
+  if (!o) { o = document.createElement("div"); o.id = "savOv"; o.innerHTML = '<div><i></i><span></span></div>'; document.body.appendChild(o); }
+  o.querySelector("span").textContent = SAV_STAY[lang] || SAV_STAY.en;
+  o.classList.toggle("on", !!on);
+  if (on) window.addEventListener("beforeunload", savLeave); else window.removeEventListener("beforeunload", savLeave);
+}
 function say(kind, text) { $("msg").className = "msg " + kind; $("msg").textContent = text; }
 
 async function countRows(id) {
@@ -303,14 +315,14 @@ async function send() {
   body.append(F.id, id); body.append(F.tg, String(tg)); body.append(F.lang, lang);
   camps.forEach((c, i) => body.append(F.c[i], String(c)));
   tiers.forEach((v, i) => body.append(F.t[i], String(v)));
-  $("send").disabled = true; say("wait", t.sending);
+  $("send").disabled = true; say("wait", t.sending); savBusy(true, lang);
   let before = 0;
   try { before = await countRows(id); } catch (e) {}
   try { await fetch(FORM, {method: "POST", mode: "no-cors", body}); } catch (e) {}
   const ok = await saved(id, before);
   if (ok) remember("id", id);
   say(ok ? "ok" : "err", ok ? t.ok : t.fail);
-  $("send").disabled = false;
+  $("send").disabled = false; savBusy(false);
 }
 
 $("langs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setLang(b.getAttribute("data-l")); });
