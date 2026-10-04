@@ -1335,7 +1335,8 @@ function renderChart() {
 }
 
 // 최적 배치: 병과별 필요량(need, 1,000 단위)을 사람들(cap, 1,000 단위)로 채우되 「보낸 병력 × 그 병과 레벨(q)」의 합이 가장 크게.
-// 사람 → 병과로 흐르는 최소 비용 흐름을 차례로 늘려 가며 푼다. 그래서 어떤 병과에 T11 이 남아 있는데 T10 을 넣는 일이 없다
+// 사람 → 병과로 흐르는 최소 비용 흐름을 차례로 늘려 가며 푼다. 레벨 = 그 병과 훈련소 TG 먼저, 같으면 순금(T11 > T10) — 이박사님 2026-10-05.
+// 그래서 어떤 병과에 TG 높은 사람이 남아 있는데 낮은 사람을 넣는 일이 없다
 function bestFill(need, cap, q) {
   const M = cap.length, S = 0, T = M + 4, N = M + 5, g = Array.from({length: N}, () => []);
   const add = (u, v, c, w) => { g[u].push({v, c, w, r: g[v].length}); g[v].push({v: u, c: 0, w: -w, r: g[u].length - 1}); };
@@ -1366,7 +1367,7 @@ function alloc(a, i, mode, bx) {
   const box = bx || planBox(a), all = box.leaders || [], lids = new Set(all.map(l => l.id));
   const mem = membersOf(a, box).filter(p => p.slots[i]);
   const march = p => MARCH[p.id] || +box.def || DEF_MARCH;
-  const lv = (p, t) => { const s = troops(p); return s ? s[t][1] * 100 + s[t][0] : 0; };
+  const lv = (p, t) => { const s = troops(p); return s ? s[t][0] * 100 + s[t][1] : 0; };
   const fk = fkOf(mode), who = id => DATA.find(q => q.id === id) || {id, name: nameOf(id), gname: "", slots: [], power: 0};
   const fixed = new Set();
   const rallies = all.map(l => ({l, p: mem.find(p => p.id === l.id), fz: l[fk] ? (l[fk][i] || null) : undefined})).filter(x => x.fz !== undefined ? x.fz : x.p).map(x => {
@@ -2257,7 +2258,7 @@ function confirmLeader(k) {
 // 빠짐: 빈자리를 「뒤 번호 확정 집결 가운데 가장 강한 사람」으로 채우고, 그 사람이 빠진 자리를 다시 그 뒤 번호에서 채운다(밀어내기).
 // 맨 끝 빈자리는 남는 인원 중 가장 강한 사람, 없으면 부족으로 남긴다. W = 바꿀 설정의 사본(여기에 바로 고친다). 시간대마다 옮긴 내역을 돌려준다
 const mOf = (W, id) => MARCH[id] || +W.def || DEF_MARCH;
-const lvOf = (p, t) => { const s = p && troops(p); return s ? s[t][1] * 100 + s[t][0] : 0; };
+const lvOf = (p, t) => { const s = p && troops(p); return s ? s[t][0] * 100 + s[t][1] : 0; };
 const powerOf = id => { const q = DATA.find(x => x.id === id); return q ? (q.power || 0) : 0; };
 function pushChain(a, mode, W, i, k, hole) {
   const fk = fkOf(mode), outs = new Set(W.out || []), moves = [];
