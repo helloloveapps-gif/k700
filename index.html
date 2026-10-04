@@ -416,6 +416,9 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
 @keyframes petGlow{50%{box-shadow:0 0 14px rgba(255,255,255,1)}}
 @media (max-width:480px){.outb .bt{display:none}.ttl .lb .outb{padding:0 6px !important;margin-inline-start:4px}}
 .undob{margin-top:10px;width:100%;min-height:36px;font-size:13px;border:1px dashed var(--sub) !important;background:transparent !important;color:var(--sub) !important}
+.replangs{display:flex;gap:4px;margin-bottom:8px;overflow-x:auto}
+.replangs .rl{flex:none;min-height:30px;padding:0 10px;font-size:12px;border-radius:99px}
+.replangs .rl.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .capline{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:4px}
 .capin{width:120px !important;min-height:32px !important;font-weight:800;font-size:15px !important;text-align:end;border:2px solid var(--mc,#e8590c) !important;border-radius:8px}
 .petrow{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;border-radius:10px;background:rgba(247,103,7,.10);border:1px solid rgba(247,103,7,.35);font-size:13px;flex-wrap:wrap}
@@ -569,7 +572,8 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
 <div class="modal" id="rep" style="display:none">
   <div class="mbox">
     <div class="mhead"><h2 id="hRep"></h2><button id="repClose" class="xbtn">✕</button></div>
-    <textarea id="repText" readonly spellcheck="false"></textarea>
+    <div class="replangs" id="repLangs"></div>
+    <textarea id="repText" readonly spellcheck="false" dir="auto"></textarea>
     <div style="margin-top:10px"><button class="primary" id="repCopy"></button> <span class="sub" id="repMsg"></span></div>
   </div>
 </div>
@@ -1629,15 +1633,26 @@ function buildReport(a) {
   });
   return out.join("\n");
 }
-function openNotice(text) {
+// 보고서 · 공지 창: 언어 탭마다 그 언어로 다시 만든다(REPGEN = 만드는 함수)
+let REPGEN = null, REPLANG = "";
+const withLang = (l, f) => { const o = LANG; LANG = l; try { return f(); } finally { LANG = o; } };
+function drawRep() {
+  const l = REPLANG || LANG;
+  $("repLangs").innerHTML = LANGS.map(k => '<button class="rl' + (k === l ? ' on' : '') + '" data-l="' + k + '">' + I18N[k].name + '</button>').join("");
+  $("repText").value = REPGEN ? withLang(l, REPGEN) : "";
+  $("repMsg").textContent = "";
+}
+$("repLangs").addEventListener("click", e => { const b = e.target.closest("button.rl"); if (b) { REPLANG = b.dataset.l; drawRep(); } });
+function openNotice(gen) {
   $("hRep").textContent = tx("ntTitle");
-  $("repText").value = text;
+  REPGEN = typeof gen === "function" ? gen : () => gen; REPLANG = LANG; drawRep();
   $("repMsg").textContent = "";
   $("rep").style.display = "flex";
 }
 function openReport() {
   $("hRep").textContent = tx("repTitle");
-  $("repText").value = buildReport($("rAlly").value || ALLIES[0]);
+  const a = $("rAlly").value || ALLIES[0];
+  REPGEN = () => buildReport(a); REPLANG = LANG; drawRep();
   $("repMsg").textContent = "";
   $("rep").style.display = "flex";
 }
@@ -2397,8 +2412,8 @@ $("rally").addEventListener("click", e => {
       slots.push({i, moves: mv});
     }
     if (!slots.length) { alert(tx("swapNone")); return; }
-    const note = moveNotice(a, tx("swapHead", nmOf(X), nmOf(y)), k, W, slots);
-    if (!confirm(tx("swapAsk", note))) return;
+    const note = () => moveNotice(a, tx("swapHead", nmOf(X), nmOf(y)), k, W, slots);
+    if (!confirm(tx("swapAsk", note()))) return;
     commitW(a, W, note, "subDone");
     return;
   }
@@ -2418,8 +2433,8 @@ $("rally").addEventListener("click", e => {
     }
     if (!slots.length) return;
     const nmOf = id => { const q = DATA.find(x => x.id === id); return q ? (q.gname || q.name) : "?"; };
-    const note = moveNotice(a, tx("ntHead", a, nmOf(out)).replace(/^📢 \[[^\]]*\] /, ""), k, W, slots);
-    if (!confirm(tx("subAsk", tx("nth", k + 1), nmOf(out), note))) return;
+    const note = () => moveNotice(a, tx("ntHead", a, nmOf(out)).replace(/^📢 \[[^\]]*\] /, ""), k, W, slots);
+    if (!confirm(tx("subAsk", tx("nth", k + 1), nmOf(out), note()))) return;
     commitW(a, W, note, "subDone");
     return;
   }
