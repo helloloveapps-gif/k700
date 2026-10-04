@@ -39,6 +39,23 @@ tr.bad td:first-child{box-shadow:inset 4px 0 0 #e03131}
 #absBox{border:2px solid #868e96}
 #eForm input.k{width:130px;text-align:start;font-weight:700}
 #eMsg:empty{display:none}
+.egrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.eg h3{margin:0 0 8px;font-size:14px}
+.ebar{display:flex;align-items:center;gap:8px;margin:5px 0;font-size:12px}
+.ebar .el{flex:none;width:44px;font-weight:800;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ebar .et{flex:1;min-width:0;height:16px;background:var(--bar);border-radius:6px;overflow:hidden;display:flex}
+.ebar .et i{display:block;height:100%;border-radius:6px}
+.ebar .stk{display:flex;height:100%;gap:1px;border-radius:6px;overflow:hidden}
+.ebar .stk i{border-radius:0;color:#fff;font-size:10px;font-style:normal;font-weight:800;display:flex;align-items:center;justify-content:center;min-width:2px}
+.ebar .ev{flex:none;min-width:64px;text-align:end;font-weight:700;font-variant-numeric:tabular-nums}
+.ebar .ev small{color:var(--sub);font-weight:400}
+.esub{margin:-2px 0 6px 52px;font-size:11px;color:var(--sub)}
+.elg{display:flex;gap:10px;font-size:11px;color:var(--sub);margin-bottom:4px;flex-wrap:wrap}
+.elg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline-end:3px;vertical-align:-1px}
+.ecol{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:6px}
+.ecol>div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:3px;font-size:11px}
+.ecol span{display:block;width:100%;max-width:46px;background:linear-gradient(#c92a2a,#f76707);border-radius:6px 6px 0 0;min-height:2px}
+.ecol small{color:var(--sub);white-space:nowrap}
 #eList{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
 #eList button{min-height:32px;padding:0 12px;font-size:13px}
 #eList button.on{background:#c92a2a;border-color:#c92a2a;color:#fff}
@@ -666,6 +683,7 @@ const I18N = {
     dispT: "🔀 다른 연맹에서 파견 받기", dispDesc: "다른 연맹 사람을 이 연맹 집결에 편성합니다. 파견된 사람은 원래 연맹 배치에서 빠집니다.", dispPick: "사람 선택 (시련 높은 순)", bDisp: "파견 받기", bBack: "복귀", dispIn: "파견 온 사람 {0}명", dispOut: "파견 나간 사람: {0}", dispDone: "{0}님을 {1}에서 파견 받았습니다.", backDone: "{0}님을 원래 연맹으로 돌려보냈습니다.",
     petT: "🐾 펫 버프 (2시간)", petNone: "안 켬", petCap: "버프 ON 집결", capOff: "집결 인원수 (OFF)", petTag: "🐾 펫 ON", petHint: "펫 버프는 2시간만 켤 수 있습니다. 고른 시간대에는 버프 ON 집결 인원수(집결장 본인 출정도 ON)로 배치합니다.",
     bUndo: "↶ 이전 저장으로 되돌리기 ({0} · 집결장 {1}명)", undoAsk: "{0} 연맹을 {1} 저장 상태(집결장 {2}명)로 되돌릴까요? 바로 저장됩니다.", undoDone: "되돌려 저장했습니다.",
+    egT: "📊 한눈에 보기", egPow: "연맹 전투력", egTg: "연맹별 건물 레벨 (명)", egMy: "시련 점수 분포 (명)", egNo: "기록 없음", egTop: "상위 {0}명 평균 전투력",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -729,6 +747,7 @@ const I18N = {
     dispT: "🔀 Borrow from another alliance", dispDesc: "Place a player from another alliance in this alliance's rallies. They are removed from their own alliance's placement.", dispPick: "Pick a player (by Trial)", bDisp: "Borrow", bBack: "Return", dispIn: "Borrowed players: {0}", dispOut: "Lent out: {0}", dispDone: "Borrowed {0} from {1}.", backDone: "Returned {0} to their alliance.",
     petT: "🐾 Pet buff (2 h)", petNone: "Off", petCap: "Rally with buff ON", capOff: "Rally size (OFF)", petTag: "🐾 Pet ON", petHint: "The pet buff lasts only 2 hours. In the chosen hours the rally uses the buff-ON size (and the leader's buff-ON march).",
     bUndo: "↶ Restore previous save ({0} · {1} leaders)", undoAsk: "Restore {0} to the save from {1} ({2} leaders)? It is saved right away.", undoDone: "Restored and saved.",
+    egT: "📊 At a glance", egPow: "Alliance power", egTg: "Building level by alliance (players)", egMy: "Trial score spread (players)", egNo: "No record", egTop: "Avg power of top {0}",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -792,6 +811,7 @@ const I18N = {
     dispT: "🔀 從其他聯盟調派", dispDesc: "把其他聯盟的人編入本聯盟集結。被調派的人會從原聯盟的配置中移除。", dispPick: "選擇成員（依試煉排序）", bDisp: "調派", bBack: "歸還", dispIn: "調派來的人 {0} 人", dispOut: "調派出去：{0}", dispDone: "已從 {1} 調派 {0}。", backDone: "已將 {0} 歸還原聯盟。",
     petT: "🐾 寵物增益（2 小時）", petNone: "不開", petCap: "增益 ON 集結", capOff: "集結人數（OFF）", petTag: "🐾 寵物 ON", petHint: "寵物增益只能開 2 小時。選定的時段會以增益 ON 的集結人數（隊長本人出征也用 ON）配置。",
     bUndo: "↶ 還原上一次儲存（{0} · 隊長 {1} 人）", undoAsk: "要把 {0} 還原到 {1} 的儲存（隊長 {2} 人）嗎？會立即儲存。", undoDone: "已還原並儲存。",
+    egT: "📊 一目了然", egPow: "聯盟戰力", egTg: "各聯盟建築等級（人）", egMy: "試煉分數分布（人）", egNo: "無紀錄", egTop: "前 {0} 名平均戰力",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -855,6 +875,7 @@ const I18N = {
     dispT: "🔀 استعارة من تحالف آخر", dispDesc: "ضع لاعبًا من تحالف آخر في حشود هذا التحالف. يُحذف من توزيع تحالفه الأصلي.", dispPick: "اختر لاعبًا (حسب التجربة)", bDisp: "استعارة", bBack: "إرجاع", dispIn: "المستعارون: {0}", dispOut: "المُعارون: {0}", dispDone: "تمت استعارة {0} من {1}.", backDone: "تمت إعادة {0} إلى تحالفه.",
     petT: "🐾 تعزيز الحيوان (ساعتان)", petNone: "مطفأ", petCap: "الحشد مع التعزيز", capOff: "حجم الحشد (OFF)", petTag: "🐾 الحيوان ON", petHint: "تعزيز الحيوان يدوم ساعتين فقط. في الساعات المختارة يُستخدم حجم الحشد مع التعزيز (ومسيرة القائد مع التعزيز).",
     bUndo: "↶ استعادة الحفظ السابق ({0} · {1} قادة)", undoAsk: "استعادة {0} إلى حفظ {1} ({2} قادة)؟ سيُحفظ فورًا.", undoDone: "تمت الاستعادة والحفظ.",
+    egT: "📊 نظرة سريعة", egPow: "قوة التحالفات", egTg: "مستوى المبنى حسب التحالف (لاعبون)", egMy: "توزيع نقاط التجربة (لاعبون)", egNo: "بلا سجل", egTop: "متوسط قوة أفضل {0}",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -918,6 +939,7 @@ const I18N = {
     dispT: "🔀 Başka ittifaktan ödünç al", dispDesc: "Başka ittifaktan bir oyuncuyu bu ittifakın rallilerine yerleştirir. Kendi ittifakının yerleşiminden çıkarılır.", dispPick: "Oyuncu seçin (Deneme sırasıyla)", bDisp: "Ödünç al", bBack: "Geri gönder", dispIn: "Ödünç alınan: {0}", dispOut: "Ödünç verilen: {0}", dispDone: "{0}, {1} ittifakından ödünç alındı.", backDone: "{0} kendi ittifakına geri gönderildi.",
     petT: "🐾 Evcil güçlendirme (2 sa)", petNone: "Kapalı", petCap: "Güçlendirme AÇIK ralli", capOff: "Ralli sayısı (KAPALI)", petTag: "🐾 Evcil AÇIK", petHint: "Evcil güçlendirme yalnızca 2 saat sürer. Seçilen saatlerde güçlendirme AÇIK ralli sayısı (ve liderin AÇIK seferi) kullanılır.",
     bUndo: "↶ Önceki kayda dön ({0} · {1} lider)", undoAsk: "{0} ittifakı {1} kaydına ({2} lider) döndürülsün mü? Hemen kaydedilir.", undoDone: "Geri alındı ve kaydedildi.",
+    egT: "📊 Bir bakışta", egPow: "İttifak gücü", egTg: "İttifaka göre bina seviyesi (oyuncu)", egMy: "Deneme puanı dağılımı (oyuncu)", egNo: "Kayıt yok", egTop: "İlk {0} ortalama güç",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -2073,6 +2095,7 @@ function renderEnemy() {
   const alls = [...new Set((D.pl || []).map(x => x.a).filter(Boolean))].sort();
   const pages = Math.max(1, Math.ceil(pl.length / 20));
   if (EPAGE >= pages) EPAGE = pages - 1;
+  h += enemyCharts(D, big);
   h += '<div class="card section"><h2>' + tx("ePl", fmt(pl.length)) + '</h2><div class="ctl"><select id="eSort">' + [["m", "eSortM"], ["p", "eSortP"], ["t", "eSortT"], ["k", "eSortK"]].map(x => '<option value="' + x[0] + '"' + (ESORT === x[0] ? ' selected' : '') + '>' + tx(x[1]) + '</option>').join("") + '</select>' +
     '<select id="eAlly"><option value="">' + tx("fAllyAll") + '</option>' + alls.map(a => '<option' + (a === EALLY ? ' selected' : '') + '>' + esc(a) + '</option>').join("") + '</select></div>' +
     '<div class="scroll"><table><tr><th>#</th><th>' + tx("thNick") + '</th><th>' + tx("thAlly") + '</th><th class="c">R</th><th class="n">' + tx("thMystic") + '</th><th class="n">' + tx("thPower") + '</th><th class="n">' + tx("thKills") + '</th><th>' + tx("thBuilding") + '</th></tr>' +
@@ -2080,6 +2103,35 @@ function renderEnemy() {
     '</table></div><div class="pager"><button id="ePrev"' + (EPAGE ? '' : ' disabled') + '>' + tx("prev") + '</button><span class="sub">' + (EPAGE + 1) + ' / ' + pages + '</span><button id="eNext"' + (EPAGE < pages - 1 ? '' : ' disabled') + '>' + tx("next") + '</button></div>' +
     '<div class="sub" style="margin-top:8px">' + tx("eNote") + '</div></div>';
   $("eBody").innerHTML = h;
+}
+// 적군 서버 그래프: 연맹 전투력 · 연맹별 건물 레벨 · 시련 점수 분포 (그림 라이브러리 없이 막대로)
+const EPAL = ["#e8590c", "#1c7ed6", "#2f9e44", "#ae3ec9", "#f59f00", "#0c8599", "#e64980", "#5c7cfa"];
+function enemyCharts(D, big) {
+  const al = (D.al || []).slice(0, 8), pl = D.pl || [];
+  if (!al.length && !pl.length) return "";
+  const colA = {}; al.forEach((a, i) => colA[a.a] = EPAL[i % EPAL.length]);
+  let h = '<div class="card section"><h2>' + tx("egT") + '</h2><div class="egrid">';
+  // 1) 연맹 전투력 + 상위 10명 평균
+  const maxP = Math.max(1, ...al.map(a => a.p || 0));
+  h += '<div class="eg"><h3>' + tx("egPow") + '</h3>' + al.map(a => {
+    const top = pl.filter(x => x.a === a.a && x.p).sort((x, y) => y.p - x.p).slice(0, 10), avg = top.length ? top.reduce((s2, x) => s2 + x.p, 0) / top.length : 0;
+    return '<div class="ebar"><span class="el" style="color:' + colA[a.a] + '">' + esc(a.a) + '</span><span class="et"><i style="width:' + ((a.p || 0) / maxP * 100).toFixed(1) + '%;background:' + colA[a.a] + '"></i></span><span class="ev">' + big(a.p) + '<small> · ' + fmt(a.c) + '</small></span></div>' +
+      (avg ? '<div class="esub">' + tx("egTop", top.length) + ' ' + big(avg) + '</div>' : '');
+  }).join("") + '</div>';
+  // 2) 연맹별 건물 레벨: TG8 · TG7 · TG6 · TG5 이하
+  const bands = [["TG8", x => x >= 70], ["TG7", x => x >= 65 && x < 70], ["TG6", x => x >= 60 && x < 65], ["≤TG5", x => x > 0 && x < 60]], bc = ["#c92a2a", "#f76707", "#fab005", "#adb5bd"];
+  const rows = al.slice(0, 6).map(a => ({a: a.a, n: bands.map(b => pl.filter(x => x.a === a.a && b[1](+x.tc || 0)).length)})).filter(r => r.n.some(Boolean));
+  if (rows.length) {
+    const maxN = Math.max(1, ...rows.map(r => r.n.reduce((s2, v) => s2 + v, 0)));
+    h += '<div class="eg"><h3>' + tx("egTg") + '</h3><div class="elg">' + bands.map((b, i) => '<span><i style="background:' + bc[i] + '"></i>' + b[0] + '</span>').join("") + '</div>' +
+      rows.map(r => '<div class="ebar"><span class="el" style="color:' + colA[r.a] + '">' + esc(r.a) + '</span><span class="et" style="background:none"><span class="stk" style="width:' + (r.n.reduce((s2, v) => s2 + v, 0) / maxN * 100).toFixed(1) + '%">' +
+        r.n.map((v, i) => v ? '<i style="flex:' + v + ';background:' + bc[i] + '" title="' + bands[i][0] + ' ' + v + '">' + (v >= 3 ? v : '') + '</i>' : '').join("") + '</span></span><span class="ev">' + r.n[0] + '<small>/' + r.n.reduce((s2, v) => s2 + v, 0) + '</small></span></div>').join("") + '</div>';
+  }
+  // 3) 시련 점수 분포
+  const mb = [["2400+", x => x >= 2400], ["2100~", x => x >= 2100 && x < 2400], ["1800~", x => x >= 1800 && x < 2100], ["1500~", x => x >= 1500 && x < 1800], ["~1500", x => x > 0 && x < 1500]];
+  const mc = mb.map(b => pl.filter(x => b[1](+x.m || 0)).length), none = pl.filter(x => !+x.m).length, maxM = Math.max(1, ...mc);
+  if (mc.some(Boolean)) h += '<div class="eg"><h3>' + tx("egMy") + '</h3><div class="ecol">' + mb.map((b, i) => '<div><b>' + mc[i] + '</b><span style="height:' + (mc[i] / maxM * 100).toFixed(1) + '%"></span><small>' + b[0] + '</small></div>').join("") + '</div>' + (none ? '<div class="esub">' + tx("egNo") + ' ' + none + '</div>' : '') + '</div>';
+  return h + '</div></div>';
 }
 function waitEnemy(k) {
   EWAIT = k; clearInterval(ETIMER);
