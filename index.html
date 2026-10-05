@@ -472,6 +472,8 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
 .tb .th .fill{flex:none;white-space:nowrap}
 #rsec .tb .th{background:var(--mc2)}
 #rsec .arow{border-top-color:var(--mc)}
+#actbar .arow{margin:0 0 10px;padding-top:0;border-top:0}
+#actbar:empty{display:none}
 #rsec .need:not(.bad){font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #savOv{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(10,12,18,.62);padding:16px}#savOv.on{display:flex}#savOv>div{background:var(--card,#fff);color:var(--ink,#1c2230);border-radius:16px;padding:22px 20px;max-width:340px;width:100%;text-align:center;font-weight:700;line-height:1.5;box-shadow:0 10px 40px rgba(0,0,0,.35)}#savOv i{display:block;width:38px;height:38px;margin:0 auto 12px;border:4px solid rgba(121,80,242,.25);border-top-color:#7950f2;border-radius:50%;animation:savSpin .8s linear infinite}@keyframes savSpin{to{transform:rotate(360deg)}}
 </style>
@@ -550,6 +552,7 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
     <div class="rhead"><h2 id="hRally"></h2><select id="rAlly"></select></div>
     <details class="help"><summary id="helpT"></summary><div class="sub" id="dRally"></div></details>
     <div class="msg" id="rallyNote" style="display:none"></div>
+    <div id="actbar"></div>
     <div class="mtabs" id="mtabs"></div>
     <div id="admin"></div>
     <div id="rally"></div>
@@ -649,7 +652,7 @@ const I18N = {
     sAll: "전체", sTable: "표로 보기",
     twC: "센터", twN: "북", twE: "동", twS: "남", twW: "서", thTarget: "공격 목표", warDrag: "연맹 딱지를 타워(센터 · 동 · 서 · 남 · 북)로 끌어다 놓으면 공격 목표가 정해집니다. 빈 곳에 놓으면 지워집니다.",
     noRight: "{0} 연맹은 내 링크로 설정할 권한이 없습니다. 보기만 됩니다.",
-    bAtk: "⚔ 공격 배치", bDef: "🛡 수비 배치", stale: "설정이 바뀌었습니다. 배치 단추를 눌러 다시 계산하세요.", fAtk: "⚔ 공격 포메이션", fDef: "🛡 수비 포메이션", capFinal: "최종 집결 인원수", needLine: "필요 → 보병 {0} · 기병 {1} · 궁병 {2}", selfBoth: "본인 입력 OFF {0} / ON {1}", aUp: "위로", modeNow: "{0} 기준",
+    bAtk: "⚔ 공격 배치", bDef: "🛡 수비 배치", stale: "설정이 바뀌었습니다. 위 공격/수비 배치 탭을 눌러 다시 배치하세요.", fAtk: "⚔ 공격 포메이션", fDef: "🛡 수비 포메이션", capFinal: "최종 집결 인원수", needLine: "필요 → 보병 {0} · 기병 {1} · 궁병 {2}", selfBoth: "본인 입력 OFF {0} / ON {1}", aUp: "위로", modeNow: "{0} 기준",
     sumBad: "합계 {0} — 보병 + 기병 + 궁병 합이 정확히 10(또는 100)이어야 합니다.", sumBlock: "포메이션 합이 10(또는 100)이 아닌 집결장이 있습니다. 고친 뒤 다시 누르세요.",
     leaderAway: "집결장이 이 시간대에 참여하지 않습니다", restTitle: "배치되지 않고 남는 인원", slotFill: "채움 {0} / {1} ({2}%) · 집결원 {3}명", ttTitle: "시간대별 편성표", noOne: "남는 사람 없음",
     memShare: "집결 인원수 {0} − 집결장 본인 출정 {1} = 집결원이 채울 몫 {2}",
@@ -713,7 +716,7 @@ const I18N = {
     sAll: "All", sTable: "View as table",
     twC: "Center", twN: "North", twE: "East", twS: "South", twW: "West", thTarget: "Attack target", warDrag: "Drag an alliance badge onto a tower (Center, East, West, South, North) to set its attack target. Drop it on empty space to clear it.",
     noRight: "Your link does not have the right to edit {0}. View only.",
-    bAtk: "⚔ Place attack", bDef: "🛡 Place defence", stale: "Settings changed. Press a Place button to recalculate.", fAtk: "⚔ Attack formation", fDef: "🛡 Defence formation", capFinal: "Final rally capacity", needLine: "Needed → Infantry {0} · Cavalry {1} · Archer {2}", selfBoth: "Self-reported OFF {0} / ON {1}", aUp: "Up", modeNow: "{0}",
+    bAtk: "⚔ Place attack", bDef: "🛡 Place defence", stale: "Settings changed. Press the Attack/Defence tab above to place again.", fAtk: "⚔ Attack formation", fDef: "🛡 Defence formation", capFinal: "Final rally capacity", needLine: "Needed → Infantry {0} · Cavalry {1} · Archer {2}", selfBoth: "Self-reported OFF {0} / ON {1}", aUp: "Up", modeNow: "{0}",
     sumBad: "Total {0} — infantry + cavalry + archer must add up to exactly 10 (or 100).", sumBlock: "A leader has a formation that does not add up to 10 (or 100). Fix it and press again.",
     leaderAway: "The leader is not available in this time slot", restTitle: "Players left unassigned", slotFill: "Filled {0} / {1} ({2}%) · {3} joiners", ttTitle: "Timetable", noOne: "No one left over",
     memShare: "Rally capacity {0} − leader's own march {1} = left for joiners {2}",
@@ -777,7 +780,7 @@ const I18N = {
     sAll: "全部", sTable: "以表格檢視",
     twC: "中央", twN: "北", twE: "東", twS: "南", twW: "西", thTarget: "攻擊目標", warDrag: "把聯盟標籤拖到塔（中央 · 東 · 西 · 南 · 北）上即可設定攻擊目標，放到空白處則清除。",
     noRight: "你的連結沒有設定 {0} 聯盟的權限，僅供檢視。",
-    bAtk: "⚔ 進攻配置", bDef: "🛡 防守配置", stale: "設定已變更，請按配置按鈕重新計算。", fAtk: "⚔ 進攻陣型", fDef: "🛡 防守陣型", capFinal: "最終集結人數", needLine: "需要 → 步兵 {0} · 騎兵 {1} · 弓兵 {2}", selfBoth: "本人填寫 OFF {0} / ON {1}", aUp: "上移", modeNow: "{0}",
+    bAtk: "⚔ 進攻配置", bDef: "🛡 防守配置", stale: "設定已變更，請按上方的攻擊/防守配置分頁重新配置。", fAtk: "⚔ 進攻陣型", fDef: "🛡 防守陣型", capFinal: "最終集結人數", needLine: "需要 → 步兵 {0} · 騎兵 {1} · 弓兵 {2}", selfBoth: "本人填寫 OFF {0} / ON {1}", aUp: "上移", modeNow: "{0}",
     sumBad: "合計 {0} — 步兵 + 騎兵 + 弓兵必須剛好等於 10（或 100）。", sumBlock: "有隊長的陣型合計不是 10（或 100），請修正後再按一次。",
     leaderAway: "隊長此時段不參加", restTitle: "未分配的成員", slotFill: "已填 {0} / {1}（{2}%）· 成員 {3} 人", ttTitle: "各時段編組表", noOne: "沒有剩餘成員",
     memShare: "集結人數 {0} − 隊長本人出征 {1} = 成員要補的人數 {2}",
@@ -841,7 +844,7 @@ const I18N = {
     sAll: "الكل", sTable: "عرض كجدول",
     twC: "الوسط", twN: "شمال", twE: "شرق", twS: "جنوب", twW: "غرب", thTarget: "هدف الهجوم", warDrag: "اسحب شارة التحالف إلى أحد الأبراج (الوسط، الشرق، الغرب، الجنوب، الشمال) لتحديد هدف الهجوم. أفلتها في مكان فارغ لإلغائه.",
     noRight: "رابطك لا يملك صلاحية تعديل تحالف {0}. للعرض فقط.",
-    bAtk: "⚔ توزيع الهجوم", bDef: "🛡 توزيع الدفاع", stale: "تغيّرت الإعدادات. اضغط زر التوزيع لإعادة الحساب.", fAtk: "⚔ تشكيلة الهجوم", fDef: "🛡 تشكيلة الدفاع", capFinal: "سعة الحشد النهائية", needLine: "المطلوب ← مشاة {0} · فرسان {1} · رماة {2}", selfBoth: "أدخلها بنفسه OFF {0} / ON {1}", aUp: "أعلى", modeNow: "{0}",
+    bAtk: "⚔ توزيع الهجوم", bDef: "🛡 توزيع الدفاع", stale: "تغيّرت الإعدادات. اضغط تبويب الهجوم/الدفاع في الأعلى لإعادة التوزيع.", fAtk: "⚔ تشكيلة الهجوم", fDef: "🛡 تشكيلة الدفاع", capFinal: "سعة الحشد النهائية", needLine: "المطلوب ← مشاة {0} · فرسان {1} · رماة {2}", selfBoth: "أدخلها بنفسه OFF {0} / ON {1}", aUp: "أعلى", modeNow: "{0}",
     sumBad: "المجموع {0} — يجب أن يساوي مجموع المشاة + الفرسان + الرماة 10 بالضبط (أو 100).", sumBlock: "توجد تشكيلة مجموعها ليس 10 (أو 100). صحّحها ثم اضغط مرة أخرى.",
     leaderAway: "القائد غير متاح في هذه الفترة", restTitle: "أعضاء لم يتم توزيعهم", slotFill: "تم ملء {0} / {1} ({2}%) · الأعضاء {3}", ttTitle: "جدول الفترات", noOne: "لا أحد متبقٍ",
     memShare: "سعة الحشد {0} − مسيرة القائد {1} = المتبقي للأعضاء {2}",
@@ -905,7 +908,7 @@ const I18N = {
     sAll: "Tümü", sTable: "Tablo olarak göster",
     twC: "Merkez", twN: "Kuzey", twE: "Doğu", twS: "Güney", twW: "Batı", thTarget: "Saldırı hedefi", warDrag: "Saldırı hedefini belirlemek için ittifak rozetini bir kulenin (Merkez, Doğu, Batı, Güney, Kuzey) üzerine sürükleyin. Boş bir yere bırakırsanız hedef silinir.",
     noRight: "Bağlantınızın {0} ittifakını düzenleme yetkisi yok. Yalnızca görüntüleme.",
-    bAtk: "⚔ Saldırı yerleşimi", bDef: "🛡 Savunma yerleşimi", stale: "Ayarlar değişti. Yeniden hesaplamak için yerleşim düğmesine basın.", fAtk: "⚔ Saldırı dizilişi", fDef: "🛡 Savunma dizilişi", capFinal: "Nihai ralli kapasitesi", needLine: "Gereken → Piyade {0} · Süvari {1} · Okçu {2}", selfBoth: "Kendi girdiği OFF {0} / ON {1}", aUp: "Yukarı", modeNow: "{0}",
+    bAtk: "⚔ Saldırı yerleşimi", bDef: "🛡 Savunma yerleşimi", stale: "Ayarlar değişti. Yeniden yerleştirmek için yukarıdaki Saldırı/Savunma sekmesine basın.", fAtk: "⚔ Saldırı dizilişi", fDef: "🛡 Savunma dizilişi", capFinal: "Nihai ralli kapasitesi", needLine: "Gereken → Piyade {0} · Süvari {1} · Okçu {2}", selfBoth: "Kendi girdiği OFF {0} / ON {1}", aUp: "Yukarı", modeNow: "{0}",
     sumBad: "Toplam {0} — piyade + süvari + okçu tam olarak 10 (veya 100) etmelidir.", sumBlock: "Dizilişi 10 (veya 100) etmeyen bir lider var. Düzeltip tekrar basın.",
     leaderAway: "Lider bu saat diliminde katılmıyor", restTitle: "Yerleştirilmeyen oyuncular", slotFill: "Dolan {0} / {1} (%{2}) · {3} katılımcı", ttTitle: "Saat çizelgesi", noOne: "Boşta kimse yok",
     memShare: "Ralli kapasitesi {0} − liderin kendi seferi {1} = katılımcılara kalan {2}",
@@ -1471,11 +1474,6 @@ function renderRally() {
   const cl = ls.map((l, n) => l[fkOf(RMODE)] ? n + 1 : 0).filter(Boolean), lg = legacyConf(box, RMODE), pubd = isPub(box, RMODE);
   const allC = ls.length && cl.length === ls.length;
   h += '<div class="rbar"><span class="cfb' + (allC || lg ? '' : ' no') + '">' + (lg && !cl.length ? tx("confYes", tx(RMODE === "def" ? "mDef" : "mAtk")) : tx(allC ? "cfCount" : "cfCountNo", cl.length, ls.length)) + '</span><span class="cfb' + (pubd ? '' : ' no') + '">' + tx(pubd ? "pubYes" : "pubNo") + '</span><span class="sp"></span><button class="repb">' + tx(RMODE === "def" ? "bRepDef" : "bRepAtk") + '</button></div>' + (lg && !cl.length ? '<div class="sub">' + tx("confLegacy") + '</div>' : '');
-  if (editing) {
-    const dl = (DRAFT.A[a] || {}).leaders || [];
-    h += '<details class="cfbox"' + (CFOPEN ? ' open' : '') + '><summary>' + tx("cfBoxT", dl.filter(l => l[fkOf(RMODE)]).length, dl.length) + '</summary>' +
-      dl.map((l, n) => { const q = DATA.find(x => x.id === l.id), on = !!l[fkOf(RMODE)]; return '<div class="cfrow' + (on ? ' on' : '') + '"><span class="nm"><i class="no1">' + (n + 1) + '</i> <b>' + esc(q ? (q.gname || q.name) : "?") + '</b></span><span class="sub">' + tx("cfRatio") + ' ' + ratioOf(l, RMODE).map(v => +v || 0).join(":") + ' · ' + fmt(+l.cap || 0) + '</span><button class="cfbtn' + (on ? ' off' : ' primary') + '" data-k="' + n + '">' + (on ? tx("bUncf") : '✅ ' + tx("bCf")) + '</button></div>'; }).join("") + '</details>';
-  }
   ls.forEach((l, n) => {
     if (l.id !== selId) return;
     const p = DATA.find(x => x.id === l.id), r = ratioOf(l, RMODE);
@@ -1702,6 +1700,14 @@ function shareText(l, def) {
 }
 function needText(l, mode) { const r = ratioOf(l, mode), n = needOf(l.cap, r); return ratioOk(r) ? tx("needLine", fmt(n[0]), fmt(n[1]), fmt(n[2])) : tx("sumBad", ratioSum(r)); }
 const needCls = (l, mode) => "need" + (ratioOk(ratioOf(l, mode)) ? "" : " bad");
+// 집결장 확정 상자(편성 설정 상자 맨 아래): 집결장 · 배율 · 인원 · 확정/취소
+function cfBoxHtml(a) {
+  const dl = (DRAFT.A[a] || {}).leaders || [];
+  let h = '';
+  h += '<details class="cfbox"' + (CFOPEN ? ' open' : '') + '><summary>' + tx("cfBoxT", dl.filter(l => l[fkOf(RMODE)]).length, dl.length) + '</summary>' +
+    dl.map((l, n) => { const q = DATA.find(x => x.id === l.id), on = !!l[fkOf(RMODE)]; return '<div class="cfrow' + (on ? ' on' : '') + '"><span class="nm"><i class="no1">' + (n + 1) + '</i> <b>' + esc(q ? (q.gname || q.name) : "?") + '</b></span><span class="sub">' + tx("cfRatio") + ' ' + ratioOf(l, RMODE).map(v => +v || 0).join(":") + ' · ' + fmt(+l.cap || 0) + '</span><button class="cfbtn' + (on ? ' off' : ' primary') + '" data-k="' + n + '">' + (on ? tx("bUncf") : '✅ ' + tx("bCf")) + '</button></div>'; }).join("") + '</details>';
+  return h;
+}
 function renderAdmin() {
   const box = $("admin");
   if (!IS_ADMIN || !DRAFT) { box.innerHTML = ""; return; }
@@ -1737,9 +1743,14 @@ function renderAdmin() {
   } else {
     h += '<div class="sub" style="margin-top:10px">' + tx("aNone", esc(a)) + '</div>';
   }
-  h += '<div class="arow"><div class="pgrp">' + passMe("aPass") +
+  if (ls.length) h += cfBoxHtml(a);
+  const keepPass = $("aPass") ? $("aPass").value : null, keepMsg = $("aMsg") ? [$("aMsg").innerHTML, $("aMsg").style.color] : null;
+  $("actbar").innerHTML = '<div class="arow"><div class="pgrp">' + passMe("aPass") +
     '<button class="primary" id="aSave">' + tx("aSave", esc(tx(RMODE === "def" ? "mDef" : "mAtk"))) + '</button><button id="aReset">' + tx("bReset") + '</button></div></div>' +
-    '<div class="sub" id="aMsg" style="margin-top:6px"></div>' +
+    '<div class="sub" id="aMsg" style="margin-top:6px"></div>';
+  if (keepPass != null) $("aPass").value = keepPass;
+  if (keepMsg) { $("aMsg").innerHTML = keepMsg[0]; $("aMsg").style.color = keepMsg[1]; }
+  h +=
     ((CFG.P || {})[a] ? '<button class="undob" id="aUndo">' + tx("bUndo", esc(CFG.P[a].at), (CFG.P[a].leaders || []).length) + '</button>' : '') + '</div></details>';
   box.innerHTML = h;
 }
@@ -2384,7 +2395,7 @@ function swapCands(a, mode, lid, i0) {
   box.leaders.forEach((L, j) => { if (j > k && L[fk] && L[fk][i0]) L[fk][i0].m.forEach(e => { if (!outs.has(e[0])) c.push({id: e[0], j}); }); });
   return c;
 }
-$("admin").addEventListener("toggle", e => { if (e.target.classList && e.target.classList.contains("adminbox")) ADMOPEN = e.target.open; }, true);
+$("admin").addEventListener("toggle", e => { if (!e.target.classList) return; if (e.target.classList.contains("adminbox")) ADMOPEN = e.target.open; if (e.target.classList.contains("cfbox")) CFOPEN = e.target.open; }, true);
 // 편성표에서 집결 인원수 바로 고치기: 다 쓰고 나면(포커스 빠짐 · Enter) 다시 배치
 $("rally").addEventListener("change", e => {
   const el = e.target;
@@ -2570,7 +2581,9 @@ const pickTab = e => {
   renderAdmin(); renderRally();
   return true;
 };
-$("admin").addEventListener("click", e => {
+const adminClick = e => {
+  const cfb = e.target.closest("button.cfbtn");
+  if (cfb) { confirmLeader(+cfb.dataset.k); return; }
   if (pickTab(e)) return;
   if (e.target.closest("button.repb")) { openReport(); return; }
   if (e.target.id === "aReset") {
@@ -2590,7 +2603,7 @@ $("admin").addEventListener("click", e => {
     const msg = $("aMsg");
     if (!box.leaders.length) { msg.textContent = tx("pubNone"); msg.style.color = "var(--warn)"; return; }
     const not = box.leaders.map((l, n) => l[fk] ? 0 : n + 1).filter(Boolean);
-    if (not.length) { msg.textContent = tx("pubNeed", not.map(n => tx("nth", n)).join(", ")); msg.style.color = "var(--warn)"; CFOPEN = true; renderRally(); const c = document.querySelector("#rally .cfbox"); if (c) c.scrollIntoView({behavior: "smooth", block: "center"}); return; }
+    if (not.length) { msg.textContent = tx("pubNeed", not.map(n => tx("nth", n)).join(", ")); msg.style.color = "var(--warn)"; CFOPEN = true; renderAdmin(); const c = document.querySelector(".cfbox"); if (c) c.scrollIntoView({behavior: "smooth", block: "center"}); return; }
     const before = box.pub || "";
     box.pub = before.indexOf(f) >= 0 ? before : (before + f).split("").sort().join("");
     DIRTY[a] = true;
@@ -2636,7 +2649,9 @@ $("admin").addEventListener("click", e => {
   leadersOf($("rAlly").value || ALLIES[0]).splice(+d.dataset.k, 1);
   renderAdmin();
   render();
-});
+};
+$("admin").addEventListener("click", adminClick);
+$("actbar").addEventListener("click", adminClick);
 (function () {
   let l = "";
   try { l = localStorage.getItem("k700lang") || ""; } catch (e) {}
