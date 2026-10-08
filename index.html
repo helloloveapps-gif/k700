@@ -991,7 +991,7 @@ const COLORS = {NeX: "#3b5bdb", NvA: "#f76707", AEH: "#2f9e44", LoV: "#d6336c"};
 const col = a => COLORS[a] || "#7950f2";
 const TROOP_GID = "404058685";
 let HIST = {};
-let MARCH_OFF = {};
+let MARCH_OFF = {}, PET_OF = {};
 const INC20 = {"107757867": 223332};   // Duby 1988 (2026-10-08 이박사님)   // 게임 ID → 이미 다이아 20% 를 넣어 낸 출정 값(이 값이면 1.2 를 곱하지 않음)
 let SELF = {}, MARCH = {}, MARCH_ON = {}, RALLY = {}, RALLY_ON = {}, CFG = {A: {}}, DRAFT = null, DIRTY = {}, IS_ADMIN = false, MAPD = null, MAP_DIRTY = false;
 const CFG_GID = "407041504";
@@ -2049,7 +2049,17 @@ async function load() {
       // ON(20%+펫)이 그보다 작으면 20% 값으로 올린다. INC20 = 이미 20% 를 넣어 낸 사람(그 값일 때만 그대로 씀)
       SELF = r.self; MARCH_OFF = r.march; MARCH = {}; MARCH_ON = {};
       Object.keys(r.march).forEach(id => { MARCH[id] = INC20[id] === r.march[id] ? r.march[id] : Math.floor(r.march[id] * 1.2); });
-      Object.keys(r.march).concat(Object.keys(r.marchOn)).forEach(id => { const v = Math.max(r.marchOn[id] || 0, MARCH[id] || 0); if (v) MARCH_ON[id] = v; }); RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || []; HIST = r.hist || {};
+      // 펫 ON: 예전 ON 입력값에서 펫 버프를 역산한다 — ON − 출정×1.2 (다이아 20%), 안 맞으면 ×1.1 · ×1.0 순으로 0~15,000 에 드는 차이를 펫으로 본다.
+      // 그 펫을 「출정×1.2」에 더한 값이 펫 ON. 어느 것도 안 맞고 ON 이 더 크면 ON 을 그대로 둔다
+      PET_OF = {};
+      Object.keys(r.march).forEach(id => {
+        const off = r.march[id], on = r.marchOn[id] || 0, base = MARCH[id];
+        if (!on) { MARCH_ON[id] = base; return; }
+        const bases = INC20[id] === off ? [off] : [Math.floor(off * 1.2), Math.floor(off * 1.1), off];
+        const d = bases.map(b => on - b).find(x => x >= 0 && x <= 15000);
+        if (d != null) { PET_OF[id] = d; MARCH_ON[id] = base + d; }
+        else MARCH_ON[id] = Math.max(on, base);
+      }); RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || []; HIST = r.hist || {};
     } catch (e) {}
     try { CFG = await loadConfig(); } catch (e) {}
     const firstDraft = IS_ADMIN && !DRAFT;
