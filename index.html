@@ -2090,13 +2090,13 @@ async function load() {
         PET_OF[id] = best.pt; MARCH_ON[id] = Math.floor(((INC20[id] === off ? Math.round(off / 1.2) : off) + best.pt) * 1.2);   // 출정 최종 = (출정 + 출정 펫) × 120%
       });
       // 집결 인원수(이박사님 표 2026-10-09): 기본 1,428,610 + 출정 버프·펫 보너스(241,332 − 186,110 = 55,222) + 집결 펫 150,000 = 1,633,832
-      // 버프 ON(펫 없이) = 기본 + (출정×120% − 출정). 집결 펫은 예전 입력에서 정확히 맞을 때만
+      // 집결 버프 ON = 기본 + 출정 보너스, 집결 펫 ON = 버프 ON + 집결 펫(이박사님 2026-10-09). 집결 펫은 예전 입력에서 정확히 맞을 때만
       RALLY = r.rally; RALLY_ON = {}; RALLY_BUFF = {}; RPET_OF = {};
       const RPL = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000];
       Object.keys(r.rally).forEach(id => {
         const R0 = r.rally[id], M0 = MARCH_OFF[id] || 0, mp = PET_OF[id] || 0, on = r.rallyOn[id] || 0;
         const core = pt => R0 - M0 + Math.floor((M0 + pt) * 1.2);
-        RALLY_BUFF[id] = core(0);
+        RALLY_BUFF[id] = core(mp);   // 집결 버프 ON = 기본 + 출정 보너스(출정 최종 − 출정, 출정 펫 포함). 펫 ON 은 여기에 집결 펫만 더함
         if (!on) { RALLY_ON[id] = RALLY_BUFF[id]; return; }
         const H = (r.hist || {})[id], hts = H && H.length ? tsOf(H[H.length - 1].t) : 0, late = hts >= Date.UTC(2026, 9, 8, 21, 30) && !(hts >= Date.UTC(2026, 9, 9, 1, 20) && hts < Date.UTC(2026, 9, 9, 1, 50));   // 21:30 뒤 = 새 화면(곱하기 식), 01:20~01:50 만 잠깐 더하기 식
         const tries = late ? [on - core(mp), on - R0, on - R0 - mp, on - core(0)] : [on - R0, on - R0 - mp, on - core(mp), on - core(0)];
