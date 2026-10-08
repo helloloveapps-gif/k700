@@ -172,7 +172,7 @@ const F = {rally: "entry.1123857302", rallyOn: "entry.659408467", march: "entry.
   c: ["entry.1338838138", "entry.757655290", "entry.659383205"],
   t: ["entry.671815691", "entry.1113601858", "entry.1129483053"]};
 const T = {
-  ko: {sOffM: "① 출정 인원", diaL: "③ 💎 다이아", d10: "10% · 2시간", d20: "20% · 12시간", petL: "② 🐾 펫", sOnM: "최종 값", onTitleM: "② 펫 → ③ 다이아를 고르면 최종 값이 계산됩니다 — (출정 + 펫) × 다이아", sOff: "① 버프 없이", sOn: "② 버프 켜고", onTitle: "② 버프 ON 값 — 다이아 · 펫 버프를 고르면 자동 계산됩니다", onGo: "⬆ ① 버프 없이 병사 수를 먼저 입력하세요. 입력해야 다이아 · 펫 버프를 고를 수 있습니다.", name: "한국어", title: "내 병사 정보 입력", desc: "700서버 KvK 집결 편성에 쓰입니다. 다시 제출하면 마지막 값이 반영됩니다.",
+  ko: {sOffM: "① 출정 인원", diaL: "③ 💎 다이아", d10: "10% · 2시간", d20: "20% · 12시간", petL: "② 🐾 펫", sOnM: "최종 값", onTitleM: "② 펫 → ③ 다이아를 고르면 최종 값이 계산됩니다 — (출정 + 펫) × 다이아", sOff: "① 버프 없이", sOn: "② 버프 켜고", onTitle: "② 집결 펫을 고르면 최종 값 = 집결 − 출정 + 출정 최종(위 ③) + 집결 펫", onGo: "⬆ ① 버프 없이 병사 수를 먼저 입력하세요. 입력해야 다이아 · 펫 버프를 고를 수 있습니다.", name: "한국어", title: "내 병사 정보 입력", desc: "700서버 KvK 집결 편성에 쓰입니다. 다시 제출하면 마지막 값이 반영됩니다.",
     id: "게임 ID (숫자만)", idHint: "게임 프로필에 있는 숫자 ID 입니다. 닉네임이 아닙니다.", tg: "내 타운센터 TG 레벨", tg0: "TG 없음 (TC30 이하)",
     tgHint: "훈련소 레벨은 TG 레벨보다 높게 고를 수 없습니다.", camp: "훈련소 레벨", tier: "순금 병사", inf: "보병", cav: "기병", arc: "궁병",
     campHint: "훈련소 레벨은 TG1~TG8 중에서 고르세요. 순금 병사는 T10 / T11 중에서 고르세요.", send: "제출", sending: "보내는 중…",
@@ -182,7 +182,7 @@ const T = {
     rally: "집결 인원수 (내가 집결장일 때 수용 인원)", rallyHint: "집결장을 맡을 수 있는 분은 꼭 넣어 주세요. 모르면 비워 두어도 됩니다.",
     errRally: "집결 인원수는 OFF · ON 둘 다 숫자로 넣거나 둘 다 비워 두세요. ON 값은 OFF 값보다 작을 수 없습니다.",
     errPick: "TG 레벨과 훈련소 레벨 세 개를 모두 선택하세요.", errCamp: "훈련소 레벨이 내 TG 레벨보다 높습니다. 다시 확인하세요.", back: "참여 현황 보기", loaded: "지난번에 입력한 내용을 불러왔습니다. 바뀐 것만 고쳐서 제출하세요."},
-  en: {sOffM: "① March size", diaL: "③ 💎 Diamond", d10: "10% · 2 h", d20: "20% · 12 h", petL: "② 🐾 Pet", sOnM: "Final", onTitleM: "Pick ② pet → ③ diamond — final = (march + pet) × diamond", sOff: "① No buff", sOn: "② With buffs", onTitle: "② Buff ON — pick your diamond and pet buffs and it is calculated for you", onGo: "⬆ Enter ① the no-buff troop count first. Then you can pick diamond / pet buffs.", name: "English", title: "My Troop Info", desc: "Used for Kingdom 700 KvK rally planning. If you submit again, the latest entry is used.",
+  en: {sOffM: "① March size", diaL: "③ 💎 Diamond", d10: "10% · 2 h", d20: "20% · 12 h", petL: "② 🐾 Pet", sOnM: "Final", onTitleM: "Pick ② pet → ③ diamond — final = (march + pet) × diamond", sOff: "① No buff", sOn: "② With buffs", onTitle: "② Pick the rally pet — final = rally − march + final march (above) + rally pet", onGo: "⬆ Enter ① the no-buff troop count first. Then you can pick diamond / pet buffs.", name: "English", title: "My Troop Info", desc: "Used for Kingdom 700 KvK rally planning. If you submit again, the latest entry is used.",
     id: "Game ID (numbers only)", idHint: "The numeric ID on your in-game profile, not your nickname.", tg: "My Town Center TG level", tg0: "No TG (TC30 or lower)",
     tgHint: "Camp levels cannot be higher than your TG level.", camp: "Camp level", tier: "Truegold troops", inf: "Infantry", cav: "Cavalry", arc: "Archer",
     campHint: "Choose TG1-TG8 for each camp, and T10 or T11 for each troop type.", send: "Submit", sending: "Sending…",
@@ -192,7 +192,7 @@ const T = {
     rally: "Rally capacity (when I lead a rally)", rallyHint: "Please fill this in if you can lead rallies. Leave both empty if you do not know.",
     errRally: "Enter both rally capacities (OFF and ON) as numbers, or leave both empty. ON cannot be smaller than OFF.",
     errPick: "Please select your TG level and all three camp levels.", errCamp: "A camp level is higher than your TG level. Please check again.", back: "View participation board", loaded: "Your previous answers were loaded. Change what is different and submit."},
-  zh: {sOffM: "① 出征人數", diaL: "③ 💎 鑽石", d10: "10% · 2 小時", d20: "20% · 12 小時", petL: "② 🐾 寵物", sOnM: "最終值", onTitleM: "選擇 ② 寵物 → ③ 鑽石 — 最終值 = (出征 + 寵物) × 鑽石", sOff: "① 不開增益", sOn: "② 開增益", onTitle: "② 增益 ON 數值 — 選擇鑽石 · 寵物增益後會自動計算", onGo: "⬆ 請先填寫 ① 不開增益的士兵數，填寫後才能選擇鑽石 · 寵物增益。", name: "繁體中文", title: "我的士兵資料", desc: "用於 700 服 KvK 集結編組。重複提交時以最後一次為準。",
+  zh: {sOffM: "① 出征人數", diaL: "③ 💎 鑽石", d10: "10% · 2 小時", d20: "20% · 12 小時", petL: "② 🐾 寵物", sOnM: "最終值", onTitleM: "選擇 ② 寵物 → ③ 鑽石 — 最終值 = (出征 + 寵物) × 鑽石", sOff: "① 不開增益", sOn: "② 開增益", onTitle: "② 選擇集結寵物 — 最終值 = 集結 − 出征 + 出征最終值（上方）+ 集結寵物", onGo: "⬆ 請先填寫 ① 不開增益的士兵數，填寫後才能選擇鑽石 · 寵物增益。", name: "繁體中文", title: "我的士兵資料", desc: "用於 700 服 KvK 集結編組。重複提交時以最後一次為準。",
     id: "遊戲 ID（只填數字）", idHint: "遊戲個人資料中的數字 ID，不是暱稱。", tg: "我的城鎮中心 TG 等級", tg0: "沒有 TG（TC30 以下）",
     tgHint: "訓練營等級不能高於 TG 等級。", camp: "訓練營等級", tier: "純金士兵", inf: "步兵", cav: "騎兵", arc: "弓兵",
     campHint: "訓練營等級請選 TG1~TG8。純金士兵請選 T10 或 T11。", send: "提交", sending: "傳送中…",
@@ -202,7 +202,7 @@ const T = {
     rally: "集結人數（我當集結隊長時的容量）", rallyHint: "可以擔任集結隊長的人請務必填寫。不清楚可以兩格都留空。",
     errRally: "集結人數請 OFF 與 ON 都用數字填寫，或兩格都留空。ON 不能小於 OFF。",
     errPick: "請選擇 TG 等級與三個訓練營等級。", errCamp: "訓練營等級高於你的 TG 等級，請再確認。", back: "查看參加狀況", loaded: "已載入你上次填寫的內容，只要修改有變動的部分再提交即可。"},
-  ar: {sOffM: "① حجم المسيرة", diaL: "③ 💎 الماس", d10: "10% · ساعتان", d20: "20% · 12 ساعة", petL: "② 🐾 الحيوان", sOnM: "القيمة النهائية", onTitleM: "اختر ② الحيوان ← ③ الماس — النهائي = (المسيرة + الحيوان) × الماس", sOff: "① بدون تعزيز", sOn: "② مع التعزيز", onTitle: "② قيمة التعزيز ON — اختر تعزيز الماس والحيوان وستُحسب تلقائيًا", onGo: "⬆ أدخل ① عدد الجنود بدون تعزيز أولًا، بعدها يمكنك اختيار تعزيز الماس والحيوان.", name: "العربية", title: "معلومات جنودي", desc: "تُستخدم لتنظيم الحشود في KvK للمملكة 700. إذا أرسلت مرة أخرى فسيُعتمد آخر إرسال.",
+  ar: {sOffM: "① حجم المسيرة", diaL: "③ 💎 الماس", d10: "10% · ساعتان", d20: "20% · 12 ساعة", petL: "② 🐾 الحيوان", sOnM: "القيمة النهائية", onTitleM: "اختر ② الحيوان ← ③ الماس — النهائي = (المسيرة + الحيوان) × الماس", sOff: "① بدون تعزيز", sOn: "② مع التعزيز", onTitle: "② اختر حيوان الحشد — النهائي = الحشد − المسيرة + المسيرة النهائية (أعلاه) + حيوان الحشد", onGo: "⬆ أدخل ① عدد الجنود بدون تعزيز أولًا، بعدها يمكنك اختيار تعزيز الماس والحيوان.", name: "العربية", title: "معلومات جنودي", desc: "تُستخدم لتنظيم الحشود في KvK للمملكة 700. إذا أرسلت مرة أخرى فسيُعتمد آخر إرسال.",
     id: "رقم ID اللاعب (أرقام فقط)", idHint: "الرقم الموجود في ملفك داخل اللعبة، وليس اسمك.", tg: "مستوى TG لمركز المدينة", tg0: "بدون TG (TC30 أو أقل)",
     tgHint: "لا يمكن أن يكون مستوى المعسكر أعلى من مستوى TG.", camp: "مستوى المعسكر", tier: "جنود الذهب الخالص", inf: "المشاة", cav: "الفرسان", arc: "الرماة",
     campHint: "اختر مستوى المعسكر من TG1 إلى TG8، واختر T10 أو T11 لكل نوع.", send: "إرسال", sending: "جارٍ الإرسال…",
@@ -212,7 +212,7 @@ const T = {
     rally: "سعة الحشد (عندما أقود الحشد)", rallyHint: "إذا كنت تستطيع قيادة الحشود فأدخل هذه القيمة. اترك الخانتين فارغتين إذا كنت لا تعرف.",
     errRally: "أدخل سعة الحشد للحالتين OFF و ON بالأرقام، أو اترك الخانتين فارغتين. لا يمكن أن يكون ON أقل من OFF.",
     errPick: "اختر مستوى TG ومستويات المعسكرات الثلاثة.", errCamp: "مستوى أحد المعسكرات أعلى من مستوى TG لديك. تحقق مرة أخرى.", back: "عرض لوحة المشاركة", loaded: "تم تحميل إجاباتك السابقة. عدّل ما تغيّر ثم أرسل."},
-  tr: {sOffM: "① Sefer sayısı", diaL: "③ 💎 Elmas", d10: "%10 · 2 sa", d20: "%20 · 12 sa", petL: "② 🐾 Pet", sOnM: "Son değer", onTitleM: "② peti → ③ elması seçin — son = (sefer + pet) × elmas", sOff: "① Takviyesiz", sOn: "② Takviyeli", onTitle: "② Takviye AÇIK — elmas ve pet takviyesini seçin, otomatik hesaplanır", onGo: "⬆ Önce ① takviyesiz asker sayısını girin. Sonra elmas / pet takviyesini seçebilirsiniz.", name: "Türkçe", title: "Asker Bilgilerim", desc: "700. Krallık KvK ralli planlaması için kullanılır. Tekrar gönderirseniz son gönderiminiz geçerli olur.",
+  tr: {sOffM: "① Sefer sayısı", diaL: "③ 💎 Elmas", d10: "%10 · 2 sa", d20: "%20 · 12 sa", petL: "② 🐾 Pet", sOnM: "Son değer", onTitleM: "② peti → ③ elması seçin — son = (sefer + pet) × elmas", sOff: "① Takviyesiz", sOn: "② Takviyeli", onTitle: "② Ralli petini seçin — son = ralli − sefer + son sefer (yukarıda) + ralli peti", onGo: "⬆ Önce ① takviyesiz asker sayısını girin. Sonra elmas / pet takviyesini seçebilirsiniz.", name: "Türkçe", title: "Asker Bilgilerim", desc: "700. Krallık KvK ralli planlaması için kullanılır. Tekrar gönderirseniz son gönderiminiz geçerli olur.",
     id: "Oyun ID (yalnızca rakam)", idHint: "Oyun profilinizdeki sayısal ID. Takma adınız değil.", tg: "Şehir Merkezi TG seviyem", tg0: "TG yok (TC30 veya altı)",
     tgHint: "Kamp seviyeleri TG seviyenizden yüksek olamaz.", camp: "Kamp seviyesi", tier: "Saf Altın askerler", inf: "Piyade", cav: "Süvari", arc: "Okçu",
     campHint: "Her kamp için TG1-TG8, her asker türü için T10 veya T11 seçin.", send: "Gönder", sending: "Gönderiliyor…",
@@ -272,7 +272,12 @@ async function prefill(id) {
   const fit = f => [20, 10, 0].map(d => [d, [0].concat(PETS.m).find(pt => f(d, pt))]).find(x => x[1] != null);
   const mk = m1 ? (late ? fit(mulOk) || fit(addOk) : fit(addOk) || fit(mulOk)) : null;
   if (mk) { BUFF.m.dia = mk[0]; BUFF.m.pet = mk[1]; }
-  if (r1 && [0].concat(PETS.r).indexOf(r1 - r0) >= 0) BUFF.r.pet = r1 - r0;
+  if (r1) {
+    const mp = mk ? mk[1] : 0, coreR = r0 - m0 + Math.floor((m0 + mp) * 1.2), RP = [0].concat(PETS.r);
+    const tries = late ? [r1 - coreR, r1 - r0 - mp, r1 - r0] : [r1 - r0 - mp, r1 - r0, r1 - coreR];
+    const rp = tries.find(d => RP.indexOf(d) >= 0);
+    if (rp != null) BUFF.r.pet = rp;
+  }
   drawBuffs();
   showOn();
   drawTiers(); checkCamps(); mark();
@@ -397,11 +402,15 @@ const PETS = {m: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(k => k * 1500), r: [0, 1, 2
 const fmtN = v => Number(v).toLocaleString("en-US");
 function calc(k) {
   const off = digits($(k + "0")), b = BUFF[k], f = $("f" + k);
-  if (!b.dia && !b.pet) { if (f) f.textContent = ""; if (off && k === "m") put($(k + "1"), off); return; }
+  if (k === "m" && !b.dia && !b.pet) { if (f) f.textContent = ""; if (off) put($(k + "1"), off); calc("r"); return; }
   if (!off) { if (f) f.textContent = ""; return; }
-  const v = Math.min(Math.floor((off + b.pet) * (100 + b.dia) / 100), NUM[k]);   // 최종 = (출정 + 펫) × 다이아(120% · 110%) — 이박사님 2026-10-08
+  // 출정 최종 = (출정 + 펫) × 다이아. 집결 최종 = 집결 − 출정 + 출정 최종 + 집결 펫 (이박사님 2026-10-08)
+  const m0 = digits($("m0")), mFin = Math.floor((m0 + BUFF.m.pet) * (100 + BUFF.m.dia) / 100);
+  const v = Math.min(k === "m" ? Math.floor((off + b.pet) * (100 + b.dia) / 100) : off - m0 + mFin + b.pet, NUM[k]);
   put($(k + "1"), v);
-  if (f) f.textContent = (b.pet ? "(" + fmtN(off) + " + " + fmtN(b.pet) + ")" : fmtN(off)) + (b.dia ? " × " + (100 + b.dia) + "%" : "") + " = " + fmtN(v);
+  if (k === "m") calc("r");
+  if (f) f.textContent = k === "m" ? (b.pet ? "(" + fmtN(off) + " + " + fmtN(b.pet) + ")" : fmtN(off)) + (b.dia ? " × " + (100 + b.dia) + "%" : "") + " = " + fmtN(v)
+    : fmtN(off) + " − " + fmtN(m0) + " + " + fmtN(mFin) + (b.pet ? " + " + fmtN(b.pet) : "") + " = " + fmtN(v);
 }
 // OFF 값이 있으면 버프 ON 칸을 펼치고, 없으면 접고 안내만
 // ① 버프 없이 값이 없으면 ② 버프 고르기를 잠그고(누르면 ① 로 안내), 값이 있으면 연다
@@ -440,7 +449,7 @@ document.addEventListener("change", e => {
 });
 function mark() { ["m0", "m1", "r0", "r1"].forEach(id => $(id).classList.toggle("act", ACT[id[0]] === id)); }
 ["m0", "m1", "r0", "r1"].forEach(id => {
-  $(id).addEventListener("input", () => { put($(id), Math.min(digits($(id)), NUM[id[0]])); ACT[id[0]] = id; mark(); if (id[1] === "0") { calc(id[0]); showOn(); } });
+  $(id).addEventListener("input", () => { put($(id), Math.min(digits($(id)), NUM[id[0]])); ACT[id[0]] = id; mark(); if (id[1] === "0") { calc(id[0]); if (id[0] === "m") calc("r"); showOn(); } });
   ["focus", "click"].forEach(ev => $(id).addEventListener(ev, () => { ACT[id[0]] = id; mark(); }));
 });
 [...document.querySelectorAll(".pad")].forEach(pad => pad.addEventListener("click", e => {
