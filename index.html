@@ -1002,7 +1002,8 @@ const col = a => COLORS[a] || "#7950f2";
 const TROOP_GID = "404058685";
 let HIST = {};
 let MARCH_OFF = {}, PET_OF = {};
-const INC20 = {"107757867": 223332};   // Duby 1988 (2026-10-08 이박사님)   // 게임 ID → 이미 다이아 20% 를 넣어 낸 출정 값(이 값이면 1.2 를 곱하지 않음)
+const INC20 = {"107757867": 223332};
+const PET_FIX = {"107757867": 15000};   // Duby 1988: 게임 화면 (186,110 + 15,000) × 1.2 = 241,332 — 10/8 다시 낼 때 펫을 빠뜨림   // Duby 1988 (2026-10-08 이박사님)   // 게임 ID → 이미 다이아 20% 를 넣어 낸 출정 값(이 값이면 1.2 를 곱하지 않음)
 let SELF = {}, MARCH = {}, MARCH_ON = {}, RALLY = {}, RALLY_ON = {}, CFG = {A: {}}, DRAFT = null, DIRTY = {}, IS_ADMIN = false, MAPD = null, MAP_DIRTY = false;
 const CFG_GID = "407041504";
 const CFG_POST = "https://docs.google.com/forms/d/e/1FAIpQLSfAoSbMjHVaMWoe4_ZXJs6G_QJWb2ZHu5Tco_c6kQTvmmcMnA/formResponse";
@@ -2079,6 +2080,7 @@ async function load() {
         const mulF = () => [1.2, 1.1, 1].forEach(k => PETL.forEach(pt => { if (!best && Math.floor(((INC20[id] === off ? off / 1.2 : off) + pt) * k) === on) best = {pt}; }));
         if (late) { mulF(); addF(); } else { addF(); mulF(); }
         if (!best) { MARCH_ON[id] = on; return; }
+        if (best.pt === 0 && PET_FIX[id]) best = {pt: PET_FIX[id]};   // 게임 화면으로 확인된 펫(다시 낼 때 펫을 빠뜨린 사람)
                 // 펫 ON = (출정 + 펫) × 120% (이박사님 2026-10-08). 예전 화면은 다이아 기본이 「없음」이라 입력 ON 에 20% 가 빠진 사람이 많다 — 시트 값은 그대로, 화면 · 편성만 이렇게 계산
         PET_OF[id] = best.pt; MARCH_ON[id] = Math.floor(((INC20[id] === off ? Math.round(off / 1.2) : off) + best.pt) * 1.2);   // 펫 ON = (출정 + 펫) × 120%
       }); RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || []; HIST = r.hist || {};
