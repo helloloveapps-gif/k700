@@ -2072,10 +2072,15 @@ async function load() {
         const bases = INC20[id] === off ? [off] : [Math.floor(off * 1.2), Math.floor(off * 1.1), off];
         // 정확히 맞는 짝만 인정 — 안 맞으면 억지로 끼워 넣지 않고 공란(이박사님 2026-10-08)
         let best = null;
-        bases.forEach(b => PETL.forEach(pt => { if (!best && on - b === pt) best = {pt}; }));
+        // 두 계산식이 함께 맞는 경우(예: ×1.2 + 9,000 = (출정 + 7,500) × 1.2)가 있어, 입력 시각으로 먼저 볼 식을 정한다:
+        // 2026-10-08 21:30(한국) 전 입력 = 예전 화면(출정×다이아 + 펫), 그 뒤 = 새 화면((출정 + 펫) × 다이아)
+        const H = (r.hist || {})[id], late = H && H.length && tsOf(H[H.length - 1].t) >= Date.UTC(2026, 9, 8, 21, 30);
+        const addF = () => bases.forEach(b => PETL.forEach(pt => { if (!best && on - b === pt) best = {pt}; }));
+        const mulF = () => [1.2, 1.1, 1].forEach(k => PETL.forEach(pt => { if (!best && Math.floor(((INC20[id] === off ? off / 1.2 : off) + pt) * k) === on) best = {pt}; }));
+        if (late) { mulF(); addF(); } else { addF(); mulF(); }
         if (!best) { MARCH_ON[id] = on; return; }
-                // 펫 ON = 버프 ON(출정 + 20%) + 펫. 예전 화면은 다이아 기본이 「없음」이라 입력 ON 에 20% 가 빠진 사람이 많다 — 시트 값은 그대로, 화면 · 편성만 이렇게 계산
-        PET_OF[id] = best.pt; MARCH_ON[id] = Math.max(on, base + best.pt);
+                // 펫 ON = (출정 + 펫) × 120% (이박사님 2026-10-08). 예전 화면은 다이아 기본이 「없음」이라 입력 ON 에 20% 가 빠진 사람이 많다 — 시트 값은 그대로, 화면 · 편성만 이렇게 계산
+        PET_OF[id] = best.pt; MARCH_ON[id] = Math.floor(((INC20[id] === off ? Math.round(off / 1.2) : off) + best.pt) * 1.2);   // 펫 ON = (출정 + 펫) × 120%
       }); RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || []; HIST = r.hist || {};
     } catch (e) {}
     try { CFG = await loadConfig(); } catch (e) {}
