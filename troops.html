@@ -389,9 +389,9 @@ function calc(k) {
   if (!b.dia && !b.pet) { if (f) f.textContent = ""; if (off && k === "m") put($(k + "1"), off); return; }
   if (k === "m" && $("m20")) $("m20").textContent = off && b.dia ? fmtN(off) + " + " + b.dia + "% = " + fmtN(Math.floor(off * (100 + b.dia) / 100)) : "";
   if (!off) { if (f) f.textContent = ""; return; }
-  const v = Math.min(Math.floor(off * (100 + b.dia) / 100) + b.pet, NUM[k]);
+  const v = Math.min(Math.floor((off + b.pet) * (100 + b.dia) / 100), NUM[k]);   // 게임 계산: (출정 + 펫) × 다이아
   put($(k + "1"), v);
-  if (f) f.textContent = fmtN(off) + (b.dia ? " × " + (100 + b.dia) / 100 : "") + (b.pet ? " + " + fmtN(b.pet) : "") + " = " + fmtN(v);
+  if (f) f.textContent = (b.pet ? "(" + fmtN(off) + " + " + fmtN(b.pet) + ")" : fmtN(off)) + (b.dia ? " × " + (100 + b.dia) / 100 : "") + " = " + fmtN(v);
 }
 // OFF 값이 있으면 버프 ON 칸을 펼치고, 없으면 접고 안내만
 // ① 버프 없이 값이 없으면 ② 버프 고르기를 잠그고(누르면 ① 로 안내), 값이 있으면 연다

@@ -1340,7 +1340,7 @@ function render() {
   const from = PAGE * PER_PAGE, view = shown.slice(from, from + PER_PAGE);
   view.forEach(p => {
     rt += '<tr' + (p.id === myId() ? ' class="mine"' : '') + '><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td><button class="who" data-id="' + esc(p.id) + '">' + esc(p.gname || p.name) + '</button>' + (p.disc === 1 ? ' <span class="dsc" title="' + esc(tx("discY")) + '">🎧</span>' : p.disc === 0 ? ' <span class="dsc no" title="' + esc(tx("discN")) + '">🔇</span>' : '') + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
-      '</td><td class="sub">' + esc(LNAME[p.lang] || "") + '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH_OFF[p.id] ? '<span class="mv0">' + fmt(MARCH_OFF[p.id]) + ' <small>' + tx("mOff") + '</small></span><br><span class="mv1">' + fmt(MARCH[p.id]) + ' <small>' + tx("mBuff") + '</small></span><br>' + (MARCH_ON[p.id] > MARCH[p.id] ? '<span class="mv2">🐾 ' + fmt(MARCH_ON[p.id]) + ' <small>' + tx("mPet") + '</small></span>' : '<span class="sub">· <small>' + tx(PET_OF[p.id] === 0 ? "mPetNone" : "mPet") + '</small></span>') : '<span class="no">·</span>') +
+      '</td><td class="sub">' + esc(LNAME[p.lang] || "") + '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH_OFF[p.id] ? '<span class="mv0">' + fmt(MARCH_OFF[p.id]) + ' <small>' + tx("mOff") + '</small></span><br><span class="mv1">' + fmt(MARCH[p.id]) + ' <small>' + tx("mBuff") + '</small></span><br>' + (PET_OF[p.id] > 0 || (PET_OF[p.id] == null && MARCH_ON[p.id] > MARCH[p.id]) ? '<span class="mv2">🐾 ' + fmt(MARCH_ON[p.id]) + ' <small>' + tx("mPet") + '</small></span>' : '<span class="sub">· <small>' + tx(PET_OF[p.id] === 0 ? "mPetNone" : "mPet") + '</small></span>') : '<span class="no">·</span>') +
       '</td><td class="n march">' + (RALLY[p.id] ? '<span class="mv1" style="color:var(--ink)">' + fmt(RALLY[p.id]) + ' <small style="color:var(--sub)">OFF</small></span><br>' + (RALLY_ON[p.id] > RALLY[p.id] ? '<span class="mv2">🐾 ' + fmt(RALLY_ON[p.id]) + ' <small>ON</small></span>' : '<span class="sub">· <small>ON</small></span>') : '<span class="no">·</span>') + '</td>' + troopCells(p) + slotTd(p) + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
   if (!shown.length) rt += '<tr><td colspan="20" class="sub">' + tx("noResp") + '</td></tr>';
@@ -1439,7 +1439,7 @@ function alloc(a, i, mode, bx) {
       return {p: x.p || who(x.l.id), cap, r, target, own, frozen: true, need: target.map((v, t) => Math.max(0, v - own[t] - members.reduce((q, m) => q + m.send[t], 0))), members};
     }
     const cap = capAt(x.l, i), r = ratioOf(x.l, mode).map(v => Math.max(0, +v || 0));
-    const target = needOf(cap, r), own = ownSplit(Math.min(petOn(x.l, i) && MARCH_ON[x.p.id] ? MARCH_ON[x.p.id] : march(x.p), cap), r, target);
+    const target = needOf(cap, r), own = ownSplit(Math.min(petOn(x.l, i) && MARCH_ON[x.p.id] ? Math.max(MARCH_ON[x.p.id], march(x.p)) : march(x.p), cap), r, target);
     return {p: x.p, cap, r, target, own, need: target.map((v, t) => Math.max(0, v - own[t])), members: []};
   });
   const outs = new Set(box.out || []);
@@ -2063,7 +2063,7 @@ async function load() {
       MARCH_OFF = Object.assign({}, r.march);
       Object.keys(INC20).forEach(id => { if (INC20[id] === r.march[id]) MARCH_OFF[id] = Math.round(r.march[id] / 1.2); });
       // 펫 ON: 예전 ON 입력값에서 펫 버프를 역산한다. ON = 출정 × (1.2 · 1.1 · 1.0) + 펫(고정 목록 0 · 1,500 ~ 15,000) 이 정확히 맞는 짝을 찾고,
-      // 안 맞으면(ON 을 손으로 친 경우) 가장 가까운 짝. 펫 ON = 출정×1.2 + 그 펫. 펫 0 = 펫을 안 넣은 사람(PET_OF 0)
+      // 안 맞으면(ON 을 손으로 친 경우) 가장 가까운 짝. 펫 0 = 펫을 안 넣은 사람(PET_OF 0)
       PET_OF = {};
       const PETL = [0, 1500, 3000, 4500, 6000, 7500, 9000, 10500, 12000, 13500, 15000];
       Object.keys(r.march).forEach(id => {
@@ -2072,7 +2072,8 @@ async function load() {
         const bases = INC20[id] === off ? [off] : [Math.floor(off * 1.2), Math.floor(off * 1.1), off];
         let best = null;
         bases.forEach(b => PETL.forEach(pt => { const d = Math.abs(on - b - pt); if (!best || d < best.d) best = {pt, d}; }));
-        PET_OF[id] = best.pt; MARCH_ON[id] = base + best.pt;
+        // 예전 입력값은 건드리지 않는다(이박사님 2026-10-08): 펫 ON 은 본인이 넣은 값 그대로. 역산한 펫은 「펫 미입력」 표시에만 쓴다
+        PET_OF[id] = best.pt; MARCH_ON[id] = on;
       }); RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || []; HIST = r.hist || {};
     } catch (e) {}
     try { CFG = await loadConfig(); } catch (e) {}
