@@ -2058,7 +2058,7 @@ async function load() {
       MARCH_OFF = Object.assign({}, r.march);
       Object.keys(INC20).forEach(id => { if (INC20[id] === r.march[id]) MARCH_OFF[id] = Math.round(r.march[id] / 1.2); });
       // 펫 ON: 예전 ON 입력값에서 펫 버프를 역산한다 — ON − 출정×1.2 (다이아 20%), 안 맞으면 ×1.1 · ×1.0 순으로 0~15,000 에 드는 차이를 펫으로 본다.
-      // 그 펫을 「출정×1.2」에 더한 값이 펫 ON. 어느 것도 안 맞고 ON 이 더 크면 ON 을 그대로 둔다
+      // 그 펫을 「출정×1.2」에 더한 값이 펫 ON. 어느 것도 안 맞고 ON 이 더 크면 펫 = 15,000(최대)
       PET_OF = {};
       Object.keys(r.march).forEach(id => {
         const off = r.march[id], on = r.marchOn[id] || 0, base = MARCH[id];
@@ -2066,7 +2066,8 @@ async function load() {
         const bases = INC20[id] === off ? [off] : [Math.floor(off * 1.2), Math.floor(off * 1.1), off];
         const d = bases.map(b => on - b).find(x => x >= 0 && x <= 15000);
         if (d != null) { PET_OF[id] = d; MARCH_ON[id] = base + d; }
-        else MARCH_ON[id] = Math.max(on, base);
+        else if (on > base) { PET_OF[id] = 15000; MARCH_ON[id] = base + 15000; }   // 펫 버프는 15,000 을 넘을 수 없다 — 넘치면 15,000 으로 본다
+        else MARCH_ON[id] = base;
       }); RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || []; HIST = r.hist || {};
     } catch (e) {}
     try { CFG = await loadConfig(); } catch (e) {}
