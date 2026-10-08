@@ -2084,7 +2084,7 @@ async function load() {
         const addF = () => bases.forEach(b => PETL.forEach(pt => { if (!best && on - b === pt) best = {pt}; }));
         const mulF = () => [1.2, 1.1, 1].forEach(k => PETL.forEach(pt => { if (!best && Math.floor(((INC20[id] === off ? off / 1.2 : off) + pt) * k) === on) best = {pt}; }));
         if (late) { mulF(); addF(); } else { addF(); mulF(); }
-        if (!best) { MARCH_ON[id] = on; return; }
+        if (!best) { MARCH_ON[id] = base; return; }   // 펫을 모르면 펫 ON 을 쓰지 않는다
         if (best.pt === 0 && PET_FIX[id]) best = {pt: PET_FIX[id]};   // 게임 화면으로 확인된 펫(다시 낼 때 펫을 빠뜨린 사람)
                 // 이박사님 표(2026-10-09): 출정 최종 = (기본 186,110 + 펫 15,000) × 120% = 241,332. 예전 화면은 다이아 기본이 「없음」이라 입력 ON 에 20% 가 빠진 사람이 많다 — 시트 값은 그대로, 화면 · 편성만 이렇게 계산
         PET_OF[id] = best.pt; MARCH_ON[id] = Math.floor(((INC20[id] === off ? Math.round(off / 1.2) : off) + best.pt) * 1.2);   // 출정 최종 = (출정 + 출정 펫) × 120%
@@ -2101,7 +2101,7 @@ async function load() {
         const H = (r.hist || {})[id], hts = H && H.length ? tsOf(H[H.length - 1].t) : 0, late = hts >= Date.UTC(2026, 9, 8, 21, 30) && !(hts >= Date.UTC(2026, 9, 9, 1, 20) && hts < Date.UTC(2026, 9, 9, 1, 50));   // 21:30 뒤 = 새 화면(곱하기 식), 01:20~01:50 만 잠깐 더하기 식
         const tries = late ? [on - core(mp), on - R0, on - R0 - mp, on - core(0)] : [on - R0, on - R0 - mp, on - core(mp), on - core(0)];
         const rp = tries.find(d => RPL.indexOf(d) >= 0);
-        if (rp == null) { RALLY_ON[id] = on; return; }
+        if (rp == null) { RALLY_ON[id] = RALLY_BUFF[id]; return; }   // 집결 펫을 모르면 펫 ON 을 쓰지 않는다(억지로 넣지 않음)
         RPET_OF[id] = rp; RALLY_ON[id] = core(mp) + rp;   // 집결 최종 = 기본 + (출정 최종 − 출정 기본) + 집결 펫
       });
       KVK_WEB = r.kvk || []; HIST = r.hist || {};
