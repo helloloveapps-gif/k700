@@ -698,6 +698,7 @@ const I18N = {
     egLow: "2500 미만 {0}명",
     copyNames: "한 번에 복사", discY: "디스코드 참가 가능", discN: "디스코드 참가 불가능",
     marchSub3: "출정 / 버프 ON / 펫 ON", mOff: "출정", mBuff: "버프 ON", mPet: "펫 ON",
+    mPetNone: "펫 미입력",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -765,6 +766,7 @@ const I18N = {
     egLow: "Below 2500: {0}",
     copyNames: "Copy all", discY: "Can join Discord", discN: "Cannot join Discord",
     marchSub3: "March / Buff ON / Pet ON", mOff: "March", mBuff: "Buff ON", mPet: "Pet ON",
+    mPetNone: "pet not entered",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -832,6 +834,7 @@ const I18N = {
     egLow: "2500 以下 {0} 人",
     copyNames: "全部複製", discY: "可參加 Discord", discN: "無法參加 Discord",
     marchSub3: "出征 / 增益 ON / 寵物 ON", mOff: "出征", mBuff: "增益 ON", mPet: "寵物 ON",
+    mPetNone: "未填寵物",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -899,6 +902,7 @@ const I18N = {
     egLow: "أقل من 2500: {0}",
     copyNames: "نسخ الكل", discY: "يستطيع الانضمام إلى ديسكورد", discN: "لا يستطيع الانضمام إلى ديسكورد",
     marchSub3: "المسيرة / التعزيز ON / الحيوان ON", mOff: "المسيرة", mBuff: "التعزيز ON", mPet: "الحيوان ON",
+    mPetNone: "لم يُدخل الحيوان",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -966,6 +970,7 @@ const I18N = {
     egLow: "2500 altı: {0}",
     copyNames: "Tümünü kopyala", discY: "Discord’a katılabilir", discN: "Discord’a katılamaz",
     marchSub3: "Sefer / Takviye AÇIK / Pet AÇIK", mOff: "Sefer", mBuff: "Takviye AÇIK", mPet: "Pet AÇIK",
+    mPetNone: "pet girilmedi",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1335,7 +1340,7 @@ function render() {
   const from = PAGE * PER_PAGE, view = shown.slice(from, from + PER_PAGE);
   view.forEach(p => {
     rt += '<tr' + (p.id === myId() ? ' class="mine"' : '') + '><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td><button class="who" data-id="' + esc(p.id) + '">' + esc(p.gname || p.name) + '</button>' + (p.disc === 1 ? ' <span class="dsc" title="' + esc(tx("discY")) + '">🎧</span>' : p.disc === 0 ? ' <span class="dsc no" title="' + esc(tx("discN")) + '">🔇</span>' : '') + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
-      '</td><td class="sub">' + esc(LNAME[p.lang] || "") + '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH_OFF[p.id] ? '<span class="mv0">' + fmt(MARCH_OFF[p.id]) + ' <small>' + tx("mOff") + '</small></span><br><span class="mv1">' + fmt(MARCH[p.id]) + ' <small>' + tx("mBuff") + '</small></span><br>' + (MARCH_ON[p.id] > MARCH[p.id] ? '<span class="mv2">🐾 ' + fmt(MARCH_ON[p.id]) + ' <small>' + tx("mPet") + '</small></span>' : '<span class="sub">· <small>' + tx("mPet") + '</small></span>') : '<span class="no">·</span>') +
+      '</td><td class="sub">' + esc(LNAME[p.lang] || "") + '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH_OFF[p.id] ? '<span class="mv0">' + fmt(MARCH_OFF[p.id]) + ' <small>' + tx("mOff") + '</small></span><br><span class="mv1">' + fmt(MARCH[p.id]) + ' <small>' + tx("mBuff") + '</small></span><br>' + (MARCH_ON[p.id] > MARCH[p.id] ? '<span class="mv2">🐾 ' + fmt(MARCH_ON[p.id]) + ' <small>' + tx("mPet") + '</small></span>' : '<span class="sub">· <small>' + tx(PET_OF[p.id] === 0 ? "mPetNone" : "mPet") + '</small></span>') : '<span class="no">·</span>') +
       '</td><td class="n march">' + (RALLY[p.id] ? '<span class="mv1" style="color:var(--ink)">' + fmt(RALLY[p.id]) + ' <small style="color:var(--sub)">OFF</small></span><br>' + (RALLY_ON[p.id] > RALLY[p.id] ? '<span class="mv2">🐾 ' + fmt(RALLY_ON[p.id]) + ' <small>ON</small></span>' : '<span class="sub">· <small>ON</small></span>') : '<span class="no">·</span>') + '</td>' + troopCells(p) + slotTd(p) + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
   if (!shown.length) rt += '<tr><td colspan="20" class="sub">' + tx("noResp") + '</td></tr>';
@@ -2057,17 +2062,17 @@ async function load() {
       // 20% 를 넣어 낸 사람은 노버프 값을 역산해 보여 준다(÷1.2)
       MARCH_OFF = Object.assign({}, r.march);
       Object.keys(INC20).forEach(id => { if (INC20[id] === r.march[id]) MARCH_OFF[id] = Math.round(r.march[id] / 1.2); });
-      // 펫 ON: 예전 ON 입력값에서 펫 버프를 역산한다 — ON − 출정×1.2 (다이아 20%), 안 맞으면 ×1.1 · ×1.0 순으로 0~15,000 에 드는 차이를 펫으로 본다.
-      // 그 펫을 「출정×1.2」에 더한 값이 펫 ON. 어느 것도 안 맞고 ON 이 더 크면 펫 = 15,000(최대)
+      // 펫 ON: 예전 ON 입력값에서 펫 버프를 역산한다. ON = 출정 × (1.2 · 1.1 · 1.0) + 펫(고정 목록 0 · 1,500 ~ 15,000) 이 정확히 맞는 짝을 찾고,
+      // 안 맞으면(ON 을 손으로 친 경우) 가장 가까운 짝. 펫 ON = 출정×1.2 + 그 펫. 펫 0 = 펫을 안 넣은 사람(PET_OF 0)
       PET_OF = {};
+      const PETL = [0, 1500, 3000, 4500, 6000, 7500, 9000, 10500, 12000, 13500, 15000];
       Object.keys(r.march).forEach(id => {
         const off = r.march[id], on = r.marchOn[id] || 0, base = MARCH[id];
         if (!on) { MARCH_ON[id] = base; return; }
         const bases = INC20[id] === off ? [off] : [Math.floor(off * 1.2), Math.floor(off * 1.1), off];
-        const d = bases.map(b => on - b).find(x => x >= 0 && x <= 15000);
-        if (d != null) { PET_OF[id] = d; MARCH_ON[id] = base + d; }
-        else if (on > base) { PET_OF[id] = 15000; MARCH_ON[id] = base + 15000; }   // 펫 버프는 15,000 을 넘을 수 없다 — 넘치면 15,000 으로 본다
-        else MARCH_ON[id] = base;
+        let best = null;
+        bases.forEach(b => PETL.forEach(pt => { const d = Math.abs(on - b - pt); if (!best || d < best.d) best = {pt, d}; }));
+        PET_OF[id] = best.pt; MARCH_ON[id] = base + best.pt;
       }); RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || []; HIST = r.hist || {};
     } catch (e) {}
     try { CFG = await loadConfig(); } catch (e) {}
