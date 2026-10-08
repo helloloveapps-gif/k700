@@ -2047,8 +2047,11 @@ async function load() {
       const r = await loadSelf();
       // 출정: 시트 값(버프 없이)은 MARCH_OFF 로 두고, 편성에는 다이아 20% 를 늘 더한 값을 쓴다(KvK 12시간 항상).
       // ON(20%+펫)이 그보다 작으면 20% 값으로 올린다. INC20 = 이미 20% 를 넣어 낸 사람(그 값일 때만 그대로 씀)
-      SELF = r.self; MARCH_OFF = r.march; MARCH = {}; MARCH_ON = {};
+      SELF = r.self; MARCH = {}; MARCH_ON = {};
       Object.keys(r.march).forEach(id => { MARCH[id] = INC20[id] === r.march[id] ? r.march[id] : Math.floor(r.march[id] * 1.2); });
+      // 20% 를 넣어 낸 사람은 노버프 값을 역산해 보여 준다(÷1.2)
+      MARCH_OFF = Object.assign({}, r.march);
+      Object.keys(INC20).forEach(id => { if (INC20[id] === r.march[id]) MARCH_OFF[id] = Math.round(r.march[id] / 1.2); });
       // 펫 ON: 예전 ON 입력값에서 펫 버프를 역산한다 — ON − 출정×1.2 (다이아 20%), 안 맞으면 ×1.1 · ×1.0 순으로 0~15,000 에 드는 차이를 펫으로 본다.
       // 그 펫을 「출정×1.2」에 더한 값이 펫 ON. 어느 것도 안 맞고 ON 이 더 크면 ON 을 그대로 둔다
       PET_OF = {};
