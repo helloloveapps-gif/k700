@@ -2080,17 +2080,17 @@ async function load() {
         let best = null;
         // 두 계산식이 함께 맞는 경우(예: ×1.2 + 9,000 = (출정 + 7,500) × 1.2)가 있어, 입력 시각으로 먼저 볼 식을 정한다:
         // 2026-10-08 21:30(한국) 전 입력 = 예전 화면(출정×다이아 + 펫), 그 뒤 = 새 화면((출정 + 펫) × 다이아)
-        const H = (r.hist || {})[id], late = H && H.length && tsOf(H[H.length - 1].t) >= Date.UTC(2026, 9, 8, 21, 30);
+        const H = (r.hist || {})[id], hts = H && H.length ? tsOf(H[H.length - 1].t) : 0, late = hts >= Date.UTC(2026, 9, 8, 21, 30) && hts < Date.UTC(2026, 9, 9, 1, 40);   // 이 사이에만 곱하기 식 화면이었다
         const addF = () => bases.forEach(b => PETL.forEach(pt => { if (!best && on - b === pt) best = {pt}; }));
         const mulF = () => [1.2, 1.1, 1].forEach(k => PETL.forEach(pt => { if (!best && Math.floor(((INC20[id] === off ? off / 1.2 : off) + pt) * k) === on) best = {pt}; }));
         if (late) { mulF(); addF(); } else { addF(); mulF(); }
         if (!best) { MARCH_ON[id] = on; return; }
         if (best.pt === 0 && PET_FIX[id]) best = {pt: PET_FIX[id]};   // 게임 화면으로 확인된 펫(다시 낼 때 펫을 빠뜨린 사람)
-                // 펫 ON = (출정 + 펫) × 120% (이박사님 2026-10-08). 예전 화면은 다이아 기본이 「없음」이라 입력 ON 에 20% 가 빠진 사람이 많다 — 시트 값은 그대로, 화면 · 편성만 이렇게 계산
-        PET_OF[id] = best.pt; MARCH_ON[id] = Math.floor(((INC20[id] === off ? Math.round(off / 1.2) : off) + best.pt) * 1.2);   // 펫 ON = (출정 + 펫) × 120%
+                // 펫 ON = 버프 ON + 펫 (이박사님 2026-10-09). 예전 화면은 다이아 기본이 「없음」이라 입력 ON 에 20% 가 빠진 사람이 많다 — 시트 값은 그대로, 화면 · 편성만 이렇게 계산
+        PET_OF[id] = best.pt; MARCH_ON[id] = base + best.pt;   // 펫 ON = 버프 ON + 펫 — 펫만큼만 늘어난다(이박사님 2026-10-09)
       });
-      // 집결 인원수(이박사님 2026-10-09): 집결 + (버프한 출정 − 출정) + 집결 펫. 버프한 출정 = 버프 ON 때 출정×120%, 펫 ON 때 (출정 + 출정 펫)×120%
-      // — 두비 게임 화면과 정확히 일치(1,428,610 + (241,332 − 186,110) + 150,000 = 1,633,832). 집결 펫은 예전 입력에서 정확히 맞을 때만
+      // 집결 인원수(이박사님 2026-10-09): 버프 ON = 집결 + (출정×120% − 출정), 펫 ON = 버프 ON + 집결 펫(펫만큼만 늘어남)
+      // 집결 펫은 예전 입력에서 정확히 맞을 때만
       RALLY = r.rally; RALLY_ON = {}; RALLY_BUFF = {}; RPET_OF = {};
       const RPL = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000];
       Object.keys(r.rally).forEach(id => {
@@ -2098,11 +2098,11 @@ async function load() {
         const core = pt => R0 - M0 + Math.floor((M0 + pt) * 1.2);
         RALLY_BUFF[id] = core(0);
         if (!on) { RALLY_ON[id] = RALLY_BUFF[id]; return; }
-        const H = (r.hist || {})[id], late = H && H.length && tsOf(H[H.length - 1].t) >= Date.UTC(2026, 9, 8, 21, 30);
-        const tries = late ? [on - core(mp), on - R0, on - R0 - mp] : [on - R0, on - R0 - mp, on - core(mp)];
+        const H = (r.hist || {})[id], hts = H && H.length ? tsOf(H[H.length - 1].t) : 0, late = hts >= Date.UTC(2026, 9, 8, 21, 30) && hts < Date.UTC(2026, 9, 9, 1, 40);   // 이 사이에만 곱하기 식 화면이었다
+        const tries = late ? [on - core(0), on - R0, on - R0 - mp, on - core(mp)] : [on - R0, on - R0 - mp, on - core(0), on - core(mp)];
         const rp = tries.find(d => RPL.indexOf(d) >= 0);
         if (rp == null) { RALLY_ON[id] = on; return; }
-        RPET_OF[id] = rp; RALLY_ON[id] = core(mp) + rp;
+        RPET_OF[id] = rp; RALLY_ON[id] = core(0) + rp;   // 펫 ON = 버프 ON + 집결 펫 — 펫만큼만 늘어난다
       });
       KVK_WEB = r.kvk || []; HIST = r.hist || {};
     } catch (e) {}
