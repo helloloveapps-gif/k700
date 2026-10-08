@@ -72,7 +72,9 @@ input[type=text],select{font:inherit;font-size:15px;width:100%;height:42px;paddi
 .buffs{background:rgba(47,158,68,.10);border:1px solid rgba(47,158,68,.45);border-inline-start:4px solid var(--ok)}
 .brow.dia span{color:#1c7ed6}
 .brow.pet span{color:#e8590c}
-.dseg{border-color:#1c7ed6}
+.dseg{border:2px solid #1c7ed6 !important;height:42px}
+.dseg button+button{border-inline-start:2px solid #1c7ed6 !important}
+.dseg button:not(.on):hover{background:rgba(28,126,214,.08)}
 .dseg button.on{background:#1c7ed6}
 .buffs select{border-color:#f59f00;background:rgba(245,159,0,.12);font-weight:700}
 .buffs .hint:not(:empty){background:var(--ok);color:#fff;border-radius:8px;padding:7px 10px}
@@ -175,7 +177,7 @@ const T = {
     tgHint: "훈련소 레벨은 TG 레벨보다 높게 고를 수 없습니다.", camp: "훈련소 레벨", tier: "순금 병사", inf: "보병", cav: "기병", arc: "궁병",
     campHint: "훈련소 레벨은 TG1~TG8 중에서 고르세요. 순금 병사는 T10 / T11 중에서 고르세요.", send: "제출", sending: "보내는 중…",
     ok: "저장되었습니다. 감사합니다!", fail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 제출해 주세요.", errId: "게임 ID는 숫자만 입력하세요 (7~12자리).", pick: "선택", none: "없음",
-    march: "출정 인원수 (한 부대 최대 병력)", pet: "버프", bPet: "펫 버프", bDia: "다이아 버프", bHint: "① 버프 없이 값을 넣고, ② 에서 다이아 · 펫 버프를 고르면 ON 값이 자동 계산됩니다.", off: "펫 버프 OFF 일 때", on: "펫 버프 ON 일 때", marchHint: "편성 계산에는 버프 OFF 값을 씁니다.",
+    march: "출정 인원수 (한 부대 최대 병력)", pet: "버프", bPet: "펫 버프", bDia: "다이아 버프", bHint: "① 버프 없이 값을 넣고, ② 에서 다이아 · 펫 버프를 고르면 ON 값이 자동 계산됩니다.", off: "펫 버프 OFF 일 때", on: "펫 버프 ON 일 때", marchHint: "편성 계산에는 다이아 20% 를 켠 값(① × 1.2)을 씁니다.",
     errMarch: "출정 인원수를 OFF · ON 둘 다 숫자로 입력하세요. ON 값은 OFF 값보다 작을 수 없습니다.",
     rally: "집결 인원수 (내가 집결장일 때 수용 인원)", rallyHint: "집결장을 맡을 수 있는 분은 꼭 넣어 주세요. 모르면 비워 두어도 됩니다.",
     errRally: "집결 인원수는 OFF · ON 둘 다 숫자로 넣거나 둘 다 비워 두세요. ON 값은 OFF 값보다 작을 수 없습니다.",
@@ -185,7 +187,7 @@ const T = {
     tgHint: "Camp levels cannot be higher than your TG level.", camp: "Camp level", tier: "Truegold troops", inf: "Infantry", cav: "Cavalry", arc: "Archer",
     campHint: "Choose TG1-TG8 for each camp, and T10 or T11 for each troop type.", send: "Submit", sending: "Sending…",
     ok: "Saved. Thank you!", fail: "Could not confirm the save. Please submit again in a moment.", errId: "Game ID must be numbers only (7-12 digits).", pick: "Select", none: "None",
-    march: "March size (max troops in one march)", pet: "Buff", bPet: "Pet buff", bDia: "Diamond buff", bHint: "Enter ① the no-buff value, then pick diamond / pet buffs in ② and the ON value is calculated.", off: "Pet buff OFF", on: "Pet buff ON", marchHint: "Rally planning uses the buff OFF value.",
+    march: "March size (max troops in one march)", pet: "Buff", bPet: "Pet buff", bDia: "Diamond buff", bHint: "Enter ① the no-buff value, then pick diamond / pet buffs in ② and the ON value is calculated.", off: "Pet buff OFF", on: "Pet buff ON", marchHint: "Rally planning uses the value with the 20% diamond buff (① × 1.2).",
     errMarch: "Enter both march sizes (OFF and ON) as numbers. ON cannot be smaller than OFF.",
     rally: "Rally capacity (when I lead a rally)", rallyHint: "Please fill this in if you can lead rallies. Leave both empty if you do not know.",
     errRally: "Enter both rally capacities (OFF and ON) as numbers, or leave both empty. ON cannot be smaller than OFF.",
@@ -195,7 +197,7 @@ const T = {
     tgHint: "訓練營等級不能高於 TG 等級。", camp: "訓練營等級", tier: "純金士兵", inf: "步兵", cav: "騎兵", arc: "弓兵",
     campHint: "訓練營等級請選 TG1~TG8。純金士兵請選 T10 或 T11。", send: "提交", sending: "傳送中…",
     ok: "已儲存，謝謝！", fail: "無法確認是否儲存，請稍後再提交一次。", errId: "遊戲 ID 只能填數字（7~12 位）。", pick: "請選擇", none: "無",
-    march: "出征人數（一支部隊的上限）", pet: "增益", bPet: "寵物增益", bDia: "鑽石增益", bHint: "先填 ① 不開增益的數值，再在 ② 選擇鑽石 · 寵物增益，會自動算出 ON 數值。", off: "寵物增益 OFF 時", on: "寵物增益 ON 時", marchHint: "編組計算使用增益 OFF 的數值。",
+    march: "出征人數（一支部隊的上限）", pet: "增益", bPet: "寵物增益", bDia: "鑽石增益", bHint: "先填 ① 不開增益的數值，再在 ② 選擇鑽石 · 寵物增益，會自動算出 ON 數值。", off: "寵物增益 OFF 時", on: "寵物增益 ON 時", marchHint: "編組計算使用開啟鑽石 20% 的數值（① × 1.2）。",
     errMarch: "請用數字填寫 OFF 與 ON 兩個出征人數，ON 不能小於 OFF。",
     rally: "集結人數（我當集結隊長時的容量）", rallyHint: "可以擔任集結隊長的人請務必填寫。不清楚可以兩格都留空。",
     errRally: "集結人數請 OFF 與 ON 都用數字填寫，或兩格都留空。ON 不能小於 OFF。",
@@ -205,7 +207,7 @@ const T = {
     tgHint: "لا يمكن أن يكون مستوى المعسكر أعلى من مستوى TG.", camp: "مستوى المعسكر", tier: "جنود الذهب الخالص", inf: "المشاة", cav: "الفرسان", arc: "الرماة",
     campHint: "اختر مستوى المعسكر من TG1 إلى TG8، واختر T10 أو T11 لكل نوع.", send: "إرسال", sending: "جارٍ الإرسال…",
     ok: "تم الحفظ. شكرًا لك!", fail: "تعذّر تأكيد الحفظ. حاول الإرسال مرة أخرى بعد قليل.", errId: "رقم ID يجب أن يكون أرقامًا فقط (7 إلى 12 رقمًا).", pick: "اختر", none: "لا يوجد",
-    march: "حجم المسيرة (الحد الأقصى للجنود في مسيرة واحدة)", pet: "التعزيز", bPet: "تعزيز الحيوان", bDia: "تعزيز الماس", bHint: "أدخل ① القيمة بدون تعزيز، ثم اختر تعزيز الماس والحيوان في ② لتُحسب قيمة ON تلقائيًا.", off: "بدون تعزيز الحيوان (OFF)", on: "مع تعزيز الحيوان (ON)", marchHint: "يُستخدم رقم OFF في حساب الحشود.",
+    march: "حجم المسيرة (الحد الأقصى للجنود في مسيرة واحدة)", pet: "التعزيز", bPet: "تعزيز الحيوان", bDia: "تعزيز الماس", bHint: "أدخل ① القيمة بدون تعزيز، ثم اختر تعزيز الماس والحيوان في ② لتُحسب قيمة ON تلقائيًا.", off: "بدون تعزيز الحيوان (OFF)", on: "مع تعزيز الحيوان (ON)", marchHint: "يُستخدم في حساب الحشود الرقم مع تعزيز الماس 20% (① × 1.2).",
     errMarch: "أدخل حجم المسيرة للحالتين OFF و ON بالأرقام. لا يمكن أن يكون ON أقل من OFF.",
     rally: "سعة الحشد (عندما أقود الحشد)", rallyHint: "إذا كنت تستطيع قيادة الحشود فأدخل هذه القيمة. اترك الخانتين فارغتين إذا كنت لا تعرف.",
     errRally: "أدخل سعة الحشد للحالتين OFF و ON بالأرقام، أو اترك الخانتين فارغتين. لا يمكن أن يكون ON أقل من OFF.",
@@ -216,7 +218,7 @@ const T = {
     campHint: "Her kamp için TG1-TG8, her asker türü için T10 veya T11 seçin.", send: "Gönder", sending: "Gönderiliyor…",
     ok: "Kaydedildi. Teşekkürler!", fail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar gönderin.", errId: "Oyun ID yalnızca rakam olmalıdır (7-12 hane).", pick: "Seçin", none: "Yok",
     errPick: "Lütfen TG seviyenizi ve üç kamp seviyesini seçin.", errCamp: "Bir kamp seviyesi TG seviyenizden yüksek. Lütfen kontrol edin.",
-    march: "Sefer kapasitesi (bir seferdeki en fazla asker)", pet: "Takviye", bPet: "Pet takviyesi", bDia: "Elmas takviyesi", bHint: "① Takviyesiz değeri girin, ② bölümünde elmas / pet takviyesini seçin; AÇIK değer otomatik hesaplanır.", off: "Evcil hayvan takviyesi KAPALI (OFF)", on: "Evcil hayvan takviyesi AÇIK (ON)", marchHint: "Ralli planlamasında OFF değeri kullanılır.",
+    march: "Sefer kapasitesi (bir seferdeki en fazla asker)", pet: "Takviye", bPet: "Pet takviyesi", bDia: "Elmas takviyesi", bHint: "① Takviyesiz değeri girin, ② bölümünde elmas / pet takviyesini seçin; AÇIK değer otomatik hesaplanır.", off: "Evcil hayvan takviyesi KAPALI (OFF)", on: "Evcil hayvan takviyesi AÇIK (ON)", marchHint: "Ralli planlamasında %20 elmas takviyeli değer (① × 1.2) kullanılır.",
     errMarch: "Sefer kapasitesini OFF ve ON için rakamla girin. ON, OFF değerinden küçük olamaz.",
     rally: "Ralli kapasitesi (ralliyi ben yönetirken)", rallyHint: "Ralli yönetebiliyorsanız lütfen doldurun. Bilmiyorsanız iki kutuyu da boş bırakın.",
     errRally: "Ralli kapasitesini OFF ve ON için rakamla girin ya da ikisini de boş bırakın. ON, OFF değerinden küçük olamaz.", back: "Katılım panosunu görüntüle", loaded: "Önceki yanıtlarınız yüklendi. Değişenleri düzeltip gönderin."}
@@ -263,6 +265,11 @@ async function prefill(id) {
   $("tg").value = "8";
   [0, 1, 2].forEach(k => { $("c" + k).value = String(num(ci.c[k])); const v = num(ci.t[k]); if (v === 10 || v === 11) tiers[k] = v; });
   [["m0", ci.m], ["m1", ci.mo], ["r0", ci.ra], ["r1", ci.rao]].forEach(x => put($(x[0]), num(x[1])));
+  const m0 = num(ci.m), m1 = num(ci.mo), r0 = num(ci.ra), r1 = num(ci.rao);
+  const mk = m1 ? [20, 10, 0].map(d => [d, [0].concat(PETS.m).find(pt => Math.floor(m0 * (100 + d) / 100) + pt === m1)]).find(x => x[1] != null) : null;
+  if (mk) { BUFF.m.dia = mk[0]; BUFF.m.pet = mk[1]; }
+  if (r1 && [0].concat(PETS.r).indexOf(r1 - r0) >= 0) BUFF.r.pet = r1 - r0;
+  drawBuffs();
   showOn();
   drawTiers(); checkCamps(); mark();
   say("wait", T[lang].loaded);
