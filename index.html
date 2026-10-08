@@ -2089,8 +2089,8 @@ async function load() {
                 // 펫 ON = (출정 + 펫) × 120% (이박사님 2026-10-08). 예전 화면은 다이아 기본이 「없음」이라 입력 ON 에 20% 가 빠진 사람이 많다 — 시트 값은 그대로, 화면 · 편성만 이렇게 계산
         PET_OF[id] = best.pt; MARCH_ON[id] = Math.floor(((INC20[id] === off ? Math.round(off / 1.2) : off) + best.pt) * 1.2);   // 펫 ON = (출정 + 펫) × 120%
       });
-      // 집결 인원수(이박사님 2026-10-09): 버프 ON = 집결 − 출정 + 출정 × 120%, 펫 ON = 버프 ON + 집결 펫(집결장 버프라 그냥 더함)
-      // 집결 펫은 예전 ON 입력에서 찾는다 — 「버프 ON + 펫」, 「집결 + 펫」, 「집결 + 펫 + 출정 펫」 순으로 고정 목록(0 · 60,000 ~ 150,000)과 정확히 맞을 때만
+      // 집결 인원수(이박사님 2026-10-09): 집결 + (버프한 출정 − 출정) + 집결 펫. 버프한 출정 = 버프 ON 때 출정×120%, 펫 ON 때 (출정 + 출정 펫)×120%
+      // — 두비 게임 화면과 정확히 일치(1,428,610 + (241,332 − 186,110) + 150,000 = 1,633,832). 집결 펫은 예전 입력에서 정확히 맞을 때만
       RALLY = r.rally; RALLY_ON = {}; RALLY_BUFF = {}; RPET_OF = {};
       const RPL = [0, 60000, 70000, 80000, 90000, 100000, 110000, 120000, 130000, 140000, 150000];
       Object.keys(r.rally).forEach(id => {
@@ -2099,10 +2099,10 @@ async function load() {
         RALLY_BUFF[id] = core(0);
         if (!on) { RALLY_ON[id] = RALLY_BUFF[id]; return; }
         const H = (r.hist || {})[id], late = H && H.length && tsOf(H[H.length - 1].t) >= Date.UTC(2026, 9, 8, 21, 30);
-        const tries = late ? [on - core(0), on - R0, on - R0 - mp] : [on - R0, on - R0 - mp, on - core(0)];
+        const tries = late ? [on - core(mp), on - R0, on - R0 - mp] : [on - R0, on - R0 - mp, on - core(mp)];
         const rp = tries.find(d => RPL.indexOf(d) >= 0);
         if (rp == null) { RALLY_ON[id] = on; return; }
-        RPET_OF[id] = rp; RALLY_ON[id] = core(0) + rp;
+        RPET_OF[id] = rp; RALLY_ON[id] = core(mp) + rp;
       });
       KVK_WEB = r.kvk || []; HIST = r.hist || {};
     } catch (e) {}
