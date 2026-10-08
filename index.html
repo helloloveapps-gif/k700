@@ -444,6 +444,12 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
 .mv2{display:inline-block;margin-top:2px;padding:1px 7px;border-radius:99px;background:#f76707;color:#fff;font-weight:800}
 .mv2 small{color:rgba(255,255,255,.9)}
 .mv1 small{color:#1c7ed6;opacity:.8}
+.cfa{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.cfa span{font-size:12px;font-weight:800;padding:2px 9px;border-radius:99px;white-space:nowrap}
+.cf1{background:rgba(245,159,0,.18);color:#e8590c}
+.cf2{background:rgba(134,142,150,.2);color:var(--sub)}
+.card.total .cf1{background:rgba(255,255,255,.22);color:#fff}
+.card.total .cf2{background:rgba(255,255,255,.15);color:#fff}
 .capline{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:4px}
 .capin{width:120px !important;min-height:32px !important;font-weight:800;font-size:15px !important;text-align:end;border:2px solid var(--mc,#e8590c) !important;border-radius:8px}
 .petrow{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;border-radius:10px;background:rgba(247,103,7,.10);border:1px solid rgba(247,103,7,.35);font-size:13px;flex-wrap:wrap}
@@ -700,6 +706,7 @@ const I18N = {
     marchSub3: "출정 / 버프 ON / 펫 ON", mOff: "출정", mBuff: "버프 ON", mPet: "펫 ON",
     mPetNone: "펫 미입력",
     rallySub3: "집결 / 버프 ON / 펫 ON", rOff: "집결",
+    cFull: "풀참여 {0}명", cAbs: "불참 {0}명",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -769,6 +776,7 @@ const I18N = {
     marchSub3: "March / Buff ON / Pet ON", mOff: "March", mBuff: "Buff ON", mPet: "Pet ON",
     mPetNone: "pet not entered",
     rallySub3: "Rally / Buff ON / Pet ON", rOff: "Rally",
+    cFull: "Full {0}", cAbs: "Not joining {0}",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -838,6 +846,7 @@ const I18N = {
     marchSub3: "出征 / 增益 ON / 寵物 ON", mOff: "出征", mBuff: "增益 ON", mPet: "寵物 ON",
     mPetNone: "未填寵物",
     rallySub3: "集結 / 增益 ON / 寵物 ON", rOff: "集結",
+    cFull: "全程 {0} 人", cAbs: "不參加 {0} 人",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -907,6 +916,7 @@ const I18N = {
     marchSub3: "المسيرة / التعزيز ON / الحيوان ON", mOff: "المسيرة", mBuff: "التعزيز ON", mPet: "الحيوان ON",
     mPetNone: "لم يُدخل الحيوان",
     rallySub3: "الحشد / التعزيز ON / الحيوان ON", rOff: "الحشد",
+    cFull: "كامل {0}", cAbs: "غير مشارك {0}",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -976,6 +986,7 @@ const I18N = {
     marchSub3: "Sefer / Takviye AÇIK / Pet AÇIK", mOff: "Sefer", mBuff: "Takviye AÇIK", mPet: "Pet AÇIK",
     mPetNone: "pet girilmedi",
     rallySub3: "Ralli / Takviye AÇIK / Pet AÇIK", rOff: "Ralli",
+    cFull: "Tam {0}", cAbs: "Katılmayan {0}",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1295,10 +1306,12 @@ function build(rows) {
 function render() {
   const total = ALLIES.reduce((s, a) => s + ROSTER[a].count, 0);
   const JOIN = DATA.filter(p => !p.absent), outN = n => n ? tx("absentN", n) : "";
-  let cards = '<div class="card total"><div class="sub">' + tx("total") + '</div><div class="big">' + pct(JOIN.length, total) + '%</div><div class="sub">' + tx("people", JOIN.length, total) + outN(DATA.length - JOIN.length) + '</div><div class="bar"><i style="width:' + Math.min(100, pct(JOIN.length, total)) + '%"></i></div></div>';
+  // 카드 아래 줄: 풀참여 · 불참 인원
+  const faLine = list => '<div class="cfa"><span class="cf1">★ ' + tx("cFull", list.filter(p => !p.absent && p.full).length) + '</span><span class="cf2">' + tx("cAbs", list.filter(p => p.absent).length) + '</span></div>';
+  let cards = '<div class="card total"><div class="sub">' + tx("total") + '</div><div class="big">' + pct(JOIN.length, total) + '%</div><div class="sub">' + tx("people", JOIN.length, total) + '</div><div class="bar"><i style="width:' + Math.min(100, pct(JOIN.length, total)) + '%"></i></div>' + faLine(DATA) + '</div>';
   ALLIES.forEach(a => {
     const n = JOIN.filter(p => p.ally === a).length, c = ROSTER[a].count, out = DATA.filter(p => p.ally === a).length - n;
-    cards += '<div class="card" style="border-top:5px solid ' + col(a) + '"><div class="sub"><b style="color:' + col(a) + '">' + esc(a) + '</b> · ' + esc(ROSTER[a].name) + '</div><div class="big" style="color:' + col(a) + '">' + pct(n, c) + '%</div><div class="sub">' + tx("people", n, c) + outN(out) + '</div><div class="bar"><i style="width:' + Math.min(100, pct(n, c)) + '%;background:' + col(a) + '"></i></div></div>';
+    cards += '<div class="card" style="border-top:5px solid ' + col(a) + '"><div class="sub"><b style="color:' + col(a) + '">' + esc(a) + '</b> · ' + esc(ROSTER[a].name) + '</div><div class="big" style="color:' + col(a) + '">' + pct(n, c) + '%</div><div class="sub">' + tx("people", n, c) + '</div><div class="bar"><i style="width:' + Math.min(100, pct(n, c)) + '%;background:' + col(a) + '"></i></div>' + faLine(DATA.filter(p => p.ally === a)) + '</div>';
   });
   $("cards").innerHTML = cards;
 
