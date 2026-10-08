@@ -1465,8 +1465,9 @@ function alloc(a, i, mode, bx) {
   const pool = mem.filter(p => !lids.has(p.id) && !fixed.has(p.id) && !outs.has(p.id)).map(p => ({p, rem: march(p), used: false}));
   // 집결장 순서대로, 남은 사람 가운데 「병사 레벨 합이 가장 높아지는」 배치를 구한다(최소 비용 흐름 — 아래 bestFill).
   // 1,000 단위로 끊어 보내고, 끝에 남는 자투리만 한 사람이 채운다
+  // 확정 집결도 집결 인원수가 늘어 모자라면(펫 · 계산식 변경 등) 확정된 사람은 그대로 두고 빈 몫만 남은 사람으로 채운다
   rallies.forEach(R => {
-    if (R.frozen) return;
+    if (R.frozen && !(R.need[0] + R.need[1] + R.need[2])) return;
     const free = pool.filter(m => !m.used);
     if (!free.length) return;
     const rank = free.slice().sort((x, y) => hoursOf(y.p) - hoursOf(x.p) || (y.p.power || 0) - (x.p.power || 0));
