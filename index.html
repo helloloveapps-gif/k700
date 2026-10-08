@@ -2074,8 +2074,8 @@ async function load() {
         let best = null;
         bases.forEach(b => PETL.forEach(pt => { if (!best && on - b === pt) best = {pt}; }));
         if (!best) { MARCH_ON[id] = on; return; }
-        // 예전 입력값은 건드리지 않는다(이박사님 2026-10-08): 펫 ON 은 본인이 넣은 값 그대로. 역산한 펫은 「펫 미입력」 표시에만 쓴다
-        PET_OF[id] = best.pt; MARCH_ON[id] = on;
+                // 펫 ON = 버프 ON(출정 + 20%) + 펫. 예전 화면은 다이아 기본이 「없음」이라 입력 ON 에 20% 가 빠진 사람이 많다 — 시트 값은 그대로, 화면 · 편성만 이렇게 계산
+        PET_OF[id] = best.pt; MARCH_ON[id] = Math.max(on, base + best.pt);
       }); RALLY = r.rally; RALLY_ON = r.rallyOn; KVK_WEB = r.kvk || []; HIST = r.hist || {};
     } catch (e) {}
     try { CFG = await loadConfig(); } catch (e) {}
