@@ -114,6 +114,14 @@ a{color:var(--accent)}
   </div>
 
   <div class="card">
+    <div class="row head"><span></span><span id="tCamp"></span><span id="tTier"></span></div>
+    <div class="row"><span class="n" id="tInf"></span><select id="c0"></select><div class="seg" id="s0"></div></div>
+    <div class="row"><span class="n" id="tCav"></span><select id="c1"></select><div class="seg" id="s1"></div></div>
+    <div class="row"><span class="n" id="tArc"></span><select id="c2"></select><div class="seg" id="s2"></div></div>
+    <div class="hint" id="tCampHint"></div>
+  </div>
+
+  <div class="card" style="display:none">
     <label class="t" id="tTg" for="tg"></label>
     <select id="tg"></select>
     <div class="hint" id="tTgHint"></div>
@@ -143,14 +151,6 @@ a{color:var(--accent)}
     </div>
     <div class="pad" data-for="r"><button type="button" data-add="100000">+100,000</button><button type="button" data-add="10000">+10,000</button><button type="button" data-add="1000">+1,000</button><button type="button" data-act="back">⌫</button><button type="button" data-add="100">+100</button><button type="button" data-add="10">+10</button><button type="button" data-add="1">+1</button><button type="button" data-act="clear">✕</button></div>
     <div class="hint" id="tRallyHint"></div>
-  </div>
-
-  <div class="card">
-    <div class="row head"><span></span><span id="tCamp"></span><span id="tTier"></span></div>
-    <div class="row"><span class="n" id="tInf"></span><select id="c0"></select><div class="seg" id="s0"></div></div>
-    <div class="row"><span class="n" id="tCav"></span><select id="c1"></select><div class="seg" id="s1"></div></div>
-    <div class="row"><span class="n" id="tArc"></span><select id="c2"></select><div class="seg" id="s2"></div></div>
-    <div class="hint" id="tCampHint"></div>
   </div>
 
   <button class="submit" id="send"></button>
@@ -254,7 +254,7 @@ async function prefill(id) {
   rows.slice(1).forEach(r => { if (String(r[ci.id] || "").trim() === id && !String(r[ci.cfg] || "").trim() && String(r[ci.tg] || "").trim() !== "") last = r; });
   if (!last || TOUCHED || $("gid").value.trim() !== id) return;
   const num = i => i >= 0 ? +String(last[i] || "").replace(/[^0-9]/g, "") || 0 : 0;
-  $("tg").value = String(num(ci.tg));
+  $("tg").value = "8";
   [0, 1, 2].forEach(k => { $("c" + k).value = String(num(ci.c[k])); const v = num(ci.t[k]); if (v === 10 || v === 11) tiers[k] = v; });
   [["m0", ci.m], ["m1", ci.mo], ["r0", ci.ra], ["r1", ci.rao]].forEach(x => put($(x[0]), num(x[1])));
   showOn();
@@ -287,6 +287,7 @@ function setLang(l) {
   $("tCampHint").textContent = t.campHint; $("send").textContent = t.send; $("tBack").textContent = t.back;
   const opts = zero => '<option value="">' + t.pick + '</option>' + [0, 1, 2, 3, 4, 5, 6, 7, 8].map(v => '<option value="' + v + '">' + (v ? "TG" + v : zero) + '</option>').join("");
   ["tg", "c0", "c1", "c2"].forEach(id => { const cur = $(id).value; $(id).innerHTML = opts(id === "tg" ? t.tg0 : t.none); $(id).value = cur; });
+  $("tg").value = "8";
   $("msg").className = "msg";
 }
 
@@ -345,7 +346,7 @@ async function send() {
   if (!(m0 >= 1000 && m0 <= 3000000 && m1 >= m0 && m1 <= 3000000)) { say("err", t.errMarch); $("m0").focus(); return; }
   const r0 = +$("r0").value.replace(/[^0-9]/g, ""), r1 = +$("r1").value.replace(/[^0-9]/g, "");
   if ((r0 || r1) && !(r0 >= 1000 && r0 <= 9000000 && r1 >= r0 && r1 <= 9000000)) { say("err", t.errRally); $("r0").focus(); return; }
-  const tg = +$("tg").value, camps = [0, 1, 2].map(i => +$("c" + i).value);
+  const camps = [0, 1, 2].map(i => +$("c" + i).value), tg = Math.max(...camps);   // 건물 TG 는 묻지 않는다 — 훈련소 중 가장 높은 값으로 보낸다
   const body = new URLSearchParams();
   body.append(F.march, String(m0)); body.append(F.marchOn, String(m1));
   if (r0) { body.append(F.rally, String(r0)); body.append(F.rallyOn, String(r1)); }

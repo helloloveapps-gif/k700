@@ -71,6 +71,11 @@ a{color:var(--accent)}
     <div class="hint" id="tTimeHint"></div>
   </div>
 
+  <div class="card">
+    <span class="t" id="tDisc"></span>
+    <div class="pick s" id="disc"></div>
+  </div>
+
   <button class="submit" id="send"></button>
   <div class="msg" id="msg"></div>
   <p class="hint" style="text-align:center;margin-top:18px"><a href="./" id="tBack"></a></p>
@@ -84,27 +89,27 @@ const ALLIES = ["NeX", "NvA", "AEH", "LoV"];
 const SLOTS = [["12:00~13:00", 12, 13], ["13:00~14:00", 13, 14], ["14:00~15:00", 14, 15], ["15:00~16:00", 15, 16], ["16:00~17:00", 16, 17], ["17:00~17:30", 17, 17.5]];
 const TZ = {ko: ["한국", 9], en: null, zh: ["台灣", 8], ar: ["UTC+3", 3], tr: ["Türkiye", 3]};
 const T = {
-  ko: {name: "한국어", title: "KvK 참여 시간", desc: "참여할 수 있는 시간을 모두 고르세요. 다시 제출하면 마지막 답만 반영됩니다.",
+  ko: {discT: "디스코드 참가", discY: "🎧 참가 가능", discN: "✕ 참가 불가능", errDisc: "디스코드 참가 가능 여부를 고르세요.", name: "한국어", title: "KvK 참여 시간", desc: "참여할 수 있는 시간을 모두 고르세요. 다시 제출하면 마지막 답만 반영됩니다.",
     ally: "연맹", id: "게임 ID (숫자만)", idHint: "게임 프로필에 있는 숫자 ID 입니다. 닉네임이 아닙니다.", nick: "게임 닉네임",
     time: "참여 가능 시간 (UTC)", timeHint: "작은 글씨는 한국 시간입니다. FULL 을 누르면 전 시간이 선택됩니다.", full: "FULL — 전 시간 참여", absent: "불참 (참여하지 않음)",
     send: "제출", sending: "보내는 중…", ok: "저장되었습니다. 감사합니다!", fail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 제출해 주세요.",
     errAlly: "연맹을 고르세요.", errId: "게임 ID는 숫자만 입력하세요 (7~12자리).", errNick: "게임 닉네임을 적어 주세요.", errTime: "참여 가능한 시간을 하나 이상 고르거나 '불참'을 고르세요.", back: "참여 현황 보기", loaded: "지난번에 입력한 내용을 불러왔습니다. 바뀐 것만 고쳐서 제출하세요."},
-  en: {name: "English", title: "KvK Available Time", desc: "Select every time you can join. If you submit again, only your latest answer counts.",
+  en: {discT: "Discord voice", discY: "🎧 I can join", discN: "✕ I cannot join", errDisc: "Please choose whether you can join Discord.", name: "English", title: "KvK Available Time", desc: "Select every time you can join. If you submit again, only your latest answer counts.",
     ally: "Alliance", id: "Game ID (numbers only)", idHint: "The numeric ID on your in-game profile, not your nickname.", nick: "In-game nickname",
     time: "Available time (UTC)", timeHint: "Press FULL to select every slot.", full: "FULL — all slots", absent: "Not participating",
     send: "Submit", sending: "Sending…", ok: "Saved. Thank you!", fail: "Could not confirm the save. Please submit again in a moment.",
     errAlly: "Please pick your alliance.", errId: "Game ID must be numbers only (7-12 digits).", errNick: "Please enter your in-game nickname.", errTime: "Pick at least one time slot, or choose 'Not participating'.", back: "View participation board", loaded: "Your previous answers were loaded. Change what is different and submit."},
-  zh: {name: "繁體中文", title: "KvK 可參加時間", desc: "請選擇所有可以參加的時段。重複提交時以最後一次為準。",
+  zh: {discT: "Discord 語音", discY: "🎧 可以參加", discN: "✕ 無法參加", errDisc: "請選擇是否能參加 Discord。", name: "繁體中文", title: "KvK 可參加時間", desc: "請選擇所有可以參加的時段。重複提交時以最後一次為準。",
     ally: "聯盟", id: "遊戲 ID（只填數字）", idHint: "遊戲個人資料中的數字 ID，不是暱稱。", nick: "遊戲暱稱",
     time: "可參加時間（UTC）", timeHint: "小字為台灣時間。按 FULL 會選取全部時段。", full: "FULL — 全程參加", absent: "不參加",
     send: "提交", sending: "傳送中…", ok: "已儲存，謝謝！", fail: "無法確認是否儲存，請稍後再提交一次。",
     errAlly: "請選擇聯盟。", errId: "遊戲 ID 只能填數字（7~12 位）。", errNick: "請填寫遊戲暱稱。", errTime: "請至少選一個時段，或選擇「不參加」。", back: "查看參加狀況", loaded: "已載入你上次填寫的內容，只要修改有變動的部分再提交即可。"},
-  ar: {name: "العربية", title: "أوقات المشاركة في KvK", desc: "اختر كل الأوقات التي تستطيع المشاركة فيها. إذا أرسلت مرة أخرى فسيُعتمد آخر إرسال.",
+  ar: {discT: "ديسكورد", discY: "🎧 أستطيع الانضمام", discN: "✕ لا أستطيع", errDisc: "اختر هل يمكنك الانضمام إلى ديسكورد.", name: "العربية", title: "أوقات المشاركة في KvK", desc: "اختر كل الأوقات التي تستطيع المشاركة فيها. إذا أرسلت مرة أخرى فسيُعتمد آخر إرسال.",
     ally: "التحالف", id: "رقم ID اللاعب (أرقام فقط)", idHint: "الرقم الموجود في ملفك داخل اللعبة، وليس اسمك.", nick: "اسمك في اللعبة",
     time: "الأوقات المتاحة (UTC)", timeHint: "الخط الصغير بتوقيت UTC+3. اضغط FULL لاختيار كل الفترات.", full: "FULL — مشاركة كاملة", absent: "لن أشارك",
     send: "إرسال", sending: "جارٍ الإرسال…", ok: "تم الحفظ. شكرًا لك!", fail: "تعذّر تأكيد الحفظ. حاول الإرسال مرة أخرى بعد قليل.",
     errAlly: "اختر التحالف.", errId: "رقم ID يجب أن يكون أرقامًا فقط (7 إلى 12 رقمًا).", errNick: "اكتب اسمك في اللعبة.", errTime: "اختر فترة واحدة على الأقل، أو اختر «لن أشارك».", back: "عرض لوحة المشاركة", loaded: "تم تحميل إجاباتك السابقة. عدّل ما تغيّر ثم أرسل."},
-  tr: {name: "Türkçe", title: "KvK Katılım Saatleri", desc: "Katılabileceğiniz tüm saatleri seçin. Tekrar gönderirseniz yalnızca son yanıtınız geçerli olur.",
+  tr: {discT: "Discord", discY: "🎧 Katılabilirim", discN: "✕ Katılamam", errDisc: "Discord’a katılıp katılamayacağınızı seçin.", name: "Türkçe", title: "KvK Katılım Saatleri", desc: "Katılabileceğiniz tüm saatleri seçin. Tekrar gönderirseniz yalnızca son yanıtınız geçerli olur.",
     ally: "İttifak", id: "Oyun ID (yalnızca rakam)", idHint: "Oyun profilinizdeki sayısal ID. Takma adınız değil.", nick: "Oyun içi takma ad",
     time: "Uygun saatler (UTC)", timeHint: "Küçük yazı Türkiye saatidir. FULL'a basınca tüm saatler seçilir.", full: "FULL — tam katılım", absent: "Katılmıyorum",
     send: "Gönder", sending: "Gönderiliyor…", ok: "Kaydedildi. Teşekkürler!", fail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar gönderin.",
@@ -115,7 +120,7 @@ const nav = (navigator.language || "en").toLowerCase();
 let lang = nav.indexOf("ko") === 0 ? "ko" : nav.indexOf("zh") === 0 ? "zh" : nav.indexOf("ar") === 0 ? "ar" : nav.indexOf("tr") === 0 ? "tr" : "en";
 try { const saved = localStorage.getItem("k700lang"); if (saved && T[saved]) lang = saved; } catch (e) {}
 { const q = new URLSearchParams(location.search).get("lang"); if (q && T[q]) lang = q; }
-let ally = "", absent = false;
+let ally = "", absent = false, disc = null;   // disc: 1 = 디스코드 참가 가능, 0 = 불가능
 // 이 기기에서 마지막으로 낸 게임 ID · 닉네임 · 연맹을 기억해 두었다가 다음에 자동으로 채운다 (현황판 · 참여 시간 · 병사 정보가 같이 쓴다)
 const ME_KEY = {id: "k700id", nick: "k700nick", ally: "k700ally"};
 const remember = (k, v) => { try { localStorage.setItem(ME_KEY[k], v); } catch (e) {} };
@@ -146,7 +151,7 @@ async function prefill(id) {
     const rows = await sheetRows(SHEET), h = rows[0] || [], ci = h.findIndex(x => String(x).trim() === "game_id"), cc = h.findIndex(x => String(x).trim() === "config number");
     rows.slice(1).forEach(r => {
       if (String(r[ci] || "").trim() !== id) return;
-      try { const c = JSON.parse(String(r[cc] || "")); if (c && c.t === "kvk") got = {a: c.a, n: c.n, s: String(c.s || ""), x: !!c.x}; } catch (e) {}
+      try { const c = JSON.parse(String(r[cc] || "")); if (c && c.t === "kvk") got = {a: c.a, n: c.n, s: String(c.s || ""), x: !!c.x, d: c.d === 0 || c.d === 1 ? c.d : null}; } catch (e) {}
     });
     if (!got) {
       const old = await sheetRows(OLD), lc = (old[0] || []).findIndex(x => String(x).indexOf("Language") >= 0);
@@ -162,6 +167,7 @@ async function prefill(id) {
   if (ALLIES.indexOf(got.a) >= 0) ally = got.a;
   if (got.n) $("nick").value = got.n;
   absent = got.x;
+  if (got.d != null) disc = got.d;
   SLOTS.forEach((s, i) => { on[i] = !got.x && got.s[i] === "1"; });
   draw();
   say("wait", T[lang].loaded);
@@ -175,6 +181,7 @@ function draw() {
   $("slots").innerHTML = '<button type="button" class="wide full' + (full ? ' on' : '') + '" data-k="full">' + t.full + '</button>' +
     SLOTS.map((s, i) => '<button type="button" data-k="' + i + '"' + (on[i] ? ' class="on"' : '') + '>' + s[0] + (z ? '<small>' + z[0] + ' ' + hm(s[1], z[1]) + '~' + hm(s[2], z[1]) + '</small>' : '') + '</button>').join("") +
     '<button type="button" class="wide no' + (absent ? ' on' : '') + '" data-k="no">' + t.absent + '</button>';
+  $("disc").innerHTML = [[1, t.discY], [0, t.discN]].map(x => '<button type="button" data-d="' + x[0] + '"' + (disc === x[0] ? ' class="on"' : '') + '>' + x[1] + '</button>').join("");
 }
 function setLang(l) {
   lang = l;
@@ -185,7 +192,7 @@ function setLang(l) {
   $("langs").innerHTML = Object.keys(T).map(k => '<button data-l="' + k + '"' + (k === l ? ' class="on"' : '') + '>' + T[k].name + '</button>').join("");
   $("tTitle").textContent = t.title; $("tDesc").textContent = t.desc;
   $("tAlly").textContent = t.ally; $("tId").textContent = t.id; $("tIdHint").textContent = t.idHint; $("tNick").textContent = t.nick;
-  $("tTime").textContent = t.time; $("tTimeHint").textContent = t.timeHint;
+  $("tDisc").textContent = t.discT; $("tTime").textContent = t.time; $("tTimeHint").textContent = t.timeHint;
   $("send").textContent = t.send; $("tBack").textContent = t.back;
   $("msg").className = "msg";
   draw();
@@ -221,9 +228,10 @@ async function send() {
   if (!/^[0-9]{7,12}$/.test(id)) { say("err", t.errId); $("gid").focus(); return; }
   if (!nick) { say("err", t.errNick); $("nick").focus(); return; }
   if (!absent && !on.some(Boolean)) { say("err", t.errTime); return; }
+  if (disc === null) { say("err", t.errDisc); return; }
   const body = new URLSearchParams();
   body.append(F.id, id); body.append(F.lang, lang);
-  body.append(F.cfg, JSON.stringify({t: "kvk", a: ally, n: nick, s: absent ? "000000" : on.map(v => v ? 1 : 0).join(""), x: absent ? 1 : 0}));
+  body.append(F.cfg, JSON.stringify({t: "kvk", a: ally, n: nick, s: absent ? "000000" : on.map(v => v ? 1 : 0).join(""), x: absent ? 1 : 0, d: disc}));
   $("send").disabled = true; say("wait", t.sending); savBusy(true, lang);
   let before = 0;
   try { before = await countRows(id); } catch (e) {}
@@ -249,6 +257,7 @@ $("slots").addEventListener("click", e => {
   else { on[+k] = !on[+k]; if (on[+k]) absent = false; }
   draw();
 });
+$("disc").addEventListener("click", e => { const b = e.target.closest("button"); if (b) { disc = +b.getAttribute("data-d"); TOUCHED = true; draw(); } });
 $("send").addEventListener("click", send);
 setLang(lang);
 // 이 기기에 기억된 사람: ID · 닉네임 · 연맹을 먼저 채우고, 지난번 답을 불러온다

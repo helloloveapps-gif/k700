@@ -436,6 +436,9 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
 .replangs{display:flex;gap:4px;margin-bottom:8px;overflow-x:auto}
 .replangs .rl{flex:none;min-height:30px;padding:0 10px;font-size:12px;border-radius:99px}
 .replangs .rl.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.mcopy{margin-inline-start:8px;min-height:28px;padding:0 10px;font-size:12px;vertical-align:middle;border-radius:99px}
+.dsc{font-size:12px}
+.dsc.no{opacity:.6}
 .capline{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:4px}
 .capin{width:120px !important;min-height:32px !important;font-weight:800;font-size:15px !important;text-align:end;border:2px solid var(--mc,#e8590c) !important;border-radius:8px}
 .petrow{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;border-radius:10px;background:rgba(247,103,7,.10);border:1px solid rgba(247,103,7,.35);font-size:13px;flex-wrap:wrap}
@@ -688,6 +691,7 @@ const I18N = {
     bUndo: "↶ 이전 저장으로 되돌리기 ({0} · 집결장 {1}명)", undoAsk: "{0} 연맹을 {1} 저장 상태(집결장 {2}명)로 되돌릴까요? 바로 저장됩니다.", undoDone: "되돌려 저장했습니다.",
     egT: "📊 한눈에 보기", egPow: "연맹 전투력", egTg: "연맹별 건물 레벨 (명)", egMy: "시련 점수 분포 (명)", egNo: "기록 없음", egTop: "상위 {0}명 평균 전투력",
     egLow: "2500 미만 {0}명",
+    copyNames: "한 번에 복사", discY: "디스코드 참가 가능", discN: "디스코드 참가 불가능",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -753,6 +757,7 @@ const I18N = {
     bUndo: "↶ Restore previous save ({0} · {1} leaders)", undoAsk: "Restore {0} to the save from {1} ({2} leaders)? It is saved right away.", undoDone: "Restored and saved.",
     egT: "📊 At a glance", egPow: "Alliance power", egTg: "Building level by alliance (players)", egMy: "Trial score spread (players)", egNo: "No record", egTop: "Avg power of top {0}",
     egLow: "Below 2500: {0}",
+    copyNames: "Copy all", discY: "Can join Discord", discN: "Cannot join Discord",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -818,6 +823,7 @@ const I18N = {
     bUndo: "↶ 還原上一次儲存（{0} · 隊長 {1} 人）", undoAsk: "要把 {0} 還原到 {1} 的儲存（隊長 {2} 人）嗎？會立即儲存。", undoDone: "已還原並儲存。",
     egT: "📊 一目了然", egPow: "聯盟戰力", egTg: "各聯盟建築等級（人）", egMy: "試煉分數分布（人）", egNo: "無紀錄", egTop: "前 {0} 名平均戰力",
     egLow: "2500 以下 {0} 人",
+    copyNames: "全部複製", discY: "可參加 Discord", discN: "無法參加 Discord",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -883,6 +889,7 @@ const I18N = {
     bUndo: "↶ استعادة الحفظ السابق ({0} · {1} قادة)", undoAsk: "استعادة {0} إلى حفظ {1} ({2} قادة)؟ سيُحفظ فورًا.", undoDone: "تمت الاستعادة والحفظ.",
     egT: "📊 نظرة سريعة", egPow: "قوة التحالفات", egTg: "مستوى المبنى حسب التحالف (لاعبون)", egMy: "توزيع نقاط التجربة (لاعبون)", egNo: "بلا سجل", egTop: "متوسط قوة أفضل {0}",
     egLow: "أقل من 2500: {0}",
+    copyNames: "نسخ الكل", discY: "يستطيع الانضمام إلى ديسكورد", discN: "لا يستطيع الانضمام إلى ديسكورد",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -948,6 +955,7 @@ const I18N = {
     bUndo: "↶ Önceki kayda dön ({0} · {1} lider)", undoAsk: "{0} ittifakı {1} kaydına ({2} lider) döndürülsün mü? Hemen kaydedilir.", undoDone: "Geri alındı ve kaydedildi.",
     egT: "📊 Bir bakışta", egPow: "İttifak gücü", egTg: "İttifaka göre bina seviyesi (oyuncu)", egMy: "Deneme puanı dağılımı (oyuncu)", egNo: "Kayıt yok", egTop: "İlk {0} ortalama güç",
     egLow: "2500 altı: {0}",
+    copyNames: "Tümünü kopyala", discY: "Discord’a katılabilir", discN: "Discord’a katılamaz",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1125,7 +1133,7 @@ async function loadSelf() {
         const c = JSON.parse(cj);
         if (c && ADMIN_H && c.k === ADMIN_H && c.A) cfg = c;
         // 웹 참여 시간 설문(kvk.html)의 답: {t:"kvk", a:연맹, n:닉네임, s:"110011"(여섯 시간대), x:불참}
-        if (c && c.t === "kvk") kvk.push({time: String(row[0] || ""), id: String(row[ci.id] || "").trim(), lang: langCode(ci.ui >= 0 ? row[ci.ui] : ""), a: String(c.a || ""), n: String(c.n || ""), s: String(c.s || ""), x: !!c.x});
+        if (c && c.t === "kvk") kvk.push({time: String(row[0] || ""), id: String(row[ci.id] || "").trim(), lang: langCode(ci.ui >= 0 ? row[ci.ui] : ""), a: String(c.a || ""), n: String(c.n || ""), s: String(c.s || ""), x: !!c.x, d: c.d === 0 || c.d === 1 ? c.d : null});
       } catch (e) {}
       return;
     }
@@ -1244,7 +1252,7 @@ function build(rows) {
     const ts = tsOf(w.time), old = byId.get(w.id);
     if (old && old.ts > ts) return;
     const slots = SLOTS.map((x, i) => !w.x && w.s[i] === "1");
-    byId.set(w.id, {key: w.id, lang: w.lang, time: w.time, ts, ally: w.a, id: w.id, name: w.n, full: slots.every(Boolean), slots, absent: w.x || !slots.some(Boolean)});
+    byId.set(w.id, {key: w.id, lang: w.lang, time: w.time, ts, ally: w.a, id: w.id, name: w.n, full: slots.every(Boolean), slots, absent: w.x || !slots.some(Boolean), disc: w.d});
   });
   const list = [...byId.values()];
   list.forEach(p => {
@@ -1314,7 +1322,7 @@ function render() {
   if (PAGE >= pages) PAGE = pages - 1;
   const from = PAGE * PER_PAGE, view = shown.slice(from, from + PER_PAGE);
   view.forEach(p => {
-    rt += '<tr' + (p.id === myId() ? ' class="mine"' : '') + '><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td><button class="who" data-id="' + esc(p.id) + '">' + esc(p.gname || p.name) + '</button>' + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
+    rt += '<tr' + (p.id === myId() ? ' class="mine"' : '') + '><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td><button class="who" data-id="' + esc(p.id) + '">' + esc(p.gname || p.name) + '</button>' + (p.disc === 1 ? ' <span class="dsc" title="' + esc(tx("discY")) + '">🎧</span>' : p.disc === 0 ? ' <span class="dsc no" title="' + esc(tx("discN")) + '">🔇</span>' : '') + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
       '</td><td class="sub">' + esc(LNAME[p.lang] || "") + '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH[p.id] ? '<b>' + fmt(MARCH[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (MARCH_ON[p.id] ? fmt(MARCH_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') +
       '</td><td class="n march">' + (RALLY[p.id] ? '<b>' + fmt(RALLY[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (RALLY_ON[p.id] ? fmt(RALLY_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') + '</td>' + troopCells(p) + slotTd(p) + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
@@ -1341,7 +1349,7 @@ function render() {
   ALLIES.forEach(a => {
     const mem = ROSTER[a].members, known = mem.filter(m => idOf[norm(m[0])]).length;
     const left = mem.filter(m => { const id = idOf[norm(m[0])]; return id ? !answered.has(id) : !done.has(norm(m[0])); });
-    ms += '<h2 style="margin-top:14px;border-inline-start-color:' + col(a) + '"><span style="color:' + col(a) + '">' + esc(a) + '</span> <span class="sub">' + tx("missStat", left.length, known, mem.length) + '</span></h2><div class="names">' +
+    ms += '<h2 style="margin-top:14px;border-inline-start-color:' + col(a) + '"><span style="color:' + col(a) + '">' + esc(a) + '</span> <span class="sub">' + tx("missStat", left.length, known, mem.length) + '</span>' + (left.length ? ' <button class="mcopy" data-names="' + esc(left.map(m => m[0]).join(", ")) + '">📋 ' + tx("copyNames") + '</button>' : '') + '</h2><div class="names">' +
       left.map(m => { const id = idOf[norm(m[0])]; return '<span' + (id ? '' : ' class="noid"') + '>' + esc(m[0]) + '</span>'; }).join("") + '</div>';
   });
   $("missing").innerHTML = ms;
@@ -2531,6 +2539,14 @@ $("mtabs").addEventListener("click", e => {
   // 탭을 누를 때마다 지금 설정으로 다시 배치한다(확정된 집결은 그대로)
   const first = $("rally").querySelector(".card.leader"), m = $("rallyMsg");
   if (first && m) { m.style.color = "var(--ok)"; m.textContent = tx("placed"); }
+});
+$("missing").addEventListener("click", async e => {
+  const b = e.target.closest("button.mcopy");
+  if (!b) return;
+  const text = b.dataset.names; let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch (x) {}
+  if (!ok) { const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select(); try { ok = document.execCommand("copy"); } catch (x) {} ta.remove(); }
+  const old = b.textContent; b.textContent = ok ? "✅ " + tx("copied") : tx("copyManual"); setTimeout(() => { b.textContent = old; }, 1600);
 });
 $("absTable").addEventListener("click", e => { const w = e.target.closest("button.who"); if (w) openRole(w.getAttribute("data-id")); });
 $("respTable").addEventListener("click", e => {
