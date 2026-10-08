@@ -439,6 +439,11 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
 .mcopy{margin-inline-start:8px;min-height:28px;padding:0 10px;font-size:12px;vertical-align:middle;border-radius:99px}
 .dsc{font-size:12px}
 .dsc.no{opacity:.6}
+.mv0{color:var(--sub);font-size:11px}
+.mv1{color:#1c7ed6;font-weight:700}
+.mv2{display:inline-block;margin-top:2px;padding:1px 7px;border-radius:99px;background:#f76707;color:#fff;font-weight:800}
+.mv2 small{color:rgba(255,255,255,.9)}
+.mv1 small{color:#1c7ed6;opacity:.8}
 .capline{display:flex;align-items:center;gap:4px;flex-wrap:wrap;margin-top:4px}
 .capin{width:120px !important;min-height:32px !important;font-weight:800;font-size:15px !important;text-align:end;border:2px solid var(--mc,#e8590c) !important;border-radius:8px}
 .petrow{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px;border-radius:10px;background:rgba(247,103,7,.10);border:1px solid rgba(247,103,7,.35);font-size:13px;flex-wrap:wrap}
@@ -1330,7 +1335,7 @@ function render() {
   const from = PAGE * PER_PAGE, view = shown.slice(from, from + PER_PAGE);
   view.forEach(p => {
     rt += '<tr' + (p.id === myId() ? ' class="mine"' : '') + '><td><span class="tag" style="background:' + col(p.ally) + ';color:#fff">' + esc(p.ally) + '</span></td><td><button class="who" data-id="' + esc(p.id) + '">' + esc(p.gname || p.name) + '</button>' + (p.disc === 1 ? ' <span class="dsc" title="' + esc(tx("discY")) + '">🎧</span>' : p.disc === 0 ? ' <span class="dsc no" title="' + esc(tx("discN")) + '">🔇</span>' : '') + (p.gname && norm(p.gname) !== norm(p.name) ? ' <span class="sub">' + tx("survey", esc(p.name)) + '</span>' : '') + (p.matched ? "" : ' <span class="sub">' + tx("preLookup") + '</span>') +
-      '</td><td class="sub">' + esc(LNAME[p.lang] || "") + '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH_OFF[p.id] ? '<span class="sub">' + fmt(MARCH_OFF[p.id]) + ' <small>' + tx("mOff") + '</small></span><br><b>' + fmt(MARCH[p.id]) + '</b> <small>' + tx("mBuff") + '</small><br><span class="sub">' + (MARCH_ON[p.id] > MARCH[p.id] ? fmt(MARCH_ON[p.id]) : '·') + ' <small>' + tx("mPet") + '</small></span>' : '<span class="no">·</span>') +
+      '</td><td class="sub">' + esc(LNAME[p.lang] || "") + '</td><td>' + (p.gally ? esc(p.gally) + (p.gally !== p.ally ? ' <span class="sub">' + tx("diffAlly") + '</span>' : '') : '') + '</td><td class="n"><b>' + fmt(p.mystic) + '</b></td><td class="n">' + fmt(p.power) + '</td><td>' + esc(p.tc) + '</td><td class="n march">' + (MARCH_OFF[p.id] ? '<span class="mv0">' + fmt(MARCH_OFF[p.id]) + ' <small>' + tx("mOff") + '</small></span><br><span class="mv1">' + fmt(MARCH[p.id]) + ' <small>' + tx("mBuff") + '</small></span><br>' + (MARCH_ON[p.id] > MARCH[p.id] ? '<span class="mv2">🐾 ' + fmt(MARCH_ON[p.id]) + ' <small>' + tx("mPet") + '</small></span>' : '<span class="sub">· <small>' + tx("mPet") + '</small></span>') : '<span class="no">·</span>') +
       '</td><td class="n march">' + (RALLY[p.id] ? '<b>' + fmt(RALLY[p.id]) + '</b> <small>OFF</small><br><span class="sub">' + (RALLY_ON[p.id] ? fmt(RALLY_ON[p.id]) : '·') + ' <small>ON</small></span>' : '<span class="no">·</span>') + '</td>' + troopCells(p) + slotTd(p) + '<td class="sub">' + esc(p.time) + '</td></tr>';
   });
   if (!shown.length) rt += '<tr><td colspan="20" class="sub">' + tx("noResp") + '</td></tr>';
