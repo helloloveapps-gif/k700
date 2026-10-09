@@ -1575,7 +1575,10 @@ function swapPanel(a, lid, i0) {
   const c = swapCands(a, RMODE, lid, i0), box = DRAFT.A[a];
   if (!c.length) return '<div class="swp"><span class="sub">' + tx("swapNone") + '</span> <button class="swx">' + tx("swapCancel") + '</button></div>';
   const nmOf = id => { const q = DATA.find(x => x.id === id); return q ? (q.gname || q.name) : "?"; };
-  return '<div class="swp"><select id="swSel"><option value="">' + tx("swapPick") + '</option>' + c.map(x => '<option value="' + esc(x.id) + '">' + esc(nmOf(x.id)) + ' · ' + tx("nth", x.j + 1) + ' · ' + tx("marchOf", fmt(mOf(box, x.id))) + '</option>').join("") + '</select><button class="primary swgo">' + tx("swapGo") + '</button><button class="swx">' + tx("swapCancel") + '</button></div>';
+  // 병사 레벨을 보병 · 궁병 · 기병 순으로 짧게: 보궁기 TG 8/7/5 · T 11/11/10
+  const ab = [0, 2, 1].map(t => tx(["inf", "cav", "arc"][t]).charAt(0)).join("");
+  const lvOf = id => { const q = DATA.find(x => x.id === id), s = q && troops(q); return s ? ab + ' TG ' + [0, 2, 1].map(t => s[t][0]).join("/") + ' · T ' + [0, 2, 1].map(t => s[t][1]).join("/") + ' · ' : ''; };
+  return '<div class="swp"><select id="swSel"><option value="">' + tx("swapPick") + '</option>' + c.map(x => '<option value="' + esc(x.id) + '">' + esc(nmOf(x.id)) + ' · ' + esc(lvOf(x.id)) + tx("nth", x.j + 1) + ' · ' + tx("marchOf", fmt(mOf(box, x.id))) + '</option>').join("") + '</select><button class="primary swgo">' + tx("swapGo") + '</button><button class="swx">' + tx("swapCancel") + '</button></div>';
 }
 // 한 사람의 역할: 확정된 포메이션마다, 시간대별로 어느 집결장에서 무엇을 보내는지 (저장 · 확정된 설정만 쓴다)
 function roleHtml(p) {
