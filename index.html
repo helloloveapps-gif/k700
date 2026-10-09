@@ -707,6 +707,7 @@ const I18N = {
     mPetNone: "펫 미입력",
     rallySub3: "집결 / 버프 ON / 펫 ON", rOff: "집결",
     cFull: "풀참여 {0}명", cAbs: "불참 {0}명",
+    overOff: "⚠ 버프(다이아 · 펫) 값으로 확정된 배치입니다. 집결원은 버프 OFF 기본값으로 편성해야 하니 확정 취소 → 다시 확정하세요.",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -777,6 +778,7 @@ const I18N = {
     mPetNone: "pet not entered",
     rallySub3: "Rally / Buff ON / Pet ON", rOff: "Rally",
     cFull: "Full {0}", cAbs: "Not joining {0}",
+    overOff: "⚠ This placement was confirmed with buffed (diamond · pet) values. Joiners must use their buff-OFF size — cancel the confirmation and confirm again.",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -847,6 +849,7 @@ const I18N = {
     mPetNone: "未填寵物",
     rallySub3: "集結 / 增益 ON / 寵物 ON", rOff: "集結",
     cFull: "全程 {0} 人", cAbs: "不參加 {0} 人",
+    overOff: "⚠ 此配置是以增益（鑽石 · 寵物）數值確認的。成員應以無增益的基本值編排，請取消確認後重新確認。",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -917,6 +920,7 @@ const I18N = {
     mPetNone: "لم يُدخل الحيوان",
     rallySub3: "الحشد / التعزيز ON / الحيوان ON", rOff: "الحشد",
     cFull: "كامل {0}", cAbs: "غير مشارك {0}",
+    overOff: "⚠ تم تأكيد هذا التوزيع بقيم معزّزة (الماس · الحيوان). يجب أن يستخدم الأعضاء القيمة دون تعزيز — ألغِ التأكيد ثم أكّد من جديد.",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -987,6 +991,7 @@ const I18N = {
     mPetNone: "pet girilmedi",
     rallySub3: "Ralli / Takviye AÇIK / Pet AÇIK", rOff: "Ralli",
     cFull: "Tam {0}", cAbs: "Katılmayan {0}",
+    overOff: "⚠ Bu yerleşim takviyeli (elmas · pet) değerlerle onaylandı. Katılımcılar takviyesiz değerle yerleştirilmeli — onayı iptal edip yeniden onaylayın.",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1039,6 +1044,8 @@ const cfgNow = () => (IS_ADMIN && DRAFT) ? DRAFT : CFG;
 const leadersOf = a => ((cfgNow().A[a] || {}).leaders || []);
 const isLeader = p => leadersOf(p.ally).some(l => l.id === p.id);
 const marchOf = p => MARCH[p.id] || +((cfgNow().A[p.ally] || {}).def) || DEF_MARCH;
+// 집결원 출정 = 버프 없이 입력한 값(다이아 · 펫 OFF) — 집결원은 버프를 할 수도 안 할 수도 있다(이박사님 2026-10-09). 집결장 본인만 버프 값
+const offOf = id => MARCH_OFF[id] ? (INC20[id] === MARCH_OFF[id] ? Math.round(MARCH_OFF[id] / 1.2) : MARCH_OFF[id]) : 0;
 // 기본값: 출정 인원수를 안 넣은 사람은 145,000, 집결 인원수를 안 넣은 집결장은 1,300,000 (이박사님 2026-10-02)
 const DEF_MARCH = 145000, DEF_RALLY = 1000000;
 const blank = () => ({def: DEF_MARCH, leaders: [], by: "", at: "", conf: "", out: [], pub: "", inc: []});
@@ -1446,7 +1453,7 @@ function bestFill(need, cap, q) {
 function alloc(a, i, mode, bx) {
   const box = bx || planBox(a), all = box.leaders || [], lids = new Set(all.map(l => l.id));
   const mem = membersOf(a, box).filter(p => p.slots[i]);
-  const march = p => MARCH[p.id] || +box.def || DEF_MARCH;
+  const march = p => MARCH[p.id] || +box.def || DEF_MARCH, jm = p => offOf(p.id) || +box.def || DEF_MARCH;
   const lv = (p, t) => TGW(troops(p), t);
   const fk = fkOf(mode), who = id => DATA.find(q => q.id === id) || {id, name: nameOf(id), gname: "", slots: [], power: 0};
   const fixed = new Set();
@@ -1462,7 +1469,7 @@ function alloc(a, i, mode, bx) {
     return {p: x.p, cap, r, target, own, need: target.map((v, t) => Math.max(0, v - own[t])), members: []};
   });
   const outs = new Set(box.out || []);
-  const pool = mem.filter(p => !lids.has(p.id) && !fixed.has(p.id) && !outs.has(p.id)).map(p => ({p, rem: march(p), used: false}));
+  const pool = mem.filter(p => !lids.has(p.id) && !fixed.has(p.id) && !outs.has(p.id)).map(p => ({p, rem: jm(p), used: false}));
   // 집결장 순서대로, 남은 사람 가운데 「병사 레벨 합이 가장 높아지는」 배치를 구한다(최소 비용 흐름 — 아래 bestFill).
   // 1,000 단위로 끊어 보내고, 끝에 남는 자투리만 한 사람이 채운다
   // 확정 집결도 집결 인원수가 늘어 모자라면(펫 · 계산식 변경 등) 확정된 사람은 그대로 두고 빈 몫만 남은 사람으로 채운다
@@ -1531,6 +1538,8 @@ function renderRally() {
     h += '<div class="card leader' + (l[fkOf(RMODE)] ? ' cf' : '') + '" style="margin-top:12px;padding:12px"><div class="lname">' + (n + 1) + '. ★ ' + (p ? nm(p) : esc(nameOf(l.id))) + ' <span class="sub" style="font-weight:400">' + (RMODE === "def" ? '🛡' : '⚔') + ' ' + r.map(v => +v || 0).join(":") + '</span>' + (l[fkOf(RMODE)] ? '<span class="cfb">' + tx("cfBadge") + '</span>' : '<span class="cfb no">' + tx("cfNot") + '</span>') + '</div>' + 
       '<div class="sub capline">' + tx("capSplit", editing && !l[fkOf(RMODE)] ? '<input class="capin" data-l="' + esc(l.id) + '" inputmode="numeric" maxlength="8" value="' + esc(+l.cap || 0) + '">' : '<b>' + fmt(cap) + '</b>', fmt(own), '<b>' + fmt(cap - own) + '</b>') + '</div>';
     const rows = plan.map(pl => pl.rallies.find(q => q.p.id === l.id) || null);
+    // 예전에 버프 값으로 확정한 배치: 집결원이 버프 없는 출정보다 많이 보내게 되어 있으면 다시 확정하라고 알린다
+    if (rows.some(x => x && x.frozen && x.members.some(m => m.send[0] + m.send[1] + m.send[2] > (offOf(m.p.id) || +box.def || DEF_MARCH)))) h += '<div class="msg" style="color:var(--warn);font-weight:700">' + tx("overOff") + '</div>';
     const sig = x => x ? JSON.stringify([x.own, x.members.map(m => [m.p.id, m.send]), x.need, x.cap]) : "away";
     for (let i = 0; i < rows.length;) {
       let j = i;
@@ -1563,7 +1572,7 @@ function renderRally() {
     h += '<div class="card dispbox" style="margin-top:12px;padding:12px"><div class="lname" style="color:#7950f2">' + tx("dispT") + '</div><div class="sub" style="margin-bottom:6px">' + tx("dispDesc") + '</div>' +
       (inc.length ? '<div class="sub" style="font-weight:700;margin:6px 0 2px">' + tx("dispIn", inc.length) + '</div>' + inc.map(id => { const q = DATA.find(x => x.id === id); return '<div class="tr"><span class="nmx">' + (q ? nmq(q) + ' <small class="dtag">' + esc(q.ally) + '→</small>' : '?') + '</span><button class="backb" data-id="' + esc(id) + '">' + tx("bBack") + '</button></div>'; }).join("") : '') +
       '<div class="dchips">' + others.map(b => '<button class="dchip' + (b === DISPA ? ' on' : '') + '" data-a="' + esc(b) + '" style="--ac:' + col(b) + '">' + esc(b) + '</button>').join("") + '</div>' +
-      '<div class="addrow"><select id="dispPick"><option value="">' + tx("dispPick") + '</option>' + cand.map(q => '<option value="' + esc(q.id) + '">' + nmq(q) + (q.mystic ? ' · ' + tx("optMystic", fmt(q.mystic)) : '') + ' · ' + fmt(MARCH[q.id] || +B.def || DEF_MARCH) + '</option>').join("") + '</select><button class="primary dispgo">' + tx("bDisp") + '</button></div>' +
+      '<div class="addrow"><select id="dispPick"><option value="">' + tx("dispPick") + '</option>' + cand.map(q => '<option value="' + esc(q.id) + '">' + nmq(q) + (q.mystic ? ' · ' + tx("optMystic", fmt(q.mystic)) : '') + ' · ' + fmt(offOf(q.id) || +B.def || DEF_MARCH) + '</option>').join("") + '</select><button class="primary dispgo">' + tx("bDisp") + '</button></div>' +
       (outs.length ? '<div class="sub" style="margin-top:8px">' + tx("dispOut", outs.map(q => nmq(q) + ' → ' + esc(dispTo(q.id))).join(", ")) + '</div>' : '') + '</div>';
   }
   h += '<details class="tbl"><summary>' + tx("restTitle") + '</summary>' +
@@ -2423,7 +2432,7 @@ function confirmLeader(k) {
 }
 // 빠짐: 빈자리를 「뒤 번호 확정 집결 가운데 가장 강한 사람」으로 채우고, 그 사람이 빠진 자리를 다시 그 뒤 번호에서 채운다(밀어내기).
 // 맨 끝 빈자리는 남는 인원 중 가장 강한 사람, 없으면 부족으로 남긴다. W = 바꿀 설정의 사본(여기에 바로 고친다). 시간대마다 옮긴 내역을 돌려준다
-const mOf = (W, id) => MARCH[id] || +W.def || DEF_MARCH;
+const mOf = (W, id) => offOf(id) || +W.def || DEF_MARCH;
 const lvOf = (p, t) => TGW(p && troops(p), t);
 const powerOf = id => { const q = DATA.find(x => x.id === id); return q ? (q.power || 0) : 0; };
 function pushChain(a, mode, W, i, k, hole) {
