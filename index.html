@@ -1784,6 +1784,9 @@ function renderAdmin() {
   const a = $("rAlly").value || ALLIES[0];
   if (!can(a)) { box.innerHTML = '<div class="msg">' + tx("noRight", esc(a)) + '</div>'; return; }
   const ls = leadersOf(a), box0 = DRAFT.A[a] || (DRAFT.A[a] = blank());
+  // 집결장 후보에서 뺄 사람: 빠짐 명단, 그리고 공격 · 수비 편성에 집결원으로 배치된 사람(이박사님 2026-10-09)
+  const busy = new Set(box0.out || []);
+  if ((box0.leaders || []).length) ["atk", "def"].forEach(md => SLOTS.forEach((s, i) => alloc(a, i, md, box0).rallies.forEach(R => R.members.forEach(m => busy.add(m.p.id)))));
   ls.forEach(l => { if (!l.r) l.r = [6, 4, 0]; if (!l.d) l.d = [5, 2, 3]; });
   let by = "";
   try { by = localStorage.getItem("k700by") || ""; } catch (e) {}
@@ -1793,7 +1796,7 @@ function renderAdmin() {
   let h = '<details class="adminbox"' + (ADMOPEN ? ' open' : '') + '><summary>' + tx("aTitle") + ' <span class="sub" style="font-weight:600">· ' + esc(a) + '</span></summary><div class="abody">' +
     '<details class="help"><summary>' + tx("helpT") + '</summary><div class="sub">' + tx("aDesc", esc(a)) + '</div></details>' +
     '<div class="addrow"><select id="aPick"><option value="">' + tx("aPickHint") + '</option>' +
-      membersOf(a).filter(p => !p.absent && !box0.leaders.some(l => l.id === p.id)).map(p => '<option value="' + esc(p.id) + '">' + esc(p.gname || p.name) + (p.mystic ? ' · ' + tx("optMystic", fmt(p.mystic)) : '') + ' · ' + esc(timeTxt(p)) + (RALLY_ON[p.id] || RALLY[p.id] ? ' · ' + tx("optRally", fmt(RALLY_ON[p.id] || RALLY[p.id])) : '') + '</option>').join("") +
+      membersOf(a).filter(p => !p.absent && !box0.leaders.some(l => l.id === p.id) && !busy.has(p.id)).map(p => '<option value="' + esc(p.id) + '">' + esc(p.gname || p.name) + (p.mystic ? ' · ' + tx("optMystic", fmt(p.mystic)) : '') + ' · ' + esc(timeTxt(p)) + (RALLY_ON[p.id] || RALLY[p.id] ? ' · ' + tx("optRally", fmt(RALLY_ON[p.id] || RALLY[p.id])) : '') + '</option>').join("") +
       '</select><button id="aAdd">＋ ' + tx("aAdd") + '</button></div>';
   if (ls.length) {
     const k = SELK[a] = Math.min(SELK[a] || 0, ls.length - 1), l = ls[k];
