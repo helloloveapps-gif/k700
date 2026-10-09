@@ -119,6 +119,7 @@ details.tt.away>summary{font-weight:400;color:var(--sub)}
 .ltab.cf{border:2px solid #2f9e44;color:#2f9e44;font-weight:800}
 .ltab.cf.on{background:#2f9e44;border-color:#2f9e44;color:#fff}
 .cfbox{margin:6px 0 10px;border:2px solid #2f9e44;border-radius:12px;padding:6px 10px;background:var(--card)}
+.cfpet{color:#e8590c;white-space:nowrap}
 .cfbox>summary{cursor:pointer;font-weight:800;color:#2f9e44;padding:4px 0}
 .cfrow{display:flex;align-items:center;gap:8px;padding:6px 0;border-top:1px dashed var(--line);flex-wrap:nowrap;font-size:13px}
 .cfrow .nm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1775,7 +1776,7 @@ function cfBoxHtml(a) {
   const dl = (DRAFT.A[a] || {}).leaders || [];
   let h = '';
   h += '<details class="cfbox"' + (CFOPEN ? ' open' : '') + '><summary>' + tx("cfBoxT", dl.filter(l => l[fkOf(RMODE)]).length, dl.length) + '</summary>' +
-    dl.map((l, n) => { const q = DATA.find(x => x.id === l.id), on = !!l[fkOf(RMODE)]; return '<div class="cfrow' + (on ? ' on' : '') + '"><span class="nm"><i class="no1">' + (n + 1) + '</i> <b>' + esc(q ? (q.gname || q.name) : "?") + '</b></span><span class="sub">' + tx("cfRatio") + ' ' + ratioOf(l, RMODE).map(v => +v || 0).join(":") + ' · ' + fmt(+l.cap || 0) + '</span><button class="cfbtn' + (on ? ' off' : ' primary') + '" data-k="' + n + '">' + (on ? tx("bUncf") : '✅ ' + tx("bCf")) + '</button></div>'; }).join("") + '</details>';
+    dl.map((l, n) => { const q = DATA.find(x => x.id === l.id), on = !!l[fkOf(RMODE)]; return '<div class="cfrow' + (on ? ' on' : '') + '"><span class="nm"><i class="no1">' + (n + 1) + '</i> <b>' + esc(q ? (q.gname || q.name) : "?") + '</b></span><span class="sub">' + tx("cfRatio") + ' ' + ratioOf(l, RMODE).map(v => +v || 0).join(":") + ' · ' + fmt(+l.cap || 0) + ' · <b class="cfpet">🐾 ' + (l.pet != null && +l.pet >= 0 ? esc(petLabel(+l.pet)) + ' → ' + fmt(+l.capOn || +l.cap || 0) : '—') + '</b></span><button class="cfbtn' + (on ? ' off' : ' primary') + '" data-k="' + n + '">' + (on ? tx("bUncf") : '✅ ' + tx("bCf")) + '</button></div>'; }).join("") + '</details>';
   return h;
 }
 function renderAdmin() {
