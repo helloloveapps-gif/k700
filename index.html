@@ -1572,7 +1572,7 @@ function renderRally() {
 }
 
 function swapPanel(a, lid, i0) {
-  const c = swapCands(a, RMODE, lid, i0), box = DRAFT.A[a];
+  const c = swapCands(a, RMODE, lid, i0, SWAP && SWAP.i1), box = DRAFT.A[a];
   if (!c.length) return '<div class="swp"><span class="sub">' + tx("swapNone") + '</span> <button class="swx">' + tx("swapCancel") + '</button></div>';
   const nmOf = id => { const q = DATA.find(x => x.id === id); return q ? (q.gname || q.name) : "?"; };
   // 병사 레벨을 보병 · 궁병 · 기병 순으로 짧게: 보궁기 TG 8/7/5 · T 11/11/10
@@ -2487,9 +2487,17 @@ function commitW(a, W, noteText, doneKey) {
 const needPass = () => { if ($("aPass") && $("aPass").value.trim()) return true; $("aMsg").textContent = tx("passNeed"); $("aMsg").style.color = "var(--warn)"; if ($("aPass")) { $("aPass").focus(); $("aPass").scrollIntoView({block: "center"}); } return false; };
 // 수동 교체: 고른 집결원(X)과 뒤 번호 확정 집결의 한 사람(Y)을 맞바꾼다. Y 의 출정 인원이 X 자리보다 적으면 막는다
 let SWAP = null, CFOPEN = true, ADMOPEN = true, DISPA = "";
-function swapCands(a, mode, lid, i0) {
+// 바꿀 후보: 이 묶음의 모든 시간대(i0 ~ i1)에 참여하고, 그 시간대마다 뒤 번호 확정 집결에 들어 있는 사람만
+function swapCands(a, mode, lid, i0, i1) {
   const box = DRAFT.A[a], fk = fkOf(mode), k = box.leaders.findIndex(l => l.id === lid), outs = new Set(box.out || []), c = [];
-  box.leaders.forEach((L, j) => { if (j > k && L[fk] && L[fk][i0]) L[fk][i0].m.forEach(e => { if (!outs.has(e[0])) c.push({id: e[0], j}); }); });
+  const at = (id, i) => box.leaders.findIndex((L, j) => j > k && L[fk] && L[fk][i] && L[fk][i].m.some(e => e[0] === id));
+  const free = (id, i) => { const q = DATA.find(x => x.id === id); return !!(q && q.slots[i]); };
+  box.leaders.forEach((L, j) => { if (j > k && L[fk] && L[fk][i0]) L[fk][i0].m.forEach(e => {
+    const id = e[0];
+    if (outs.has(id) || c.some(x => x.id === id)) return;
+    for (let i = i0; i <= (i1 == null ? i0 : i1); i++) if (!free(id, i) || at(id, i) < 0) return;
+    c.push({id, j});
+  }); });
   return c;
 }
 $("admin").addEventListener("toggle", e => { if (!e.target.classList) return; if (e.target.classList.contains("adminbox")) ADMOPEN = e.target.open; if (e.target.classList.contains("cfbox")) CFOPEN = e.target.open; }, true);
