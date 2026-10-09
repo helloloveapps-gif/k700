@@ -2110,7 +2110,7 @@ async function load() {
       Object.keys(r.rally).forEach(id => {
         const R0 = r.rally[id], M0 = MARCH_OFF[id] || 0, mp = PET_OF[id] || 0, on = r.rallyOn[id] || 0;
         const core = pt => R0 - M0 + Math.floor((M0 + pt) * 1.2);
-        RALLY_BUFF[id] = core(mp);   // 집결 버프 ON = 기본 + 출정 보너스(출정 최종 − 출정, 출정 펫 포함). 펫 ON 은 여기에 집결 펫만 더함
+        RALLY_BUFF[id] = core(0);   // 집결 버프 ON = 기본 + 출정 다이아 20% 증가분만(펫 없음). 펫 ON = 기본 + 출정 펫 포함 증가분 + 집결 펫 (이박사님 2026-10-09)
         if (!on) { RALLY_ON[id] = RALLY_BUFF[id]; return; }
         const H = (r.hist || {})[id], hts = H && H.length ? tsOf(H[H.length - 1].t) : 0, late = hts >= Date.UTC(2026, 9, 8, 21, 30) && !(hts >= Date.UTC(2026, 9, 9, 1, 20) && hts < Date.UTC(2026, 9, 9, 1, 50));   // 21:30 뒤 = 새 화면(곱하기 식), 01:20~01:50 만 잠깐 더하기 식
         const tries = late ? [on - core(mp), on - R0, on - R0 - mp, on - core(0)] : [on - R0, on - R0 - mp, on - core(mp), on - core(0)];
