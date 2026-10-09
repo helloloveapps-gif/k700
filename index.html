@@ -1580,13 +1580,21 @@ function renderRally() {
   $("rally").innerHTML = h;
 }
 
+// 참여 시간을 짧게: FULL 또는 이어진 시간대끼리 묶어 12:00~15:00, 16:00~17:30
+const timeTxt = p => {
+  if (!p || !p.slots) return '';
+  if (p.full || p.slots.every(Boolean)) return 'FULL';
+  const out = [];
+  for (let i = 0; i < SLOTS.length; i++) { if (!p.slots[i]) continue; let j = i; while (j + 1 < SLOTS.length && p.slots[j + 1]) j++; out.push(SLOTS[i][0].slice(0, 5) + '~' + SLOTS[j][0].slice(6)); i = j; }
+  return out.join(', ') || '·';
+};
+// 병사 레벨을 보병 · 궁병 · 기병 순으로 짧게: 보궁기 TG 8/7/5 · T 11/11/10
+const lvTxt = q => { const s = q && troops(q); return s ? [0, 2, 1].map(t => tx(["inf", "cav", "arc"][t]).charAt(0)).join("") + ' TG ' + [0, 2, 1].map(t => s[t][0]).join("/") + ' · T ' + [0, 2, 1].map(t => s[t][1]).join("/") : ''; };
 function swapPanel(a, lid, i0) {
   const c = swapCands(a, RMODE, lid, i0, SWAP && SWAP.i1), box = DRAFT.A[a];
   if (!c.length) return '<div class="swp"><span class="sub">' + tx("swapNone") + '</span> <button class="swx">' + tx("swapCancel") + '</button></div>';
   const nmOf = id => { const q = DATA.find(x => x.id === id); return q ? (q.gname || q.name) : "?"; };
-  // 병사 레벨을 보병 · 궁병 · 기병 순으로 짧게: 보궁기 TG 8/7/5 · T 11/11/10
-  const ab = [0, 2, 1].map(t => tx(["inf", "cav", "arc"][t]).charAt(0)).join("");
-  const lvOf = id => { const q = DATA.find(x => x.id === id), s = q && troops(q); return s ? ab + ' TG ' + [0, 2, 1].map(t => s[t][0]).join("/") + ' · T ' + [0, 2, 1].map(t => s[t][1]).join("/") + ' · ' : ''; };
+  const lvOf = id => { const v = lvTxt(DATA.find(x => x.id === id)); return v ? v + ' · ' : ''; };
   return '<div class="swp"><select id="swSel"><option value="">' + tx("swapPick") + ' — ' + esc(SLOTS[i0][0].slice(0, 5) + '~' + SLOTS[SWAP && SWAP.i1 != null ? SWAP.i1 : i0][0].slice(6)) + ' ✓</option>' + c.map(x => '<option value="' + esc(x.id) + '">' + esc(nmOf(x.id)) + ' · ' + esc(lvOf(x.id)) + tx("nth", x.j + 1) + ' · ' + tx("marchOf", fmt(mOf(box, x.id))) + '</option>').join("") + '</select><button class="primary swgo">' + tx("swapGo") + '</button><button class="swx">' + tx("swapCancel") + '</button></div>';
 }
 // 한 사람의 역할: 확정된 포메이션마다, 시간대별로 어느 집결장에서 무엇을 보내는지 (저장 · 확정된 설정만 쓴다)
@@ -1785,7 +1793,7 @@ function renderAdmin() {
   let h = '<details class="adminbox"' + (ADMOPEN ? ' open' : '') + '><summary>' + tx("aTitle") + ' <span class="sub" style="font-weight:600">· ' + esc(a) + '</span></summary><div class="abody">' +
     '<details class="help"><summary>' + tx("helpT") + '</summary><div class="sub">' + tx("aDesc", esc(a)) + '</div></details>' +
     '<div class="addrow"><select id="aPick"><option value="">' + tx("aPickHint") + '</option>' +
-      membersOf(a).filter(p => !p.absent && !box0.leaders.some(l => l.id === p.id)).map(p => '<option value="' + esc(p.id) + '">' + esc(p.gname || p.name) + (p.mystic ? ' · ' + tx("optMystic", fmt(p.mystic)) : '') + (RALLY_ON[p.id] || RALLY[p.id] ? ' · ' + tx("optRally", fmt(RALLY_ON[p.id] || RALLY[p.id])) : '') + '</option>').join("") +
+      membersOf(a).filter(p => !p.absent && !box0.leaders.some(l => l.id === p.id)).map(p => '<option value="' + esc(p.id) + '">' + esc(p.gname || p.name) + (p.mystic ? ' · ' + tx("optMystic", fmt(p.mystic)) : '') + ' · ' + esc(timeTxt(p)) + (RALLY_ON[p.id] || RALLY[p.id] ? ' · ' + tx("optRally", fmt(RALLY_ON[p.id] || RALLY[p.id])) : '') + '</option>').join("") +
       '</select><button id="aAdd">＋ ' + tx("aAdd") + '</button></div>';
   if (ls.length) {
     const k = SELK[a] = Math.min(SELK[a] || 0, ls.length - 1), l = ls[k];
