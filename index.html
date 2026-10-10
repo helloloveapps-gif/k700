@@ -301,7 +301,8 @@ h1,h2,.sub,label,th,td,.msg{word-break:keep-all}
 .topbar .langs{margin-bottom:0}
 #menuBtn{display:flex;align-items:center;gap:8px;font-weight:700}
 #menuBtn .ico{font-size:17px;line-height:1}
-.drawer{position:fixed;top:0;bottom:0;inset-inline-start:0;width:250px;max-width:82vw;background:var(--card);padding:16px 12px;box-shadow:6px 0 30px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:8px}
+.drawer{position:fixed;top:0;bottom:0;inset-inline-start:0;width:250px;max-width:82vw;background:var(--card);padding:16px 12px;box-shadow:6px 0 30px rgba(0,0,0,.4);display:flex;flex-direction:column;gap:8px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.drawer>*{flex-shrink:0}
 .drawer .dhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-weight:700;font-size:17px;padding-inline-start:6px}
 .drawer button.item{width:100%;text-align:start;min-height:46px;font-size:15px;border-color:transparent;background:none}
 .drawer button.item.on{background:var(--accent);color:#fff}
