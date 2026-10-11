@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="ko">
+<head><script src="archive.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>[10/10 보관] 700 KvK · My Troops</title>
+<style>
+:root{--bg:#e9edf7;--card:#fff;--ink:#1c2230;--sub:#667085;--line:#d9deea;--accent:#5f3dc4;--bar:#dfe4f3;--warn:#e03131;--ok:#2f9e44}
+@media (prefers-color-scheme:dark){:root{--bg:#12151c;--card:#1b202b;--ink:#e8ebf2;--sub:#98a2b3;--line:#2b3242;--accent:#9775fa;--bar:#2a3145;--warn:#ff6b6b;--ok:#51cf66}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Malgun Gothic","Apple SD Gothic Neo","Microsoft JhengHei","Segoe UI",system-ui,sans-serif;word-break:keep-all}
+.wrap{max-width:520px;margin:0 auto;padding:12px 12px 40px}
+.hero{background:linear-gradient(120deg,#1b2a80 0%,#5f3dc4 55%,#d6336c 100%);color:#fff;border-radius:14px;padding:14px 16px;margin-bottom:10px}
+.hero h1{font-size:18px;margin:0 0 4px}
+.hero p{margin:0;font-size:12px;opacity:.9}
+.langs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:10px;padding:4px;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.langs button{font:inherit;font-size:12px;font-weight:600;min-height:32px;padding:0 2px;border-radius:8px;border:none;background:none;color:var(--sub);cursor:pointer}
+.langs button.on{background:var(--accent);color:#fff}
+body.embed .langs,body.embed .hero h1{display:none}
+body.embed .hero{padding:10px 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.t{display:block;font-weight:700;font-size:14px;margin-bottom:8px}
+.t small{display:block;font-weight:400;font-size:12px;color:var(--sub)}
+.hint{color:var(--sub);font-size:12px;margin-top:6px}
+input[type=text],select{font:inherit;font-size:15px;width:100%;height:42px;padding:0 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.nrow{display:grid;grid-template-columns:84px 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.nrow .lab{display:flex;flex-direction:column;line-height:1.2}
+.nrow .lab small{color:var(--sub);font-size:11px}
+.nrow .lab b{font-size:15px}
+.nrow .lab b.on{color:var(--ok)}
+.nrow input{text-align:end;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.3px}
+.nrow input.act{border-color:var(--accent);box-shadow:0 0 0 2px rgba(121,80,242,.25)}
+.onbtn{font:inherit;color:inherit;text-align:start;background:none;border:1px dashed var(--sub);border-radius:10px;height:42px;padding:0 8px;justify-content:center;cursor:pointer}
+.buffs{background:var(--bar);border-radius:10px;padding:10px;margin-bottom:8px}
+.lab.off{border:2px solid #868e96;border-radius:10px;height:42px;padding:0 8px;display:flex;flex-direction:column;justify-content:center;line-height:1.15}
+.lab.off b{color:#868e96}
+.onsec{margin:8px 0;padding:10px;border:2px solid #2f9e44;border-radius:12px;background:rgba(47,158,68,.07)}
+.ontitle{font-weight:800;color:#2f9e44;font-size:14px;margin-bottom:8px}
+.lab.onlab{background:#2f9e44;color:#fff;border-radius:10px;height:42px;padding:0 8px;display:flex;flex-direction:column;justify-content:center;line-height:1.15}
+.lab.onlab small,.lab.onlab b{color:#fff !important}
+.ongo{font-size:12px;color:var(--sub);margin:4px 0 8px}
+.ongo:empty{display:none}
+.dsum{margin:-2px 0 8px;text-align:end;font-weight:800;color:#1c7ed6;font-variant-numeric:tabular-nums;font-size:13px}
+.dsum:empty{display:none}
+.dseg button{line-height:1.15;font-size:12px}
+.brow.dia.fixed{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;background:rgba(28,126,214,.10);border:1px solid rgba(28,126,214,.35);margin-bottom:8px}
+.brow.dia.fixed span{font-weight:800;color:#1c7ed6;font-size:13px}
+.brow.dia.fixed b{font-variant-numeric:tabular-nums;color:#1c7ed6;white-space:nowrap}
+.onsec.locked .buffs{opacity:.4;filter:grayscale(1)}
+.onsec.locked .buffs *{pointer-events:none}
+.onsec.locked{border-style:dashed;cursor:not-allowed}
+.ongo:not(:empty){font-size:13px;font-weight:800;color:#e03131;background:rgba(224,49,49,.08);border:1px solid rgba(224,49,49,.4);border-radius:8px;padding:6px 10px}
+.ongo.shake{animation:ogShake .4s}
+@keyframes ogShake{20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.brow{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:center;margin-bottom:8px;font-size:12px;font-weight:700}
+.dseg{display:flex;height:38px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.dseg button{flex:1;font:inherit;font-size:13px;padding:0;border:none;background:var(--card);color:var(--ink);cursor:pointer}
+.dseg button.on{background:var(--accent);color:#fff;font-weight:700}
+.buffs select{height:38px;font-size:14px}
+.buffs .hint{margin:0;text-align:end;font-variant-numeric:tabular-nums;font-weight:700;color:var(--ink)}
+/* 버프 부분은 색으로 구분: ON = 초록, 다이아 = 파랑, 펫 = 주황 */
+/* OFF 는 회색 딱지 + 흰 칸, ON 은 초록 딱지 + 초록 칸 */
+.nrow .lab{height:42px;border-radius:10px;padding:0 10px;justify-content:center}
+.nrow div.lab{background:#868e96;color:#fff}
+.nrow div.lab small{color:rgba(255,255,255,.85)}
+.onbtn{background:#2f9e44;border:none;color:#fff}
+.onbtn small{color:rgba(255,255,255,.9) !important}
+.onbtn b.on{color:#fff !important}
+#m1,#r1{border:2px solid #2f9e44;background:rgba(47,158,68,.14)}
+#m0,#r0{border:2px solid #868e96}
+.buffs{background:rgba(47,158,68,.10);border:1px solid rgba(47,158,68,.45);border-inline-start:4px solid var(--ok)}
+.brow.dia span{color:#1c7ed6}
+.brow.pet span{color:#e8590c}
+.dseg{border:2px solid #1c7ed6 !important;height:42px}
+.dseg button+button{border-inline-start:2px solid #1c7ed6 !important}
+.dseg button:not(.on):hover{background:rgba(28,126,214,.08)}
+.dseg button.on{background:#1c7ed6}
+.buffs select{border-color:#f59f00;background:rgba(245,159,0,.12);font-weight:700}
+.buffs .hint:not(:empty){background:var(--ok);color:#fff;border-radius:8px;padding:7px 10px}
+@media (prefers-color-scheme:dark){.brow.dia span{color:#74c0fc}.brow.pet span{color:#ffa94d}}
+[hidden]{display:none !important}
+.pad{display:grid;grid-template-columns:repeat(3,1fr) 46px;gap:6px}
+.pad button{font:inherit;font-size:12px;font-weight:700;height:36px;padding:0;border-radius:8px;border:1px solid var(--line);background:var(--bar);color:var(--ink);cursor:pointer;white-space:nowrap}
+.pad button:active{background:var(--accent);color:#fff}
+.row{display:grid;grid-template-columns:56px 1fr 1fr;gap:8px;align-items:center;margin-bottom:8px}
+.row .n{font-weight:700}
+.row.head{color:var(--sub);font-size:12px;margin-bottom:4px}
+.seg{display:flex;height:42px;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{flex:1;font:inherit;font-size:14px;padding:0;border:none;background:var(--card);color:var(--ink);cursor:pointer}
+.seg button.on.t10{background:#f59f00;color:#fff;font-weight:700}
+.seg button.on.t11{background:#e03131;color:#fff;font-weight:700}
+.submit{font:inherit;font-size:16px;font-weight:700;width:100%;height:48px;border-radius:12px;border:none;background:var(--accent);color:#fff;cursor:pointer}
+.submit:disabled{opacity:.5}
+.msg{margin-top:10px;padding:10px 12px;border-radius:10px;font-weight:700;display:none}
+.msg.ok{display:block;background:rgba(47,158,68,.15);color:var(--ok)}
+.msg.err{display:block;background:rgba(224,49,49,.12);color:var(--warn)}
+.msg.wait{display:block;background:var(--bar);color:var(--ink);font-weight:400}
+a{color:var(--accent)}
+#savOv{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(10,12,18,.62);padding:16px}#savOv.on{display:flex}#savOv>div{background:var(--card,#fff);color:var(--ink,#1c2230);border-radius:16px;padding:22px 20px;max-width:340px;width:100%;text-align:center;font-weight:700;line-height:1.5;box-shadow:0 10px 40px rgba(0,0,0,.35)}#savOv i{display:block;width:38px;height:38px;margin:0 auto 12px;border:4px solid rgba(121,80,242,.25);border-top-color:#7950f2;border-radius:50%;animation:savSpin .8s linear infinite}@keyframes savSpin{to{transform:rotate(360deg)}}
+
+/* ① 버프 없이 / ② 버프 켜고 라벨: 크게 · 진하게 */
+.nrow{grid-template-columns:104px 1fr}
+.nrow div.lab.off{background:#fff;border:2px solid #495057;color:#212529;height:46px;padding:0 8px}
+.nrow div.lab.off small{color:#212529 !important;font-size:12.5px;font-weight:800;white-space:nowrap}
+.nrow div.lab.off b{color:#495057 !important;font-size:16px}
+.nrow div.lab.onlab{background:#2f9e44 !important;border:2px solid #2f9e44;height:46px;padding:0 8px}
+.nrow div.lab.onlab small{color:#fff !important;font-size:12.5px;font-weight:800;white-space:nowrap}
+.nrow div.lab.onlab b{color:#fff !important;font-size:16px}
+@media (prefers-color-scheme:dark){.nrow div.lab.off{background:#2a3145;border-color:#ced4da;color:#fff}.nrow div.lab.off small{color:#fff !important}.nrow div.lab.off b{color:#ced4da !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="langs" id="langs"></div>
+  <div class="hero"><h1 id="tTitle"></h1><p id="tDesc"></p></div>
+
+  <div class="card">
+    <label class="t" id="tId" for="gid"></label>
+    <input type="text" id="gid" inputmode="numeric" autocomplete="off" maxlength="12">
+    <div class="hint" id="tIdHint"></div>
+  </div>
+
+  <div class="card">
+    <div class="row head"><span></span><span id="tCamp"></span><span id="tTier"></span></div>
+    <div class="row"><span class="n" id="tInf"></span><select id="c0"></select><div class="seg" id="s0"></div></div>
+    <div class="row"><span class="n" id="tCav"></span><select id="c1"></select><div class="seg" id="s1"></div></div>
+    <div class="row"><span class="n" id="tArc"></span><select id="c2"></select><div class="seg" id="s2"></div></div>
+    <div class="hint" id="tCampHint"></div>
+  </div>
+
+  <div class="card" style="display:none">
+    <label class="t" id="tTg" for="tg"></label>
+    <select id="tg"></select>
+    <div class="hint" id="tTgHint"></div>
+  </div>
+
+  <div class="card">
+    <div class="t"><span id="tMarch"></span><small id="tMarchSub"></small></div>
+    <div class="nrow"><div class="lab off"><small class="soffm"></small><b>OFF</b></div><input type="text" id="m0" inputmode="numeric" autocomplete="off" maxlength="9"></div>
+    <div class="pad" data-for="m"><button type="button" data-add="100000">+100,000</button><button type="button" data-add="10000">+10,000</button><button type="button" data-add="1000">+1,000</button><button type="button" data-act="back">⌫</button><button type="button" data-add="100">+100</button><button type="button" data-add="10">+10</button><button type="button" data-add="1">+1</button><button type="button" data-act="clear">✕</button></div>
+    <div class="ongo" id="gm"></div>
+    <div class="onsec" id="sm" hidden>
+      <div class="ontitle"></div>
+      <div class="buffs" id="bm"></div>
+      <div class="nrow"><div class="lab onlab"><small class="sonm"></small><b>ON</b></div><input type="text" id="m1" inputmode="numeric" autocomplete="off" maxlength="9"></div>
+    </div>
+    <div class="hint" id="tMarchHint"></div>
+  </div>
+
+  <div class="card">
+    <div class="t"><span id="tRally"></span><small id="tRallySub"></small></div>
+    <div class="nrow"><div class="lab off"><small class="soff"></small><b>OFF</b></div><input type="text" id="r0" inputmode="numeric" autocomplete="off" maxlength="9"></div>
+    <div class="pad" data-for="r"><button type="button" data-add="100000">+100,000</button><button type="button" data-add="10000">+10,000</button><button type="button" data-add="1000">+1,000</button><button type="button" data-act="back">⌫</button><button type="button" data-add="100">+100</button><button type="button" data-add="10">+10</button><button type="button" data-add="1">+1</button><button type="button" data-act="clear">✕</button></div>
+    <div class="ongo" id="gr"></div>
+    <div class="onsec" id="sr" hidden>
+      <div class="ontitle"></div>
+      <div class="buffs" id="br"></div>
+      <div class="nrow"><div class="lab onlab"><small class="son"></small><b>ON</b></div><input type="text" id="r1" inputmode="numeric" autocomplete="off" maxlength="9"></div>
+    </div>
+    <div class="hint" id="tRallyHint"></div>
+  </div>
+
+  <button class="submit" id="send"></button>
+  <div class="msg" id="msg"></div>
+  <p class="hint" style="text-align:center;margin-top:18px"><a href="./" id="tBack"></a></p>
+</div>
+<script>
+const FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfAnxDTxK2o8l1F6yTpPvlZ-4toOYDxLqcgEs5F8wDUeWY95w/formResponse";
+const SHEET = "https://docs.google.com/spreadsheets/d/1fwh4GmuMnzgylvhzoALqD0KIK5ssld-Ghs3U4Loul4E/gviz/tq?gid=404058685&headers=1&tqx=out:csv";
+const F = {rally: "entry.1123857302", rallyOn: "entry.659408467", march: "entry.701440869", marchOn: "entry.1267744402", id: "entry.1548665780", tg: "entry.723988649", lang: "entry.1865700227",
+  c: ["entry.1338838138", "entry.757655290", "entry.659383205"],
+  t: ["entry.671815691", "entry.1113601858", "entry.1129483053"]};
+const T = {
+  ko: {sOffM: "① 출정 인원", diaL: "③ 💎 다이아", d10: "10% · 2시간", d20: "20% · 12시간", petL: "② 🐾 펫", sOnM: "최종 값", onTitleM: "② 펫 → ③ 다이아를 고르면 최종 값이 계산됩니다 — (출정 + 펫) × 다이아", sOff: "① 버프 없이", sOn: "② 버프 켜고", onTitle: "② 집결 펫을 고르면 최종 값 = 집결 + (출정 최종 − 출정) + 집결 펫", onGo: "⬆ ① 버프 없이 병사 수를 먼저 입력하세요. 입력해야 다이아 · 펫 버프를 고를 수 있습니다.", name: "한국어", title: "내 병사 정보 입력", desc: "700서버 KvK 집결 편성에 쓰입니다. 다시 제출하면 마지막 값이 반영됩니다.",
+    id: "게임 ID (숫자만)", idHint: "게임 프로필에 있는 숫자 ID 입니다. 닉네임이 아닙니다.", tg: "내 타운센터 TG 레벨", tg0: "TG 없음 (TC30 이하)",
+    tgHint: "훈련소 레벨은 TG 레벨보다 높게 고를 수 없습니다.", camp: "훈련소 레벨", tier: "순금 병사", inf: "보병", cav: "기병", arc: "궁병",
+    campHint: "훈련소 레벨은 TG1~TG8 중에서 고르세요. 순금 병사는 T10 / T11 중에서 고르세요.", send: "제출", sending: "보내는 중…",
+    ok: "저장되었습니다. 감사합니다!", fail: "저장을 확인하지 못했습니다. 잠시 뒤 다시 제출해 주세요.", errId: "게임 ID는 숫자만 입력하세요 (7~12자리).", pick: "선택", none: "없음",
+    march: "출정 인원수 (한 부대 최대 병력)", pet: "버프", bPet: "펫 버프", bDia: "다이아 버프", bHint: "① 버프 없이 값을 넣고, ② 에서 다이아 · 펫 버프를 고르면 ON 값이 자동 계산됩니다.", off: "펫 버프 OFF 일 때", on: "펫 버프 ON 일 때", marchHint: "편성 계산에는 다이아 20% 를 켠 값(① × 1.2)을 씁니다.",
+    errMarch: "출정 인원수를 OFF · ON 둘 다 숫자로 입력하세요. ON 값은 OFF 값보다 작을 수 없습니다.",
+    rally: "집결 인원수 (내가 집결장일 때 수용 인원)", rallyHint: "집결장을 맡을 수 있는 분은 꼭 넣어 주세요. 모르면 비워 두어도 됩니다.",
+    errRally: "집결 인원수는 OFF · ON 둘 다 숫자로 넣거나 둘 다 비워 두세요. ON 값은 OFF 값보다 작을 수 없습니다.",
+    errPick: "TG 레벨과 훈련소 레벨 세 개를 모두 선택하세요.", errCamp: "훈련소 레벨이 내 TG 레벨보다 높습니다. 다시 확인하세요.", back: "참여 현황 보기", loaded: "지난번에 입력한 내용을 불러왔습니다. 바뀐 것만 고쳐서 제출하세요."},
+  en: {sOffM: "① March size", diaL: "③ 💎 Diamond", d10: "10% · 2 h", d20: "20% · 12 h", petL: "② 🐾 Pet", sOnM: "Final", onTitleM: "Pick ② pet → ③ diamond — final = (march + pet) × diamond", sOff: "① No buff", sOn: "② With buffs", onTitle: "② Pick the rally pet — final = rally + (final march − march) + rally pet", onGo: "⬆ Enter ① the no-buff troop count first. Then you can pick diamond / pet buffs.", name: "English", title: "My Troop Info", desc: "Used for Kingdom 700 KvK rally planning. If you submit again, the latest entry is used.",
+    id: "Game ID (numbers only)", idHint: "The numeric ID on your in-game profile, not your nickname.", tg: "My Town Center TG level", tg0: "No TG (TC30 or lower)",
+    tgHint: "Camp levels cannot be higher than your TG level.", camp: "Camp level", tier: "Truegold troops", inf: "Infantry", cav: "Cavalry", arc: "Archer",
+    campHint: "Choose TG1-TG8 for each camp, and T10 or T11 for each troop type.", send: "Submit", sending: "Sending…",
+    ok: "Saved. Thank you!", fail: "Could not confirm the save. Please submit again in a moment.", errId: "Game ID must be numbers only (7-12 digits).", pick: "Select", none: "None",
+    march: "March size (max troops in one march)", pet: "Buff", bPet: "Pet buff", bDia: "Diamond buff", bHint: "Enter ① the no-buff value, then pick diamond / pet buffs in ② and the ON value is calculated.", off: "Pet buff OFF", on: "Pet buff ON", marchHint: "Rally planning uses the value with the 20% diamond buff (① × 1.2).",
+    errMarch: "Enter both march sizes (OFF and ON) as numbers. ON cannot be smaller than OFF.",
+    rally: "Rally capacity (when I lead a rally)", rallyHint: "Please fill this in if you can lead rallies. Leave both empty if you do not know.",
+    errRally: "Enter both rally capacities (OFF and ON) as numbers, or leave both empty. ON cannot be smaller than OFF.",
+    errPick: "Please select your TG level and all three camp levels.", errCamp: "A camp level is higher than your TG level. Please check again.", back: "View participation board", loaded: "Your previous answers were loaded. Change what is different and submit."},
+  zh: {sOffM: "① 出征人數", diaL: "③ 💎 鑽石", d10: "10% · 2 小時", d20: "20% · 12 小時", petL: "② 🐾 寵物", sOnM: "最終值", onTitleM: "選擇 ② 寵物 → ③ 鑽石 — 最終值 = (出征 + 寵物) × 鑽石", sOff: "① 不開增益", sOn: "② 開增益", onTitle: "② 選擇集結寵物 — 最終值 = 集結 + (出征最終值 − 出征) + 集結寵物", onGo: "⬆ 請先填寫 ① 不開增益的士兵數，填寫後才能選擇鑽石 · 寵物增益。", name: "繁體中文", title: "我的士兵資料", desc: "用於 700 服 KvK 集結編組。重複提交時以最後一次為準。",
+    id: "遊戲 ID（只填數字）", idHint: "遊戲個人資料中的數字 ID，不是暱稱。", tg: "我的城鎮中心 TG 等級", tg0: "沒有 TG（TC30 以下）",
+    tgHint: "訓練營等級不能高於 TG 等級。", camp: "訓練營等級", tier: "純金士兵", inf: "步兵", cav: "騎兵", arc: "弓兵",
+    campHint: "訓練營等級請選 TG1~TG8。純金士兵請選 T10 或 T11。", send: "提交", sending: "傳送中…",
+    ok: "已儲存，謝謝！", fail: "無法確認是否儲存，請稍後再提交一次。", errId: "遊戲 ID 只能填數字（7~12 位）。", pick: "請選擇", none: "無",
+    march: "出征人數（一支部隊的上限）", pet: "增益", bPet: "寵物增益", bDia: "鑽石增益", bHint: "先填 ① 不開增益的數值，再在 ② 選擇鑽石 · 寵物增益，會自動算出 ON 數值。", off: "寵物增益 OFF 時", on: "寵物增益 ON 時", marchHint: "編組計算使用開啟鑽石 20% 的數值（① × 1.2）。",
+    errMarch: "請用數字填寫 OFF 與 ON 兩個出征人數，ON 不能小於 OFF。",
+    rally: "集結人數（我當集結隊長時的容量）", rallyHint: "可以擔任集結隊長的人請務必填寫。不清楚可以兩格都留空。",
+    errRally: "集結人數請 OFF 與 ON 都用數字填寫，或兩格都留空。ON 不能小於 OFF。",
+    errPick: "請選擇 TG 等級與三個訓練營等級。", errCamp: "訓練營等級高於你的 TG 等級，請再確認。", back: "查看參加狀況", loaded: "已載入你上次填寫的內容，只要修改有變動的部分再提交即可。"},
+  ar: {sOffM: "① حجم المسيرة", diaL: "③ 💎 الماس", d10: "10% · ساعتان", d20: "20% · 12 ساعة", petL: "② 🐾 الحيوان", sOnM: "القيمة النهائية", onTitleM: "اختر ② الحيوان ← ③ الماس — النهائي = (المسيرة + الحيوان) × الماس", sOff: "① بدون تعزيز", sOn: "② مع التعزيز", onTitle: "② اختر حيوان الحشد — النهائي = الحشد + (المسيرة النهائية − المسيرة) + حيوان الحشد", onGo: "⬆ أدخل ① عدد الجنود بدون تعزيز أولًا، بعدها يمكنك اختيار تعزيز الماس والحيوان.", name: "العربية", title: "معلومات جنودي", desc: "تُستخدم لتنظيم الحشود في KvK للمملكة 700. إذا أرسلت مرة أخرى فسيُعتمد آخر إرسال.",
+    id: "رقم ID اللاعب (أرقام فقط)", idHint: "الرقم الموجود في ملفك داخل اللعبة، وليس اسمك.", tg: "مستوى TG لمركز المدينة", tg0: "بدون TG (TC30 أو أقل)",
+    tgHint: "لا يمكن أن يكون مستوى المعسكر أعلى من مستوى TG.", camp: "مستوى المعسكر", tier: "جنود الذهب الخالص", inf: "المشاة", cav: "الفرسان", arc: "الرماة",
+    campHint: "اختر مستوى المعسكر من TG1 إلى TG8، واختر T10 أو T11 لكل نوع.", send: "إرسال", sending: "جارٍ الإرسال…",
+    ok: "تم الحفظ. شكرًا لك!", fail: "تعذّر تأكيد الحفظ. حاول الإرسال مرة أخرى بعد قليل.", errId: "رقم ID يجب أن يكون أرقامًا فقط (7 إلى 12 رقمًا).", pick: "اختر", none: "لا يوجد",
+    march: "حجم المسيرة (الحد الأقصى للجنود في مسيرة واحدة)", pet: "التعزيز", bPet: "تعزيز الحيوان", bDia: "تعزيز الماس", bHint: "أدخل ① القيمة بدون تعزيز، ثم اختر تعزيز الماس والحيوان في ② لتُحسب قيمة ON تلقائيًا.", off: "بدون تعزيز الحيوان (OFF)", on: "مع تعزيز الحيوان (ON)", marchHint: "يُستخدم في حساب الحشود الرقم مع تعزيز الماس 20% (① × 1.2).",
+    errMarch: "أدخل حجم المسيرة للحالتين OFF و ON بالأرقام. لا يمكن أن يكون ON أقل من OFF.",
+    rally: "سعة الحشد (عندما أقود الحشد)", rallyHint: "إذا كنت تستطيع قيادة الحشود فأدخل هذه القيمة. اترك الخانتين فارغتين إذا كنت لا تعرف.",
+    errRally: "أدخل سعة الحشد للحالتين OFF و ON بالأرقام، أو اترك الخانتين فارغتين. لا يمكن أن يكون ON أقل من OFF.",
+    errPick: "اختر مستوى TG ومستويات المعسكرات الثلاثة.", errCamp: "مستوى أحد المعسكرات أعلى من مستوى TG لديك. تحقق مرة أخرى.", back: "عرض لوحة المشاركة", loaded: "تم تحميل إجاباتك السابقة. عدّل ما تغيّر ثم أرسل."},
+  tr: {sOffM: "① Sefer sayısı", diaL: "③ 💎 Elmas", d10: "%10 · 2 sa", d20: "%20 · 12 sa", petL: "② 🐾 Pet", sOnM: "Son değer", onTitleM: "② peti → ③ elması seçin — son = (sefer + pet) × elmas", sOff: "① Takviyesiz", sOn: "② Takviyeli", onTitle: "② Ralli petini seçin — son = ralli + (son sefer − sefer) + ralli peti", onGo: "⬆ Önce ① takviyesiz asker sayısını girin. Sonra elmas / pet takviyesini seçebilirsiniz.", name: "Türkçe", title: "Asker Bilgilerim", desc: "700. Krallık KvK ralli planlaması için kullanılır. Tekrar gönderirseniz son gönderiminiz geçerli olur.",
+    id: "Oyun ID (yalnızca rakam)", idHint: "Oyun profilinizdeki sayısal ID. Takma adınız değil.", tg: "Şehir Merkezi TG seviyem", tg0: "TG yok (TC30 veya altı)",
+    tgHint: "Kamp seviyeleri TG seviyenizden yüksek olamaz.", camp: "Kamp seviyesi", tier: "Saf Altın askerler", inf: "Piyade", cav: "Süvari", arc: "Okçu",
+    campHint: "Her kamp için TG1-TG8, her asker türü için T10 veya T11 seçin.", send: "Gönder", sending: "Gönderiliyor…",
+    ok: "Kaydedildi. Teşekkürler!", fail: "Kayıt doğrulanamadı. Lütfen biraz sonra tekrar gönderin.", errId: "Oyun ID yalnızca rakam olmalıdır (7-12 hane).", pick: "Seçin", none: "Yok",
+    errPick: "Lütfen TG seviyenizi ve üç kamp seviyesini seçin.", errCamp: "Bir kamp seviyesi TG seviyenizden yüksek. Lütfen kontrol edin.",
+    march: "Sefer kapasitesi (bir seferdeki en fazla asker)", pet: "Takviye", bPet: "Pet takviyesi", bDia: "Elmas takviyesi", bHint: "① Takviyesiz değeri girin, ② bölümünde elmas / pet takviyesini seçin; AÇIK değer otomatik hesaplanır.", off: "Evcil hayvan takviyesi KAPALI (OFF)", on: "Evcil hayvan takviyesi AÇIK (ON)", marchHint: "Ralli planlamasında %20 elmas takviyeli değer (① × 1.2) kullanılır.",
+    errMarch: "Sefer kapasitesini OFF ve ON için rakamla girin. ON, OFF değerinden küçük olamaz.",
+    rally: "Ralli kapasitesi (ralliyi ben yönetirken)", rallyHint: "Ralli yönetebiliyorsanız lütfen doldurun. Bilmiyorsanız iki kutuyu da boş bırakın.",
+    errRally: "Ralli kapasitesini OFF ve ON için rakamla girin ya da ikisini de boş bırakın. ON, OFF değerinden küçük olamaz.", back: "Katılım panosunu görüntüle", loaded: "Önceki yanıtlarınız yüklendi. Değişenleri düzeltip gönderin."}
+};
+const $ = id => document.getElementById(id);
+const nav = (navigator.language || "en").toLowerCase();
+let lang = nav.indexOf("ko") === 0 ? "ko" : nav.indexOf("zh") === 0 ? "zh" : nav.indexOf("ar") === 0 ? "ar" : nav.indexOf("tr") === 0 ? "tr" : "en";
+try { const saved = localStorage.getItem("k700lang"); if (saved && T[saved]) lang = saved; } catch (e) {}
+{ const q = new URLSearchParams(location.search).get("lang"); if (q && T[q]) lang = q; }
+const tiers = [10, 10, 10];
+// 이 기기에서 마지막으로 낸 게임 ID · 닉네임 · 연맹을 기억해 두었다가 다음에 자동으로 채운다 (현황판 · 참여 시간 · 병사 정보가 같이 쓴다)
+const ME_KEY = {id: "k700id", nick: "k700nick", ally: "k700ally"};
+const remember = (k, v) => { try { localStorage.setItem(ME_KEY[k], v); } catch (e) {} };
+const recall = k => { try { return localStorage.getItem(ME_KEY[k]) || ""; } catch (e) { return ""; } };
+function parseCsv(text) {
+  const rows = []; let row = [], cur = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { cur += '"'; i++; } else q = false; } else cur += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === ",") { row.push(cur); cur = ""; }
+    else if (ch === "\n") { row.push(cur); rows.push(row); row = []; cur = ""; }
+    else if (ch !== "\r") cur += ch;
+  }
+  if (cur !== "" || row.length) { row.push(cur); rows.push(row); }
+  return rows;
+}
+async function sheetRows(url) { const t = await fetch(url + "&_=" + Date.now()).then(r => r.text()); return t.trim().charAt(0) === "<" ? [] : parseCsv(t); }
+let TOUCHED = false, LOADED_ID = "";
+
+// 그 ID 로 마지막에 낸 병사 정보를 시트에서 찾아 빈 칸에 채운다
+async function prefill(id) {
+  if (!/^[0-9]{7,12}$/.test(id) || id === LOADED_ID) return;
+  LOADED_ID = id;
+  let rows = [];
+  try { rows = await sheetRows(SHEET); } catch (e) { return; }
+  const h = rows[0] || [], col = n => h.findIndex(x => String(x).trim() === n);
+  const ci = {id: col("game_id"), cfg: col("config number"), tg: col("tg"), m: col("march number"), mo: col("march_on number"), ra: col("rally number"), rao: col("rally_on number"),
+    c: ["inf_camp number", "cav_camp number", "arc_camp number"].map(col), t: ["inf_tier number", "cav_tier number", "arc_tier number"].map(col)};
+  let last = null;
+  rows.slice(1).forEach(r => { if (String(r[ci.id] || "").trim() === id && !String(r[ci.cfg] || "").trim() && String(r[ci.tg] || "").trim() !== "") last = r; });
+  if (!last || TOUCHED || $("gid").value.trim() !== id) return;
+  const num = i => i >= 0 ? +String(last[i] || "").replace(/[^0-9]/g, "") || 0 : 0;
+  $("tg").value = "8";
+  [0, 1, 2].forEach(k => { $("c" + k).value = String(num(ci.c[k])); const v = num(ci.t[k]); if (v === 10 || v === 11) tiers[k] = v; });
+  [["m0", ci.m], ["m1", ci.mo], ["r0", ci.ra], ["r1", ci.rao]].forEach(x => put($(x[0]), num(x[1])));
+  const m0 = num(ci.m), m1 = num(ci.mo), r0 = num(ci.ra), r1 = num(ci.rao);
+  // 저장 시각이 2026-10-08 21:30 뒤면 새 식((출정 + 펫) × 다이아)부터, 전이면 예전 식(출정×다이아 + 펫)부터 맞춰 본다
+  const late = (() => { const m = /(\d+)\D+(\d+)\D+(\d+)\D*?(오전|오후|AM|PM)?\s*(\d+):(\d+)/i.exec(String(last[0] || "")); if (!m) return false; let h = +m[5]; if (/오후|PM/i.test(m[4] || "") && h < 12) h += 12; if (/오전|AM/i.test(m[4] || "") && h === 12) h = 0; const t = Date.UTC(+m[1], +m[2] - 1, +m[3], h, +m[6]); return t >= Date.UTC(2026, 9, 8, 21, 30) && !(t >= Date.UTC(2026, 9, 9, 1, 20) && t < Date.UTC(2026, 9, 9, 1, 50)); })();
+  const mulOk = (d, pt) => Math.floor((m0 + pt) * (100 + d) / 100) === m1, addOk = (d, pt) => Math.floor(m0 * (100 + d) / 100) + pt === m1;
+  const fit = f => [20, 10, 0].map(d => [d, [0].concat(PETS.m).find(pt => f(d, pt))]).find(x => x[1] != null);
+  const mk = m1 ? (late ? fit(mulOk) || fit(addOk) : fit(addOk) || fit(mulOk)) : null;
+  if (mk) { BUFF.m.dia = mk[0]; BUFF.m.pet = mk[1]; }
+  if (r1) {
+    const mp = mk ? mk[1] : 0, coreR = r0 - m0 + Math.floor(m0 * 1.2), coreG = r0 - m0 + Math.floor((m0 + mp) * 1.2), RP = [0].concat(PETS.r);
+    const tries = late ? [r1 - coreG, r1 - r0, r1 - r0 - mp, r1 - coreR] : [r1 - r0, r1 - r0 - mp, r1 - coreG, r1 - coreR];
+    const rp = tries.find(d => RP.indexOf(d) >= 0);
+    if (rp != null) BUFF.r.pet = rp;
+  }
+  drawBuffs();
+  showOn();
+  drawTiers(); checkCamps(); mark();
+  say("wait", T[lang].loaded);
+}
+
+function setLang(l) {
+  lang = l;
+  const t = T[l];
+  try { localStorage.setItem("k700lang", l); } catch (e) {}
+  document.documentElement.lang = l === "zh" ? "zh-Hant" : l;
+  document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
+  $("langs").innerHTML = Object.keys(T).map(k => '<button data-l="' + k + '"' + (k === l ? ' class="on"' : '') + '>' + T[k].name + '</button>').join("");
+  $("tTitle").textContent = t.title; $("tDesc").textContent = t.desc;
+  $("tId").textContent = t.id; $("tIdHint").textContent = t.idHint;
+  $("tTg").textContent = t.tg; $("tTgHint").textContent = t.tgHint;
+  // 제목의 괄호 설명은 작은 글씨로 내려 한 줄에 들어가게 한다
+  const cut = v => { const m = /^(.*?)\s*[(（](.*)[)）]\s*$/.exec(v); return m ? [m[1], m[2]] : [v, ""]; };
+  [["tMarch", t.march], ["tRally", t.rally]].forEach(x => { const c = cut(x[1]); $(x[0]).textContent = c[0]; $(x[0] + "Sub").textContent = c[1]; });
+  $("tMarchHint").textContent = t.bHint + " " + t.marchHint; $("tRallyHint").textContent = t.bHint + " " + t.rallyHint;
+  [...document.querySelectorAll(".pet")].forEach(e => { e.textContent = t.pet; });
+  [...document.querySelectorAll(".soff")].forEach(e => { e.textContent = t.sOff; });
+  [...document.querySelectorAll(".soffm")].forEach(e => { e.textContent = t.sOffM; });
+  [...document.querySelectorAll(".son")].forEach(e => { e.textContent = t.sOn; });
+  [...document.querySelectorAll(".sonm")].forEach(e => { e.textContent = t.sOnM; });
+  [...document.querySelectorAll(".ontitle")].forEach(e => { e.textContent = e.closest("#sm") ? t.onTitleM : t.onTitle; });
+  showOn();
+  drawBuffs();
+  $("tCamp").textContent = t.camp; $("tTier").textContent = t.tier;
+  $("tInf").textContent = t.inf; $("tCav").textContent = t.cav; $("tArc").textContent = t.arc;
+  $("tCampHint").textContent = t.campHint; $("send").textContent = t.send; $("tBack").textContent = t.back;
+  const opts = zero => '<option value="">' + t.pick + '</option>' + [0, 1, 2, 3, 4, 5, 6, 7, 8].map(v => '<option value="' + v + '">' + (v ? "TG" + v : zero) + '</option>').join("");
+  ["tg", "c0", "c1", "c2"].forEach(id => { const cur = $(id).value; $(id).innerHTML = opts(id === "tg" ? t.tg0 : t.none); $(id).value = cur; });
+  $("tg").value = "8";
+  $("msg").className = "msg";
+}
+
+// 훈련소 레벨은 내 TG 레벨보다 높을 수 없다. 높으면 그 칸을 빨갛게 하고 제출을 막는다
+function checkCamps() {
+  const tgv = $("tg").value, tg = +tgv;
+  let bad = false;
+  [0, 1, 2].forEach(i => {
+    const el = $("c" + i), over = tgv !== "" && el.value !== "" && +el.value > tg;
+    el.style.borderColor = over ? "var(--warn)" : "";
+    if (over) bad = true;
+  });
+  if (bad) say("err", T[lang].errCamp); else if ($("msg").className.indexOf("err") >= 0) $("msg").className = "msg";
+  return !bad;
+}
+
+function drawTiers() {
+  [0, 1, 2].forEach(i => {
+    $("s" + i).innerHTML = [10, 11].map(v => '<button type="button" data-i="' + i + '" data-v="' + v + '" class="t' + v + (tiers[i] === v ? ' on' : '') + '">T' + v + '</button>').join("");
+  });
+}
+
+
+// 저장 중 팝업: 화면을 덮어 다른 조작을 막고, 창을 닫거나 나가려 하면 브라우저가 한 번 더 묻는다
+const SAV_STAY = {"ko": "저장 중입니다… 끝날 때까지 창을 닫거나 나가지 마세요.", "en": "Saving… Please don't close or leave this page until it finishes.", "zh": "儲存中…完成前請不要關閉或離開此頁面。", "ar": "جارٍ الحفظ… يرجى عدم إغلاق الصفحة أو مغادرتها حتى ينتهي.", "tr": "Kaydediliyor… Bitene kadar sayfayı kapatmayın veya ayrılmayın."};
+const savLeave = e => { e.preventDefault(); e.returnValue = ""; return ""; };
+function savBusy(on, lang) {
+  let o = document.getElementById("savOv");
+  if (!o) { o = document.createElement("div"); o.id = "savOv"; o.innerHTML = '<div><i></i><span></span></div>'; document.body.appendChild(o); }
+  o.querySelector("span").textContent = SAV_STAY[lang] || SAV_STAY.en;
+  o.classList.toggle("on", !!on);
+  if (on) window.addEventListener("beforeunload", savLeave); else window.removeEventListener("beforeunload", savLeave);
+}
+function say(kind, text) { $("msg").className = "msg " + kind; $("msg").textContent = text; }
+
+async function countRows(id) {
+  const txt = await fetch(SHEET + "&_=" + Date.now()).then(r => r.text());
+  return txt.split("\n").filter(x => x.indexOf('"' + id + '"') >= 0).length;
+}
+
+// 제출 전보다 이 ID 의 줄이 늘었으면 저장된 것
+async function saved(id, before) {
+  for (let k = 0; k < 8; k++) {
+    await new Promise(r => setTimeout(r, 2500));
+    try { if (await countRows(id) > before) return true; } catch (e) {}
+  }
+  return false;
+}
+
+async function send() {
+  const t = T[lang], id = $("gid").value.trim();
+  if (!/^[0-9]{7,12}$/.test(id)) { say("err", t.errId); $("gid").focus(); return; }
+  if ($("tg").value === "" || [0, 1, 2].some(i => $("c" + i).value === "")) { say("err", t.errPick); return; }
+  if (!checkCamps()) return;
+  const m0 = +$("m0").value.replace(/[^0-9]/g, ""), m1 = +$("m1").value.replace(/[^0-9]/g, "");
+  if (!(m0 >= 1000 && m0 <= 3000000 && m1 >= m0 && m1 <= 3000000)) { say("err", t.errMarch); $("m0").focus(); return; }
+  const r0 = +$("r0").value.replace(/[^0-9]/g, ""), r1 = +$("r1").value.replace(/[^0-9]/g, "");
+  if ((r0 || r1) && !(r0 >= 1000 && r0 <= 9000000 && r1 >= r0 && r1 <= 9000000)) { say("err", t.errRally); $("r0").focus(); return; }
+  const camps = [0, 1, 2].map(i => +$("c" + i).value), tg = Math.max(...camps);   // 건물 TG 는 묻지 않는다 — 훈련소 중 가장 높은 값으로 보낸다
+  const body = new URLSearchParams();
+  body.append(F.march, String(m0)); body.append(F.marchOn, String(m1));
+  if (r0) { body.append(F.rally, String(r0)); body.append(F.rallyOn, String(r1)); }
+  body.append(F.id, id); body.append(F.tg, String(tg)); body.append(F.lang, lang);
+  camps.forEach((c, i) => body.append(F.c[i], String(c)));
+  tiers.forEach((v, i) => body.append(F.t[i], String(v)));
+  $("send").disabled = true; say("wait", t.sending); savBusy(true, lang);
+  let before = 0;
+  try { before = await countRows(id); } catch (e) {}
+  try { await fetch(FORM, {method: "POST", mode: "no-cors", body}); } catch (e) {}
+  const ok = await saved(id, before);
+  if (ok) remember("id", id);
+  say(ok ? "ok" : "err", ok ? t.ok : t.fail);
+  $("send").disabled = false; savBusy(false);
+}
+
+$("langs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setLang(b.getAttribute("data-l")); });
+["tg", "c0", "c1", "c2"].forEach(id => $(id).addEventListener("change", checkCamps));
+$("gid").addEventListener("input", () => { $("gid").value = $("gid").value.replace(/[^0-9]/g, ""); clearTimeout(window.__pf); window.__pf = setTimeout(() => prefill($("gid").value.trim()), 700); });
+// 다른 칸을 직접 고치기 시작하면 불러오기로 덮어쓰지 않는다
+["tg", "c0", "c1", "c2", "m0", "m1", "r0", "r1"].forEach(id => ["input", "change"].forEach(ev => $(id).addEventListener(ev, e => { if (e.isTrusted) TOUCHED = true; })));
+// 숫자 칸: 쉼표를 자동으로 넣고, 아래 도우미 단추(+100,000 ~ +1 · 한 자리 지우기 · 모두 지우기)는 마지막으로 누른 칸에 적용한다
+const NUM = {m: 3000000, r: 9000000}, ACT = {m: "m0", r: "r0"};
+const digits = el => +el.value.replace(/[^0-9]/g, "") || 0;
+const put = (el, v) => { el.value = v ? Number(v).toLocaleString("en-US") : ""; };
+// 버프 ON 값 자동 계산. 출정: OFF × (다이아 10% · 20%) + 펫 버프(1,500~15,000). 집결: OFF + 펫 버프(60,000~150,000)
+const BUFF = {m: {dia: 20, pet: 0}, r: {dia: 0, pet: 0}};   // 출정: 다이아 10%(2시간) · 20%(12시간), 처음엔 20%
+const PETS = {m: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(k => k * 1500), r: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => 60000 + k * 10000)};
+const fmtN = v => Number(v).toLocaleString("en-US");
+function calc(k) {
+  const off = digits($(k + "0")), b = BUFF[k], f = $("f" + k);
+  if (k === "m" && !b.dia && !b.pet) { if (f) f.textContent = ""; if (off) put($(k + "1"), off); calc("r"); return; }
+  if (!off) { if (f) f.textContent = ""; return; }
+  // 이박사님 표(2026-10-09): 출정 최종 = (출정 + 출정 펫) × 다이아. 집결 최종 = 집결 + (출정 최종 − 출정) + 집결 펫
+  const m0 = digits($("m0")), mFin = Math.floor((m0 + BUFF.m.pet) * (100 + BUFF.m.dia) / 100);
+  const v = Math.min(k === "m" ? Math.floor((off + b.pet) * (100 + b.dia) / 100) : off + (mFin - m0) + b.pet, NUM[k]);
+  put($(k + "1"), v);
+  if (k === "m") calc("r");
+  if (f) f.textContent = k === "m" ? (b.pet ? "(" + fmtN(off) + " + " + fmtN(b.pet) + ")" : fmtN(off)) + (b.dia ? " × " + (100 + b.dia) + "%" : "") + " = " + fmtN(v)
+    : fmtN(off) + " + " + fmtN(mFin - m0) + (b.pet ? " + " + fmtN(b.pet) : "") + " = " + fmtN(v);
+}
+// OFF 값이 있으면 버프 ON 칸을 펼치고, 없으면 접고 안내만
+// ① 버프 없이 값이 없으면 ② 버프 고르기를 잠그고(누르면 ① 로 안내), 값이 있으면 연다
+function showOn() {
+  const t = T[lang];
+  ["m", "r"].forEach(k => {
+    const has = digits($(k + "0")) > 0, sec = $("s" + k);
+    sec.hidden = false; sec.classList.toggle("locked", !has);
+    $("g" + k).textContent = has ? "" : t.onGo;
+  });
+}
+document.addEventListener("click", e => {
+  const sec = e.target.closest(".onsec.locked");
+  if (!sec || e.target.closest("input")) return;
+  const k = sec.id.slice(1), g = $("g" + k);
+  g.classList.remove("shake"); void g.offsetWidth; g.classList.add("shake");
+  $(k + "0").focus();
+}, true);
+function drawBuffs() {
+  const t = T[lang];
+  ["m", "r"].forEach(k => {
+    const b = BUFF[k];
+    $("b" + k).innerHTML = '<div class="brow pet"><span>' + (k === "m" ? t.petL : '🐾 ' + t.bPet) + '</span><select data-k="' + k + '"><option value="0">' + t.none + '</option>' + PETS[k].map(v => '<option value="' + v + '"' + (b.pet === v ? ' selected' : '') + '>+' + fmtN(v) + '</option>').join("") + '</select></div>' +
+      (k === "m" ? '<div class="brow dia"><span>' + t.diaL + '</span><div class="dseg" data-k="m">' + [[0, t.none], [10, t.d10], [20, t.d20]].map(x => '<button type="button" data-v="' + x[0] + '"' + (b.dia === x[0] ? ' class="on"' : '') + '>' + x[1] + '</button>').join("") + '</div></div>' : '') +
+      '<div class="hint" id="f' + k + '"></div>';
+    calc(k);
+  });
+}
+document.addEventListener("click", e => {
+  const d = e.target.closest(".dseg button");
+  if (d) { BUFF.m.dia = +d.getAttribute("data-v") || 0; drawBuffs(); }
+});
+document.addEventListener("change", e => {
+  const k = e.target.getAttribute && e.target.getAttribute("data-k");
+  if (k && e.target.tagName === "SELECT") { BUFF[k].pet = +e.target.value || 0; calc(k); }
+});
+function mark() { ["m0", "m1", "r0", "r1"].forEach(id => $(id).classList.toggle("act", ACT[id[0]] === id)); }
+["m0", "m1", "r0", "r1"].forEach(id => {
+  $(id).addEventListener("input", () => { put($(id), Math.min(digits($(id)), NUM[id[0]])); ACT[id[0]] = id; mark(); if (id[1] === "0") { calc(id[0]); if (id[0] === "m") calc("r"); showOn(); } });
+  ["focus", "click"].forEach(ev => $(id).addEventListener(ev, () => { ACT[id[0]] = id; mark(); }));
+});
+[...document.querySelectorAll(".pad")].forEach(pad => pad.addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  const k = pad.getAttribute("data-for"), el = $(ACT[k]), v = digits(el), add = +b.getAttribute("data-add") || 0, act = b.getAttribute("data-act");
+  put(el, add ? Math.min(v + add, NUM[k]) : act === "back" ? Math.floor(v / 10) : 0);
+  if (ACT[k] === k + "0") { calc(k); showOn(); }
+  mark();
+}));
+mark();
+document.addEventListener("click", e => {
+  const b = e.target.closest(".seg button");
+  if (!b) return;
+  tiers[+b.getAttribute("data-i")] = +b.getAttribute("data-v");
+  drawTiers();
+});
+$("send").addEventListener("click", send);
+setLang(lang); drawTiers();
+if (recall("id")) { $("gid").value = recall("id"); prefill(recall("id")); }
+if (/[?&]embed=1/.test(location.search)) { $("tBack").parentNode.style.display = "none"; document.body.classList.add("embed"); }
+</script>
+</body>
+</html>
