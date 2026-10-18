@@ -29,8 +29,9 @@
       auto: "⚡ 전투력 순 자동 선발", clr: "비우기", cnt: "참전 {0}/20 · 후보 {1}/10", inP: "참전", inS: "후보", inN: "—", other: "군단 {0}", absent: "KvK 불참",
       s2: "② 집결장 · 집결원 자동 배치", s2d: "참전 명단에서 집결장을 고르면(이름을 누르기) 나머지가 TG → 전투력 순으로 집결장마다 번갈아(뱀 순서) 들어갑니다. 집결 인원수를 넘으면 개인 부대로 남습니다. 집결원 출정은 버프 OFF 기본값.",
       pickL: "집결장으로 쓸 사람 (참전 명단에서 누르기)", cap: "집결 인원수", own: "본인", sum: "채움 {0} / {1}", solo: "개인 부대 (점령 유지 · 수송차 줍기 · 땅굴)", none: "없음",
-      s3: "③ 작전 지도", s3d: "단계를 고르고, 아래에서 집결장(또는 개인 부대)을 누른 뒤 지도의 건물이나 원하는 지점을 누르면 공격 좌표가 찍힙니다. 다시 누르면 바뀝니다.",
+      s3: "③ 작전 지도", s3d: "아군 진입이 왼쪽일 때와 오른쪽일 때를 따로 짭니다(대칭 복사 후 고치면 빠릅니다). 단계를 고르고, 아래에서 집결장(또는 개인 부대)을 누른 뒤 지도의 건물이나 원하는 지점을 누르면 공격 좌표가 찍힙니다. 다시 누르면 바뀝니다.",
       ph: ["초반 · 1단계", "중반 · 2단계", "후반 · 3단계"], phd: ["성소 · 수도원 · 시계탑 · 마구간 개방", "성검 제단 · 교화의 홀 · 용병 주둔지 개방", "숨겨진 땅굴 2개가 무작위로 출현"],
+      sideL: "◀ 아군 진입 왼쪽", sideR: "아군 진입 오른쪽 ▶", mirR: "↔ 오른쪽에 대칭 복사", mirL: "↔ 왼쪽에 대칭 복사", mirAsk: "지금 작전을 반대쪽에 대칭으로 복사합니다. 반대쪽에 짜 둔 작전은 덮어씁니다. 진행할까요?",
       cel: "⛏ 땅굴 표시", del: "✕ 좌표 지우기", soloL: "개인 부대", memo: "이 단계 작전 지시 (자유롭게)", lock: "{0}단계 개방",
       val: "이 단계 목표 건물: 첫 점령 합 {0} · 지속 {1}/분 (연맹 점수)", free: "지정 좌표",
       s4: "④ 작전 브리핑", copy: "📋 복사", copied: "복사했습니다", brief: "🗡 성검 쟁탈 작전 — {0} 군단 {1}", bMem: "집결원 {0}명", bSolo: "개인 부대",
@@ -45,8 +46,9 @@
       auto: "⚡ Auto-pick by power", clr: "Clear", cnt: "Combatants {0}/20 · Subs {1}/10", inP: "Fight", inS: "Sub", inN: "—", other: "Legion {0}", absent: "KvK absent",
       s2: "② Rally leaders & auto-placed joiners", s2d: "Tap names in the roster to make them rally leaders. Everyone else is dealt to the leaders in snake order (TG, then power). Anyone over capacity stays as a solo squad. Joiner march = buff-OFF size.",
       pickL: "Rally leaders (tap from the roster)", cap: "Rally capacity", own: "own", sum: "Filled {0} / {1}", solo: "Solo squads (hold · carts · tunnels)", none: "none",
-      s3: "③ Battle map", s3d: "Pick a phase, tap a leader (or solo squads) below, then tap a building or any spot on the map to set the target. Tap again to change.",
+      s3: "③ Battle map", s3d: "Plan both cases — entering on the left and on the right (mirror, then adjust). Pick a phase, tap a leader (or solo squads) below, then tap a building or any spot on the map to set the target. Tap again to change.",
       ph: ["Early · Phase 1", "Mid · Phase 2", "Late · Phase 3"], phd: ["Sanctums · Abbeys · Bell Tower · Stables open", "Swordshrine · Hall of Reformation · Mercenary Camp open", "Two hidden Undercellars appear at random"],
+      sideL: "◀ We enter LEFT", sideR: "We enter RIGHT ▶", mirR: "↔ Mirror to right", mirL: "↔ Mirror to left", mirAsk: "Copy this plan to the other side, mirrored? The other side's plan will be overwritten.",
       cel: "⛏ Mark tunnel", del: "✕ Clear target", soloL: "Solo squads", memo: "Orders for this phase (free text)", lock: "opens in phase {0}",
       val: "Targets this phase: first capture {0} · hold {1}/min (alliance points)", free: "map point",
       s4: "④ Briefing", copy: "📋 Copy", copied: "Copied", brief: "🗡 Swordland plan — {0} Legion {1}", bMem: "{0} joiners", bSolo: "Solo squads",
@@ -57,16 +59,23 @@
   };
   const st = (k, ...a) => { const d = T[LANG === "ko" ? "ko" : "en"]; let s = d[k] != null ? d[k] : T.ko[k]; if (typeof s === "string") a.forEach((v, i) => { s = s.split("{" + i + "}").join(v); }); return s; };
   const bn = b => LANG === "ko" ? b.ko : b.en;
-  const blankLeg = () => ({m: [], s: [], ld: [], ph: [{t: {}, memo: ""}, {t: {}, memo: ""}, {t: {}, memo: ""}], cel: []});
+  // ph = 아군 진입이 왼쪽일 때, phR = 오른쪽일 때(어느 쪽에 배치될지 모르니 둘 다 미리 짠다)
+  const blankPh = () => [{t: {}, memo: ""}, {t: {}, memo: ""}, {t: {}, memo: ""}];
+  const blankLeg = () => ({m: [], s: [], ld: [], ph: blankPh(), phR: blankPh(), cel: [], celR: []});
   const blank = a => ({a, L: [blankLeg(), blankLeg()]});
-  let SA = "", SL = 0, SP = 0, SEL = null, BL = "ko", MSG = "";
+  let SA = "", SL = 0, SP = 0, SD = 0, SEL = null, BL = "ko", MSG = "";
+  const PH = (L, d) => (d == null ? SD : d) ? L.phR : L.ph, CEL = (L, d) => (d == null ? SD : d) ? L.celR : L.cel;
+  const both = (L, f) => { L.ph.forEach(f); L.phR.forEach(f); };
+  // 전장은 가운데를 중심으로 점대칭 — 왼쪽 작전을 오른쪽으로 뒤집을 때 쓰는 짝
+  const MIR = {alt: "alt", sa1: "sa2", sa2: "sa1", ab1: "ab4", ab4: "ab1", ab2: "ab3", ab3: "ab2", bel: "sta", sta: "bel", mer: "hal", hal: "mer"};
+  const mirT = t => !t ? t : t.b ? {b: MIR[t.b] || t.b} : {x: 900 - t.x, y: 724 - t.y};
   const SWD = {}, SDIRTY = {};
   const saved = a => ((CFG.sword || {})[a]) || null;
   const plan = a => {
     if (!SWD[a]) { const s = saved(a); SWD[a] = s ? JSON.parse(JSON.stringify(s.P)) : blank(a); }
     const P = SWD[a];
     P.L = (P.L || []).slice(0, 2); while (P.L.length < 2) P.L.push(blankLeg());
-    P.L.forEach(L => { ["m", "s", "ld", "cel"].forEach(k => { if (!Array.isArray(L[k])) L[k] = []; }); if (!Array.isArray(L.ph)) L.ph = []; while (L.ph.length < 3) L.ph.push({t: {}, memo: ""}); L.ph.forEach(p => { if (!p.t) p.t = {}; }); });
+    P.L.forEach(L => { ["m", "s", "ld", "cel", "celR"].forEach(k => { if (!Array.isArray(L[k])) L[k] = []; }); ["ph", "phR"].forEach(k => { if (!Array.isArray(L[k])) L[k] = []; while (L[k].length < 3) L[k].push({t: {}, memo: ""}); L[k].forEach(p => { if (!p.t) p.t = {}; }); }); });
     return P;
   };
   const editable = () => IS_ADMIN && typeof can === "function" && can(SA);
@@ -187,7 +196,7 @@
   }
 
   function mapSvg(L, A) {
-    const ph = L.ph[SP], ko = LANG === "ko";
+    const ph = PH(L)[SP], ko = LANG === "ko", US = SD ? RED : BLUE, THEM = SD ? BLUE : RED;
     const lead = A.R.map(r => r.l.k);
     const rh = (x, y, w, h) => [[x - w, y], [x, y - h], [x + w, y], [x, y + h]].map(p => p.join(",")).join(" ");   // 마름모(쿼터뷰 바닥판)
     let s = '<svg class="map" id="swMap" viewBox="0 0 ' + MW + ' ' + MH + '" xmlns="http://www.w3.org/2000/svg">' +
@@ -205,7 +214,7 @@
       '<polygon points="' + FIELD.map(p => p.join(",")).join(" ") + '" fill="url(#swg)"/>' +
       '<path d="M130 300 L240 330 L300 420 M560 140 L620 250 L720 300 M380 560 L470 470 L560 470 M600 560 L700 520" fill="none" stroke="rgba(70,35,10,.28)" stroke-width="2"/>';
     // 진영
-    [[BLUE, "#4dabf7", "rgba(51,154,240,.32)", ko ? "아군 진입" : "ALLY"], [RED, "#ff6b6b", "rgba(240,62,62,.32)", ko ? "적군 진입" : "ENEMY"]].forEach(z => {
+    [[US, "#4dabf7", "rgba(51,154,240,.32)", ko ? "아군 진입" : "ALLY"], [THEM, "#ff6b6b", "rgba(240,62,62,.32)", ko ? "적군 진입" : "ENEMY"]].forEach(z => {
       s += '<polygon points="' + rh(z[0][0], z[0][1], 52, 40) + '" fill="' + z[2] + '" stroke="' + z[1] + '" stroke-width="4"/>' +
         '<text x="' + z[0][0] + '" y="' + (z[0][1] + 64) + '" text-anchor="middle" font-size="19" font-weight="800" fill="' + z[1] + '" stroke="#2b1a0c" stroke-width="4" paint-order="stroke">' + z[3] + '</text>';
     });
@@ -220,7 +229,7 @@
         '<text x="' + b.x + '" y="' + (b.y + hh + 12 * big + 18.5) + '" text-anchor="middle" font-size="16" font-weight="800" fill="' + (open ? "#ffe8a3" : "#c9bba0") + '">' + esc(lab) + '</text></g>';
     });
     // 땅굴(3단계)
-    if (SP === 2) L.cel.forEach((c, i) => {
+    if (SP === 2) CEL(L).forEach((c, i) => {
       s += '<g filter="url(#sws)"><polygon points="' + rh(c[0], c[1], 34, 20) + '" fill="rgba(60,40,20,.75)" stroke="#ffa94d" stroke-width="3" stroke-dasharray="7 5"/><text x="' + c[0] + '" y="' + (c[1] + 9) + '" text-anchor="middle" font-size="24">⛏</text>' +
         '<text x="' + c[0] + '" y="' + (c[1] + 44) + '" text-anchor="middle" font-size="16" font-weight="800" fill="#ffc078" stroke="#2b1a0c" stroke-width="4" paint-order="stroke">' + (ko ? "땅굴 " : "Tunnel ") + (i + 1) + '</text></g>';
     });
@@ -232,7 +241,7 @@
       const b = t.b && B.find(x => x.id === t.b), x = b ? b.x : +t.x, y = b ? b.y : +t.y;
       if (!isFinite(x) || !isFinite(y)) return;
       const key = Math.round(x) + ":" + Math.round(y), j = stack[key] = (stack[key] || 0) + 1;
-      const sx = BLUE[0] + 40, sy = BLUE[1], dx = x - sx, dy = y - sy, len = Math.hypot(dx, dy) || 1, bend = Math.min(40 + j * 22, len * .3);
+      const sx = US[0] + (SD ? -40 : 40), sy = US[1], dx = x - sx, dy = y - sy, len = Math.hypot(dx, dy) || 1, bend = Math.min(40 + j * 22, len * .3);
       const cx = (sx + x) / 2 + dy / len * bend, cy = (sy + y) / 2 - dx / len * bend;
       const ex = x - dx / len * (b ? 34 : 12), ey = y - dy / len * (b ? 22 : 12);
       s += '<path d="M' + sx + ' ' + sy + ' Q ' + cx + ' ' + cy + ' ' + ex + ' ' + ey + '" fill="none" stroke="#1b1208" stroke-width="7" opacity=".45"/>' +
@@ -252,14 +261,17 @@
     try {
       const nm = k => who(k).n;
       let out = st("brief", SA, SL + 1) + "\n";
+      [0, 1].forEach(d => {
+      out += "\n■■ " + st(d ? "sideR" : "sideL") + " ■■\n";
       [0, 1, 2].forEach(p => {
-        const ph = L.ph[p], lines = [];
+        const ph = PH(L, d)[p], lines = [];
         A.R.forEach((r, i) => { const t = ph.t[r.l.k]; lines.push("①②③④⑤⑥⑦⑧".charAt(i) + " " + nm(r.l.k) + (t ? " → " + tName(t) : "") + "  (" + st("bMem", r.mem.length) + (r.mem.length ? ": " + r.mem.map(m => nm(m.k)).join(", ") : "") + ")"); });
         const ts = ph.t.solo;
         if (A.solo.length || ts) lines.push("Ⓢ " + st("bSolo") + (ts ? " → " + tName(ts) : "") + (A.solo.length ? ": " + A.solo.map(nm).join(", ") : ""));
         if (p > 0 && !Object.keys(ph.t).length && !ph.memo) { out += "\n━ " + st("ph")[p] + " ━\n" + (lang === "ko" ? "↳ 앞 단계 그대로" : "↳ same as before") + "\n"; return; }
         if (!lines.length && !ph.memo) return;
         out += "\n━ " + st("ph")[p] + " — " + st("phd")[p] + " ━\n" + lines.join("\n") + (ph.memo ? "\n📝 " + ph.memo : "") + "\n";
+      });
       });
       return out.trim();
     } finally { LANG = keep; }
@@ -294,8 +306,8 @@
     });
     h += '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:#adb5bd">S</i>' + st("solo") + '</span></div><div class="ml" style="margin-top:6px">' + (A.solo.map(k => '<span>' + esc(who(k).n) + '</span>').join("") || st("none")) + '</div></div></div>';
     // ③ 작전 지도
-    const ph = L.ph[SP], tg = new Set(Object.values(ph.t).map(t => t && t.b).filter(Boolean)), tb = B.filter(b => tg.has(b.id) && b.ph <= SP + 1);
-    h += '<div class="sw"><h2>' + st("s3") + '</h2><div class="d">' + esc(st("s3d")) + '</div><div class="tabs ph" id="swPh">' + [0, 1, 2].map(i => '<button data-ph="' + i + '"' + (i === SP ? ' class="on"' : '') + '>' + st("ph")[i] + '</button>').join("") + '</div><div class="phd">' + st("phd")[SP] + '</div>';
+    const ph = PH(L)[SP], tg = new Set(Object.values(ph.t).map(t => t && t.b).filter(Boolean)), tb = B.filter(b => tg.has(b.id) && b.ph <= SP + 1);
+    h += '<div class="sw"><h2>' + st("s3") + '</h2><div class="d">' + esc(st("s3d")) + '</div><div class="tabs" id="swSide" style="margin-bottom:8px">' + [0, 1].map(d => '<button data-side="' + d + '"' + (d === SD ? ' class="on"' : '') + '>' + st(d ? "sideR" : "sideL") + '</button>').join("") + (E ? '<button id="swMir">' + st(SD ? "mirL" : "mirR") + '</button>' : '') + '</div><div class="tabs ph" id="swPh">' + [0, 1, 2].map(i => '<button data-ph="' + i + '"' + (i === SP ? ' class="on"' : '') + '>' + st("ph")[i] + '</button>').join("") + '</div><div class="phd">' + st("phd")[SP] + '</div>';
     if (E) h += '<div class="chips">' + A.R.map((r, i) => '<button class="chip' + (SEL === r.l.k ? ' on' : '') + '" data-sel="' + esc(r.l.k) + '"><i style="background:' + LC[i % LC.length] + '">' + (i + 1) + '</i>' + esc(who(r.l.k).n) + (ph.t[r.l.k] ? ' → ' + esc(tName(ph.t[r.l.k])) : '') + '</button>').join("") +
       '<button class="chip' + (SEL === "solo" ? ' on' : '') + '" data-sel="solo"><i style="background:#adb5bd">S</i>' + st("soloL") + (ph.t.solo ? ' → ' + esc(tName(ph.t.solo)) : '') + '</button>' +
       (SP === 2 ? '<button class="chip' + (SEL === "cel" ? ' on' : '') + '" data-sel="cel">' + st("cel") + '</button>' : '') + '<button class="chip" id="swDel">' + st("del") + '</button></div>';
@@ -318,19 +330,20 @@
     const P = plan(SA), L = P.L[SL];
     if (el.closest("#swMap")) {
       if (!editable() || !SEL) return;
-      const [x, y] = svgPt(e), ph = L.ph[SP];
+      const [x, y] = svgPt(e), ph = PH(L)[SP], CL = CEL(L);
       if (SEL === "cel") {
-        const i = L.cel.findIndex(c => Math.hypot(c[0] - x, c[1] - y) < 30);
-        if (i >= 0) L.cel.splice(i, 1); else { if (L.cel.length >= 2) L.cel.shift(); L.cel.push([Math.round(x), Math.round(y)]); }
+        const i = CL.findIndex(c => Math.hypot(c[0] - x, c[1] - y) < 30);
+        if (i >= 0) CL.splice(i, 1); else { if (CL.length >= 2) CL.shift(); CL.push([Math.round(x), Math.round(y)]); }
       } else {
         const near = B.filter(b => b.ph <= SP + 1).map(b => ({b, d: Math.hypot(b.x - x, b.y - y)})).sort((p, q) => p.d - q.d)[0];
-        const cel = SP === 2 ? L.cel.find(c => Math.hypot(c[0] - x, c[1] - y) < 34) : null;
+        const cel = SP === 2 ? CL.find(c => Math.hypot(c[0] - x, c[1] - y) < 34) : null;
         ph.t[SEL] = near && near.d < 48 ? {b: near.b.id} : cel ? {x: cel[0], y: cel[1]} : {x: Math.round(x), y: Math.round(y)};
       }
       touch(); render(); return;
     }
     if (!btn) return;
     if (btn.dataset.leg != null) { SL = +btn.dataset.leg; SEL = null; render(); return; }
+    if (btn.dataset.side != null) { SD = +btn.dataset.side; render(); return; }
     if (btn.dataset.ph != null) { SP = +btn.dataset.ph; if (SEL === "cel" && SP !== 2) SEL = null; render(); return; }
     if (btn.dataset.bl) { BL = btn.dataset.bl; render(); return; }
     if (btn.id === "swCopy") { const t = $("swBrief").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { btn.textContent = st("copied"); setTimeout(() => { btn.textContent = st("copy"); }, 1500); }, () => {}); return; }
@@ -341,12 +354,12 @@
       L.m = L.m.filter(x => x !== k); L.s = L.s.filter(x => x !== k);
       if (s === "p") { if (L.m.length >= 20) { MSG = st("cnt", 20, L.s.length); render(); return; } L.m.push(k); }
       if (s === "s") { if (L.s.length >= 10) { MSG = st("cnt", L.m.length, 10); render(); return; } L.s.push(k); }
-      if (s !== "p") { L.ld = L.ld.filter(l => l.k !== k); L.ph.forEach(p => { delete p.t[k]; }); }
+      if (s !== "p") { L.ld = L.ld.filter(l => l.k !== k); both(L, p => { delete p.t[k]; }); }
       touch(); render(); return;
     }
     if (btn.id === "swAuto" || btn.id === "swClr") {
       const O = P.L[1 - SL], used = new Set(O.m.concat(O.s));
-      L.m = []; L.s = []; L.ld = []; L.ph.forEach(p => { p.t = {}; });
+      L.m = []; L.s = []; L.ld = []; both(L, p => { p.t = {}; });
       if (btn.id === "swAuto") {
         const free = people(SA).filter(q => !used.has(q.k) && !(q.d && q.d.absent));
         L.m = free.slice(0, 20).map(q => q.k); L.s = free.slice(20, 30).map(q => q.k);
@@ -355,11 +368,18 @@
     }
     if (btn.dataset.ld) {
       const k = btn.dataset.ld, i = L.ld.findIndex(l => l.k === k);
-      if (i >= 0) { L.ld.splice(i, 1); L.ph.forEach(p => { delete p.t[k]; }); } else if (L.ld.length < 8) L.ld.push({k, cap: 0});
+      if (i >= 0) { L.ld.splice(i, 1); both(L, p => { delete p.t[k]; }); } else if (L.ld.length < 8) L.ld.push({k, cap: 0});
       touch(); render(); return;
     }
     if (btn.dataset.sel) { SEL = SEL === btn.dataset.sel ? null : btn.dataset.sel; render(); return; }
-    if (btn.id === "swDel") { if (SEL && SEL !== "cel") { delete L.ph[SP].t[SEL]; touch(); } render(); return; }
+    if (btn.id === "swDel") { if (SEL && SEL !== "cel") { delete PH(L)[SP].t[SEL]; touch(); } render(); return; }
+    if (btn.id === "swMir") {
+      // 지금 보는 쪽 작전을 반대쪽에 점대칭으로 옮겨 적는다(반대쪽 내용은 덮어씀)
+      if (!confirm(st("mirAsk"))) return;
+      const src = PH(L), dst = PH(L, 1 - SD);
+      src.forEach((p, i) => { const t = {}; Object.keys(p.t).forEach(k => { t[k] = mirT(p.t[k]); }); dst[i].t = t; dst[i].memo = p.memo; });
+      SD = 1 - SD; touch(); render(); return;
+    }
     if (btn.id === "swSave") { save(); return; }
   }
   function onChange(e) {
@@ -367,7 +387,7 @@
     if (el.id === "swAlly") { SA = el.value; SEL = null; MSG = ""; render(); return; }
     if (!editable()) return;
     if (el.dataset.cap) { const l = L.ld.find(x => x.k === el.dataset.cap); if (l) { l.cap = +String(el.value).replace(/[^0-9]/g, "") || 0; touch(); render(); } return; }
-    if (el.id === "swMemo") { L.ph[SP].memo = el.value.slice(0, 1500); touch(); const b = $("swBrief"); if (b) b.textContent = briefText(L, assign(L), BL); }
+    if (el.id === "swMemo") { PH(L)[SP].memo = el.value.slice(0, 1500); touch(); const b = $("swBrief"); if (b) b.textContent = briefText(L, assign(L), BL); }
   }
 
   async function save() {
