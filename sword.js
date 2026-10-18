@@ -293,7 +293,7 @@
       (E ? '<div class="sv" style="margin-bottom:8px"><button class="primary" id="swAuto">' + st("auto") + '</button><button id="swClr">' + st("clr") + '</button></div>' : '') + '<div class="ros">';
     const rowOf = q => {
       const isP = L.m.includes(q.k), isS = L.s.includes(q.k), oth = inO.has(q.k);
-      if (!E && !isP && !isS) return '';
+      if (oth || (!E && !isP && !isS)) return '';   // 다른 군단에 들어간 사람은 이 군단 명단에 안 보인다
       return '<div class="rr' + (isP ? ' p' : isS ? ' s' : '') + '"><span class="nm">' + esc(q.n) + (q.d && q.d.absent ? ' <span class="tag">' + st("absent") + '</span>' : '') + '</span><span class="pw">' + (q.tg ? 'TG' + q.tg + ' · ' : '') + pw(q.p) + '</span>' +
         (oth ? '<span class="tag">' + st("other", 2 - SL) + '</span>' : E ? '<span class="seg" data-k="' + esc(q.k) + '"><button class="p' + (isP ? ' on' : '') + '" data-st="p">' + st("inP") + '</button><button class="s' + (isS ? ' on' : '') + '" data-st="s">' + st("inS") + '</button><button class="n' + (!isP && !isS ? ' on' : '') + '" data-st="n">' + st("inN") + '</button></span>' : '<span class="tag">' + (isP ? st("inP") : st("inS")) + '</span>') + '</div>';
     };
