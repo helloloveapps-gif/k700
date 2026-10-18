@@ -31,6 +31,7 @@
       pickL: "집결장으로 쓸 사람 (참전 명단에서 누르기)", cap: "집결 인원수", own: "본인", sum: "채움 {0} / {1}", solo: "개인 부대 (점령 유지 · 수송차 줍기 · 땅굴)", none: "없음",
       s3: "③ 작전 지도", s3d: "아군 진입이 왼쪽일 때와 오른쪽일 때를 따로 짭니다(대칭 복사 후 고치면 빠릅니다). 단계를 고르고, 아래에서 집결장(또는 개인 부대)을 누른 뒤 지도의 건물이나 원하는 지점을 누르면 공격 좌표가 찍힙니다. 다시 누르면 바뀝니다.",
       ph: ["초반 · 1단계", "중반 · 2단계", "후반 · 3단계"], phd: ["성소 · 수도원 · 시계탑 · 마구간 개방", "성검 제단 · 교화의 홀 · 용병 주둔지 개방", "숨겨진 땅굴 2개가 무작위로 출현"],
+      roleNone: "저장된 성검 쟁탈 작전에 내 이름이 없습니다.", roleSub: "후보입니다 — 참전자가 빠지면 들어갑니다.", roleLead: "{0}번 집결장입니다", roleJoin: "{0}번 집결 — {1} 집결에 들어갑니다", roleSolo: "개인 부대 — 점령 유지 · 수송차 줍기 · 땅굴",
       sideL: "◀ 아군 진입 왼쪽", sideR: "아군 진입 오른쪽 ▶", mirR: "↔ 오른쪽에 대칭 복사", mirL: "↔ 왼쪽에 대칭 복사", mirAsk: "지금 작전을 반대쪽에 대칭으로 복사합니다. 반대쪽에 짜 둔 작전은 덮어씁니다. 진행할까요?",
       cel: "⛏ 땅굴 표시", del: "✕ 좌표 지우기", soloL: "개인 부대", memo: "이 단계 작전 지시 (자유롭게)", lock: "{0}단계 개방",
       val: "이 단계 목표 건물: 첫 점령 합 {0} · 지속 {1}/분 (연맹 점수)", free: "지정 좌표",
@@ -48,6 +49,7 @@
       pickL: "Rally leaders (tap from the roster)", cap: "Rally capacity", own: "own", sum: "Filled {0} / {1}", solo: "Solo squads (hold · carts · tunnels)", none: "none",
       s3: "③ Battle map", s3d: "Plan both cases — entering on the left and on the right (mirror, then adjust). Pick a phase, tap a leader (or solo squads) below, then tap a building or any spot on the map to set the target. Tap again to change.",
       ph: ["Early · Phase 1", "Mid · Phase 2", "Late · Phase 3"], phd: ["Sanctums · Abbeys · Bell Tower · Stables open", "Swordshrine · Hall of Reformation · Mercenary Camp open", "Two hidden Undercellars appear at random"],
+      roleNone: "You are not in the saved Swordland plan.", roleSub: "Substitute — you join if a combatant drops out.", roleLead: "You lead rally #{0}", roleJoin: "Rally #{0} — join {1}'s rally", roleSolo: "Solo squad — hold buildings · pick up carts · tunnels",
       sideL: "◀ We enter LEFT", sideR: "We enter RIGHT ▶", mirR: "↔ Mirror to right", mirL: "↔ Mirror to left", mirAsk: "Copy this plan to the other side, mirrored? The other side's plan will be overwritten.",
       cel: "⛏ Mark tunnel", del: "✕ Clear target", soloL: "Solo squads", memo: "Orders for this phase (free text)", lock: "opens in phase {0}",
       val: "Targets this phase: first capture {0} · hold {1}/min (alliance points)", free: "map point",
@@ -416,6 +418,37 @@
       MSG = st("fail"); render();
     } finally { savBusy(false); SAVING = false; }
   }
+
+  // 헤더 「🗡 성검 임무」: 저장된 작전에서 이 사람의 군단 · 역할 · 단계별 목표(아군 진입 왼쪽 / 오른쪽)
+  window.swordRoleHtml = id => {
+    const keep = SA, nmOf = (LOOKUP[id] || {}).n || ((DATA.find(x => x.id === id) || {}).gname || (DATA.find(x => x.id === id) || {}).name || "");
+    try {
+      for (const a of ALLIES) {
+        const sv = saved(a);
+        if (!sv) continue;
+        SA = a;
+        const ks = people(a).filter(q => q.id === id || (nmOf && norm(q.n) === norm(nmOf))).map(q => q.k).concat([id]);
+        for (let li = 0; li < 2; li++) {
+          const L = JSON.parse(JSON.stringify(sv.P.L[li] || blankLeg()));
+          ["ph", "phR"].forEach(k => { if (!Array.isArray(L[k])) L[k] = blankPh(); });
+          const k = ks.find(x => (L.m || []).includes(x) || (L.s || []).includes(x));
+          if (!k) continue;
+          let h = '<div class="msg" style="font-weight:800">' + esc(a) + ' · ' + st("leg", li + 1) + ' · ' + ((L.s || []).includes(k) ? st("inS") : st("inP")) + '</div>';
+          if ((L.s || []).includes(k)) return h + '<div class="msg">' + st("roleSub") + '</div>';
+          const A = assign(L), ri = A.R.findIndex(r => r.l.k === k), rj = A.R.findIndex(r => r.mem.some(m => m.k === k));
+          const grp = ri >= 0 ? ri : rj, gk = grp >= 0 ? A.R[grp].l.k : "solo";
+          h += '<div class="msg">' + (ri >= 0 ? '★ ' + st("roleLead", ri + 1) + '<br><small>' + st("bMem", A.R[ri].mem.length) + ': ' + esc(A.R[ri].mem.map(m => who(m.k).n).join(", ")) + '</small>' : rj >= 0 ? st("roleJoin", rj + 1, esc(who(A.R[rj].l.k).n)) : st("roleSolo")) + '</div>';
+          [0, 1].forEach(d => {
+            h += '<div style="margin-top:8px;font-weight:800">' + st(d ? "sideR" : "sideL") + '</div>';
+            let last = null;
+            [0, 1, 2].forEach(p => { const ph = PH(L, d)[p], t = ph.t[gk] || last; last = t; h += '<div class="sub" style="margin:2px 0">' + st("ph")[p] + ': <b>' + (t ? esc(tName(t)) : '·') + '</b>' + (ph.memo ? '<br>📝 ' + esc(ph.memo) : '') + '</div>'; });
+          });
+          return h;
+        }
+      }
+      return '<div class="msg">' + st("roleNone") + '</div>';
+    } finally { SA = keep; }
+  };
 
   let bound = false;
   window.renderSword = () => {
