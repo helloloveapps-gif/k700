@@ -236,6 +236,7 @@
         A.R.forEach((r, i) => { const t = ph.t[r.l.k]; lines.push("①②③④⑤⑥⑦⑧".charAt(i) + " " + nm(r.l.k) + (t ? " → " + tName(t) : "") + "  (" + st("bMem", r.mem.length) + (r.mem.length ? ": " + r.mem.map(m => nm(m.k)).join(", ") : "") + ")"); });
         const ts = ph.t.solo;
         if (A.solo.length || ts) lines.push("Ⓢ " + st("bSolo") + (ts ? " → " + tName(ts) : "") + (A.solo.length ? ": " + A.solo.map(nm).join(", ") : ""));
+        if (p > 0 && !Object.keys(ph.t).length && !ph.memo) { out += "\n━ " + st("ph")[p] + " ━\n" + (lang === "ko" ? "↳ 앞 단계 그대로" : "↳ same as before") + "\n"; return; }
         if (!lines.length && !ph.memo) return;
         out += "\n━ " + st("ph")[p] + " — " + st("phd")[p] + " ━\n" + lines.join("\n") + (ph.memo ? "\n📝 " + ph.memo : "") + "\n";
       });
