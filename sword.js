@@ -4,20 +4,22 @@
 (() => {
   // 건물 11개. x · y 는 전장 그림(파란 진영 왼쪽, 빨간 진영 오른쪽)에서의 자리. ph = 열리는 단계, f = 첫 점령, m = 분당(연맹 점수)
   const B = [
-    {id: "alt", ko: "성검 제단", en: "Swordshrine", ph: 2, f: 9000, m: 1800, x: 225, y: 182, k: "alt"},
-    {id: "sa1", ko: "성소 (서)", en: "Sanctum W", ph: 1, f: 6000, m: 1200, x: 122, y: 150, k: "san"},
-    {id: "sa2", ko: "성소 (동)", en: "Sanctum E", ph: 1, f: 6000, m: 1200, x: 328, y: 214, k: "san"},
-    {id: "ab1", ko: "수도원 북서", en: "Abbey NW", ph: 1, f: 3000, m: 600, x: 158, y: 60, k: "abb"},
-    {id: "ab2", ko: "수도원 북동", en: "Abbey NE", ph: 1, f: 3000, m: 600, x: 284, y: 64, k: "abb"},
-    {id: "ab3", ko: "수도원 남서", en: "Abbey SW", ph: 1, f: 3000, m: 600, x: 166, y: 300, k: "abb"},
-    {id: "ab4", ko: "수도원 남동", en: "Abbey SE", ph: 1, f: 3000, m: 600, x: 292, y: 304, k: "abb"},
-    {id: "sta", ko: "마구간", en: "Royal Stables", ph: 1, f: 1200, m: 240, x: 96, y: 212, k: "sta", fx: {ko: "고급 이전 충전 −50%", en: "Teleport recharge −50%"}},
-    {id: "bel", ko: "시계탑", en: "Bell Tower", ph: 1, f: 1200, m: 240, x: 354, y: 152, k: "bel", fx: {ko: "건물 점령 시간 −50%", en: "Capture time −50%"}},
-    {id: "mer", ko: "용병 주둔지", en: "Mercenary Camp", ph: 2, f: 1200, m: 240, x: 225, y: 100, k: "mer", fx: {ko: "적군 건물 공격용 용병 파견", en: "Mercenaries weaken enemy buildings"}},
-    {id: "hal", ko: "교화의 홀", en: "Hall of Reformation", ph: 2, f: 1200, m: 240, x: 225, y: 266, k: "hal", fx: {ko: "부대 공방 +15% / −15%", en: "Troop ATK/DEF +15% / −15%"}}
+    {id: "alt", ko: "성검 제단", en: "Swordshrine", ph: 2, f: 9000, m: 1800, x: 450, y: 362, k: "alt"},
+    {id: "sa1", ko: "성소 (서)", en: "Sanctum W", ph: 1, f: 6000, m: 1200, x: 240, y: 312, k: "san"},
+    {id: "sa2", ko: "성소 (동)", en: "Sanctum E", ph: 1, f: 6000, m: 1200, x: 660, y: 436, k: "san"},
+    {id: "ab1", ko: "수도원 (북)", en: "Abbey N", ph: 1, f: 3000, m: 600, x: 565, y: 118, k: "abb"},
+    {id: "ab2", ko: "수도원 (동)", en: "Abbey E", ph: 1, f: 3000, m: 600, x: 706, y: 332, k: "abb"},
+    {id: "ab3", ko: "수도원 (서)", en: "Abbey W", ph: 1, f: 3000, m: 600, x: 198, y: 428, k: "abb"},
+    {id: "ab4", ko: "수도원 (남)", en: "Abbey S", ph: 1, f: 3000, m: 600, x: 330, y: 628, k: "abb"},
+    {id: "bel", ko: "시계탑", en: "Bell Tower", ph: 1, f: 1200, m: 240, x: 330, y: 118, k: "bel", fx: {ko: "건물 점령 시간 −50%", en: "Capture time −50%"}},
+    {id: "sta", ko: "마구간", en: "Royal Stables", ph: 1, f: 1200, m: 240, x: 562, y: 628, k: "sta", fx: {ko: "고급 이전 충전 −50%", en: "Teleport recharge −50%"}},
+    {id: "mer", ko: "용병 주둔지", en: "Mercenary Camp", ph: 2, f: 1200, m: 240, x: 450, y: 198, k: "mer", fx: {ko: "적군 건물 공격용 용병 파견", en: "Mercenaries weaken enemy buildings"}},
+    {id: "hal", ko: "교화의 홀", en: "Hall of Reformation", ph: 2, f: 1200, m: 240, x: 450, y: 536, k: "hal", fx: {ko: "부대 공방 +15% / −15%", en: "Troop ATK/DEF +15% / −15%"}}
   ];
   const ICON = {alt: "🗡", san: "⛪", abb: "🏰", sta: "🐎", bel: "🔔", mer: "⚔", hal: "🛡"};
-  const BLUE = [22, 182], RED = [428, 182];
+  // 전장 그림 크기와 테두리(게임 화면 캡처를 따라 잡은 자리)
+  const MW = 900, MH = 730, BLUE = [86, 388], RED = [814, 388];
+  const FIELD = [[22, 258], [296, 14], [524, 14], [878, 252], [878, 470], [640, 716], [318, 716], [22, 500]];
   const LC = ["#ffd43b", "#ff922b", "#74c0fc", "#b197fc", "#63e6be", "#f783ac", "#ced4da", "#a9e34b"];   // 집결장 색
   const T = {
     ko: {
@@ -185,28 +187,44 @@
   }
 
   function mapSvg(L, A) {
-    const ph = L.ph[SP], E = editable();
+    const ph = L.ph[SP], ko = LANG === "ko";
     const lead = A.R.map(r => r.l.k);
-    let s = '<svg class="map" id="swMap" viewBox="0 0 450 365" xmlns="http://www.w3.org/2000/svg">' +
-      '<defs><pattern id="swg" width="18" height="18" patternUnits="userSpaceOnUse"><path d="M18 0H0V18" fill="none" stroke="#2a3a24" stroke-width=".6"/></pattern>' +
-      '<marker id="swa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker></defs>' +
-      '<rect width="450" height="365" fill="#0b120d"/>' +
-      '<polygon points="12,182 225,8 438,182 225,356" fill="#3b2f1c" stroke="#7a6237" stroke-width="2"/>' +
-      '<polygon points="12,182 225,8 438,182 225,356" fill="url(#swg)"/>' +
-      '<polygon points="' + [[BLUE[0] - 14, BLUE[1]], [BLUE[0], BLUE[1] - 11], [BLUE[0] + 14, BLUE[1]], [BLUE[0], BLUE[1] + 11]].map(p => p.join(",")).join(" ") + '" fill="rgba(51,154,240,.35)" stroke="#4dabf7" stroke-width="2"/>' +
-      '<polygon points="' + [[RED[0] - 14, RED[1]], [RED[0], RED[1] - 11], [RED[0] + 14, RED[1]], [RED[0], RED[1] + 11]].map(p => p.join(",")).join(" ") + '" fill="rgba(240,62,62,.35)" stroke="#ff6b6b" stroke-width="2"/>' +
-      '<text x="' + BLUE[0] + '" y="' + (BLUE[1] + 26) + '" text-anchor="middle" font-size="10" fill="#74c0fc" font-weight="700">' + (LANG === "ko" ? "아군" : "ALLY") + '</text>' +
-      '<text x="' + RED[0] + '" y="' + (RED[1] + 26) + '" text-anchor="middle" font-size="10" fill="#ff8787" font-weight="700">' + (LANG === "ko" ? "적군" : "ENEMY") + '</text>';
-    // 건물
+    const rh = (x, y, w, h) => [[x - w, y], [x, y - h], [x + w, y], [x, y + h]].map(p => p.join(",")).join(" ");   // 마름모(쿼터뷰 바닥판)
+    let s = '<svg class="map" id="swMap" viewBox="0 0 ' + MW + ' ' + MH + '" xmlns="http://www.w3.org/2000/svg">' +
+      '<defs>' +
+      '<radialGradient id="swf" cx="50%" cy="50%" r="62%"><stop offset="0" stop-color="#b8743a"/><stop offset=".7" stop-color="#94592b"/><stop offset="1" stop-color="#6e4120"/></radialGradient>' +
+      '<linearGradient id="swc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2c79d"/><stop offset="1" stop-color="#a88a62"/></linearGradient>' +
+      '<pattern id="swg" width="46" height="23" patternUnits="userSpaceOnUse"><path d="M0 11.5L23 0L46 11.5L23 23Z" fill="none" stroke="rgba(60,30,10,.22)" stroke-width="1"/></pattern>' +
+      '<marker id="swa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="context-stroke"/></marker>' +
+      '<filter id="sws" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#000" flood-opacity=".45"/></filter>' +
+      '</defs>' +
+      '<rect width="' + MW + '" height="' + MH + '" fill="#d9d2c6"/>' +
+      // 절벽(바깥 테두리)과 모래 전장 — 게임 화면처럼 모서리가 깎인 마름모
+      '<polygon points="' + FIELD.map(p => [p[0] + (p[0] < MW / 2 ? -14 : 14), p[1] + (p[1] < MH / 2 ? -14 : 14)].join(",")).join(" ") + '" fill="url(#swc)" stroke="#8a6d48" stroke-width="3"/>' +
+      '<polygon points="' + FIELD.map(p => p.join(",")).join(" ") + '" fill="url(#swf)" stroke="#5a3519" stroke-width="3"/>' +
+      '<polygon points="' + FIELD.map(p => p.join(",")).join(" ") + '" fill="url(#swg)"/>' +
+      '<path d="M130 300 L240 330 L300 420 M560 140 L620 250 L720 300 M380 560 L470 470 L560 470 M600 560 L700 520" fill="none" stroke="rgba(70,35,10,.28)" stroke-width="2"/>';
+    // 진영
+    [[BLUE, "#4dabf7", "rgba(51,154,240,.32)", ko ? "아군 진입" : "ALLY"], [RED, "#ff6b6b", "rgba(240,62,62,.32)", ko ? "적군 진입" : "ENEMY"]].forEach(z => {
+      s += '<polygon points="' + rh(z[0][0], z[0][1], 52, 40) + '" fill="' + z[2] + '" stroke="' + z[1] + '" stroke-width="4"/>' +
+        '<text x="' + z[0][0] + '" y="' + (z[0][1] + 64) + '" text-anchor="middle" font-size="19" font-weight="800" fill="' + z[1] + '" stroke="#2b1a0c" stroke-width="4" paint-order="stroke">' + z[3] + '</text>';
+    });
+    // 건물: 주황 바닥판 + 아이콘 + 이름표
     B.forEach(b => {
-      const open = b.ph <= SP + 1, r = b.k === "alt" ? 17 : b.k === "san" ? 14 : 11;
-      s += '<g class="bd" data-b="' + b.id + '" opacity="' + (open ? 1 : .38) + '"><circle cx="' + b.x + '" cy="' + b.y + '" r="' + r + '" fill="' + (b.k === "alt" ? "#5c3d0e" : "#2e2a20") + '" stroke="' + (open ? "#e9c46a" : "#6b6150") + '" stroke-width="' + (b.k === "alt" ? 2.5 : 1.5) + '"/>' +
-        '<text x="' + b.x + '" y="' + (b.y + 4) + '" text-anchor="middle" font-size="' + (r + 1) + '">' + ICON[b.k] + '</text>' +
-        '<text x="' + b.x + '" y="' + (b.y + r + 10) + '" text-anchor="middle" font-size="8.5" fill="' + (open ? "#f1e3b0" : "#8a826e") + '" font-weight="700">' + esc(bn(b)) + (open ? '' : ' 🔒') + '</text></g>';
+      const open = b.ph <= SP + 1, big = b.k === "alt" ? 1.8 : b.k === "san" ? 1.35 : 1, w = 46 * big, hh = 25 * big;
+      const lab = bn(b) + (open ? "" : " 🔒" + b.ph);
+      s += '<g class="bd" data-b="' + b.id + '" opacity="' + (open ? 1 : .45) + '" filter="url(#sws)">' +
+        '<polygon points="' + rh(b.x, b.y + 6 * big, w, hh) + '" fill="' + (b.k === "alt" ? "rgba(255,200,80,.30)" : "rgba(255,170,60,.18)") + '" stroke="' + (open ? "#ffc533" : "#9c8a66") + '" stroke-width="3"/>' +
+        '<text x="' + b.x + '" y="' + (b.y + 14 * big) + '" text-anchor="middle" font-size="' + Math.round(34 * big) + '">' + ICON[b.k] + '</text>' +
+        '<rect x="' + (b.x - lab.length * 8.2 - 8) + '" y="' + (b.y + hh + 12 * big) + '" width="' + (lab.length * 16.4 + 16) + '" height="26" rx="13" fill="rgba(30,18,8,.78)"/>' +
+        '<text x="' + b.x + '" y="' + (b.y + hh + 12 * big + 18.5) + '" text-anchor="middle" font-size="16" font-weight="800" fill="' + (open ? "#ffe8a3" : "#c9bba0") + '">' + esc(lab) + '</text></g>';
     });
     // 땅굴(3단계)
-    if (SP === 2) L.cel.forEach((c, i) => { s += '<g><circle cx="' + c[0] + '" cy="' + c[1] + '" r="11" fill="#4a3415" stroke="#ffa94d" stroke-width="2" stroke-dasharray="3 2"/><text x="' + c[0] + '" y="' + (c[1] + 4) + '" text-anchor="middle" font-size="11">⛏</text><text x="' + c[0] + '" y="' + (c[1] + 21) + '" text-anchor="middle" font-size="8.5" fill="#ffc078" font-weight="700">' + (LANG === "ko" ? "땅굴 " : "Tunnel ") + (i + 1) + '</text></g>'; });
-    // 공격 좌표: 아군 진영에서 목표까지 화살표
+    if (SP === 2) L.cel.forEach((c, i) => {
+      s += '<g filter="url(#sws)"><polygon points="' + rh(c[0], c[1], 34, 20) + '" fill="rgba(60,40,20,.75)" stroke="#ffa94d" stroke-width="3" stroke-dasharray="7 5"/><text x="' + c[0] + '" y="' + (c[1] + 9) + '" text-anchor="middle" font-size="24">⛏</text>' +
+        '<text x="' + c[0] + '" y="' + (c[1] + 44) + '" text-anchor="middle" font-size="16" font-weight="800" fill="#ffc078" stroke="#2b1a0c" stroke-width="4" paint-order="stroke">' + (ko ? "땅굴 " : "Tunnel ") + (i + 1) + '</text></g>';
+    });
+    // 공격 좌표: 아군 진입 지점에서 목표까지 화살표 + 번호
     const stack = {};
     const tgt = (k, n, color) => {
       const t = ph.t[k];
@@ -214,15 +232,18 @@
       const b = t.b && B.find(x => x.id === t.b), x = b ? b.x : +t.x, y = b ? b.y : +t.y;
       if (!isFinite(x) || !isFinite(y)) return;
       const key = Math.round(x) + ":" + Math.round(y), j = stack[key] = (stack[key] || 0) + 1;
-      s += '<path d="M' + (BLUE[0] + 12) + ' ' + BLUE[1] + ' Q ' + ((BLUE[0] + x) / 2) + ' ' + (Math.min(BLUE[1], y) - 30 - j * 6) + ' ' + (x - 6) + ' ' + y + '" fill="none" stroke="' + color + '" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#swa)" opacity=".9"/>';
-      if (!b) s += '<g stroke="' + color + '" stroke-width="2"><line x1="' + (x - 8) + '" y1="' + y + '" x2="' + (x + 8) + '" y2="' + y + '"/><line x1="' + x + '" y1="' + (y - 8) + '" x2="' + x + '" y2="' + (y + 8) + '"/></g><circle cx="' + x + '" cy="' + y + '" r="5" fill="none" stroke="' + color + '" stroke-width="2"/>';
-      const bx = x + 14 + (j - 1) * 15, by = y - 16;
-      s += '<circle cx="' + bx + '" cy="' + by + '" r="7.5" fill="' + color + '" stroke="#111" stroke-width="1"/><text x="' + bx + '" y="' + (by + 3.5) + '" text-anchor="middle" font-size="9.5" font-weight="800" fill="#111">' + n + '</text>';
+      const sx = BLUE[0] + 40, sy = BLUE[1], dx = x - sx, dy = y - sy, len = Math.hypot(dx, dy) || 1, bend = Math.min(40 + j * 22, len * .3);
+      const cx = (sx + x) / 2 + dy / len * bend, cy = (sy + y) / 2 - dx / len * bend;
+      const ex = x - dx / len * (b ? 34 : 12), ey = y - dy / len * (b ? 22 : 12);
+      s += '<path d="M' + sx + ' ' + sy + ' Q ' + cx + ' ' + cy + ' ' + ex + ' ' + ey + '" fill="none" stroke="#1b1208" stroke-width="7" opacity=".45"/>' +
+        '<path d="M' + sx + ' ' + sy + ' Q ' + cx + ' ' + cy + ' ' + ex + ' ' + ey + '" fill="none" stroke="' + color + '" stroke-width="4" stroke-dasharray="12 7" marker-end="url(#swa)"/>';
+      if (!b) s += '<g stroke="' + color + '" stroke-width="4"><line x1="' + (x - 16) + '" y1="' + y + '" x2="' + (x + 16) + '" y2="' + y + '"/><line x1="' + x + '" y1="' + (y - 16) + '" x2="' + x + '" y2="' + (y + 16) + '"/></g><circle cx="' + x + '" cy="' + y + '" r="10" fill="none" stroke="' + color + '" stroke-width="4"/>';
+      const bx = x + 30 + (j - 1) * 30, by = y - 34;
+      s += '<circle cx="' + bx + '" cy="' + by + '" r="15" fill="' + color + '" stroke="#1b1208" stroke-width="3"/><text x="' + bx + '" y="' + (by + 6.5) + '" text-anchor="middle" font-size="18" font-weight="900" fill="#1b1208">' + n + '</text>';
     };
     lead.forEach((k, i) => tgt(k, i + 1, LC[i % LC.length]));
-    tgt("solo", "S", "#adb5bd");
-    s += '</svg>';
-    return s + (E ? '' : '');
+    tgt("solo", "S", "#dee2e6");
+    return s + '</svg>';
   }
 
   const tName = t => { if (!t) return ""; const b = t.b && B.find(x => x.id === t.b); return b ? bn(b) : st("free") + " (" + Math.round(t.x) + ", " + Math.round(t.y) + ")"; };
@@ -289,7 +310,7 @@
   const touch = () => { SDIRTY[SA] = true; MSG = ""; };
   function svgPt(e) {
     const svg = $("swMap"), r = svg.getBoundingClientRect();
-    return [(e.clientX - r.left) / r.width * 450, (e.clientY - r.top) / r.height * 365];
+    return [(e.clientX - r.left) / r.width * MW, (e.clientY - r.top) / r.height * MH];
   }
   function onClick(e) {
     const V = $("vSword"), el = e.target;
@@ -299,12 +320,12 @@
       if (!editable() || !SEL) return;
       const [x, y] = svgPt(e), ph = L.ph[SP];
       if (SEL === "cel") {
-        const i = L.cel.findIndex(c => Math.hypot(c[0] - x, c[1] - y) < 14);
+        const i = L.cel.findIndex(c => Math.hypot(c[0] - x, c[1] - y) < 30);
         if (i >= 0) L.cel.splice(i, 1); else { if (L.cel.length >= 2) L.cel.shift(); L.cel.push([Math.round(x), Math.round(y)]); }
       } else {
         const near = B.filter(b => b.ph <= SP + 1).map(b => ({b, d: Math.hypot(b.x - x, b.y - y)})).sort((p, q) => p.d - q.d)[0];
-        const cel = SP === 2 ? L.cel.find(c => Math.hypot(c[0] - x, c[1] - y) < 16) : null;
-        ph.t[SEL] = near && near.d < 22 ? {b: near.b.id} : cel ? {x: cel[0], y: cel[1]} : {x: Math.round(x), y: Math.round(y)};
+        const cel = SP === 2 ? L.cel.find(c => Math.hypot(c[0] - x, c[1] - y) < 34) : null;
+        ph.t[SEL] = near && near.d < 48 ? {b: near.b.id} : cel ? {x: cel[0], y: cel[1]} : {x: Math.round(x), y: Math.round(y)};
       }
       touch(); render(); return;
     }
