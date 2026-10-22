@@ -64,4 +64,6 @@
     }
     render();
   };
+  // 주소(#emp)로 바로 열었을 때: 메뉴가 이 파일보다 먼저 정해지므로 여기서 한 번 그린다
+  if (typeof VIEW !== "undefined" && VIEW === "emp") window.renderEmp();
 })();
