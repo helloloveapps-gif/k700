@@ -4,14 +4,16 @@
 (() => {
   const D = {"at":"2026-10-22","T":[3500,3400,3300,3200,3000,2700,2500],"sv":{"700":{"b":[0,0,0,0,3,10,18],"b1":2,"n":637,"top":[["NeX",94,431],["AEH",95,342],["LoV",96,167]],"kv":[3,5,5,9]},"710":{"b":[2,5,6,7,11,23,38],"b1":3,"n":681,"top":[["710",81,399],["RED",85,338],["SKY",96,305]],"kv":[5,2,5,9]},"719":{"b":[3,4,5,5,8,15,19],"b1":6,"n":618,"top":[["KOR",100,507],["TFF",82,299],["TFK",79,140]],"kv":[6,2,7,6]},"737":{"b":[2,3,3,4,7,10,19],"b1":3,"n":598,"top":[["KOR",97,499],["GGw",97,313],["DOM",95,200]],"kv":[3,4,6,7]}},
     "pl":[[737,"°꒰ঌＲＥΛＰＥＲ໒꒱°ᴷᴼᴿ","KOR",3413,1277,51.1,37,131],[737,"꒰ঌ C키즈ᶜᴷᴵᴰˢ ໒꒱༒࿐","KOR",3658,2509,57.8,46.9,193],[737,"°꒰ঌ ᎢΛΙᎫΙ ໒꒱°","KOR",3522,1572,53.4,38.6,165],[737,"༒커피향기 A R O M A༒","KOR",3020,736,32.1,27.5,113],[737,"༒ 찬 찬 K Y M ༒","KOR",3082,827,31.1,29.6,118],[737,"༒ E R I C ༒","KOR",3243,771,37.7,29.9,115],[737,"༒ 헨리 H E N R Y ༒","KOR",3077,701,35.1,32.2,107],[719,"꒰ঌ BL̇UEMÖÖƝ ໒꒱","KOR",3446,1306,49.6,39,141],[719,"꒰ঌ SONNY ໒꒱","KOR",3581,2312,53.9,38.6,167],[719,"꒰ঌ SOSO ໒꒱","KOR",3583,2011,52.4,43.3,181],[719,"꒰ঌ Magnus ໒꒱","KOR",3165,1027,43.2,24.7,117],[719,"꒰ঌ SÄNG JÏ ໒꒱","KOR",3334,1005,43,34,138],[719,"꒰ঌ Ari rang ໒꒱","KOR",3000,760,38,32.1,104],[719,"꒰ঌ ĊÖĊÖ ໒꒱","KOR",3000,626,38.6,30.3,108],[719,"꒰ঌ Gwangju ໒꒱","KOR",3551,1616,54.2,40.2,150],[710,"Khorr","710",3608,1826,57.9,47.4,182],[710,"Raddan","710",3418,1090,56.9,53.3,145],[710,"Julpaca","710",3485,936,51.8,32.3,136],[710,"Chunky","710",3633,921,57.4,45.6,117],[710,"ASSASSIN","710",3398,882,48.8,38.4,127],[710,"Woff","710",3004,710,34.5,25.9,96],[710,"漆黒堕天使SASAMIﾁｬﾝ໒꒱","710",3464,629,48.4,38.3,127],[710,"Andyᴾᴴ","710",3069,517,37.8,24.4,92],[710,"Qqq","710",3256,476,45.5,32.4,139],[710,"WEALTHY_ADS","710",3130,669,37,30.3,118],[710,"Darth Vader","RED",3106,419,45.8,32.2,81],[700,"Duby 1988","NeX",3000,1273,58.5,50,121],[700,"DA기부천사","NeX",3105,869,38.6,24.7,114],[700,"ᴮᴼˢˢ化神ᴳᵒᵈ","NeX",3028,748,33.5,29.2,103]]};
+  // F: 서버마다 전체와 상위 5개 연맹 — n 인원, tg [TG8, TG7, TG6, TG5, TG4 이하](타운센터), b 시련 [3500+, 3000+, 2700+, 2500+], p 전투력(억)
+  const F = {"700":{"all":{"n":637,"tg":[105,84,79,90,279],"b":[0,3,10,18],"p":1410},"als":[["NeX",{"n":94,"tg":[51,28,12,3,0],"b":[0,3,9,15],"p":436}],["AEH",{"n":95,"tg":[38,22,20,9,6],"b":[0,0,0,1],"p":340}],["LoV",{"n":96,"tg":[0,6,14,25,51],"b":[0,0,0,0],"p":167}],["nex",{"n":72,"tg":[4,5,9,13,41],"b":[0,0,0,0],"p":133}],["NvA",{"n":43,"tg":[8,13,10,6,6],"b":[0,0,1,1],"p":128}]]},"710":{"all":{"n":682,"tg":[153,62,53,57,357],"b":[2,11,23,38],"p":1384},"als":[["710",{"n":81,"tg":[67,6,5,1,2],"b":[2,10,15,23],"p":382}],["RED",{"n":85,"tg":[50,23,6,6,0],"b":[0,1,6,8],"p":337}],["SKY",{"n":96,"tg":[29,25,24,14,4],"b":[0,0,2,7],"p":318}],["red",{"n":74,"tg":[6,6,6,17,39],"b":[0,0,0,0],"p":118}],["GBS",{"n":94,"tg":[0,0,5,10,79],"b":[0,0,0,0],"p":106}]]},"719":{"all":{"n":680,"tg":[109,50,43,57,421],"b":[3,8,15,19],"p":1151},"als":[["KOR",{"n":100,"tg":[76,13,8,0,3],"b":[3,8,13,15],"p":508}],["TFF",{"n":82,"tg":[30,24,20,7,1],"b":[0,0,2,4],"p":304}],["TFK",{"n":79,"tg":[1,8,6,20,44],"b":[0,0,0,0],"p":136}],["TF2",{"n":67,"tg":[0,2,5,19,41],"b":[0,0,0,0],"p":91}],["ARB",{"n":98,"tg":[0,0,2,3,93],"b":[0,0,0,0],"p":42}]]},"737":{"all":{"n":659,"tg":[94,67,55,51,392],"b":[2,7,10,19],"p":1196},"als":[["KOR",{"n":97,"tg":[73,21,3,0,0],"b":[2,7,10,19],"p":499}],["GGw",{"n":97,"tg":[18,31,20,16,12],"b":[0,0,0,0],"p":313}],["DOM",{"n":95,"tg":[3,11,26,16,39],"b":[0,0,0,0],"p":199}],["ICE",{"n":61,"tg":[0,0,5,15,41],"b":[0,0,0,0],"p":73}],["Fin",{"n":95,"tg":[0,0,0,0,95],"b":[0,0,0,0],"p":33}]]}};
   const KS = [700, 710, 719, 737];
   const T = {
-    ko: {h: "👑 엠페럴 정보 — 서버 정예 비교", d: "737 · 719 · 710 서버와 우리 700 서버의 시련 · 펫투력 · 거장투력 비교 (jeabslist {0} 기준, 서버마다 상위 12개 연맹)", srv: "서버", band: "시련 점수대 인원", b1: "전투력 10억+", top: "상위 연맹 (인원 · 전투력)", kv: "KvK 성 점령 / 함락", ppl: "시련 3,000+ 정예 {0}명", sort: "정렬", sM: "시련", sPet: "펫투력", sMs: "거장투력", sP: "전투력", sH: "영웅", all: "전체", rk: "#", nm: "이름", al: "연맹", sum: "서버별 평균 (시련 3,000+)", n: "명", avg: "평균", e: "억", note: "펫투력 · 거장투력은 jeabslist 개인 순위(Total Pet Power · Master Total Power)에서 한 명씩 받은 값입니다. 서버 전체 순위가 아니라 시련 3,000+ 인원만 대상입니다."},
-    en: {h: "👑 Emperor info — elite comparison", d: "Mystic Trial · pet power · master power for kingdoms 737 · 719 · 710 vs our 700 (jeabslist, {0}; top 12 alliances each)", srv: "Kingdom", band: "Players by Mystic Trial score", b1: "Power 1B+", top: "Top alliances (members · power)", kv: "KvK castles taken / lost", ppl: "{0} elites with Mystic Trial 3,000+", sort: "Sort", sM: "Trial", sPet: "Pet", sMs: "Master", sP: "Power", sH: "Hero", all: "All", rk: "#", nm: "Name", al: "Alliance", sum: "Averages by kingdom (Trial 3,000+)", n: "", avg: "avg", e: "B", note: "Pet and master power come from each player's jeabslist personal rankings (Total Pet Power · Master Total Power). Only Mystic Trial 3,000+ players are included, not the whole kingdom."}
+    ko: {h: "👑 엠페럴 정보 — 서버 정예 비교", d: "737 · 719 · 710 서버와 우리 700 서버의 시련 · 펫투력 · 거장투력 비교 (jeabslist {0} 기준, 서버마다 상위 12개 연맹)", srv: "서버", band: "시련 점수대 인원", b1: "전투력 10억+", top: "상위 연맹 (인원 · 전투력)", kv: "KvK 성 점령 / 함락", ppl: "시련 3,000+ 정예 {0}명", sort: "정렬", sM: "시련", sPet: "펫투력", sMs: "거장투력", sP: "전투력", sH: "영웅", all: "전체", rk: "#", nm: "이름", al: "연맹", sum: "서버별 평균 (시련 3,000+)", n: "명", avg: "평균", e: "억", tgH: "🏰 TG8 분포 (타운센터)", tgD: "서버마다 상위 12개 연맹 인원의 타운센터 TG 단계. 아래에서 서버를 고르면 그 서버 안의 연맹별로 나눠 봅니다.", byAl: "연맹별 보기", t11: "⚔ 우리 700 T11(순금 병사): 병사 정보가 있는 {0}명 중 T11 병과 하나 이상 {1}명 · 세 병과 모두 T11 {2}명", t11No: "T11(순금 병사)은 jeabslist 에 나오지 않아 다른 서버는 알 수 없습니다.", note: "펫투력 · 거장투력은 jeabslist 개인 순위(Total Pet Power · Master Total Power)에서 한 명씩 받은 값입니다. 서버 전체 순위가 아니라 시련 3,000+ 인원만 대상입니다."},
+    en: {h: "👑 Emperor info — elite comparison", d: "Mystic Trial · pet power · master power for kingdoms 737 · 719 · 710 vs our 700 (jeabslist, {0}; top 12 alliances each)", srv: "Kingdom", band: "Players by Mystic Trial score", b1: "Power 1B+", top: "Top alliances (members · power)", kv: "KvK castles taken / lost", ppl: "{0} elites with Mystic Trial 3,000+", sort: "Sort", sM: "Trial", sPet: "Pet", sMs: "Master", sP: "Power", sH: "Hero", all: "All", rk: "#", nm: "Name", al: "Alliance", sum: "Averages by kingdom (Trial 3,000+)", n: "", avg: "avg", e: "B", tgH: "🏰 TG8 distribution (Town Center)", tgD: "Town Center TG tier of players in each kingdom's top 12 alliances. Pick a kingdom below to split it by alliance.", byAl: "By alliance", t11: "⚔ Our 700 T11 (true gold troops): of {0} players with troop info, {1} have at least one T11 type · {2} have all three T11", t11No: "T11 troops are not shown on jeabslist, so other kingdoms are unknown.", note: "Pet and master power come from each player's jeabslist personal rankings (Total Pet Power · Master Total Power). Only Mystic Trial 3,000+ players are included, not the whole kingdom."}
   };
   const st = (k, ...a) => { let s = (T[LANG === "ko" ? "ko" : "en"])[k]; a.forEach((v, i) => { s = s.split("{" + i + "}").join(v); }); return s; };
   const COLK = {700: "#3b5bdb", 710: "#e8590c", 719: "#2f9e44", 737: "#ae3ec9"};
-  let SORT = 5, FIL = 0;
+  let SORT = 5, FIL = 0, FA = 710;
   const pw = m => LANG === "ko" ? (m / 100).toFixed(1) + st("e") : (m / 1000).toFixed(2) + st("e");
   const clean = s => s.replace(/[꒰ঌ໒꒱°༒࿐]/g, "").replace(/\s+/g, " ").trim();
   const css = `
@@ -31,6 +33,14 @@
 #vEmp th.on{color:var(--accent)}
 #vEmp .nmc{max-width:210px;overflow:hidden;text-overflow:ellipsis}
 `;
+  // T11(순금 병사)은 jeabslist 에 없다 — 우리 서버만 병사 정보 입력 · 병사 명단으로 센다
+  function t11Html() {
+    const L = DATA.filter(p => troops(p));
+    if (!L.length) return '';
+    const n11 = L.filter(p => troops(p).some(t => t[1] === 11)).length, all11 = L.filter(p => troops(p).every(t => t[1] === 11)).length;
+    const by = ALLIES.map(a => { const q = L.filter(p => p.ally === a); return [a, q.length, q.filter(p => troops(p).some(t => t[1] === 11)).length]; }).filter(x => x[1]);
+    return '<div class="d" style="margin-top:10px">' + esc(st("t11", L.length, n11, all11)) + '<br>' + by.map(x => esc(x[0]) + ' ' + x[2] + '/' + x[1]).join(" · ") + '</div><div class="d">' + esc(st("t11No")) + '</div>';
+  }
   function render() {
     const V = $("vEmp");
     if (!V) return;
@@ -44,7 +54,14 @@
     const mx = [3, 5, 6].map(i => Math.max(...KS.map(k => avg(k, i))));
     h += '<div class="ep"><h2>' + st("sum") + '</h2><div class="sc"><table><tr><th>' + st("srv") + '</th><th class="n">' + st("n") + '</th><th>' + st("sM") + '</th><th>' + st("sPet") + '</th><th>' + st("sMs") + '</th></tr>' +
       KS.map(k => '<tr' + (k === 700 ? ' class="us"' : '') + '><td>' + kb(k) + '</td><td class="n">' + D.pl.filter(x => x[0] === k).length + '</td>' + [3, 5, 6].map((i, j) => { const v = avg(k, i); return '<td>' + (i === 3 ? Math.round(v) : v.toFixed(1) + 'M') + '<span class="bar" style="width:' + Math.round(v / mx[j] * 70) + 'px;background:' + COLK[k] + '"></span></td>'; }).join("") + '</tr>').join("") + '</table></div></div>';
-    // ③ 정예 명단
+    // ③ TG8 분포 · 연맹별 (서버를 고르면 그 서버 안의 연맹으로 나눠 본다)
+    const tgMx = Math.max(...KS.map(k => F[k].all.tg[0]));
+    h += '<div class="ep"><h2>' + st("tgH") + '</h2><div class="d">' + esc(st("tgD")) + '</div><div class="sc"><table><tr><th>' + st("srv") + '</th><th class="n">TG8</th><th class="n">TG7</th><th class="n">TG6</th><th class="n">TG5</th><th class="n">≤TG4</th><th class="n">' + st("n") + '</th></tr>' +
+      KS.map(k => { const a = F[k].all; return '<tr' + (k === 700 ? ' class="us"' : '') + '><td>' + kb(k) + '</td><td class="n"><b>' + a.tg[0] + '</b><span class="bar" style="width:' + Math.round(a.tg[0] / tgMx * 70) + 'px;background:' + COLK[k] + '"></span></td>' + a.tg.slice(1).map(v => '<td class="n">' + v + '</td>').join("") + '<td class="n">' + a.n + '</td></tr>'; }).join("") + '</table></div>' +
+      '<div class="chips" style="margin-top:12px"><b style="font-size:13px">' + st("byAl") + '</b>' + KS.map(k => '<button data-fa="' + k + '"' + (FA === k ? ' class="on"' : '') + '>' + k + '</button>').join("") + '</div>' +
+      '<div class="sc"><table><tr><th>' + st("al") + '</th><th class="n">' + st("n") + '</th><th class="n">' + st("sP") + '</th><th class="n">TG8</th><th class="n">TG7</th><th class="n">TG6</th><th class="n">TG5</th><th class="n">≤TG4</th><th class="n">' + st("sM") + ' 3500+</th><th class="n">3000+</th><th class="n">2700+</th><th class="n">2500+</th></tr>' +
+      F[FA].als.map(x => '<tr><td><b>' + esc(x[0]) + '</b></td><td class="n">' + x[1].n + '</td><td class="n">' + pw(x[1].p * 100) + '</td>' + x[1].tg.map((v, i) => '<td class="n">' + (i === 0 ? '<b>' + v + '</b>' : v) + '</td>').join("") + x[1].b.map(v => '<td class="n">' + v + '</td>').join("") + '</tr>').join("") + '</table></div>' + t11Html() + '</div>';
+    // ④ 정예 명단
     const cols = [[3, "sM"], [5, "sPet"], [6, "sMs"], [4, "sP"], [7, "sH"]];
     const rows = D.pl.filter(x => !FIL || x[0] === FIL).slice().sort((a, b) => b[SORT] - a[SORT] || b[3] - a[3]);
     h += '<div class="ep"><h2>' + st("ppl", rows.length) + '</h2><div class="chips"><b style="font-size:13px">' + st("srv") + '</b>' + [0].concat(KS).map(k => '<button data-f="' + k + '"' + (FIL === k ? ' class="on"' : '') + '>' + (k ? k : st("all")) + '</button>').join("") + '</div>' +
@@ -60,7 +77,7 @@
     if (!V) return;
     if (!bound) {
       bound = true;
-      V.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.s) SORT = +b.dataset.s; if (b.dataset.f != null) FIL = +b.dataset.f; render(); });
+      V.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.s) SORT = +b.dataset.s; if (b.dataset.f != null) FIL = +b.dataset.f; if (b.dataset.fa) FA = +b.dataset.fa; render(); });
     }
     render();
   };
