@@ -312,6 +312,8 @@ body.ev-sword .kvkOnly{display:none!important}
 .drawer .dsec{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--sub);padding:10px 8px 2px;border-top:1px solid var(--line);margin-top:4px}
 .drawer .dsec:first-of-type{border-top:none;margin-top:0;padding-top:0}
 .drawer button.item{width:100%;text-align:start;min-height:46px;font-size:15px;border-color:transparent;background:none}
+.drawer button.item.sub{padding-inline-start:30px;min-height:40px;font-size:14px;position:relative}
+.drawer button.item.sub::before{content:"└";position:absolute;inset-inline-start:12px;opacity:.6}
 .drawer button.item.on{background:var(--accent);color:#fff}
 .drawer button.item:hover{border-color:var(--line)}
 input.pass{width:110px !important;text-align:start;font-weight:700}
@@ -600,8 +602,8 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
     <div class="dhead"><span id="menuT"></span><button id="menuClose" class="xbtn">✕</button></div>
     <div class="dsec" id="mSecK"></div>
     <button class="item" data-v="dash" id="mDash"></button>
+    <button class="item sub" data-v="enemy" id="mEnemy"></button>
     <button class="item" data-v="rally" id="mRally"></button>
-    <button class="item" data-v="enemy" id="mEnemy"></button>
     <button class="item" data-v="emp" id="mEmp"></button>
     <div class="dsec" id="mSecS"></div>
     <button class="item" data-v="sword" id="mSword"></button>
@@ -2246,7 +2248,7 @@ function setView(v) {
   $("menuCur").textContent = tx(VIEW === "rally" ? "mRally" : VIEW === "enemy" ? "mEnemy" : VIEW === "sword" ? "mSword" : VIEW === "emp" ? "mEmp" : "mDash");
   $("mDash").className = "item" + (VIEW === "dash" ? " on" : "");
   $("mRally").className = "item" + (VIEW === "rally" ? " on" : "");
-  $("mEnemy").className = "item" + (VIEW === "enemy" ? " on" : "");
+  $("mEnemy").className = "item sub" + (VIEW === "enemy" ? " on" : "");
   $("mSword").className = "item" + (VIEW === "sword" ? " on" : "");
   $("mEmp").className = "item" + (VIEW === "emp" ? " on" : "");
   if (VIEW === "emp" && window.renderEmp) renderEmp();
