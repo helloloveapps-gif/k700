@@ -190,7 +190,8 @@ function setLang(l) {
   document.documentElement.lang = l === "zh" ? "zh-Hant" : l;
   document.documentElement.dir = l === "ar" ? "rtl" : "ltr";
   $("langs").innerHTML = Object.keys(T).map(k => '<button data-l="' + k + '"' + (k === l ? ' class="on"' : '') + '>' + T[k].name + '</button>').join("");
-  $("tTitle").textContent = t.title; $("tDesc").textContent = t.desc;
+  $("tTitle").textContent = t.title + " · S2 vs 707";   // 이번 시즌(index.html SEASONS 와 같이 바꾼다)
+  $("tDesc").textContent = t.desc;
   $("tAlly").textContent = t.ally; $("tId").textContent = t.id; $("tIdHint").textContent = t.idHint; $("tNick").textContent = t.nick;
   $("tDisc").textContent = t.discT; $("tTime").textContent = t.time; $("tTimeHint").textContent = t.timeHint;
   $("send").textContent = t.send; $("tBack").textContent = t.back;

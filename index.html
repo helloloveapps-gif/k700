@@ -305,6 +305,10 @@ h1,h2,.sub,label,th,td,.msg{word-break:keep-all}
 .drawer>*{flex-shrink:0}
 .drawer .dhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-weight:700;font-size:17px;padding-inline-start:6px}
 body.ev-sword .kvkOnly{display:none!important}
+.seasonBar{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+.seasonBar button{min-height:32px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:700;background:rgba(255,255,255,.14);color:#fff;border:1px solid rgba(255,255,255,.4)}
+.seasonBar button.on{background:#ffd43b;color:#1c2230;border-color:#ffd43b}
+.seasonBar small{color:#fff;opacity:.9;font-size:12px;font-weight:700}
 .drawer .dsec{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--sub);padding:10px 8px 2px;border-top:1px solid var(--line);margin-top:4px}
 .drawer .dsec:first-of-type{border-top:none;margin-top:0;padding-top:0}
 .drawer button.item{width:100%;text-align:start;min-height:46px;font-size:15px;border-color:transparent;background:none}
@@ -510,6 +514,7 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
     <div>
       <h1 id="tTitle">700서버 KvK 참여 현황</h1>
       <div class="sub" id="stamp">불러오는 중…</div>
+      <div class="seasonBar kvkOnly" id="seasonBar"></div>
     </div>
     <div class="acts">
       <a href="kvk.html" class="kvkOnly"><button id="bSurvey">참여 시간 작성</button></a>
@@ -635,7 +640,7 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
 <script>
 const SHEET_ID = "1fwh4GmuMnzgylvhzoALqD0KIK5ssld-Ghs3U4Loul4E";
 const GID = "952911154";
-const ROSTER = {"NeX":{"name":"Nextus","count":81,"members":[["Duby 1988",1254347236,"TG8"],["WoNI o0@",1036186923,"TG8"],["DA기부천사",854225813,"TG8"],["ᴮᴼˢˢ化神ᴳᵒᵈ",742120014,"TG8"],["Noblesse",731552070,"TG8"],["Clacy的小窩",715125814,"TG8"],["윤&연 MVP forever~",646360374,"TG8"],["필 piil",631184830,"TG8"],["Jugy",587624723,"TG8"],["Yoshimori",585607762,"TG8"],["클레오빡Dora",580249614,"TG8"],["서아대디_SeoA Daddy",573128400,"TG8"],["Far",563408110,"TG8"],["chenlq",532501342,"TG8"],["마루나 Maruna",527448444,"TG8"],["乂v12乂",525743038,"TG8"],["NanaMingB",524536751,"TG8"],["CoCoMa 꼬꼬마",510661859,"TG8"],["Jain",510218625,"TG8"],["Gluck",507032793,"TG8"],["안녕 Hi",497979890,"TG7-2"],["#145Bahtraz#417",491655918,"TG8"],["SeoA",482030708,"TG7-2"],["qwer0192",480328420,"TG8"],["kamilerzs",458894777,"TG8"],["여왕 JOKOWI",455843521,"TG7-4"],["Lordwaise679",450893462,"TG8"],["20CM",449030226,"TG7-1"],["offonoff",443688883,"TG8"],["Ludus",436780386,"TG8"],["소악마 eso",424598830,"TG8"],["Pedja",423292548,"TG7-3"],["ALEX 블루라곤",422919166,"TG7-1"],["BingSu",420644645,"TG7-1"],["Ash Burn",419343390,"TG7"],["Skybreaker",418106114,"TG8"],["WIXILL",417969621,"TG8"],["Ermin",416173435,"TG8"],["OM【 ﾌㄖҜㄖ山丨】",416087919,"TG7-1"],["이웃집또터러Totoro",415189769,"TG7"],["Hina",407648344,"TG8"],["월드사나이MAN",406997612,"TG8"],["쿠쿠닷_CuCu",402261598,"TG6-4"],["TOMORO",396737406,"TG7-1"],["보배드림BD",386244530,"TG7"],["onemore",382676518,"TG7-4"],["Bhokaal",382518066,"TG8"],["GamMu 감감무",377987735,"TG7"],["아샷추 AddShot",374941711,"TG8"],["Ducky綠豆掀人",374768795,"TG7"],["헤르메스_Hermes",374408135,"TG8"],["SUPERNOVA",372761703,"TG5-4"],["siapa",365641795,"TG7-1"],["wangwang",362693108,"TG7-1"],["PENGU",360582668,"TG7"],["NextUs",346527664,"TG6-2"],["121006",337480773,"TG8"],["SuPeRr",335373610,"TG6-1"],["Divine 디바인",332971262,"TG7-4"],["STM399",328524454,"TG6-4"],["dj철민",325257431,"TG5-3"],["garden5",305425543,"TG6-4"],["jiwoo",303151393,"TG6"],["bro",301941715,"TG6-1"],["JR_04",299558256,"TG6-2"],["Liner",297691089,"TG6"],["포크볼 forkball",290978891,"TG6-2"],["ewenew",289529853,"TG6-4"],["El Chapo",276427525,"TG6"],["uooowa",273292105,"TG6"],["耶耶耶耶耶耶ya",268391270,"TG6"],["豈耶Kevin",267353973,"TG6-1"],["elbesmy",254372424,"TG7"],["binibinipapa",242406199,"TG7"],["가나초코 ghana",240443279,"TG6"],["ShotMonarch",239012537,"TG5-2"],["콜모고로프 T0",238896399,"TG5-4"],["야간다이빙",221472722,"TG6-4"],["CoCoMa 꼬꼬마부인",191164599,"TG5"],["Airsprite",144977927,"TG5"],["PHILIP _ 필리비",136198401,"TG7"]]},"NvA":{"name":"Nova","count":60,"members":[["Imnotdonn",742187889,"TG8"],["Lotto",672924645,"TG8"],["Captain Q ᴷᴼᴿ",672315515,"TG8"],["방울찡 ᴷᴼᴿ",661387592,"TG8"],["JayChangᵀᵂ",646316896,"TG8"],["༒HoneyYuLᴷᴼᴿ༒",641276751,"TG8"],["조유리YURI",622056941,"TG8"],["Daigo",615929866,"TG8"],["sudong01",567911027,"TG8"],["General 대조영ᴷᴼᴿ",558349301,"TG8"],["Marchᴷᴼᴿ",520465251,"TG8"],["༺ཌ࿅AttiLLaᵀᴿ࿅ད༻",519627232,"TG8"],["Gugirlᴮᵁᴸ",506577372,"TG8"],["Cacaca",501455269,"TG8"],["mina",501311032,"TG8"],["아메리카노 Americano",471769441,"TG8"],["晚睡覺SleepySwim ᶻᶻ",470866569,"TG8"],["Sadako030",453376951,"TG7"],["Muscle Rabbit",451380100,"TG8"],["DeadwooD",444796662,"TG8"],["DongDong",412819607,"TG8"],["TTÜN",409654978,"TG7-1"],["이노무스key~",408695259,"TG7-4"],["Namirᴮᵁᴸ",407345065,"TG8"],["드럼 Drumd",406146300,"TG8"],["Aquarius",398418540,"TG8"],["A R E 135",398382457,"TG7"],["Ｔ Ｉ Ｔ Ｕ Ｓ 『 鬼 』",390488837,"TG8"],["BuLSaR",382955736,"TG8"],["Mamba Out",374672872,"TG7"],["세종대왕 King Sejong",371799243,"TG8"],["담비찡 Dambi ᴷᴼᴿ",369323473,"TG7-4"],["n00b4lyf",367163300,"TG8"],["iMommy",365016193,"TG7"],["DaddyCat",358220146,"TG7"],["Duran",356636602,"TG8"],["Jadieᴮᵁᴸ",352389005,"TG7-3"],["포차코 Pochaco",338745299,"TG7-3"],["John2",330487594,"TG6"],["Lord RonJustin",319806475,"TG5-2"],["Grace莓頌",318818553,"TG7-1"],["DaeHan H",318057458,"TG6"],["「DUCATI ６６６」특공",309226515,"TG7"],["DevilsDoPray",306940519,"TG7"],["Black체리",300295266,"TG6-3"],["Lord Jay Bᴮᵁᴸ",295756949,"TG8"],["Buble",262604912,"TG6"],["Kerryae33",242478823,"TG6"],["Volde",234153129,"TG6"],["GAMJA",234044663,"TG5"],["Covervis",227964401,"TG6-2"],["ToBeOrNotToBe",225660404,"TG7"],["Arturᴮᵁᴸ",220327922,"TG6"],["Stephy Baby",213350053,"TG6"],["Sangsom1",201904973,"TG5"],["Noodlerama!",182531190,"TG5-1"],["Skychakra",181389980,"TG6"],["ǝʞɐɔdnɔ ı̣uı̣ɯ",167870070,"TG4"],["༒Gwangjuᴷᴼᴿ ༒",85469813,"TC30-1"],["嚕嚕醬 ᴸᵘᴸᵘ ᶠʳᵒᵐ ᵀᵂ",31432193,"TC25"]]},"AEH":{"name":"華人陽光幼兒園","count":89,"members":[["24CM",640683280,"TG8"],["歇斯底里是崩潰 底里歇斯是美味",555896068,"TG8"],["多談一個不叫渣 那叫多愛一個家",541900216,"TG8"],["Jz Crimson",540828030,"TG8"],["1523ᵀᵂ",489876989,"TG8"],["山健 久武澤",473133570,"TG8"],["Feng 狂風",470026782,"TG8"],["豆乾先生 Chi",458293720,"TG8"],["新世紀福德正神TudiGong",452429162,"TG6-4"],["一坪的海岸線x",450320650,"TG7-1"],["JianSharon平凡人",450280395,"TG7-1"],["安娜膩Hanna",447617128,"TG8"],["迅猛龍Dragon",421787045,"TG8"],["MozBah",415009073,"TG7-3"],["咖哩魚蛋Fish",400847511,"TG7"],["M I T 嚕嚕米",396997152,"TG7"],["婕晞Jess",395832739,"TG8"],["Fish 說話的小魚",395157235,"TG6-4"],["CAT6966",393586654,"TG7-2"],["快使用雙截棍CHOU",392394845,"TG8"],["嘎抓roach",389859833,"TG8"],["酱板鸭",381290285,"TG7"],["黑輪小姐 siao",379242468,"TG7-4"],["半糖微冰 WEI",377537017,"TG7-4"],["胡不歸",370875547,"TG8"],["PARADISE ~ ᴷᴵˢˢ",369374876,"TG7-4"],["台灣BinbOn",368007294,"TG8"],["Green",366398378,"TG6"],["芒果金煌我是 Mango",361599349,"TG7"],["睡觉的时候不会困",348869153,"TG6"],["保力達 JUI",346544836,"TG6-1"],["Chanel N°5",344833967,"TG7"],["薯條飽飽·YU",342768885,"TG6"],["Biu須說幹話",341734249,"TG7"],["【和平】༒ ᴬᴹᴬᴺᴵ ༒",339484481,"TG6"],["halahoo 哈啦呼",332664106,"TG5-4"],["JING",326948162,"TG6"],["Lin",320468573,"TG6"],["World Peace",320108592,"TG5-2"],["湯姆貓",318896571,"TG6"],["Benno",316058922,"TG7"],["JayZ",313930101,"TG5-4"],["kking5528",300448771,"TG6"],["快樂斑馬。HZ",292094536,"TG6-1"],["一休方丈 Ikkyu",290659370,"TG7"],["pink moon",285827151,"TG6"],["SunnySunny",283422943,"TG5"],["༻ʚ Meat 肉ɞ༺",280929209,"TG5"],["新竹狗熊",280332209,"TG6"],["～ᴍᴏꜱᴛᴀɴ°魔斯坦°～",279522682,"TG6"],["0o偷你o0",276489817,"TG6-4"],["The vast sky",276354594,"TG5-1"],["Manman",275682464,"TG6"],["蚵仔寶寶",274823245,"TG6"],["伞妮流Sunny",268713015,"TG6"],["Denno 蔥三小",260941192,"TG5-2"],["我很好我很棒Huei",250409085,"TG6"],["埃及貓 Egyptian Cat",235102031,"TG5"],["閃身步 浪子踢球 狗熊哆嗦毛",226508495,"TG5-3"],["Meowxl",225878912,"TG5"],["神創彗星_Star",220837853,"TG7"],["小橘子 Orange",217796761,"TG5"],["Wulfy ฅʕ·͡ᴥ፝֟·ʔฅ",209038123,"TG3"],["路寶Joanna",201427202,"TG5-1"],["非常菜 S",194900164,"TG5-2"],["Elena餃子",186365645,"TG5"],["姬拉布Tsai",178028042,"TG4"],["糖果雞腿",177382019,"TG3"],["Gary",173730596,"TG5-3"],["FAFO",167084162,"TG5"],["雞皮甜不辣",160559355,"TG4"],["小利特Drew",157593768,"TG6"],["八級小狂風",122331418,"TG3-2"],["CianTW",121480622,"TG5"],["Alumi",110902726,"TG4"],["珽身而出",110758349,"TG3-1"],["MiniJess",85303765,"TG1"],["黑堂真乃",72887492,"TG1-3"],["春日部の大美女 野原 美伢",71399539,"TC30"],["心太軟",70114677,"TG2-4"],["红焖羊蝎子",68478654,"TG1"],["똥싸고손안씻음YO",63720961,"TC30"],["情非得已",60199197,"TG2-2"],["古顧估",43139406,"TC30-3"],["咳嗽用斯斯",41300730,"TG1"],["大冰棍",25811244,"TC24"],["李慕慕",11809633,"TC20"],["小太子奶",8791584,"TC24"],["Moonlitz Reach",4474934,"TC22"]]},"WTF":{"name":"Forever","count":70,"members":[["WIFI的小迷妹",886284955,"TG8"],["ROBiÏiN",572141980,"TG8"],["Dokdo_Shrimpᴷᴼᴿ",540767049,"TG8"],["Frogᴷᴼᴿ",511732851,"TG8"],["RyaN 캥",439758084,"TG8"],["사조성sajo",433740798,"TG8"],["SS4",417340300,"TG8"],["Mr_MA_마블리ᴷᴼᴿ",408235655,"TG8"],["EKSELANSWS",404389660,"TG7-2"],["༺Abu Salem ༻",400236778,"TG8"],["SEKSEKTR32",393849865,"TG7-4"],["optimushyeonjin",370999803,"TG7"],["noid",370787713,"TG6-2"],["DracheN",370370035,"TG7-3"],["제임스딘777_Dean",359115800,"TG7-1"],["Spartan Warrior",354327418,"TG8"],["TwoPark",346590170,"TG7"],["JJigaeᴷᴼᴿ",345487397,"TG8"],["DIABLO ᵀᴿ",341901797,"TG7"],["ShriMCMV",340914382,"TG8"],["아서스 Arthas",338292303,"TG7"],["WoodKing",338057078,"TG7"],["DwaejiGukbap",337363231,"TG8"],["카시스Cassisᴷᴼᴿ",335985419,"TG7-1"],["Bozza",325792797,"TG6"],["도깨비 Specter",320875030,"TG6"],["창12chang",316279258,"TG8"],["white",312453799,"TG8"],["WTD",308242362,"TG7"],["SAJABARAM",303543798,"TG7-1"],["Hajin_papa",300514419,"TG6"],["mirinai",300431452,"TG7"],["Hideonbush",299694642,"TG8"],["라현은우천사_Rara",295552708,"TG6-4"],["winterqueen",290046737,"TG7"],["FIRST 처음부터",285706289,"TG6"],["13Moon",279362511,"TG5-3"],["abu saeed",264067272,"TG6"],["126",259906055,"TG6-1"],["Bokja김복자",259295662,"TG6"],["L0rdSl3nd3r",253373879,"TG5-4"],["냉이나물 wawa",252884371,"TG6"],["Dokdoᴷᴼᴿ",250218356,"TG5"],["0628",248474847,"TG7"],["porori",242800619,"TG5"],["WoNl o0@",238241211,"TG5"],["QueenB",235459888,"TG5"],["Daisy",228191303,"TG5"],["Safeer AlSham",222870321,"TG5-2"],["juba 515",218887518,"TG5"],["Fantasma",213827726,"TG5"],["냥냥Punch",213230014,"TG5"],["King너굴이",205602084,"TG6-4"],["Helen Ailith",203163786,"TG5"],["타이거 tiger",202898214,"TG5-4"],["tree frogᴷᴼᴿ",178173213,"TG6"],["Mahmood",167978800,"TG4"],["piil farm",163350983,"TG3-4"],["milesmorales1610",161141440,"TG5-1"],["DDOKBARO",154127040,"TG5"],["B U G A T T I",147478269,"TG7-1"],["Razaza",77354183,"TG1"],["ᴷᴼᴿ tree frog",74969018,"TG3"],["WaynoTheWise",50540683,"TG3"],["Zephyr",49207368,"TG2-4"],["optimusfarm",44204993,"TC26"],["#853 DIABLO",35010726,"TC26"],["SpartanWarrior3",29035200,"TC25"],["Noop890",4293551,"TC17"],["BongJu",1876868,"TC16"]]},"LoV":{"name":"LoV","count":98,"members":[["McGills",429372277,"TG7-1"],["Senpei",416880943,"TG7"],["Lord 2571 sr",398016477,"TG7"],["BlejdRunner",389924151,"TG6-1"],["ΓΙΑΝΝΗΣ",346148848,"TG6-1"],["Sid",342934790,"TG6-4"],["fatlard",321484164,"TG6"],["Hecto",313344657,"TG6-2"],["kameni28",306023107,"TG6-2"],["KAAN Abdullah 07",286304202,"TG5-3"],["Fjord",282730564,"TG6"],["littlebook",282003426,"TG6"],["Lord alarue",276457401,"TG5"],["Let Me Be Sad",272949367,"TG5-3"],["Aydinandirin",270394865,"TG5-4"],["Tenebrix",265900376,"TG3-4"],["WB94",261233631,"TG4"],["JOLESBAT",256765004,"TG5-4"],["giaca08",255064022,"TG5"],["Frederick",238332276,"TG7"],["Mabuhay",226788101,"TG5"],["roti kosong",226380516,"TG6"],["Jeco",224237932,"TG6"],["Dude",218131661,"TG6"],["Peridot",213952253,"TG5"],["HadSkype",211020974,"TG3-3"],["LordJosephBurky",210390709,"TG5-2"],["Naples_Ag4in",206014530,"TG4"],["Veliona",201601627,"TG5"],["Mystogan",201236990,"TG6"],["followerofRagosh",195019150,"TG4-1"],["bluepepper",190249159,"TG5-2"],["Bdancercosplay",187292631,"TG6"],["Aysu",185995216,"TG4-4"],["Chuck nuck",182482929,"TG5"],["소미 도하",180700308,"TG5"],["lionel 72",180499442,"TG5"],["louie mar",180485401,"TG5"],["AllyM",176633958,"TG5"],["ąŋɖཞɛɛą",170847245,"TG4-1"],["silent hill",170032359,"TG5"],["JoིJoྀ ༶JOY༶",166535336,"TG3"],["BRALMAVAPA",165065836,"TG4-1"],["El3Andlib",164050242,"TG5"],["Twin1453",162425228,"TG5-4"],["NitroxX",154309503,"TG5"],["꧁༺Loνє༻꧂",152757089,"TG7"],["Nims_Noms_peace",151577351,"TG4"],["Marshal kuwait",151221173,"TG4"],["돈키호테",150490419,"TG4"],["Algetic",144567209,"TG4-2"],["TadejPec",143069378,"TG5"],["Baba Yaga",142078566,"TG4-1"],["e7andy",141642595,"TG4-1"],["ВІКТОР",137319915,"TG5"],["DaMaRq8",136635831,"TG4-1"],["HadSkype 2",133339969,"TG1"],["HOT",132988343,"TG4-4"],["ᴺᵛᴬSomedayᴮᵁᴸ",132909815,"TG4-2"],["ʟᴜɴᴀʀᴀ ᥫ᭡",128495299,"TG4"],["Veldanava",128443510,"TG4"],["Viker",127778736,"TG4"],["Laura",126694409,"TG4"],["Trond",126016864,"TG6-3"],["omcmge",124662313,"TG4-2"],["Murrano ツ",123995796,"TG3"],["Mission possible",123831204,"TG7"],["Cidelion",121494426,"TG5"],["༻BlazE༺࿐",121396923,"TG4"],["Thanis",120811804,"TC30"],["Kelly lau",119007768,"TG4"],["007빵",118871719,"TG2"],["دحّام",118252472,"TG3"],["Cake",117921257,"TG4"],["محمد فرحات 99",117227319,"TG2"],["༺ Loνє ฅʕ·͡ᴥ፝֟·ʔ",115224507,"TG3-3"],["Vikingsalé",108471540,"TG4"],["Jacksonalt8",105624774,"TG4"],["COZMAN",100147127,"TG3"],["myin",97492522,"TG3-2"],["Leo1001",93634502,"TG5"],["DayOne oR OneDay",89487700,"TG2"],["Albahti",89169528,"TG3"],["Boyz01",87757659,"TG4"],["Danies",77662918,"TG1"],["R4d3k",77205167,"TG1-2"],["༻Hana༺",73544888,"TC30"],["LittleEmpress",72929074,"TC30-1"],["Daow 4i20",67611799,"TG2"],["JokerVerde",67427876,"TG3"],["༻ Lσνє ༺ ᴸᵒᵛ",65272400,"TC30"],["sonia26",61531076,"TC29"],["BiggusDikkus",61105239,"TC27"],["FURY",57067094,"TC29"],["SummerMrsh",56527618,"TC30"],["ηιєнαѕн · 니해쉬",52527030,"TC29"],["Throne",49796566,"TC30-2"],["Enara",412013,"TC10"]]}};
+const ROSTER = {"NeX":{"name":"Nextus","count":92,"members":[["Duby 1988",1226742591,"TG8"],["WoNI o0@",1015148315,"TG8"],["DA기부천사",892344761,"TG8"],["Noblesse",762161300,"TG8"],["ᴮᴼˢˢ化神ᴳᵒᵈ",744517458,"TG8"],["Clacy的小窩",713176078,"TG8"],["윤&연 MVP forever~",660660846,"TG8"],["필 piil",653334469,"TG8"],["Jugy",652485936,"TG8"],["나뭇잎마을Namu",617020987,"TG8"],["서아대디_SeoA Daddy",591829831,"TG8"],["Jain",587655188,"TG8"],["클레오빡Dora",587579737,"TG8"],["Far",585636151,"TG8"],["乂v12乂",585062708,"TG8"],["ROBiÏiN",582951310,"TG8"],["chenlq",580816997,"TG8"],["Dokdo_Shrimpᴷᴼᴿ",555633212,"TG8"],["CoCoMa 꼬꼬마",554018601,"TG8"],["Yoshimori",553452163,"TG8"],["#145Bahtraz#417",549734781,"TG8"],["엽기 Rabbit",549096032,"TG7"],["Frogᴷᴼᴿ",532664963,"TG8"],["NanaMingB",532158966,"TG8"],["마루나 Maruna",529483351,"TG8"],["사랑ⒾⒸⓎᵇᵃᵇᵉˢ",522053443,"TG8"],["Gluck",520627829,"TG8"],["안녕 Hi",519243712,"TG7-2"],["qwer0192",502518635,"TG8"],["SeoA",494685256,"TG7-3"],["kamilerzs",492541878,"TG8"],["Mr_MA_마블리ᴷᴼᴿ",488117864,"TG8"],["Ash Burn",487593479,"TG7-2"],["SS4",487155727,"TG8"],["여왕 JOKOWI",474674772,"TG8"],["WIXILL",471880595,"TG8"],["Pedja",466527654,"TG8"],["RyaN 캥",454308483,"TG8"],["offonoff",452933938,"TG8"],["Ludus",452754736,"TG8"],["Hina",450099034,"TG8"],["OM【 ﾌㄖҜㄖ山丨】",449993963,"TG8"],["ALEX 블루라곤",441665606,"TG7-4"],["Ermin",436208197,"TG8"],["TOMORO",434505835,"TG8"],["BingSu",432711120,"TG7-1"],["༺Abu Salem ༻",432668876,"TG8"],["EKSELANSWS",428048721,"TG8"],["이웃집또터러Totoro",425357673,"TG7"],["소악마 eso",424578893,"TG8"],["월드사나이MAN",418646506,"TG8"],["쿠쿠닷_CuCu",418206860,"TG7"],["Ducky綠豆掀人",412381215,"TG7"],["헤르메스_Hermes",402935204,"TG8"],["DwaejiGukbap",401214622,"TG8"],["onemore",400876502,"TG8"],["Bhokaal",396371158,"TG8"],["보배드림BD",395701296,"TG7"],["아샷추 AddShot",394737430,"TG8"],["optimushyeonjin",385255849,"TG7-1"],["Divine 디바인",384178450,"TG8"],["noid",381745018,"TG6-2"],["SUPERNOVA",379269389,"TG5-4"],["제임스딘777_Dean",376032288,"TG8"],["wangwang",365611247,"TG7-3"],["TwoPark",357464702,"TG7"],["JJigaeᴷᴼᴿ",355580868,"TG8"],["121006",350886901,"TG8"],["DIABLO ᵀᴿ",349811008,"TG7"],["ShriMCMV",349649181,"TG8"],["아서스 Arthas",347659841,"TG7"],["SuPeRr",344779738,"TG6-3"],["STM399",344608626,"TG7"],["white",343817091,"TG8"],["WoodKing",343420864,"TG7"],["카시스Cassisᴷᴼᴿ",342868399,"TG7-1"],["창12chang",341019860,"TG8"],["dj철민",336657771,"TG5-4"],["bro",328189279,"TG6-3"],["garden5",327148686,"TG7"],["WTD",320192795,"TG7"],["Hideonbush",319669178,"TG8"],["SAJABARAM",317609826,"TG7-3"],["jiwoo",314125971,"TG6"],["耶耶耶耶耶耶ya",311626194,"TG6-1"],["포크볼 forkball",302276273,"TG6-3"],["ewenew",300943285,"TG6-4"],["豈耶Kevin",277224460,"TG6-3"],["Bokja김복자",271061551,"TG6-1"],["가나초코 ghana",257478784,"TG6-1"],["ShotMonarch",246945958,"TG5-4"],["CoCoMa 꼬꼬마부인",210970762,"TG5-4"]]},"NvA":{"name":"Nova","count":67,"members":[["Imnotdonn",777836521,"TG8"],["Captain Q ᴷᴼᴿ",681242662,"TG8"],["JayChangᵀᵂ",677813772,"TG8"],["방울찡 ᴷᴼᴿ",676835144,"TG8"],["༒HoneyYuLᴷᴼᴿ༒",641175186,"TG8"],["조유리YURI",635461555,"TG8"],["Daigo",630794740,"TG8"],["Lotto",618659401,"TG8"],["sudong01",605130153,"TG8"],["General 대조영ᴷᴼᴿ",565930172,"TG8"],["Gugirlᴮᵁᴸ",540470003,"TG8"],["Marchᴷᴼᴿ",537194958,"TG8"],["༺ཌ࿅AttiLLaᵀᴿ࿅ད༻",536829522,"TG8"],["mina",527609251,"TG8"],["Cacaca",520514085,"TG8"],["1523ᵀᵂ",499195110,"TG8"],["晚睡覺SleepySwim ᶻᶻ",496161066,"TG8"],["아메리카노 Americano",487298532,"TG8"],["Muscle Rabbit",472662616,"TG8"],["Sadako030",468911081,"TG7-2"],["DeadwooD",455097587,"TG8"],["DongDong",436985694,"TG8"],["Akira",428102141,"TG7"],["SEKSEKTR32",427418756,"TG8"],["이노무스key~",424112876,"TG7-4"],["TTÜN",423723921,"TG8"],["Namirᴮᵁᴸ",422242032,"TG8"],["드럼 Drumd",421505651,"TG8"],["Aquarius",414707227,"TG8"],["A R E 135",412256403,"TG7"],["n00b4lyf",411226879,"TG8"],["BuLSaR",408314707,"TG8"],["Ｔ Ｉ Ｔ Ｕ Ｓ 『 鬼 』",405314160,"TG8"],["세종대왕 King Sejong",395395653,"TG8"],["Mamba Out",393641009,"TG7-2"],["담비찡 Dambi ᴷᴼᴿ",390657266,"TG8"],["Duran",376406120,"TG8"],["MommyCat",371905158,"TG7"],["DaddyCat",366334249,"TG7"],["John2",363865813,"TG6-1"],["Jadieᴮᵁᴸ",363525538,"TG8"],["포차코 Pochaco",362308581,"TG8"],["Lord RonJustin",357056813,"TG6"],["Grace莓頌",344040655,"TG7-1"],["DaeHan H",331833668,"TG7"],["「DUCATI ６６６」특공",324997491,"TG7-1"],["DevilsDoPray",321791065,"TG7"],["Lord Jay Bᴮᵁᴸ",310422255,"TG8"],["Buble",309871655,"TG6-1"],["Black체리",308754841,"TG7"],["Stephy Baby",291605919,"TG6"],["Covervis",262086575,"TG7"],["ToBeOrNotToBe",262021225,"TG7"],["Volde",260710403,"TG6"],["Arturᴮᵁᴸ",260023508,"TG6"],["Kerryae33",258062788,"TG6-4"],["GAMJA",247931064,"TG5-2"],["Sangsom1",234911575,"TG5-2"],["Noodlerama!",208487739,"TG6"],["Skychakra",202298525,"TG6"],["ǝʞɐɔdnɔ ı̣uı̣ɯ",168729570,"TG4"],["SomethingSpecial",152743344,"TG5"],["Namir Farm",95989466,"TC29"],["༒Gwangjuᴷᴼᴿ ༒",85409977,"TC30-1"],["嚕嚕醬 ᴸᵘᴸᵘ ᶠʳᵒᵐ ᵀᵂ",46144992,"TC26"],["GuGuGaGa",45461287,"TC27"],["Banggu 뽕",9729503,"TC22"]]},"AEH":{"name":"華人地區精神病院","count":77,"members":[["Yui",885262023,"TG8"],["24CM",670049629,"TG8"],["無能維力炸醬麵ᴸᴵᴺ",571666070,"TG8"],["小昇昇son",567877796,"TG8"],["Jz Bomb",544754542,"TG8"],["Feng 狂風",491405582,"TG8"],["香郎 津桃 Mickey",490829085,"TG8"],["豆乾先生 Chi",477643482,"TG8"],["安娜膩Hanna",469901045,"TG8"],["JianSharon平凡人",468987318,"TG7-2"],["新世紀福德正神TudiGong",466014340,"TG7"],["MozBah",455718611,"TG8"],["迅猛龍Dragon",437398032,"TG8"],["Imsorryᴾᴵᴳ",425643031,"TG8"],["M I T 嚕嚕米",424262694,"TG7"],["咖哩魚蛋Fish",422153111,"TG7"],["婕晞Jess",415047445,"TG8"],["CAT6966",414490462,"TG7-3"],["Fish 說話的小魚",408032832,"TG7"],["快使用雙截棍CHOU",404213632,"TG8"],["嘎抓roach",403180484,"TG8"],["酱板鸭",401885641,"TG7"],["PARADISE ~ ᴷᴵˢˢ",400499849,"TG8"],["胃食的小馋猫～ᴾᴿᴱᶜᴵᴼᵁˢ",393119765,"TG8"],["胡不歸",391559817,"TG8"],["半糖微冰 WEI",390791852,"TG8"],["黑輪小姐 siao",389258246,"TG8"],["台灣BinbOn",388260041,"TG8"],["Green",384943617,"TG6-2"],["焦糖馒头",380512412,"TG7-1"],["芒果金煌我是 Mango",373246211,"TG7-1"],["保力達 JUI",364293696,"TG7"],["Chanel N°5",362024488,"TG7-2"],["睡觉的时候不会困",359330375,"TG6"],["薯條飽飽·YU",354404886,"TG6"],["【和平】༒ ᴬᴹᴬᴺᴵ ༒",353363187,"TG6-3"],["Biu須說幹話",349423489,"TG7"],["Benno",345895893,"TG7"],["halahoo 哈啦呼",341251506,"TG6"],["JING",337948317,"TG6-2"],["Lin",337436370,"TG6"],["World Peace",333112832,"TG6"],["湯姆貓",330075499,"TG6-2"],["JayZ",321275458,"TG6"],["kking5528",320554567,"TG6"],["0o偷你o0",318525883,"TG7"],["蚵仔寶寶",309175992,"TG6"],["SunnySunny",300923596,"TG5"],["一休方丈 Ikkyu",300385304,"TG7"],["快樂斑馬。HZ",300025927,"TG6-3"],["pink moon",298606833,"TG6-2"],["～ᴍᴏꜱᴛᴀɴ°魔斯坦°～",293706592,"TG6-2"],["伞妮流Sunny",291456109,"TG6"],["༻ʚ Meat 肉ɞ༺",288552709,"TG5"],["Manman",288028084,"TG6-1"],["Panpan 高不可潘",279163272,"TG6-1"],["Denno 蔥三小",272292567,"TG6"],["新竹狗熊",270540339,"TG7"],["我很好我很棒Huei",263608364,"TG6-2"],["쿠팡이츠KiKi",255881952,"TG5"],["閃身步 浪子踢球 狗熊哆嗦毛",248300769,"TG5-3"],["路寶Joanna",243758869,"TG6"],["Meowxl",231516372,"TG5"],["小橘子 Orange",226352198,"TG5"],["___",226268278,"TG8"],["神創彗星_Star",220837853,"TG7"],["Elena餃子",208928543,"TG5"],["曹氏鸭脖",194764196,"TG4-3"],["糖果雞腿",184679901,"TG3-1"],["雞皮甜不辣",165916950,"TG4"],["珽身而出",115230627,"TG3-3"],["Alumi",112838222,"TG4"],["红焖羊蝎子",78465940,"TG1"],["黑堂真乃",74816313,"TG1-4"],["春日部の大美女 野原 美伢",73843307,"TC30"],["大冰棍",34472928,"TC25"],["李慕慕",16943553,"TC22"]]},"WTF":{"name":"Forever","count":8,"members":[["tree frogᴷᴼᴿ",197621092,"TG6"],["ᴷᴼᴿ tree frog",74862883,"TG3"],["WaynoTheWise",50540683,"TG3"],["SpartanWarrior3",35190639,"TC26"],["에스틴",9161249,"TC20"],["esta",8924194,"TC20"],["Châtiment",2821230,"TC17"],["Shrimpᴷᴼᴿ",1269530,"TC14"]]},"LoV":{"name":"LoV","count":96,"members":[["McGills",444823203,"TG7-2"],["Senpei",433288136,"TG7"],["Lord 2571 sr",416965570,"TG7-1"],["BlejdRunner",406936033,"TG7"],["Sid",365600209,"TG7"],["ΓΙΑΝΝΗΣ",362636375,"TG6-3"],["Hecto",355563642,"TG7"],["fatlard",340572156,"TG6-1"],["KAAN Abdullah 07",332620792,"TG6"],["littlebook",328832722,"TG6"],["Fjord",327269792,"TG6-1"],["Lord alarue",318542445,"TG5"],["kameni28",317128848,"TG6-4"],["JOLESBAT",295051254,"TG6"],["Aydinandirin",287826750,"TG6"],["Let Me Be Sad",285810380,"TG5-4"],["giaca08",275936136,"TG5"],["Tenebrix",275562201,"TG4"],["WB94",275185636,"TG4-3"],["Jeco",262600831,"TG6"],["roti kosong",259242668,"TG6-1"],["Frederick",254294430,"TG7"],["Peridot",243256896,"TG5-1"],["Mystogan",240020537,"TG6-1"],["Veliona",238034168,"TG5"],["LordJosephBurky",237387946,"TG6"],["Dude",230966326,"TG6"],["Mabuhay",226381933,"TG5"],["bluepepper",222017946,"TG5-4"],["Naples_Ag4in",221775149,"TG4-2"],["HadSkype",215562531,"TG4"],["소미 도하",213010975,"TG5"],["lionel 72",212967291,"TG5"],["Bdancercosplay",203173815,"TG6"],["followerofRagosh",200991546,"TG4-3"],["silent hill",200428045,"TG5-1"],["Aysu",198882993,"TG5"],["louie mar",196052976,"TG5-1"],["ąŋɖཞɛɛą",183860699,"TG5"],["Chuck nuck",182482929,"TG5"],["AllyM",182059200,"TG5"],["NitroxX",181405754,"TG5-1"],["TadejPec",175590990,"TG5"],["Twin1453",175193573,"TG6"],["Algetic",167127449,"TG4-4"],["BRALMAVAPA",165065836,"TG4-1"],["El3Andlib",163851519,"TG5"],["Nims_Noms_peace",162663864,"TG4"],["DaMaRq8",160637277,"TG4-3"],["Marshal kuwait",156820738,"TG4-1"],["꧁༺Loνє༻꧂",152552456,"TG7"],["Laura",151188467,"TG4"],["HOT",150803379,"TG5"],["Viker",149798902,"TG4"],["Baba Yaga",144254461,"TG4-2"],["Veldanava",142099032,"TG4"],["ᴺᵛᴬSomedayᴮᵁᴸ",141582672,"TG4-2"],["HadSkype 2",137706362,"TG1"],["007빵",137289629,"TG2-4"],["ВІКТОР",137097511,"TG5"],["Cake",132582808,"TG4"],["ʟᴜɴᴀʀᴀ ᥫ᭡",131924370,"TG4"],["Vikingsalé",131077403,"TG4"],["Murrano ツ",130729903,"TG3"],["omcmge",128814645,"TG4-4"],["Thanis",127539490,"TC30"],["Cidelion",126887266,"TG5"],["Trond",126016864,"TG6-3"],["Kelly lau",125745973,"TG4-2"],["Mission possible",123756542,"TG7"],["دحّام",121649400,"TG3"],["༻BlazE༺࿐",121396923,"TG4"],["محمد فرحات 99",116896265,"TG2"],["༺ Loνє ฅʕ·͡ᴥ፝֟·ʔ",115224507,"TG3-3"],["COZMAN",114419831,"TG3"],["Daow 4i20",110419992,"TG2"],["Jacksonalt8",105486185,"TG4"],["Albahti",99362854,"TG3"],["myin",97326624,"TG3-2"],["Leo1001",93634502,"TG5"],["DayOne oR OneDay",91162448,"TG2"],["Boyz01",87757659,"TG4"],["Danies",85526535,"TG1"],["R4d3k",83432743,"TG1-2"],["LittleEmpress",79616470,"TG1"],["༻Hana༺",74998296,"TC30"],["BiggusDikkus",72082162,"TC28"],["JokerVerde",67427876,"TG3"],["༻ Lσνє ༺ ᴸᵒᵛ",65272400,"TC30"],["sonia26",61531076,"TC29"],["FURY",58647355,"TC29"],["Throne",57262265,"TG1"],["SummerMrsh",56527618,"TC30"],["ηιєнαѕн · 니해쉬",54222303,"TC29"],["king india",49439069,"TG1"],["Enara",412013,"TC10"]]}};
 const SLOTS = [["12:00~13:00", 12, 13], ["13:00~14:00", 13, 14], ["14:00~15:00", 14, 15], ["15:00~16:00", 15, 16], ["16:00~17:00", 16, 17], ["17:00~17:30", 17, 17.5]];
 const ALLIES = Object.keys(ROSTER);
 const $ = id => document.getElementById(id);
@@ -722,6 +727,7 @@ const I18N = {
     mSecK: "KvK", mSecS: "성검 쟁탈", mSword: "🗡 성검 쟁탈 작전",
     titleSw: "700서버 성검 쟁탈", meRoleK: "⚔ KvK 임무", meRoleSw: "🗡 성검 임무", roleTitleSw: "🗡 {0} — 성검 쟁탈 임무",
     mEmp: "👑 엠페럴 정보",
+    seasonBtn: "시즌 {0} · vs {1}", seasonOld: "지난 시즌 기록입니다 (보기 전용)", seasonLeave: "저장하지 않은 편성이 있습니다. 시즌을 바꾸면 사라집니다. 바꿀까요?",
     loadFail: "불러오지 못했습니다", loadFailMsg: "응답 시트를 읽지 못했습니다. 시트가 \"링크가 있는 모든 사용자 · 뷰어\"로 공유되어 있어야 이 화면에 숫자가 나옵니다."},
   en: {name: "English", title: "Kingdom 700 KvK Participation", loading: "Loading…", bSurvey: "Enter my KvK time", bTroops: "Enter my troop info", bReload: "Refresh",
     hSlots: "Available players per time slot (UTC)", hRally: "Rally plan",
@@ -796,6 +802,7 @@ const I18N = {
     mSecK: "KvK", mSecS: "Swordland Showdown", mSword: "🗡 Swordland plan",
     titleSw: "Kingdom 700 Swordland Showdown", meRoleK: "⚔ KvK mission", meRoleSw: "🗡 Swordland mission", roleTitleSw: "🗡 {0} — Swordland mission",
     mEmp: "👑 Emperor info",
+    seasonBtn: "Season {0} · vs {1}", seasonOld: "Past season (view only)", seasonLeave: "You have unsaved changes that will be lost. Switch season?",
     loadFail: "Could not load", loadFailMsg: "Could not read the response sheet. The sheet must be shared as \"Anyone with the link · Viewer\" for the numbers to appear here."},
   zh: {name: "繁體中文", title: "700 服 KvK 參加狀況", loading: "載入中…", bSurvey: "填寫參加時間", bTroops: "填寫我的士兵資料", bReload: "重新整理",
     hSlots: "各時段可參加人數（UTC · 小字為台灣時間）", hRally: "集結編組",
@@ -870,6 +877,7 @@ const I18N = {
     mSecK: "KvK", mSecS: "聖劍爭奪", mSword: "🗡 聖劍爭奪作戰",
     titleSw: "700 服 聖劍爭奪", meRoleK: "⚔ KvK 任務", meRoleSw: "🗡 聖劍任務", roleTitleSw: "🗡 {0} — 聖劍爭奪任務",
     mEmp: "👑 Emperor 資訊",
+    seasonBtn: "第 {0} 季 · vs {1}", seasonOld: "過去賽季（僅供查看）", seasonLeave: "有尚未儲存的編排，切換賽季後會消失。要切換嗎？",
     loadFail: "載入失敗", loadFailMsg: "無法讀取回覆試算表。試算表必須以「知道連結的任何人 · 檢視者」分享，這裡才會顯示數字。"},
   ar: {name: "العربية", title: "مشاركة المملكة 700 في KvK", loading: "جارٍ التحميل…", bSurvey: "أدخل وقت المشاركة", bTroops: "أدخل معلومات جنودي", bReload: "تحديث",
     hSlots: "عدد المتاحين في كل فترة (UTC · الخط الصغير بتوقيت UTC+3)", hRally: "خطة الحشود",
@@ -944,6 +952,7 @@ const I18N = {
     mSecK: "KvK", mSecS: "مواجهة أرض السيف", mSword: "🗡 خطة أرض السيف",
     titleSw: "المملكة 700 — مواجهة أرض السيف", meRoleK: "⚔ مهمة KvK", meRoleSw: "🗡 مهمة أرض السيف", roleTitleSw: "🗡 {0} — مهمة أرض السيف",
     mEmp: "👑 معلومات Emperor",
+    seasonBtn: "الموسم {0} · ضد {1}", seasonOld: "موسم سابق (للعرض فقط)", seasonLeave: "لديك تغييرات غير محفوظة ستضيع. هل تريد تبديل الموسم؟",
     loadFail: "تعذر التحميل", loadFailMsg: "تعذرت قراءة جدول الإجابات. يجب مشاركة الجدول بخيار \"أي شخص لديه الرابط · مُشاهد\" حتى تظهر الأرقام هنا."},
   tr: {name: "Türkçe", title: "700. Krallık KvK Katılımı", loading: "Yükleniyor…", bSurvey: "Katılım saatini gir", bTroops: "Asker bilgilerimi gir", bReload: "Yenile",
     hSlots: "Saat dilimine göre katılabilecek kişi sayısı (UTC · küçük yazı Türkiye saati)", hRally: "Ralli planı",
@@ -1018,6 +1027,7 @@ const I18N = {
     mSecK: "KvK", mSecS: "Kılıç Diyarı", mSword: "🗡 Kılıç Diyarı planı",
     titleSw: "700. Krallık Kılıç Diyarı", meRoleK: "⚔ KvK görevi", meRoleSw: "🗡 Kılıç Diyarı görevi", roleTitleSw: "🗡 {0} — Kılıç Diyarı görevi",
     mEmp: "👑 Emperor bilgisi",
+    seasonBtn: "Sezon {0} · vs {1}", seasonOld: "Geçmiş sezon (yalnızca görüntüleme)", seasonLeave: "Kaydedilmemiş değişiklikler kaybolacak. Sezon değiştirilsin mi?",
     loadFail: "Yüklenemedi", loadFailMsg: "Yanıt tablosu okunamadı. Sayıların burada görünmesi için tablo \"Bağlantıya sahip olan herkes · Görüntüleyen\" olarak paylaşılmalıdır."}
 };
 let LANG = "ko", LOADED_AT = null, LOAD_ERR = false, PAGE = 0, VIEW = "dash", SLOT_ALLY = "";
@@ -1034,6 +1044,15 @@ const slotLocal = i => { const z = TZ[LANG]; return z ? z[0] + " " + hm(SLOTS[i]
 let DATA = [];
 let BAD_ID = 0, BAD = [], KVK_WEB = [];
 // 시트의 타임스탬프("2026. 10. 2 오후 5:09:36")를 비교할 수 있는 수로. 같은 사람이 여러 번 내면 가장 늦은 답을 쓴다
+// KvK 시즌: 참여 시간 설문 · 집결 편성 · 배치도는 시즌마다 따로, 병사 정보는 공통. 시트 기록은 지우지 않고 저장 시각으로 나눈다
+// 새 시즌 = 줄 하나 추가 (from = 그 시즌이 시작된 한국 시각, 앞 시즌은 거기까지)
+const KST = 9 * 3600 * 1000;
+const SEASONS = [{n: 1, opp: 629, from: 0}, {n: 2, opp: 707, from: Date.UTC(2026, 10, 2) - KST}];
+let SEASON = SEASONS[SEASONS.length - 1].n;
+const seasonOf = () => SEASONS.find(x => x.n === SEASON);
+const seasonOld = () => SEASON !== SEASONS[SEASONS.length - 1].n;
+const inSeason = ms => { const c = seasonOf(), nx = SEASONS.find(x => x.n === SEASON + 1); return ms >= c.from && (!nx || ms < nx.from); };   // ms = 실제 시각(저장 묶음 번호)
+const inSeasonW = ts => inSeason(ts - KST);   // ts = tsOf 값(한국 시각을 그대로 읽은 값)
 const tsOf = v => {
   const m = /(\d+)\D+(\d+)\D+(\d+)\D*?(오전|오후|AM|PM)?\s*(\d+):(\d+)(?::(\d+))?/i.exec(String(v || ""));
   if (!m) return Date.parse(v) || 0;
@@ -1062,7 +1081,7 @@ const ADMIN_H = typeof ADMIN_HASH === "undefined" ? "" : ADMIN_HASH;
 const ADMIN_LIST = (typeof ADMINS === "undefined" ? [] : ADMINS).concat(ADMIN_H ? [{h: ADMIN_H, n: "", s: "*"}] : []);
 let ME = null;
 const scopeOk = (sc, a) => sc === "*" || String(sc || "").split(",").indexOf(a) >= 0;
-const can = a => !!ME && scopeOk(ME.s, a);
+const can = a => !!ME && scopeOk(ME.s, a) && (VIEW === "sword" || !seasonOld());
 const rowOk = (hash, a) => !!hash && ADMIN_LIST.some(x => x.h === hash && scopeOk(x.s, a));
 const FORM_POST = "https://docs.google.com/forms/d/e/1FAIpQLSfAnxDTxK2o8l1F6yTpPvlZ-4toOYDxLqcgEs5F8wDUeWY95w/formResponse";
 const troops = p => SELF[p.id] || (SOLD[p.id] && SOLD[p.id].s) || null;
@@ -1142,7 +1161,7 @@ async function loadConfig() {
       } catch (e) {}
       return;
     }
-    if (!a || !b || a === "ENEMY" || !rowOk(String(row[ci.admin] || "").trim(), a)) return;
+    if (!a || !b || a === "ENEMY" || !inSeason(b) || !rowOk(String(row[ci.admin] || "").trim(), a)) return;
     if (a === "MAP") {
       if (map && b <= map.batch) return;
       try {
@@ -1305,7 +1324,7 @@ function build(rows) {
     if (!row) return;
     const lang = langCode(langCol >= 0 ? String(row[langCol] || "").trim().split(" ")[0] : "");
     const f = row.filter((v, i) => i > 0 && i !== langCol && String(v || "").trim() !== "");
-    if (f.length < 3) return;
+    if (f.length < 3 || !inSeasonW(tsOf(row[0]))) return;
     const r = f.length === 3 ? [row[0], f[0], "", f[1], f[2]] : [row[0], f[0], f[1], f[2], f[3]];
     const ally = String(r[1] || "").trim().split(" ")[0];
     const id = /^[0-9]{7,12}$/.test(String(r[2] || "").trim()) ? String(r[2]).trim() : "";
@@ -1323,7 +1342,7 @@ function build(rows) {
   });
   // 웹 설문 답을 합친다. 같은 ID 는 더 늦게 낸 답이 이긴다
   KVK_WEB.forEach(w => {
-    if (!/^[0-9]{7,12}$/.test(w.id) || ALLIES.indexOf(w.a) < 0) return;
+    if (!/^[0-9]{7,12}$/.test(w.id) || ALLIES.indexOf(w.a) < 0 || !inSeasonW(tsOf(w.time))) return;
     const ts = tsOf(w.time), old = byId.get(w.id);
     if (old && old.ts > ts) return;
     const slots = SLOTS.map((x, i) => !w.x && w.s[i] === "1");
@@ -2208,7 +2227,11 @@ async function load() {
 // 화면 둘: 대시보드 · 집결장 전용. 왼쪽 위 메뉴에서 고르고 주소 # 뒤에 남긴다
 // 지금 이벤트(KvK · 성검 쟁탈)에 맞춰 헤더 제목 · 임무 버튼 · 할 일 안내를 바꾼다
 const EVT = () => VIEW === "sword" ? "sword" : "kvk";
+function renderSeason() {
+  $("seasonBar").innerHTML = SEASONS.slice().reverse().map(x => '<button data-season="' + x.n + '"' + (x.n === SEASON ? ' class="on"' : '') + '>' + esc(tx("seasonBtn", x.n, x.opp)) + '</button>').join("") + (seasonOld() ? '<small>' + esc(tx("seasonOld")) + '</small>' : '');
+}
 function applyEvent() {
+  renderSeason();
   document.body.classList.toggle("ev-sword", EVT() === "sword");
   $("tTitle").textContent = tx(EVT() === "sword" ? "titleSw" : "title");
   renderMe();
@@ -2234,6 +2257,19 @@ function setView(v) {
   $("menu").style.display = "none";
   try { history.replaceState(null, "", location.pathname + location.search + (VIEW !== "dash" ? "#" + VIEW : "")); } catch (e) {}
 }
+$("seasonBar").addEventListener("click", e => {
+  const b = e.target.closest("button[data-season]");
+  if (!b || +b.dataset.season === SEASON) return;
+  // 고치던 편성은 다른 시즌으로 넘어가지 않게 비운다
+  if (Object.keys(DIRTY).some(a => DIRTY[a]) && !confirm(tx("seasonLeave"))) return;
+  SEASON = +b.dataset.season;
+  DRAFT = null; DIRTY = {}; MAPD = null; MAP_DIRTY = false;
+  [PLAN, SELK].forEach(o => Object.keys(o).forEach(k => delete o[k]));
+  if (VIEW === "enemy") { ECUR = String(seasonOf().opp); EPAGE = 0; EALLY = ""; initEnemy(); }
+  renderSeason();
+  $("msg").innerHTML = '<div class="msg">' + esc(tx("loading")) + '</div>';
+  load();
+});
 $("menuBtn").addEventListener("click", () => { $("menu").style.display = "flex"; });
 $("menuClose").addEventListener("click", () => { $("menu").style.display = "none"; });
 $("menu").addEventListener("click", e => {
@@ -2250,7 +2286,7 @@ async function initEnemy() {
   }
   renderEnemy();
   try { ELIST = await ejson("enemy/list.json"); } catch (e) { ELIST = ELIST || []; }
-  if (!ECUR && ELIST.length) ECUR = String(ELIST[0].k);
+  if (!ECUR && ELIST.length) ECUR = String((ELIST.find(x => x.k === seasonOf().opp) || ELIST[0]).k);
   if (ECUR && !EDATA[ECUR]) await loadEnemy(ECUR);
   renderEnemy();
 }
@@ -2856,8 +2892,8 @@ setView(location.hash.slice(1) || "dash");
 initAdmin().then(() => { setView(VIEW); return load(); }, load);
 setInterval(load, 60000);
 </script>
-<script src="emperor_top.js?v=1"></script>
-<script src="emperor.js?v=4"></script>
+<script src="emperor_top.js?v=2"></script>
+<script src="emperor.js?v=5"></script>
 <script src="sword.js?v=7"></script>
 </body>
 </html>
