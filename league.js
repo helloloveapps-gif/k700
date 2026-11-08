@@ -143,7 +143,7 @@
   const triK = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; };
   function roleKs(L) {
     const SG = window.LEAGUE_STRATEGY; if (!SG || !window.LEAGUE_ROSTER) return [];
-    const order = L.m.slice().sort((x, y) => triK(y) - triK(x)), fixed = new Set(), byRole = SG.roles.map(r => { const ks = order.filter(k => (r.fix || []).indexOf(who(k).n) >= 0); ks.forEach(k => fixed.add(k)); return ks; });
+    const order = L.m.slice().sort((x, y) => triK(y) - triK(x)), fixed = new Set(), byRole = SG.roles.map(r => { const ks = (r.fix || []).map(n => order.find(k => who(k).n === n)).filter(Boolean); ks.forEach(k => fixed.add(k)); return ks; });
     const rest = order.filter(k => !fixed.has(k));
     // aehFirst: 그 역할 안에서 AEH · 한자 이름을 앞으로 모아 조가 되도록 같이 묶는다(시련 순은 그 안에서 유지)
     return SG.roles.map((r, ri) => { const ks = byRole[ri].concat(rest.splice(0, Math.max(0, r.n - byRole[ri].length))); return r.aehFirst ? ks.filter(k => who(k).aeh).concat(ks.filter(k => !who(k).aeh)) : ks; });
