@@ -142,7 +142,8 @@
     const SG = window.LEAGUE_STRATEGY; if (!SG || !window.LEAGUE_ROSTER) return [];
     const order = L.m.slice().sort((x, y) => triK(y) - triK(x)), fixed = new Set(), byRole = SG.roles.map(r => { const ks = order.filter(k => (r.fix || []).indexOf(who(k).n) >= 0); ks.forEach(k => fixed.add(k)); return ks; });
     const rest = order.filter(k => !fixed.has(k));
-    return SG.roles.map((r, ri) => byRole[ri].concat(rest.splice(0, Math.max(0, r.n - byRole[ri].length))));
+    // aehFirst: 그 역할 안에서 AEH · 한자 이름을 앞으로 모아 조가 되도록 같이 묶는다(시련 순은 그 안에서 유지)
+    return SG.roles.map((r, ri) => { const ks = byRole[ri].concat(rest.splice(0, Math.max(0, r.n - byRole[ri].length))); return r.aehFirst ? ks.filter(k => who(k).aeh).concat(ks.filter(k => !who(k).aeh)) : ks; });
   }
   const roleOf = (L, key) => { const SG = window.LEAGUE_STRATEGY, KS = roleKs(L), i = SG ? SG.roles.findIndex(r => r.k === key) : -1; return i < 0 ? [] : KS[i] || []; };
   // 집결원 자동 배치: TG → 전투력 순으로 뱀 순서(1→N, N→1)로 나눠 준다. 집결 인원수를 넘으면 개인 부대
@@ -398,25 +399,16 @@
   // 회수조 역할 영상: 수도원 하나를 크게 — 싸움이 붙으면 전리품(동전)이 사방으로 튀고, 회수 1조 4명이 동 · 서 · 남 · 북 자기 구역만 주워 제자리로(이박사님 11-08)
   const RV = {run: false, t0: 0, seed: 7, plan: null, nm: []};
   const RV_POST = [[300, 84, "북"], [482, 200, "동"], [300, 316, "남"], [118, 200, "서"]], RV_C = [300, 200], RV_CYC = 9.5;
-  const RV_CAP = [[0, 1.5, "① 거점에서 공격 · 수비가 붙으면"], [1.5, 3.3, "② 전리품(동전)이 사방으로 튄다"], [3.3, 6.8, "③ 동 · 서 · 남 · 북 — 자기 구역만 줍는다"], [6.8, 9.5, "④ 줍고 바로 제자리 — 다음 전리품을 지킨다"]];
+  const RV_CAP = [[0, 1.5, "① 거점에서 공격 · 수비가 붙으면"], [1.5, 3.3, "② 전리품(동전)이 사방으로 튄다"], [3.3, 6.8, "③ 동 · 서 · 남 · 북 — 자기 구역만 행군(선)으로 회수"], [6.8, 9.5, "④ 제자리를 지키며 행군으로 가져온다"]];
   function rvPlan(seed) {
     let s = seed; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
     const coins = [];
     for (let i = 0; i < 16; i++) { const a = rnd() * Math.PI * 2, r = 45 + rnd() * 80; coins.push({x: RV_C[0] + Math.cos(a) * r * 1.55, y: RV_C[1] + Math.sin(a) * r * .95, d: rnd() * .45}); }
     coins.forEach(c => { const dx = (c.x - RV_C[0]) / 182, dy = (c.y - RV_C[1]) / 116; c.q = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0); });
-    // 사람마다 자기 구역 동전을 가까운 순으로 — 3.4초부터 하나에 0.5초
-    const runs = RV_POST.map((p, q) => {
-      let cur = [p[0], p[1]], t = 3.4; const st = [], mine = coins.filter(c => c.q === q);
-      while (mine.length) { mine.sort((a, b) => Math.hypot(a.x - cur[0], a.y - cur[1]) - Math.hypot(b.x - cur[0], b.y - cur[1])); const c = mine.shift(); st.push({a: cur, b: [c.x, c.y], t0: t, t1: t + .45}); c.pick = t + .45; cur = [c.x, c.y]; t += .5; }
-      const back = Math.max(t, 6.8); st.push({a: cur, b: [p[0], p[1]], t0: back, t1: back + .6});
-      return st;
-    });
-    return {coins, runs};
-  }
-  function rvPos(q, t) {
-    let p = RV_POST[q];
-    for (const m of RV.plan.runs[q]) { if (t < m.t0) return p; if (t < m.t1) { const u = ease((t - m.t0) / (m.t1 - m.t0)); return [m.a[0] + (m.b[0] - m.a[0]) * u, m.a[1] + (m.b[1] - m.a[1]) * u]; } p = m.b; }
-    return p;
+    // 사람은 제자리 — 자기 구역 동전마다 행군(선)을 보내 가져온다. 가까운 순으로 3.4초부터 0.4초 간격, 가는 데 0.35초 · 오는 데 0.35초
+    coins.forEach(c => { const p = RV_POST[c.q]; c.dist = Math.hypot(c.x - p[0], c.y - p[1]); });
+    RV_POST.forEach((p, q) => coins.filter(c => c.q === q).sort((a, b) => a.dist - b.dist).forEach((c, j) => { c.t0 = 3.4 + j * .4; c.pick = c.t0 + .35; c.home = c.pick + .35; }));
+    return {coins};
   }
   function rvFrame(now) {
     const el = $("lgRec"); if (!el || !el.getClientRects().length) { RV.run = false; return; }
@@ -436,9 +428,17 @@
       const u = Math.min(1, (t - s0) / .55), x = RV_C[0] + (c.x - RV_C[0]) * u, y = RV_C[1] + (c.y - RV_C[1]) * u - Math.sin(u * Math.PI) * 70;
       h += '<g><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="9" fill="#ffd43b" stroke="#8a5a00" stroke-width="2.5"/><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="4.5" fill="none" stroke="#e8a800" stroke-width="1.5"/></g>';
     });
-    // 회수 1조 4명(동서남북)
+    // 행군 선: 아이디에서 전리품까지 선을 긋고, 닿으면 줍는다(전리품이 사라지고 선이 옅어진다)
+    C.forEach(c => {
+      if (t < c.t0 || t >= c.home) return;
+      const p = RV_POST[c.q], got = t >= c.pick, u = ease(got ? 1 : (t - c.t0) / (c.pick - c.t0)), al = got ? 1 - (t - c.pick) / (c.home - c.pick) : 1;
+      const e = [p[0] + (c.x - p[0]) * u, p[1] + (c.y - p[1]) * u];
+      h += '<g opacity="' + al.toFixed(2) + '"><line x1="' + p[0] + '" y1="' + p[1] + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) + '" stroke="#1b1208" stroke-width="6" stroke-linecap="round" opacity=".5"/><line x1="' + p[0] + '" y1="' + p[1] + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) + '" stroke="#d0bfff" stroke-width="3" stroke-linecap="round"/>' +
+        (got ? '<circle cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) + '" r="' + (9 + (1 - al) * 12).toFixed(1) + '" fill="none" stroke="#ffd43b" stroke-width="3"/>' : '') + '</g>';
+    });
+    // 회수 1조 4명(동서남북) — 제자리 고정
     RV_POST.forEach((p, q) => {
-      const [x, y] = rvPos(q, t), got = C.filter(c => c.q === q && c.pick <= t).length;
+      const [x, y] = p, got = C.filter(c => c.q === q && c.home <= t).length;
       h += '<g><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="16" fill="#b197fc" stroke="#1b1208" stroke-width="3"/><text x="' + x.toFixed(1) + '" y="' + (y + 6).toFixed(1) + '" text-anchor="middle" font-size="15" font-weight="900" fill="#1b1208">' + p[2] + '</text>' +
         (RV.nm[q] ? '<text x="' + x.toFixed(1) + '" y="' + (y + 34).toFixed(1) + '" text-anchor="middle" font-size="13" font-weight="800" fill="#f3f0ff" stroke="#1b1208" stroke-width="4" paint-order="stroke">' + esc(RV.nm[q]) + '</text>' : '') +
         (got ? '<text x="' + (x + 20).toFixed(1) + '" y="' + (y - 12).toFixed(1) + '" font-size="14" font-weight="900" fill="#ffd43b" stroke="#1b1208" stroke-width="4" paint-order="stroke">+' + got + '</text>' : '') + '</g>';
