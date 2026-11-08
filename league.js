@@ -92,7 +92,7 @@
     if (!Array.isArray(P.posts)) P.posts = [];
     if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; const fx = [].concat(...window.LEAGUE_STRATEGY.roles.slice(1).map(r => r.fix || [])), f0 = window.LEAGUE_STRATEGY.roles[0].fix || [], top = k => f0.indexOf(who(k).n) >= 0 ? 1 : 0; L0.ld = L0.m.slice().filter(k => fx.indexOf(who(k).n) < 0).sort((x, y) => (top(y) - top(x)) || (tri(y) - tri(x))).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
     // 1단계 동선: 집결장 순서대로 목표(아군 진입 왼쪽 기준 · 오른쪽은 대칭)
-    const RT = (window.LEAGUE_STRATEGY || {}).route; if (LR && RT && !Object.keys(L0.ph[0].t).length && !Object.keys(L0.phR[0].t).length) L0.ld.forEach((l, i) => { const id = RT.left[i]; if (id) { L0.ph[0].t[l.k] = {b: id}; L0.phR[0].t[l.k] = {b: MIR[id] || id}; } });
+    const RT = (window.LEAGUE_STRATEGY || {}).route; if (LR && RT && !Object.keys(L0.ph[0].t).length && !Object.keys(L0.phR[0].t).length) { const put = (p, k, id) => { if (!id) return; L0.ph[p].t[k] = {b: id}; L0.phR[p].t[k] = {b: MIR[id] || id}; }; L0.ld.forEach((l, i) => { put(0, l.k, RT.left[i]); put(1, l.k, (RT.p2 || [])[i]); }); roleOf(L0, "gather").forEach((k, i) => put(0, k, (RT.gather || [])[i])); }
     return P;
   };
   const editable = () => IS_ADMIN && typeof can === "function" && can(SA);
@@ -136,10 +136,19 @@
   const pw = p => !p ? "·" : LANG === "ko" ? (p / 1e8).toFixed(1) + "억" : Math.round(p / 1e6) + "M";
   const score = k => { const q = who(k), s = q.d && troops(q.d); return (q.sp || 0) * 1e18 + (q.tg || 0) * 1e15 + (s ? TGW(s, 0) + TGW(s, 1) + TGW(s, 2) : 0) * 1e3 + (q.p || 0) / 1e6; };
 
+  // 역할 나누기: 참전자를 시련 순으로 위에서부터, 지정된 사람(fix)은 그 역할에 먼저
+  const triK = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; };
+  function roleKs(L) {
+    const SG = window.LEAGUE_STRATEGY; if (!SG || !window.LEAGUE_ROSTER) return [];
+    const order = L.m.slice().sort((x, y) => triK(y) - triK(x)), fixed = new Set(), byRole = SG.roles.map(r => { const ks = order.filter(k => (r.fix || []).indexOf(who(k).n) >= 0); ks.forEach(k => fixed.add(k)); return ks; });
+    const rest = order.filter(k => !fixed.has(k));
+    return SG.roles.map((r, ri) => byRole[ri].concat(rest.splice(0, Math.max(0, r.n - byRole[ri].length))));
+  }
+  const roleOf = (L, key) => { const SG = window.LEAGUE_STRATEGY, KS = roleKs(L), i = SG ? SG.roles.findIndex(r => r.k === key) : -1; return i < 0 ? [] : KS[i] || []; };
   // 집결원 자동 배치: TG → 전투력 순으로 뱀 순서(1→N, N→1)로 나눠 준다. 집결 인원수를 넘으면 개인 부대
   function assign(L) {
     const R = L.ld.filter(l => L.m.includes(l.k)).map((l, i) => { const cap = capOf(l), own = Math.min(marchK(l.k), cap); return {l, i, cap, own, mem: [], sum: own}; });
-    const lk = new Set(R.map(r => r.l.k)), pool = L.m.filter(k => !lk.has(k)).sort((x, y) => score(y) - score(x)), solo = [];
+    const lk = new Set(R.map(r => r.l.k)), GA = new Set(roleOf(L, "gather")), pool = L.m.filter(k => !lk.has(k) && !GA.has(k)).sort((x, y) => score(y) - score(x)), solo = [];
     let pos = 0, dir = 1;
     pool.forEach(k => {
       const v = marchK(k);
@@ -304,9 +313,9 @@
         '<path d="M' + sx + ' ' + sy + ' Q ' + cx + ' ' + cy + ' ' + ex + ' ' + ey + '" fill="none" stroke="' + color + '" stroke-width="4" stroke-dasharray="12 7" marker-end="url(#lga)"/>';
       if (!b) s += '<g stroke="' + color + '" stroke-width="4"><line x1="' + (x - 16) + '" y1="' + y + '" x2="' + (x + 16) + '" y2="' + y + '"/><line x1="' + x + '" y1="' + (y - 16) + '" x2="' + x + '" y2="' + (y + 16) + '"/></g><circle cx="' + x + '" cy="' + y + '" r="10" fill="none" stroke="' + color + '" stroke-width="4"/>';
       const bx = x + 30 + (j - 1) * 30, by = y - 34;
-      s += '<circle cx="' + bx + '" cy="' + by + '" r="15" fill="' + color + '" stroke="#1b1208" stroke-width="3"/><text x="' + bx + '" y="' + (by + 6.5) + '" text-anchor="middle" font-size="18" font-weight="900" fill="#1b1208">' + n + '</text>';
+      s += '<circle cx="' + bx + '" cy="' + by + '" r="15" fill="' + color + '" stroke="#1b1208" stroke-width="3"/><text x="' + bx + '" y="' + (by + 6.5) + '" text-anchor="middle" font-size="' + (String(n).length > 1 ? 12 : 18) + '" font-weight="900" fill="#1b1208">' + n + '</text>';
     };
-    if (!PLAY.on) { lead.forEach((k, i) => tgt(k, i + 1, LC[i % LC.length])); tgt("solo", "S", "#dee2e6"); }
+    if (!PLAY.on) { lead.forEach((k, i) => tgt(k, i + 1, LC[i % LC.length])); tgt("solo", "S", "#dee2e6"); roleOf(L, "gather").forEach((k, i) => tgt(k, "채" + (i + 1), "#63e6be")); }
     return s + '<g id="lgOv">' + (PLAY.on ? '' : recDemo(null)) + '</g></svg>';
   }
 
@@ -344,6 +353,7 @@
     const US = SD ? RED : BLUE, home = [US[0] + (SD ? -40 : 40), US[1]];
     const G = A.R.map((r, i) => ({k: r.l.k, n: i + 1, c: LC[i % LC.length], mem: r.mem.map(m => m.k)}));
     if ([0, 1, 2].some(p => PH(L)[p].t.solo)) G.push({k: "solo", n: "S", c: "#dee2e6", mem: A.solo});
+    roleOf(L, "gather").forEach((k, i) => G.push({k, n: "채" + (i + 1), c: "#63e6be", mem: []}));
     G.forEach(g => {
       let cur = home, prev = null; g.seg = []; g.home = home;
       [0, 1, 2].forEach(p => {
@@ -383,25 +393,31 @@
     let k = 0;
     cols.forEach(c => { if (c === ":") return; const w = el.querySelectorAll(".w b")[k++]; if (w) w.style.transform = "translateY(" + (-c.v * 1.15).toFixed(3) + "em)"; });
   }
-  const REC_OFF = [[0, -78, "북"], [100, 0, "동"], [0, 84, "남"], [-100, 0, "서"]];
+  const REC_OFF = [[0, -60, "북"], [82, 0, "동"], [0, 62, "남"], [-82, 0, "서"]];
+  // 회수조: 4명 1조 · 조마다 거점 하나 둘레 동 · 서 · 남 · 북에 한 명씩(이박사님 11-08). 아군 진입 오른쪽이면 대칭 거점
   function recDemo(t) {
-    const R = (window.LEAGUE_STRATEGY || {}).recover, b = R && B.find(x => x.id === R.b); if (!b) return "";
-    const home = REC_OFF.map(o => [b.x + o[0], b.y + o[1]]);
-    let h = '<g>' + home.map((p, i) => '<line x1="' + b.x + '" y1="' + b.y + '" x2="' + p[0] + '" y2="' + p[1] + '" stroke="#b197fc" stroke-width="2" stroke-dasharray="2 5" opacity=".6"/>').join("");
-    const pos = home.map(p => p.slice());
-    if (t != null) {
-      // 15분부터 0.7분마다 군수물자 하나가 떨어진다. 방향이 가까운 사람이 0.35분 안에 주웠다가 제자리로
-      for (let i = 0; i < 64; i++) {
-        const ts = 15 + i * .7; if (ts > t || ts > 60) break;
-        const ang = (i * 137.5) % 360 * Math.PI / 180, rr = 40 + (i * 53) % 55, cx = b.x + Math.cos(ang) * rr * 1.25, cy = b.y + Math.sin(ang) * rr * .78;
-        const q = Math.abs(Math.cos(ang)) * 1.25 > Math.abs(Math.sin(ang)) * .78 ? (Math.cos(ang) > 0 ? 1 : 3) : (Math.sin(ang) > 0 ? 2 : 0);
-        const u = (t - ts) / .35;
-        if (u < 1) { const k = u < .5 ? u * 2 : (1 - u) * 2; pos[q] = [home[q][0] + (cx - home[q][0]) * k, home[q][1] + (cy - home[q][1]) * k]; }
-        if (u < .5) h += '<g><rect x="' + (cx - 8) + '" y="' + (cy - 7 - Math.max(0, 1 - (t - ts) / .08) * 30) + '" width="16" height="13" rx="2" fill="#c08a3e" stroke="#3b2a12" stroke-width="2"/><line x1="' + (cx - 8) + '" y1="' + (cy - 1) + '" x2="' + (cx + 8) + '" y2="' + (cy - 1) + '" stroke="#3b2a12" stroke-width="2"/></g>';
+    const R = (window.LEAGUE_STRATEGY || {}).recover; if (!R) return "";
+    const TS = R.teams || [{t: LANG === "ko" ? "회수조 예시" : "Recovery team", b: R.b}];
+    let mem = []; try { mem = roleOf(plan(SA).L[SL], "recover"); } catch (e) {}
+    return TS.map((T, ti) => {
+      const b = B.find(x => x.id === (SD ? MIR[T.b] || T.b : T.b)); if (!b) return "";
+      const home = REC_OFF.map(o => [b.x + o[0], b.y + o[1]]), pos = home.map(p => p.slice()), nm = mem.slice(ti * 4, ti * 4 + 4).map(k => who(k).n);
+      let h = '<g>' + home.map(p => '<line x1="' + b.x + '" y1="' + b.y + '" x2="' + p[0] + '" y2="' + p[1] + '" stroke="#b197fc" stroke-width="2" stroke-dasharray="2 5" opacity=".6"/>').join("");
+      if (t != null) {
+        // 15분부터 조마다 0.7분에 군수물자 하나. 방향이 맞는 사람이 0.35분 안에 주웠다가 제자리로
+        for (let i = 0; i < 64; i++) {
+          const ts = 15 + ti * .23 + i * .7; if (ts > t || ts > 60) break;
+          const ang = (i * 137.5 + ti * 71) % 360 * Math.PI / 180, rr = 34 + (i * 53) % 44, cx = b.x + Math.cos(ang) * rr * 1.3, cy = b.y + Math.sin(ang) * rr * .8;
+          const q = Math.abs(Math.cos(ang)) * 1.3 > Math.abs(Math.sin(ang)) * .8 ? (Math.cos(ang) > 0 ? 1 : 3) : (Math.sin(ang) > 0 ? 2 : 0);
+          const u = (t - ts) / .35;
+          if (u < 1) { const k = u < .5 ? u * 2 : (1 - u) * 2; pos[q] = [home[q][0] + (cx - home[q][0]) * k, home[q][1] + (cy - home[q][1]) * k]; }
+          if (u < .5) h += '<g><rect x="' + (cx - 8) + '" y="' + (cy - 7 - Math.max(0, 1 - (t - ts) / .08) * 30) + '" width="16" height="13" rx="2" fill="#c08a3e" stroke="#3b2a12" stroke-width="2"/><line x1="' + (cx - 8) + '" y1="' + (cy - 1) + '" x2="' + (cx + 8) + '" y2="' + (cy - 1) + '" stroke="#3b2a12" stroke-width="2"/></g>';
+        }
       }
-    }
-    h += pos.map((p, i) => '<g><circle cx="' + p[0] + '" cy="' + p[1] + '" r="13" fill="#b197fc" stroke="#1b1208" stroke-width="3"/><text x="' + p[0] + '" y="' + (p[1] + 5) + '" text-anchor="middle" font-size="13" font-weight="900" fill="#1b1208">' + REC_OFF[i][2] + '</text></g>').join("");
-    return h + '<rect x="' + (b.x - 70) + '" y="' + (b.y - 120) + '" width="140" height="24" rx="12" fill="#b197fc"/><text x="' + b.x + '" y="' + (b.y - 103) + '" text-anchor="middle" font-size="14" font-weight="900" fill="#1b1208">' + (LANG === "ko" ? "회수조 예시" : "Recovery team") + '</text></g>';
+      h += pos.map((p, i) => '<g><circle cx="' + p[0] + '" cy="' + p[1] + '" r="12" fill="#b197fc" stroke="#1b1208" stroke-width="3"/><text x="' + p[0] + '" y="' + (p[1] + 5) + '" text-anchor="middle" font-size="12" font-weight="900" fill="#1b1208">' + REC_OFF[i][2] + '</text>' + (nm[i] ? '<text x="' + p[0] + '" y="' + (p[1] + 26) + '" text-anchor="middle" font-size="11" font-weight="800" fill="#e5dbff" stroke="#1b1208" stroke-width="3" paint-order="stroke">' + esc(nm[i]) + '</text>' : '') + '</g>').join("");
+      const tx = b.x - 82, ty = b.y - 58;
+      return h + '<rect x="' + (tx - 40) + '" y="' + (ty - 11) + '" width="80" height="22" rx="11" fill="#b197fc"/><text x="' + tx + '" y="' + (ty + 5) + '" text-anchor="middle" font-size="13" font-weight="900" fill="#1b1208">' + esc(T.t) + '</text></g>';
+    }).join("");
   }
   function playFrame() {
     const V = $("vLeague"), ov = $("lgOv"); if (!ov) return;
@@ -417,6 +433,8 @@
       if (t >= first) { pts += b.f; const now = iv.find(([a0, e0]) => a0 <= t && t < e0); h += '<g opacity="' + (now ? 1 : .3) + '">' + roughRing(b, (now || iv[0])[2], smooth((t - first) / .7)) + '</g>'; }
       let end = -1; iv.forEach(([a, e]) => { const s0 = Math.max(a, end); if (e > s0) pts += b.m * Math.max(0, Math.min(t, e) - s0); end = Math.max(end, e); });
     });
+    // 앞으로 갈 길(옅은 선 · 화살표)
+    G.forEach(g => g.seg.forEach(sg => { if (t >= sg.t1) return; h += '<path d="M' + sg.a[0] + ' ' + sg.a[1] + ' Q ' + sg.c[0].toFixed(1) + ' ' + sg.c[1].toFixed(1) + ' ' + sg.b[0] + ' ' + sg.b[1] + '" fill="none" stroke="' + g.c + '" stroke-width="2.5" opacity="' + (mine && mine !== g ? .15 : .35) + '" marker-end="url(#lga)"/>'; }));
     // 지나온 길(점선)과 부대 말
     G.forEach(g => {
       g.seg.forEach(sg => {
@@ -428,7 +446,7 @@
     G.forEach((g, i) => {
       const {p, moving} = posAt(g, t), dim = mine && mine !== g, off = (G.filter((x, j) => j < i && Math.hypot(posAt(x, t).p[0] - p[0], posAt(x, t).p[1] - p[1]) < 8).length) * 26;
       const x = p[0] + off, y = p[1] - (moving ? 0 : 30);
-      h += '<g opacity="' + (dim ? .55 : 1) + '"><circle cx="' + x + '" cy="' + y + '" r="' + (mine === g ? 19 : 15) + '" fill="' + g.c + '" stroke="#1b1208" stroke-width="3"/><text x="' + x + '" y="' + (y + 6.5) + '" text-anchor="middle" font-size="18" font-weight="900" fill="#1b1208">' + g.n + '</text></g>';
+      h += '<g opacity="' + (dim ? .55 : 1) + '"><circle cx="' + x + '" cy="' + y + '" r="' + (mine === g ? 19 : 15) + '" fill="' + g.c + '" stroke="#1b1208" stroke-width="3"/><text x="' + x + '" y="' + (y + 6.5) + '" text-anchor="middle" font-size="' + (String(g.n).length > 1 ? 12 : 18) + '" font-weight="900" fill="#1b1208">' + g.n + '</text></g>';
       if (mine === g) h += '<g><path d="M' + x + ' ' + (y - 22) + ' l-9 -12 h18 z" fill="#fff"/><rect x="' + (x - 44) + '" y="' + (y - 62) + '" width="88" height="28" rx="14" fill="#fff"/><text x="' + x + '" y="' + (y - 42) + '" text-anchor="middle" font-size="16" font-weight="900" fill="#1b1208">' + st("me") + '</text></g>';
     });
     h += recDemo(t);
@@ -467,15 +485,11 @@
     // 작전 설명 · 역할 배정(참전자를 시련 점수 순으로 위에서부터)
     const SG = window.LEAGUE_STRATEGY;
     if (SG) {
-      const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; };
-      const order = L.m.slice().sort((x, y) => tri(y) - tri(x));
-      // 지정된 사람(fix)을 먼저 그 역할에 넣고, 나머지를 시련 순으로 채운다
-      const fixed = new Set(), byRole = SG.roles.map(r => { const ks = order.filter(k => (r.fix || []).indexOf(who(k).n) >= 0); ks.forEach(k => fixed.add(k)); return ks; });
-      const rest = order.filter(k => !fixed.has(k));
+      const tri = triK, KS0 = roleKs(L);
       h += '<div class="lg"><h2>📜 ' + esc(LANG === "ko" ? "작전 설명" : "Battle plan") + '</h2><div class="d" style="white-space:pre-wrap;color:#e9f2e4">' + esc(SG.intro) + '</div>' +
         SG.phases.map((x, i) => '<div class="post"><b>' + esc(x.t) + '</b><p>' + esc(x.b) + '</p></div>').join("") + (SG.recover ? '<div class="post" style="border-color:#b197fc"><b style="color:#d0bfff">🟣 ' + esc(SG.recover.title) + '</b><p>' + esc(SG.recover.text) + '</p></div>' : '') + '<div class="d">' + esc(SG.note) + '</div>' +
         '<h2 style="margin-top:12px">🎖 ' + esc(LANG === "ko" ? "역할 배정 (참전자 시련 순)" : "Roles (combatants by Mystic Trial)") + '</h2>' +
-        SG.roles.map((r, ri) => byRole[ri].concat(rest.splice(0, Math.max(0, r.n - byRole[ri].length)))).map((ks, ri, KS) => { const r = SG.roles[ri], pk = r.pair ? KS[SG.roles.findIndex(x => x.k === r.pair)] || [] : null, num = r.k === "lead" || r.pair, TM = SG.teams || [], tmOf = k => TM.findIndex(x => x.ld.indexOf(who(k).n) >= 0), tmTag = k => { const j = tmOf(k); return j < 0 ? '' : ' <small style="color:' + TM[j].c + ';font-weight:800">' + esc(TM[j].t) + '</small>'; }; return '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:' + r.c + '">' + r.n + '</i>' + esc(r.t) + '</span></div><div class="ml" style="margin:6px 0">' + (ks.map((k, i) => '<span>' + (num ? '<b style="color:' + r.c + '">' + (i + 1 + (pk ? pk.length : 0)) + '</b> ' : '') + esc(who(k).n) + ' <small style="color:#8fa98a">' + (tri(k) ? fmt(tri(k)) : '·') + '</small>' + (pk && pk[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(pk[i]).n) + '</small>' : '') + (r.k === "lead" ? tmTag(k) : pk && pk[i] ? tmTag(pk[i]) : '') + '</span>').join("") || st("none")) + '</div><div class="d" style="margin:0">' + r.d.map(esc).join(" · ") + '</div></div>' + (r.pair && TM.length ? TM.map(x => '<div class="rc" style="border-color:' + x.c + '"><div class="hd"><b style="color:' + x.c + '">' + esc(x.t) + '</b></div><div class="ml" style="margin:6px 0">' + KS[0].map((k, i) => x.ld.indexOf(who(k).n) < 0 ? '' : '<span>' + esc(who(k).n) + (pk === KS[0] && ks[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(ks[i]).n) + '</small>' : '') + '</span>').join("") + '</div></div>').join("") : ''); }).join("") + '</div>';
+        KS0.map((ks, ri, KS) => { const r = SG.roles[ri], pk = r.pair ? KS[SG.roles.findIndex(x => x.k === r.pair)] || [] : null, num = r.k === "lead" || r.pair, TM = SG.teams || [], tmOf = k => TM.findIndex(x => x.ld.indexOf(who(k).n) >= 0), tmTag = k => { const j = tmOf(k); return j < 0 ? '' : ' <small style="color:' + TM[j].c + ';font-weight:800">' + esc(TM[j].t) + '</small>'; }; return '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:' + r.c + '">' + r.n + '</i>' + esc(r.t) + '</span></div><div class="ml" style="margin:6px 0">' + (ks.map((k, i) => '<span>' + (num ? '<b style="color:' + r.c + '">' + (i + 1 + (pk ? pk.length : 0)) + '</b> ' : '') + esc(who(k).n) + ' <small style="color:#8fa98a">' + (tri(k) ? fmt(tri(k)) : '·') + '</small>' + (pk && pk[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(pk[i]).n) + '</small>' : '') + (r.k === "recover" && SG.recover && SG.recover.teams ? ' <small style="color:#d0bfff;font-weight:800">' + (Math.floor(i / 4) + 1) + '조 ' + REC_OFF[i % 4][2] + '</small>' : '') + (r.k === "gather" ? ' <small style="color:#63e6be;font-weight:800">채' + (i + 1) + '</small>' : '') + (r.k === "lead" ? tmTag(k) : pk && pk[i] ? tmTag(pk[i]) : '') + '</span>').join("") || st("none")) + '</div><div class="d" style="margin:0">' + r.d.map(esc).join(" · ") + '</div></div>' + (r.pair && TM.length ? TM.map(x => '<div class="rc" style="border-color:' + x.c + '"><div class="hd"><b style="color:' + x.c + '">' + esc(x.t) + '</b></div><div class="ml" style="margin:6px 0">' + KS[0].map((k, i) => x.ld.indexOf(who(k).n) < 0 ? '' : '<span>' + esc(who(k).n) + (pk === KS[0] && ks[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(ks[i]).n) + '</small>' : '') + '</span>').join("") + '</div></div>').join("") : ''); }).join("") + '</div>';
     }
     // ① 명단
     h += '<div class="lg"><h2>' + st("s1") + ' <span class="tag">' + st("cnt", L.m.length, L.s.length) + '</span></h2><div class="d">' + esc(st("s1d")) + '</div>' +
