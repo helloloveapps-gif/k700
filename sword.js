@@ -14,9 +14,14 @@
     {id: "bel", ko: "시계탑", en: "Bell Tower", ph: 1, f: 1200, m: 240, x: 330, y: 118, k: "bel", fx: {ko: "건물 점령 시간 −50%", en: "Capture time −50%"}},
     {id: "sta", ko: "마구간", en: "Royal Stables", ph: 1, f: 1200, m: 240, x: 562, y: 628, k: "sta", fx: {ko: "고급 이전 충전 −50%", en: "Teleport recharge −50%"}},
     {id: "mer", ko: "용병 주둔지", en: "Mercenary Camp", ph: 2, f: 1200, m: 240, x: 450, y: 198, k: "mer", fx: {ko: "적군 건물 공격용 용병 파견", en: "Mercenaries weaken enemy buildings"}},
-    {id: "hal", ko: "교화의 홀", en: "Hall of Reformation", ph: 2, f: 1200, m: 240, x: 450, y: 536, k: "hal", fx: {ko: "부대 공방 +15% / −15%", en: "Troop ATK/DEF +15% / −15%"}}
+    {id: "hal", ko: "교화의 홀", en: "Hall of Reformation", ph: 2, f: 1200, m: 240, x: 450, y: 536, k: "hal", fx: {ko: "부대 공방 +15% / −15%", en: "Troop ATK/DEF +15% / −15%"}},
+    // 땅굴 4곳 — 전투 30분에 열린다(이박사님 지도 표시 2026-11-08). 점수는 아직 모름(0 = ?)
+    {id: "tu1", ko: "땅굴 1", en: "Undercellar 1", ph: 3, f: 0, m: 0, x: 309, y: 268, k: "tun", fx: {ko: "30분 개방", en: "opens at 30 min"}},
+    {id: "tu2", ko: "땅굴 2", en: "Undercellar 2", ph: 3, f: 0, m: 0, x: 577, y: 274, k: "tun", fx: {ko: "30분 개방", en: "opens at 30 min"}},
+    {id: "tu3", ko: "땅굴 3", en: "Undercellar 3", ph: 3, f: 0, m: 0, x: 292, y: 506, k: "tun", fx: {ko: "30분 개방", en: "opens at 30 min"}},
+    {id: "tu4", ko: "땅굴 4", en: "Undercellar 4", ph: 3, f: 0, m: 0, x: 530, y: 500, k: "tun", fx: {ko: "30분 개방", en: "opens at 30 min"}}
   ];
-  const ICON = {alt: "🗡", san: "⛪", abb: "🏰", sta: "🐎", bel: "🔔", mer: "⚔", hal: "🛡"};
+  const ICON = {alt: "🗡", san: "⛪", abb: "🏰", sta: "🐎", bel: "🔔", mer: "⚔", hal: "🛡", tun: "⛏"};
   // 전장 그림 크기와 테두리(게임 화면 캡처를 따라 잡은 자리)
   const MW = 900, MH = 730, BLUE = [86, 388], RED = [814, 388];
   const FIELD = [[22, 258], [296, 14], [524, 14], [878, 252], [878, 470], [640, 716], [318, 716], [22, 500]];
@@ -30,7 +35,7 @@
       s2: "② 집결장 · 집결원 자동 배치", s2d: "참전 명단에서 집결장을 고르면(이름을 누르기) 나머지가 TG → 전투력 순으로 집결장마다 번갈아(뱀 순서) 들어갑니다. 집결 인원수를 넘으면 개인 부대로 남습니다. 집결원 출정은 버프 OFF 기본값.",
       pickL: "집결장으로 쓸 사람 (참전 명단에서 누르기)", cap: "집결 인원수", own: "본인", sum: "채움 {0} / {1}", solo: "개인 부대 (점령 유지 · 수송차 줍기 · 땅굴)", none: "없음",
       s3: "③ 작전 지도", s3d: "아군 진입이 왼쪽일 때와 오른쪽일 때를 따로 짭니다(대칭 복사 후 고치면 빠릅니다). 단계를 고르고, 아래에서 집결장(또는 개인 부대)을 누른 뒤 지도의 건물이나 원하는 지점을 누르면 공격 좌표가 찍힙니다. 다시 누르면 바뀝니다.",
-      ph: ["초반 · 1단계", "중반 · 2단계", "후반 · 3단계"], phd: ["성소 · 수도원 · 시계탑 · 마구간 개방", "성검 제단 · 교화의 홀 · 용병 주둔지 개방", "숨겨진 땅굴 2개가 무작위로 출현"],
+      ph: ["초반 · 1단계", "중반 · 2단계", "후반 · 3단계"], phd: ["성소 · 수도원 · 시계탑 · 마구간 개방", "성검 제단 · 교화의 홀 · 용병 주둔지 개방", "30분 — 땅굴 4곳 개방"],
       roleNone: "저장된 성검 쟁탈 작전에 내 이름이 없습니다.", roleSub: "후보입니다 — 참전자가 빠지면 들어갑니다.", roleLead: "{0}번 집결장입니다", roleJoin: "{0}번 집결 — {1} 집결에 들어갑니다", roleSolo: "개인 부대 — 점령 유지 · 수송차 줍기 · 땅굴",
       sideL: "◀ 아군 진입 왼쪽", sideR: "아군 진입 오른쪽 ▶", mirR: "↔ 오른쪽에 대칭 복사", mirL: "↔ 왼쪽에 대칭 복사", mirAsk: "지금 작전을 반대쪽에 대칭으로 복사합니다. 반대쪽에 짜 둔 작전은 덮어씁니다. 진행할까요?",
       cel: "⛏ 땅굴 표시", del: "✕ 좌표 지우기", soloL: "개인 부대", memo: "이 단계 작전 지시 (자유롭게)", lock: "{0}단계 개방",
@@ -48,7 +53,7 @@
       s2: "② Rally leaders & auto-placed joiners", s2d: "Tap names in the roster to make them rally leaders. Everyone else is dealt to the leaders in snake order (TG, then power). Anyone over capacity stays as a solo squad. Joiner march = buff-OFF size.",
       pickL: "Rally leaders (tap from the roster)", cap: "Rally capacity", own: "own", sum: "Filled {0} / {1}", solo: "Solo squads (hold · carts · tunnels)", none: "none",
       s3: "③ Battle map", s3d: "Plan both cases — entering on the left and on the right (mirror, then adjust). Pick a phase, tap a leader (or solo squads) below, then tap a building or any spot on the map to set the target. Tap again to change.",
-      ph: ["Early · Phase 1", "Mid · Phase 2", "Late · Phase 3"], phd: ["Sanctums · Abbeys · Bell Tower · Stables open", "Swordshrine · Hall of Reformation · Mercenary Camp open", "Two hidden Undercellars appear at random"],
+      ph: ["Early · Phase 1", "Mid · Phase 2", "Late · Phase 3"], phd: ["Sanctums · Abbeys · Bell Tower · Stables open", "Swordshrine · Hall of Reformation · Mercenary Camp open", "30 min — four Undercellars open"],
       roleNone: "You are not in the saved Swordland plan.", roleSub: "Substitute — you join if a combatant drops out.", roleLead: "You lead rally #{0}", roleJoin: "Rally #{0} — join {1}'s rally", roleSolo: "Solo squad — hold buildings · pick up carts · tunnels",
       sideL: "◀ We enter LEFT", sideR: "We enter RIGHT ▶", mirR: "↔ Mirror to right", mirL: "↔ Mirror to left", mirAsk: "Copy this plan to the other side, mirrored? The other side's plan will be overwritten.",
       cel: "⛏ Mark tunnel", del: "✕ Clear target", soloL: "Solo squads", memo: "Orders for this phase (free text)", lock: "opens in phase {0}",
@@ -69,7 +74,7 @@
   const PH = (L, d) => (d == null ? SD : d) ? L.phR : L.ph, CEL = (L, d) => (d == null ? SD : d) ? L.celR : L.cel;
   const both = (L, f) => { L.ph.forEach(f); L.phR.forEach(f); };
   // 전장은 가운데를 중심으로 점대칭 — 왼쪽 작전을 오른쪽으로 뒤집을 때 쓰는 짝
-  const MIR = {alt: "alt", sa1: "sa2", sa2: "sa1", ab1: "ab4", ab4: "ab1", ab2: "ab3", ab3: "ab2", bel: "sta", sta: "bel", mer: "hal", hal: "mer"};
+  const MIR = {tu1: "tu4", tu4: "tu1", tu2: "tu3", tu3: "tu2", alt: "alt", sa1: "sa2", sa2: "sa1", ab1: "ab4", ab4: "ab1", ab2: "ab3", ab3: "ab2", bel: "sta", sta: "bel", mer: "hal", hal: "mer"};
   const mirT = t => !t ? t : t.b ? {b: MIR[t.b] || t.b} : {x: 900 - t.x, y: 724 - t.y};
   const SWD = {}, SDIRTY = {};
   const saved = a => ((CFG.sword || {})[a]) || null;
@@ -182,7 +187,7 @@
       "전투 시작 시 고급 도시 이전 1회 무료(쿨타임 뒤 회복) · 전장을 떠나면 12분 뒤 복귀 가능",
       "포인트: 첫 점령 + 지속 점령 + 처치(방어 중 처치 전투력 1만당 개인 40 · 공격 중 1만당 개인 80, 연맹 점수는 없음)",
       "건물 상한을 넘은 점수는 [군수 물자]로 흩어짐 → 주워서 획득. 점령당하면 쌓인 점수의 50%는 점령 측, 50%는 방어 측(방어 실패 시 잃음)",
-      "1단계: 성소 · 수도원 · 시계탑 · 마구간 / 2단계: 성검 제단 · 교화의 홀 · 용병 주둔지 / 3단계: 땅굴 2개 무작위"
+      "1단계: 성소 · 수도원 · 시계탑 · 마구간 / 2단계: 성검 제단 · 교화의 홀 · 용병 주둔지 / 3단계(30분): 땅굴 4곳"
     ] : [
       "Top 20 alliances · two legions (Legion 2 needs alliance Lv.6 + 40 weekly logins) · 15+ combatants and subs to match",
       "R4+ choose up to 30 combatants + 10 substitutes (this page uses 20 + 10) · one legion per person",
@@ -191,9 +196,9 @@
       "One free advanced teleport at start (recharges) · leaving the field means a 12-minute re-entry cooldown",
       "Points: first capture + holding + kills (10k power killed while defending = 40 personal, while attacking = 80 personal; no alliance points)",
       "Points above a building's cap drop as supply carts to pick up. When a building falls, 50% of stored points go to the attacker, 50% to the defender (lost if defence fails)",
-      "Phase 1: Sanctums · Abbeys · Bell Tower · Stables / Phase 2: Swordshrine · Hall · Mercenary Camp / Phase 3: two random Undercellars"
+      "Phase 1: Sanctums · Abbeys · Bell Tower · Stables / Phase 2: Swordshrine · Hall · Mercenary Camp / Phase 3 (30 min): four Undercellars"
     ];
-    const rows = B.map(b => '<tr><td>' + ICON[b.k] + ' ' + esc(bn(b)) + '</td><td class="n">' + b.ph + '</td><td class="n">' + fmt(b.f) + '</td><td class="n">+' + fmt(b.m) + '</td><td>' + esc(b.fx ? b.fx[ko ? "ko" : "en"] : "") + '</td></tr>').join("");
+    const rows = B.map(b => '<tr><td>' + ICON[b.k] + ' ' + esc(bn(b)) + '</td><td class="n">' + b.ph + '</td><td class="n">' + (b.f ? fmt(b.f) : '?') + '</td><td class="n">' + (b.m ? '+' + fmt(b.m) : '?') + '</td><td>' + esc(b.fx ? b.fx[ko ? "ko" : "en"] : "") + '</td></tr>').join("");
     return '<details class="rl"><summary>' + st("rules") + '</summary><ul>' + li.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul><table class="bt"><tr>' + st("bTh").map(h => '<th>' + esc(h) + '</th>').join("") + '</tr>' + rows + '</table></details>';
   }
 
@@ -312,7 +317,7 @@
     h += '<div class="sw"><h2>' + st("s3") + '</h2><div class="d">' + esc(st("s3d")) + '</div><div class="tabs" id="swSide" style="margin-bottom:8px">' + [0, 1].map(d => '<button data-side="' + d + '"' + (d === SD ? ' class="on"' : '') + '>' + st(d ? "sideR" : "sideL") + '</button>').join("") + (E ? '<button id="swMir">' + st(SD ? "mirL" : "mirR") + '</button>' : '') + '</div><div class="tabs ph" id="swPh">' + [0, 1, 2].map(i => '<button data-ph="' + i + '"' + (i === SP ? ' class="on"' : '') + '>' + st("ph")[i] + '</button>').join("") + '</div><div class="phd">' + st("phd")[SP] + '</div>';
     if (E) h += '<div class="chips">' + A.R.map((r, i) => '<button class="chip' + (SEL === r.l.k ? ' on' : '') + '" data-sel="' + esc(r.l.k) + '"><i style="background:' + LC[i % LC.length] + '">' + (i + 1) + '</i>' + esc(who(r.l.k).n) + (ph.t[r.l.k] ? ' → ' + esc(tName(ph.t[r.l.k])) : '') + '</button>').join("") +
       '<button class="chip' + (SEL === "solo" ? ' on' : '') + '" data-sel="solo"><i style="background:#adb5bd">S</i>' + st("soloL") + (ph.t.solo ? ' → ' + esc(tName(ph.t.solo)) : '') + '</button>' +
-      (SP === 2 ? '<button class="chip' + (SEL === "cel" ? ' on' : '') + '" data-sel="cel">' + st("cel") + '</button>' : '') + '<button class="chip" id="swDel">' + st("del") + '</button></div>';
+      '<button class="chip" id="swDel">' + st("del") + '</button></div>';
     h += mapSvg(L, A) + '<div class="val">' + st("val", fmt(tb.reduce((t, b) => t + b.f, 0)), fmt(tb.reduce((t, b) => t + b.m, 0))) + '</div>' +
       (E ? '<textarea id="swMemo" placeholder="' + esc(st("memo")) + '">' + esc(ph.memo || "") + '</textarea>' : (ph.memo ? '<pre>📝 ' + esc(ph.memo) + '</pre>' : '')) + '</div>';
     // ④ 브리핑
