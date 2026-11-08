@@ -90,7 +90,7 @@
     const LR = (window.LEAGUE_ROSTER || {})[a], L0 = P.L[0];
     if (LR && !L0.m.length && !L0.s.length) { const ppl = people(a); L0.m = ppl.filter(q => q.gs === "p").map(q => q.k); L0.s = ppl.filter(q => q.gs === "s").map(q => q.k); }
     if (!Array.isArray(P.posts)) P.posts = [];
-    if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; L0.ld = L0.m.slice().sort((x, y) => tri(y) - tri(x)).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
+    if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; L0.ld = L0.m.slice().sort((x, y) => tri(y) - tri(x)).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
     return P;
   };
   const editable = () => IS_ADMIN && typeof can === "function" && can(SA);
@@ -115,7 +115,7 @@
     if (PC.a === a && PC.n === DATA.length) return PC.list;
     const LR = (window.LEAGUE_ROSTER || {})[a];
     if (LR) {
-      const out = LR.list.map(r => { const id = /^[0-9]{7,12}$/.test(r[4] || "") ? r[4] : idByName(r[0], a); return {k: id || "n:" + r[0], id, n: r[0], r: r[1], sp: r[2], gs: r[3], p: id ? ((LOOKUP[id] || {}).p || 0) : 0, tg: 0}; });
+      const out = LR.list.map(r => { const id = /^[0-9]{7,12}$/.test(r[4] || "") ? r[4] : idByName(r[0], a); return {k: id || "n:" + r[0], id, n: r[0], r: r[1], sp: r[2], gs: r[3], mt: +r[5] || 0, p: id ? ((LOOKUP[id] || {}).p || 0) : 0, tg: 0}; });
       out.forEach(q => { const d = q.id && DATA.find(x => x.id === q.id); q.d = d || null; const s = d && troops(d); if (s) q.tg = Math.max(s[0][0], s[1][0], s[2][0]); });
       PC = {a, n: DATA.length, list: out};
       return out;
@@ -459,7 +459,7 @@
     // 작전 설명 · 역할 배정(참전자를 시련 점수 순으로 위에서부터)
     const SG = window.LEAGUE_STRATEGY;
     if (SG) {
-      const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; };
+      const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; };
       const order = L.m.slice().sort((x, y) => tri(y) - tri(x)); let at = 0;
       h += '<div class="lg"><h2>📜 ' + esc(LANG === "ko" ? "작전 설명" : "Battle plan") + '</h2><div class="d" style="white-space:pre-wrap;color:#e9f2e4">' + esc(SG.intro) + '</div>' +
         SG.phases.map((x, i) => '<div class="post"><b>' + esc(x.t) + '</b><p>' + esc(x.b) + '</p></div>').join("") + (SG.recover ? '<div class="post" style="border-color:#b197fc"><b style="color:#d0bfff">🟣 ' + esc(SG.recover.title) + '</b><p>' + esc(SG.recover.text) + '</p></div>' : '') + '<div class="d">' + esc(SG.note) + '</div>' +
