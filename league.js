@@ -90,7 +90,7 @@
     const LR = (window.LEAGUE_ROSTER || {})[a], L0 = P.L[0];
     if (LR && !L0.m.length && !L0.s.length) { const ppl = people(a); L0.m = ppl.filter(q => q.gs === "p").map(q => q.k); L0.s = ppl.filter(q => q.gs === "s").map(q => q.k); }
     if (!Array.isArray(P.posts)) P.posts = [];
-    if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; const fx = [].concat(...window.LEAGUE_STRATEGY.roles.slice(1).map(r => r.fix || [])); L0.ld = L0.m.slice().filter(k => fx.indexOf(who(k).n) < 0).sort((x, y) => tri(y) - tri(x)).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
+    if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; const fx = [].concat(...window.LEAGUE_STRATEGY.roles.slice(1).map(r => r.fix || [])), f0 = window.LEAGUE_STRATEGY.roles[0].fix || [], top = k => f0.indexOf(who(k).n) >= 0 ? 1 : 0; L0.ld = L0.m.slice().filter(k => fx.indexOf(who(k).n) < 0).sort((x, y) => (top(y) - top(x)) || (tri(y) - tri(x))).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
     return P;
   };
   const editable = () => IS_ADMIN && typeof can === "function" && can(SA);
@@ -115,7 +115,7 @@
     if (PC.a === a && PC.n === DATA.length) return PC.list;
     const LR = (window.LEAGUE_ROSTER || {})[a];
     if (LR) {
-      const out = LR.list.map(r => { const id = /^[0-9]{7,12}$/.test(r[4] || "") ? r[4] : idByName(r[0], a); return {k: id || "n:" + r[0], id, n: r[0], r: r[1], sp: r[2], gs: r[3], mt: +r[5] || 0, p: id ? ((LOOKUP[id] || {}).p || 0) : 0, tg: 0}; });
+      const out = LR.list.map(r => { const id = /^[0-9]{7,12}$/.test(r[4] || "") ? r[4] : idByName(r[0], a); return {k: id || "n:" + r[0], id, n: r[0], r: r[1], sp: r[2], gs: r[3], mt: +r[5] || 0, p: id ? ((LOOKUP[id] || {}).p || 0) : 0, tg: 0, aeh: (id && (LOOKUP[id] || {}).a === "AEH") || /[㐀-鿿]/.test(r[0]) || r[6] === "AEH"}; });
       out.forEach(q => { const d = q.id && DATA.find(x => x.id === q.id); q.d = d || null; const s = d && troops(d); if (s) q.tg = Math.max(s[0][0], s[1][0], s[2][0]); });
       PC = {a, n: DATA.length, list: out};
       return out;
@@ -142,6 +142,12 @@
     pool.forEach(k => {
       const v = marchK(k);
       let done = false;
+      for (let t = 0; t < R.length * 2 && !done; t++) {
+        const r = R[pos];
+        pos += dir; if (pos >= R.length) { pos = R.length - 1; dir = -1; } else if (pos < 0) { pos = 0; dir = 1; }
+        if (!!who(r.l.k).aeh === !!who(k).aeh && r.sum + v <= r.cap) { r.mem.push({k, v}); r.sum += v; done = true; }
+      }
+      // 같은 무리(AEH · 한자 이름 / 그 밖) 집결장이 다 차면 아무 데나
       for (let t = 0; t < R.length * 2 && !done; t++) {
         const r = R[pos];
         pos += dir; if (pos >= R.length) { pos = R.length - 1; dir = -1; } else if (pos < 0) { pos = 0; dir = 1; }
