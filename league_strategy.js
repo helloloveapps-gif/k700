@@ -8,7 +8,7 @@ window.LEAGUE_STRATEGY = {
   ],
   note: "※ 군수물자: 거점 공격 성공 · 수비 실패 시 주변에 떨어지는 포인트.",
   // 회수조(이박사님 11-08): 12명 → 4명씩 3조 · 조 안에서 북 · 동 · 남 · 서 한 명씩. AEH · 한자 이름끼리 최대한 같은 조(aehFirst). 큰 지도에는 안 그리고 따로 짧은 영상(수도원 하나)으로 보여 준다
-  recover: {teams: [{t: "회수 1조"}, {t: "회수 2조"}, {t: "회수 3조"}], title: "회수조 12명 — 3조 · 4인 1조 · 동서남북", text: "회수조 12명은 시련 순으로 4명씩 3조로 나눕니다. 조마다 싸움이 붙은 거점 둘레의 동 · 서 · 남 · 북에 한 명씩 자리를 잡고, 자기 구역에 튄 전리품만 줍고 바로 제자리로 돌아옵니다. 서로 겹치지 않아 빠짐없이 가장 빨리 회수합니다. 아래 영상은 회수 1조 예시입니다."},
+  recover: {teams: [{t: "회수 1조"}, {t: "회수 2조"}, {t: "회수 3조"}], subT: "대체 인원", title: "회수조 12명 — 3조 · 4인 1조 · 동서남북", text: "회수조 12명은 시련 순으로 4명씩 3조로 나눕니다. 조마다 싸움이 붙은 거점 둘레의 동 · 서 · 남 · 북에 한 명씩 자리를 잡고, 자기 구역에 튄 전리품만 줍고 바로 제자리로 돌아옵니다. 서로 겹치지 않아 빠짐없이 가장 빨리 회수합니다. 대체 인원 10명도 모두 회수조이며 조마다 나눠 둡니다. 회수한 전리품이 18만이 쌓이면 대체 인원과 교체합니다. 아래 영상은 회수 1조 예시입니다."},
   // 역할 — pair = 같은 번호끼리 짝(서브 n번 ↔ 집결장 n번, 이박사님 11-08). 참전자를 시련 점수 순으로 위에서부터 나눈다(이박사님: 6 · 6 · 4 · 2 · 12). fix = 이 역할에 꼭 넣을 사람(이박사님 지정, 시련 순보다 먼저)
   // AEH 연맹 · 한자 이름은 되도록 AEH 집결장 밑으로(이박사님 11-08)
   // 팀(이박사님 11-08): 집결장 셋씩 두 팀 · 서브 집결장은 파트너(짝인 집결장)의 팀
@@ -37,7 +37,7 @@ window.LEAGUE_STRATEGY = {
     {k: "sub", n: 6, fix: ["방울찡", "mina"], pair: "lead", t: "서브 집결장", c: "#ff922b", d: ["순위대로 파트너가 정해진다 — 1번 ↔ 7번, 2번 ↔ 8번 … 6번 ↔ 12번(↔ 표시).", "★ 파트너(메인 집결장)가 빠진 빈 곳을 반드시 1군으로 지킨다.", "서브 집결장은 파트너와 같은 팀 소속(1팀 · 2팀).", "★ 수비하고 있는 거점(성소 · 수도원 · 시계탑 등)이 공격받으면 바로 회수조에게 알린다.", "10% 이상 버프.", "집결장이 포함된 성소 · 수도원을 1군으로 수비한다.", "아군 성소 · 수도원에 방어 리필한다.", "집결원 빠진 곳을 집결원에게 알린다."]},
     {k: "gather", n: 4, t: "채집조", c: "#63e6be", d: ["행군 1~4 는 채집, 나머지 2행군은 집결 · 수비 지원 — 집결 · 수비에서 빠지면 안 된다.", "30분에 땅굴이 열리면 한 명씩 땅굴 1~4 로 간다(지도의 채1~채4).", "채집지가 열리면 진격한다.", "적군 · 아군 채집지를 2개 점령한다.", "행군 4 성소 · 수도원 방어."]},
     {k: "scout", n: 2, fix: ["ImsorryPIG", "晚睡覺SleepySwim"], t: "정찰조", c: "#74c0fc", d: ["행군 4 — 성소 · 수도원 방어.", "2랠리 — 적군 성소 · 수도원 정찰 및 적군 1군 위치 확인.", "★ 회수조가 텔레포트로 먼저 자리를 잡게 하고, 빈 곳(회수 자리 · 거점)이 있으면 정찰조가 그곳으로 이동해 채운다."]},
-    {k: "recover", n: 12, aehFirst: true, t: "회수조", c: "#b197fc", d: ["동 · 서 · 남 · 북으로 배치하여 전리품을 회수하는 것이 목적이다(4명씩 3조).", "중반: 군수물자를 빠르게 습득하는 데 집중한다.", "후반: 서브 집결장과 함께 뺏고 뺏기는 싸움의 핵심이다."]}
+    {k: "recover", n: 12, aehFirst: true, t: "회수조", c: "#b197fc", d: ["동 · 서 · 남 · 북으로 배치하여 전리품을 회수하는 것이 목적이다(4명씩 3조).", "대체 인원 10명도 모두 회수조 — 조마다 나눠 둔다.", "★ 회수한 전리품이 18만이 쌓이면 대체 인원과 교체한다.", "중반: 군수물자를 빠르게 습득하는 데 집중한다.", "후반: 서브 집결장과 함께 뺏고 뺏기는 싸움의 핵심이다."]}
   ]
 };
 // 繁體中文(대만) — 이박사님 11-08. 화면 언어가 繁體中文(zh)일 때 위 글 대신 쓴다(구조 · 이름 · 동선은 위 그대로)
@@ -49,7 +49,7 @@ window.LEAGUE_STRATEGY.zh = {
     {t: "第 3 階段 · 後期戰略（30~60 分）", b: "後期是互相搶奪的戰鬥，副集結隊長 · 回收組的角色非常重要。\n副集結隊長要把第 1 軍派到主集結隊長離開的空位。\n我們要搶得快、被搶得慢。"}
   ],
   note: "※ 軍需物資：進攻據點成功 · 防守失敗時掉落在周圍的點數。",
-  recover: {teams: [{t: "回收 1 組"}, {t: "回收 2 組"}, {t: "回收 3 組"}], title: "回收組 12 人 — 3 組 · 每組 4 人 · 東西南北", text: "回收組 12 人分成 3 組，每組 4 人。每組在交戰據點周圍的東 · 西 · 南 · 北各站一人，只撿自己區域裡噴出的戰利品，撿完立刻回到原位。彼此不重疊，所以能最快、不漏地回收。下面的影片是回收 1 組的示範。"},
+  recover: {teams: [{t: "回收 1 組"}, {t: "回收 2 組"}, {t: "回收 3 組"}], subT: "替補", title: "回收組 12 人 — 3 組 · 每組 4 人 · 東西南北", text: "回收組 12 人分成 3 組，每組 4 人。每組在交戰據點周圍的東 · 西 · 南 · 北各站一人，只撿自己區域裡噴出的戰利品，撿完立刻回到原位。彼此不重疊，所以能最快、不漏地回收。10 位替補也全部是回收組，分配到各組。回收的戰利品累積到 18 萬時，與替補交換。下面的影片是回收 1 組的示範。"},
   teams: [{t: "1 隊"}, {t: "2 隊"}],
   captions: [
     {t: "開始 — 6 位集結隊長各自前往位置"},
@@ -65,7 +65,7 @@ window.LEAGUE_STRATEGY.zh = {
     sub: {t: "副集結隊長", d: ["依排名決定搭檔 — 1 號 ↔ 7 號、2 號 ↔ 8 號 … 6 號 ↔ 12 號（↔ 標示）。", "★ 搭檔（主集結隊長）離開的空位，一定要用第 1 軍守住。", "副集結隊長與搭檔同屬一隊（1 隊 · 2 隊）。", "★ 正在防守的據點（聖所 · 修道院 · 鐘樓等）被攻擊時，立刻通知回收組。", "增益 10% 以上。", "用第 1 軍防守有集結隊長的聖所 · 修道院。", "為我方聖所 · 修道院補防守。", "把集結缺人的地方告訴集結成員。"]},
     gather: {t: "採集組", d: ["行軍 1~4 採集，其餘 2 個行軍支援集結 · 防守 — 不可缺席集結 · 防守。", "30 分地道開放時，一人一個前往地道 1~4（地圖上的 採1~採4）。", "採集點開放時前進。", "佔領敵方 · 我方採集點 2 個。", "行軍 4 防守聖所 · 修道院。"]},
     scout: {t: "偵察組", d: ["行軍 4 — 防守聖所 · 修道院。", "第 2 集結 — 偵察敵方聖所 · 修道院，並確認敵方第 1 軍位置。", "★ 讓回收組先用傳送就位；若有空位（回收位置 · 據點），由偵察組移動過去補上。"]},
-    recover: {t: "回收組", d: ["目的是站在東 · 西 · 南 · 北回收戰利品（每組 4 人，共 3 組）。", "中期：專心快速撿取軍需物資。", "後期：與副集結隊長一起，是互相搶奪戰鬥的核心。"]}
+    recover: {t: "回收組", d: ["目的是站在東 · 西 · 南 · 北回收戰利品（每組 4 人，共 3 組）。", "10 位替補也全部是回收組 — 分配到各組。", "★ 回收的戰利品累積到 18 萬時，與替補交換。", "中期：專心快速撿取軍需物資。", "後期：與副集結隊長一起，是互相搶奪戰鬥的核心。"]}
   }
 };
 // English — 이박사님 11-08. 한국어 · 繁體中文 밖의 화면 언어는 이 글을 쓴다
@@ -77,7 +77,7 @@ window.LEAGUE_STRATEGY.en = {
     {t: "Phase 3 · Late (30–60 min)", b: "The late game is take-and-retake. Sub-leaders and the recovery team matter most.\nSub-leaders must put their 1st march into any spot a main rally leader has left.\nWe take fast and lose slowly."}
   ],
   note: "※ Supplies: points dropped around a building when an attack succeeds or a defense fails.",
-  recover: {teams: [{t: "Recovery 1"}, {t: "Recovery 2"}, {t: "Recovery 3"}], title: "Recovery team of 12 — 3 squads · 4 each · N/E/S/W", text: "The 12 recovery players form 3 squads of 4. Each squad takes the north · east · south · west sides around the building being fought over, one player per side, and picks up only the loot that lands in their own zone, then returns to their spot. No overlap, so nothing is missed and recovery is fastest. The video below shows Recovery squad 1."},
+  recover: {teams: [{t: "Recovery 1"}, {t: "Recovery 2"}, {t: "Recovery 3"}], subT: "Subs", title: "Recovery team of 12 — 3 squads · 4 each · N/E/S/W", text: "The 12 recovery players form 3 squads of 4. Each squad takes the north · east · south · west sides around the building being fought over, one player per side, and picks up only the loot that lands in their own zone, then returns to their spot. No overlap, so nothing is missed and recovery is fastest. All 10 substitutes are recovery too, split across the squads. When a player has recovered 180,000 loot, swap them out for a substitute. The video below shows Recovery squad 1."},
   teams: [{t: "Team 1"}, {t: "Team 2"}],
   captions: [
     {t: "Start — 6 rally leaders move to their spots"},
@@ -93,6 +93,6 @@ window.LEAGUE_STRATEGY.en = {
     sub: {t: "Sub-leaders", d: ["Partners are set by rank — #1 ↔ #7, #2 ↔ #8 … #6 ↔ #12 (shown with ↔).", "★ Always cover the spot your partner (main rally leader) left with your 1st march.", "Sub-leaders belong to their partner's team (Team 1 · Team 2).", "★ If the building you are defending (Sanctum · Abbey · Bell Tower, etc.) is attacked, tell the recovery team at once.", "10%+ buffs.", "Defend Sanctums · Abbeys that include a rally leader with your 1st march.", "Refill defense on our Sanctums · Abbeys.", "Tell joiners where a rally is short."]},
     gather: {t: "Gatherers", d: ["Marches 1–4 gather; the other 2 marches support rallies · defense — never skip rallies · defense.", "When tunnels open at 30 min, one person per tunnel 1–4 (G1–G4 on the map).", "Advance when gathering spots open.", "Take 2 gathering spots (enemy · ours).", "March 4 defends Sanctums · Abbeys."]},
     scout: {t: "Scouts", d: ["March 4 — defend Sanctums · Abbeys.", "2nd rally — scout enemy Sanctums · Abbeys and find the enemy 1st march.", "★ Let the recovery team teleport in first; if any spot is empty (recovery post · building), a scout moves there to fill it."]},
-    recover: {t: "Recovery", d: ["Purpose: stand N · E · S · W and recover the loot (3 squads of 4).", "Mid game: focus on picking up supplies fast.", "Late game: with the sub-leaders, the core of the take-and-retake fight."]}
+    recover: {t: "Recovery", d: ["Purpose: stand N · E · S · W and recover the loot (3 squads of 4).", "All 10 substitutes are recovery too — split across the squads.", "★ At 180,000 recovered loot, swap out for a substitute.", "Mid game: focus on picking up supplies fast.", "Late game: with the sub-leaders, the core of the take-and-retake fight."]}
   }
 };
