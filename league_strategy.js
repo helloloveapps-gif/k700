@@ -21,7 +21,7 @@ window.LEAGUE_STRATEGY = {
   route: {left: ["sa2", "ab2", "sa1", "bel", "ab1", "ab3"],
     // 15분(2단계): 1번 Yui → 성검 제단 · 2번 Lotto → 교화의 홀. 나머지는 1단계 거점을 지킨다
     p2: ["alt", "hal"],
-    // 채집조 4명: 집결 · 수비에도 들어가고(남은 2행군), 30분 땅굴이 열리면 한 명씩 땅굴 1~4 로(이박사님 11-08)
+    // 채집조 4명: 집결 · 수비에도 들어가고(남은 2행군), 30분 땅굴이 열리면 각자 맡은 땅굴 1~4 로 동시에(이박사님 11-08)
     gather: ["tu1", "tu2", "tu3", "tu4"]},
   // 작전 재생 자막: a~b 분 동안만 지도 위에 나타났다가 사라진다. {1} {2} = 1번 · 2번 집결장 이름
   captions: [
@@ -29,13 +29,13 @@ window.LEAGUE_STRATEGY = {
     {a: 7.5, b: 14.5, t: "거점을 지킨다 · 공격받으면 회수조에게 알린다"},
     {a: 15, b: 22, t: "15분 — 1번 {1} → 성검 제단 · 2번 {2} → 교화의 홀"},
     {a: 22.5, b: 29.5, t: "서브 집결장은 파트너가 비운 곳을 지킨다"},
-    {a: 30, b: 37, t: "30분 — 땅굴 개방 · 채집조 한 명씩 땅굴로"},
+    {a: 30, b: 37, t: "30분 — 땅굴 개방 · 채집조 각자 땅굴로 동시에"},
     {a: 38, b: 46, t: "빠르게 뺏고 늦게 뺏긴다"}
   ],
   roles: [
     {k: "lead", n: 6, fix: ["Yui"], t: "집결장", c: "#ffd43b", d: ["1단계 동선(집결장 순서대로): 1 적군 성소 → 2 적군 수도원1 → 3 아군 성소 → 4 시계탑 → 5 적군 수도원2 → 6 아군 수도원1.", "1 · 2군으로 성소 · 수도원을 점령한다.", "공격 시 1군 3~5분 집결.", "수비 시 1 · 2군 장비 교체한다.", "15분: 1번 Yui → 성검 제단 · 2번 Lotto → 교화의 홀 이동. 나머지는 1단계 거점을 지킨다.", "★ 수비하고 있는 거점(성소 · 수도원 · 시계탑 등)이 공격받으면 바로 회수조에게 알린다."]},
     {k: "sub", n: 6, fix: ["방울찡", "mina"], pair: "lead", t: "서브 집결장", c: "#ff922b", d: ["순위대로 파트너가 정해진다 — 1번 ↔ 7번, 2번 ↔ 8번 … 6번 ↔ 12번(↔ 표시).", "★ 파트너(메인 집결장)가 빠진 빈 곳을 반드시 1군으로 지킨다.", "서브 집결장은 파트너와 같은 팀 소속(1팀 · 2팀).", "★ 수비하고 있는 거점(성소 · 수도원 · 시계탑 등)이 공격받으면 바로 회수조에게 알린다.", "10% 이상 버프.", "집결장이 포함된 성소 · 수도원을 1군으로 수비한다.", "아군 성소 · 수도원에 방어 리필한다.", "집결원 빠진 곳을 집결원에게 알린다."]},
-    {k: "gather", n: 4, t: "채집조", c: "#63e6be", d: ["행군 1~4 는 채집, 나머지 2행군은 집결 · 수비 지원 — 집결 · 수비에서 빠지면 안 된다.", "30분에 땅굴이 열리면 한 명씩 땅굴 1~4 로 간다(지도의 채1~채4).", "채집지가 열리면 진격한다.", "적군 · 아군 채집지를 2개 점령한다.", "행군 4 성소 · 수도원 방어."]},
+    {k: "gather", n: 4, t: "채집조", c: "#63e6be", d: ["행군 1~4 는 채집, 나머지 2행군은 집결 · 수비 지원 — 집결 · 수비에서 빠지면 안 된다.", "30분에 땅굴이 열리면 각자 맡은 땅굴(1~4)로 동시에 간다(지도의 채1~채4).", "채집지가 열리면 진격한다.", "적군 · 아군 채집지를 2개 점령한다.", "행군 4 성소 · 수도원 방어."]},
     {k: "scout", n: 2, fix: ["ImsorryPIG", "晚睡覺SleepySwim"], t: "정찰조", c: "#74c0fc", d: ["행군 4 — 성소 · 수도원 방어.", "2랠리 — 적군 성소 · 수도원 정찰 및 적군 1군 위치 확인.", "★ 회수조가 텔레포트로 먼저 자리를 잡게 하고, 빈 곳(회수 자리 · 거점)이 있으면 정찰조가 그곳으로 이동해 채운다."]},
     {k: "recover", n: 12, aehFirst: true, t: "회수조", c: "#b197fc", d: ["동 · 서 · 남 · 북으로 배치하여 전리품을 회수하는 것이 목적이다(4명씩 3조).", "★ 18만이 넘었거나 병사가 다 죽어 전투에 참가하지 못하면 대체 인원과 교체 바랍니다.", "중반: 군수물자를 빠르게 습득하는 데 집중한다.", "후반: 서브 집결장과 함께 뺏고 뺏기는 싸움의 핵심이다."]}
   ]
@@ -56,14 +56,14 @@ window.LEAGUE_STRATEGY.zh = {
     {t: "守住據點 · 被攻擊時通知回收組"},
     {t: "15 分 — 1 號 {1} → 聖劍祭壇 · 2 號 {2} → 教化之廳"},
     {t: "副集結隊長守住搭檔離開的空位"},
-    {t: "30 分 — 地道開放 · 採集組一人一個地道"},
+    {t: "30 分 — 地道開放 · 採集組各自同時前往地道"},
     {t: "搶得快、被搶得慢"}
   ],
   rvCap: [[0, 1.5, "① 據點發生攻擊 · 防守時"], [1.5, 3.3, "② 戰利品（金幣）向四周噴出"], [3.3, 6.8, "③ 東 · 西 · 南 · 北 — 只用行軍（線）回收自己的區域"], [6.8, 9.5, "④ 守在原位，用行軍把戰利品帶回"]],
   roles: {
     lead: {t: "集結隊長", d: ["第 1 階段路線（依集結隊長順序）：1 敵方聖所 → 2 敵方修道院 1 → 3 我方聖所 → 4 鐘樓 → 5 敵方修道院 2 → 6 我方修道院 1。", "用第 1 · 2 軍佔領聖所 · 修道院。", "進攻時第 1 軍集結 3~5 分鐘。", "防守時更換第 1 · 2 軍裝備。", "15 分：1 號 Yui → 聖劍祭壇 · 2 號 Lotto → 教化之廳。其餘守住第 1 階段的據點。", "★ 正在防守的據點（聖所 · 修道院 · 鐘樓等）被攻擊時，立刻通知回收組。"]},
     sub: {t: "副集結隊長", d: ["依排名決定搭檔 — 1 號 ↔ 7 號、2 號 ↔ 8 號 … 6 號 ↔ 12 號（↔ 標示）。", "★ 搭檔（主集結隊長）離開的空位，一定要用第 1 軍守住。", "副集結隊長與搭檔同屬一隊（1 隊 · 2 隊）。", "★ 正在防守的據點（聖所 · 修道院 · 鐘樓等）被攻擊時，立刻通知回收組。", "增益 10% 以上。", "用第 1 軍防守有集結隊長的聖所 · 修道院。", "為我方聖所 · 修道院補防守。", "把集結缺人的地方告訴集結成員。"]},
-    gather: {t: "採集組", d: ["行軍 1~4 採集，其餘 2 個行軍支援集結 · 防守 — 不可缺席集結 · 防守。", "30 分地道開放時，一人一個前往地道 1~4（地圖上的 採1~採4）。", "採集點開放時前進。", "佔領敵方 · 我方採集點 2 個。", "行軍 4 防守聖所 · 修道院。"]},
+    gather: {t: "採集組", d: ["行軍 1~4 採集，其餘 2 個行軍支援集結 · 防守 — 不可缺席集結 · 防守。", "30 分地道開放時，各自同時前往負責的地道 1~4（地圖上的 採1~採4）。", "採集點開放時前進。", "佔領敵方 · 我方採集點 2 個。", "行軍 4 防守聖所 · 修道院。"]},
     scout: {t: "偵察組", d: ["行軍 4 — 防守聖所 · 修道院。", "第 2 集結 — 偵察敵方聖所 · 修道院，並確認敵方第 1 軍位置。", "★ 讓回收組先用傳送就位；若有空位（回收位置 · 據點），由偵察組移動過去補上。"]},
     recover: {t: "回收組", d: ["目的是站在東 · 西 · 南 · 北回收戰利品（每組 4 人，共 3 組）。", "★ 超過 18 萬，或士兵全部陣亡無法參戰時，請與替補人員交換。", "中期：專心快速撿取軍需物資。", "後期：與副集結隊長一起，是互相搶奪戰鬥的核心。"]}
   }
@@ -84,14 +84,14 @@ window.LEAGUE_STRATEGY.en = {
     {t: "Hold your building · tell recovery when attacked"},
     {t: "15 min — #1 {1} → Swordshrine · #2 {2} → Hall of Reformation"},
     {t: "Sub-leaders cover the spot their partner left"},
-    {t: "30 min — tunnels open · one gatherer per tunnel"},
+    {t: "30 min — tunnels open · gatherers go to their tunnels together"},
     {t: "Take fast, lose slowly"}
   ],
   rvCap: [[0, 1.5, "① A fight breaks out at the building"], [1.5, 3.3, "② Loot (coins) sprays in every direction"], [3.3, 6.8, "③ N · E · S · W — each recovers only their zone by march line"], [6.8, 9.5, "④ Stay on your spot and bring loot in by march"]],
   roles: {
     lead: {t: "Rally leaders", d: ["Phase 1 route (by leader order): 1 enemy Sanctum → 2 enemy Abbey 1 → 3 our Sanctum → 4 Bell Tower → 5 enemy Abbey 2 → 6 our Abbey 1.", "Take Sanctums · Abbeys with your 1st · 2nd marches.", "When attacking, 1st march rallies for 3–5 min.", "When defending, swap gear on 1st · 2nd marches.", "15 min: #1 Yui → Swordshrine · #2 Lotto → Hall of Reformation. Everyone else holds their phase-1 building.", "★ If the building you are defending (Sanctum · Abbey · Bell Tower, etc.) is attacked, tell the recovery team at once."]},
     sub: {t: "Sub-leaders", d: ["Partners are set by rank — #1 ↔ #7, #2 ↔ #8 … #6 ↔ #12 (shown with ↔).", "★ Always cover the spot your partner (main rally leader) left with your 1st march.", "Sub-leaders belong to their partner's team (Team 1 · Team 2).", "★ If the building you are defending (Sanctum · Abbey · Bell Tower, etc.) is attacked, tell the recovery team at once.", "10%+ buffs.", "Defend Sanctums · Abbeys that include a rally leader with your 1st march.", "Refill defense on our Sanctums · Abbeys.", "Tell joiners where a rally is short."]},
-    gather: {t: "Gatherers", d: ["Marches 1–4 gather; the other 2 marches support rallies · defense — never skip rallies · defense.", "When tunnels open at 30 min, one person per tunnel 1–4 (G1–G4 on the map).", "Advance when gathering spots open.", "Take 2 gathering spots (enemy · ours).", "March 4 defends Sanctums · Abbeys."]},
+    gather: {t: "Gatherers", d: ["Marches 1–4 gather; the other 2 marches support rallies · defense — never skip rallies · defense.", "When tunnels open at 30 min, everyone goes to their own tunnel (1–4) at the same time (G1–G4 on the map).", "Advance when gathering spots open.", "Take 2 gathering spots (enemy · ours).", "March 4 defends Sanctums · Abbeys."]},
     scout: {t: "Scouts", d: ["March 4 — defend Sanctums · Abbeys.", "2nd rally — scout enemy Sanctums · Abbeys and find the enemy 1st march.", "★ Let the recovery team teleport in first; if any spot is empty (recovery post · building), a scout moves there to fill it."]},
     recover: {t: "Recovery", d: ["Purpose: stand N · E · S · W and recover the loot (3 squads of 4).", "★ Over 180,000, or all troops dead and unable to fight — please swap with a substitute.", "Mid game: focus on picking up supplies fast.", "Late game: with the sub-leaders, the core of the take-and-retake fight."]}
   }
