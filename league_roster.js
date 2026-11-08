@@ -20,7 +20,7 @@ window.LEAGUE_ROSTER = {
     ["DongDong", 3, 4870, "p"],
     ["n00b4lyf", 3, 4518, "p"],
     ["Namir", 3, 4513, "p"],
-    ["Lord Jay B", 3, 4492, "s"],
+    ["Lord Jay B", 3, 4492, "p"],   // 대체 → 참전(Feng 대신, 이박사님 11-08) · 회수조
     ["세종대왕 King Sejong", 3, 4419, "p"],
     ["SEKSEKTR32", 3, 4328, "s"],
     ["TTÜN", 3, 4323, "s"],
