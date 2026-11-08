@@ -148,7 +148,7 @@
   // 집결원 자동 배치: TG → 전투력 순으로 뱀 순서(1→N, N→1)로 나눠 준다. 집결 인원수를 넘으면 개인 부대
   function assign(L) {
     const R = L.ld.filter(l => L.m.includes(l.k)).map((l, i) => { const cap = capOf(l), own = Math.min(marchK(l.k), cap); return {l, i, cap, own, mem: [], sum: own}; });
-    const lk = new Set(R.map(r => r.l.k)), GA = new Set(roleOf(L, "gather")), pool = L.m.filter(k => !lk.has(k) && !GA.has(k)).sort((x, y) => score(y) - score(x)), solo = [];
+    const lk = new Set(R.map(r => r.l.k)), pool = L.m.filter(k => !lk.has(k)).sort((x, y) => score(y) - score(x)), solo = [];
     let pos = 0, dir = 1;
     pool.forEach(k => {
       const v = marchK(k);
