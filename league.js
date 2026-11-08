@@ -91,6 +91,8 @@
     if (LR && !L0.m.length && !L0.s.length) { const ppl = people(a); L0.m = ppl.filter(q => q.gs === "p").map(q => q.k); L0.s = ppl.filter(q => q.gs === "s").map(q => q.k); }
     if (!Array.isArray(P.posts)) P.posts = [];
     if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; const fx = [].concat(...window.LEAGUE_STRATEGY.roles.slice(1).map(r => r.fix || [])), f0 = window.LEAGUE_STRATEGY.roles[0].fix || [], top = k => f0.indexOf(who(k).n) >= 0 ? 1 : 0; L0.ld = L0.m.slice().filter(k => fx.indexOf(who(k).n) < 0).sort((x, y) => (top(y) - top(x)) || (tri(y) - tri(x))).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
+    // 1단계 동선: 집결장 순서대로 목표(아군 진입 왼쪽 기준 · 오른쪽은 대칭)
+    const RT = (window.LEAGUE_STRATEGY || {}).route; if (LR && RT && !Object.keys(L0.ph[0].t).length && !Object.keys(L0.phR[0].t).length) L0.ld.forEach((l, i) => { const id = RT.left[i]; if (id) { L0.ph[0].t[l.k] = {b: id}; L0.phR[0].t[l.k] = {b: MIR[id] || id}; } });
     return P;
   };
   const editable = () => IS_ADMIN && typeof can === "function" && can(SA);
