@@ -170,15 +170,7 @@
       }
       if (!done) solo.push(k);
     });
-    const JMAX = 2, cnt = {}; R.forEach(r => r.mem.forEach(m => cnt[m.k] = (cnt[m.k] || 0) + 1));
-    [true, false].forEach(same => pool.forEach(k => {
-      const v = marchK(k);
-      R.slice().sort((x, y) => (x.sum / x.cap) - (y.sum / y.cap)).forEach(r => {
-        if ((cnt[k] || 0) >= JMAX || r.mem.some(m => m.k === k) || r.sum + v > r.cap || (same && !!who(r.l.k).aeh !== !!who(k).aeh)) return;
-        r.mem.push({k, v, x: 1}); r.sum += v; cnt[k] = (cnt[k] || 0) + 1;
-      });
-    }));
-    return {R, solo: solo.filter(k => !cnt[k])};
+    return {R, solo};
   }
 
   const css = `
