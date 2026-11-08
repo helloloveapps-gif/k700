@@ -139,6 +139,7 @@
   // 역할 나누기: 참전자를 시련 순으로 위에서부터, 지정된 사람(fix)은 그 역할에 먼저
   const LSG = () => { const S = window.LEAGUE_STRATEGY, Z = S && LANG !== "ko" && (S[LANG] || S.en); if (!Z) return S; return Object.assign({}, S, {intro: Z.intro, phases: Z.phases, note: Z.note, recover: Object.assign({}, S.recover, Z.recover), teams: S.teams.map((x, i) => Object.assign({}, x, Z.teams[i])), captions: S.captions.map((c, i) => Object.assign({}, c, Z.captions[i])), roles: S.roles.map(r => Object.assign({}, r, Z.roles[r.k])), rvCap: Z.rvCap}); };
   const DIR = i => (LANG === "zh" ? "北東南西" : LANG === "ko" ? "북동남서" : "NESW")[i], DCOL = ["#ff6b6b", "#ffd43b", "#69db7c", "#4dabf7"];   // 북 빨강 · 동 노랑 · 남 초록 · 서 파랑(헷갈리지 않게)
+  let MYPICK = ""; window.lgPickMe = v => { MYPICK = v; render(); };
   const triK = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; };
   function roleKs(L) {
     const SG = window.LEAGUE_STRATEGY; if (!SG || !window.LEAGUE_ROSTER) return [];
@@ -532,6 +533,41 @@
     const SG = LSG();
     if (SG) {
       const tri = triK, KS0 = roleKs(L); setTimeout(recStart, 0);
+      // 🎯 내 임무: 내 게임 ID(또는 이름 고르기)로 — 역할 · 번호 · 팀 · 파트너 · 목표 · 회수 몇 조 · 동서남북 · 들어갈 집결(이박사님 11-08)
+      {
+        const LX = LANG === "zh" ? "zh" : LANG === "ko" ? "ko" : "en", W = {
+          ko: {h: "🎯 내 임무", pick: "이름 고르기", none: "명단에서 이름을 고르세요(내 게임 ID 를 넣으면 저절로 나옵니다).", sub: "대체 인원 — 회수조가 18만이 넘었거나 병사가 다 죽어 전투에 못 나가면 교체합니다.", lead: "집결장 {0}번", subL: "서브 집결장 {0}번", part: "파트너", r1: "1단계 목표", r2: "15분", side: "(오른쪽 진입: {0})", gat: "채집조 채{0} — 30분에 {1}", rec: "회수 {0}조 — {1}", join: "집결원으로 들어갈 집결", noJ: "없음"},
+          zh: {h: "🎯 我的任務", pick: "選擇名字", none: "請從名單選擇名字（輸入遊戲 ID 會自動顯示）。", sub: "替補人員 — 回收組超過 18 萬或士兵全部陣亡無法參戰時，與其交換。", lead: "集結隊長 {0} 號", subL: "副集結隊長 {0} 號", part: "搭檔", r1: "第 1 階段目標", r2: "15 分", side: "（右側進場：{0}）", gat: "採集組 採{0} — 30 分前往 {1}", rec: "回收 {0} 組 — {1}", join: "要加入的集結", noJ: "無"},
+          en: {h: "🎯 My mission", pick: "Pick your name", none: "Pick your name from the list (it appears by itself once you enter your game ID).", sub: "Substitute — swap in when a recovery player is over 180,000 or has lost all troops.", lead: "Rally leader #{0}", subL: "Sub-leader #{0}", part: "Partner", r1: "Phase 1 target", r2: "15 min", side: "(right-side entry: {0})", gat: "Gatherer G{0} — at 30 min to {1}", rec: "Recovery {0} — {1}", join: "Rallies to join", noJ: "none"}
+        }[LX], fm = (s, ...a) => a.reduce((x, v, i) => x.replace("{" + i + "}", v), s);
+        const all = L.m.concat(L.s), mid = typeof myId === "function" ? myId() : "", auto = all.find(k => mid && (k === mid || who(k).id === mid));
+        const mk = MYPICK && all.includes(MYPICK) ? MYPICK : auto || "";
+        let mh = '<select onchange="window.lgPickMe(this.value)" style="min-height:36px;background:#16241a;color:#e9f2e4;border:1px solid #3a5641;border-radius:8px;padding:0 8px;margin-bottom:8px"><option value="">' + esc(W.pick) + '</option>' + all.map(k => '<option value="' + esc(k) + '"' + (k === mk ? ' selected' : '') + '>' + esc(who(k).n) + '</option>').join("") + '</select>';
+        if (!mk) mh += '<div class="d" style="margin:0">' + esc(W.none) + '</div>';
+        else if (L.s.includes(mk)) mh += '<div class="post"><b>' + esc(who(mk).n) + '</b><p>' + esc(W.sub) + '</p></div>';
+        else {
+          const ri = SG.roles.findIndex((r, i) => (KS0[i] || []).includes(mk)), r = SG.roles[ri] || {}, ix = ri >= 0 ? KS0[ri].indexOf(mk) : -1, lines = [];
+          const TM = SG.teams || [], tm = k => { const j = TM.findIndex(x => x.ld.indexOf(who(k).n) >= 0); return j < 0 ? "" : " · " + TM[j].t; };
+          const bName = id => { const b = B.find(x => x.id === id); return b ? (LX === "ko" ? b.ko : b.en) : id; }, RT = SG.route || {};
+          if (r.k === "lead") {
+            lines.push(fm(W.lead, ix + 1) + tm(mk));
+            if (RT.left && RT.left[ix]) lines.push(W.r1 + ": " + bName(RT.left[ix]) + " " + fm(W.side, bName(MIR[RT.left[ix]] || RT.left[ix])));
+            if (RT.p2 && RT.p2[ix]) lines.push(W.r2 + ": " + bName(RT.p2[ix]) + " " + fm(W.side, bName(MIR[RT.p2[ix]] || RT.p2[ix])));
+            const pk = (KS0[SG.roles.findIndex(x => x.pair === "lead")] || [])[ix]; if (pk) lines.push(W.part + ": " + who(pk).n);
+          } else if (r.pair) {
+            const pk = (KS0[SG.roles.findIndex(x => x.k === r.pair)] || [])[ix];
+            lines.push(fm(W.subL, ix + 1 + (KS0[0] || []).length) + (pk ? tm(pk) : ""));
+            if (pk) lines.push(W.part + ": " + who(pk).n);
+          } else if (r.k === "gather") lines.push(fm(W.gat, ix + 1, bName((RT.gather || [])[ix]) + " " + fm(W.side, bName(MIR[(RT.gather || [])[ix]] || ""))));
+          else if (r.k === "recover") lines.push(fm(W.rec, Math.floor(ix / 4) + 1, DIR(ix % 4)));
+          else if (r.t) lines.push(r.t);
+          const A = assign(L), J = A.R.filter(x => x.mem.some(m => m.k === mk)).map(x => (A.R.indexOf(x) + 1) + " " + who(x.l.k).n);
+          if (r.k !== "lead") lines.push(W.join + ": " + (J.join(" · ") || W.noJ));
+          const col = r.k === "recover" ? DCOL[ix % 4] : r.c || "#e9d48a";
+          mh += '<div class="post" style="border-color:' + col + '"><b style="color:' + col + '">' + esc(who(mk).n) + ' — ' + esc(r.t || "") + '</b><p>' + lines.map(esc).join("<br>") + '</p>' + (r.d ? '<div class="d" style="margin:6px 0 0">' + r.d.map(esc).join(" · ") + '</div>' : '') + '</div>';
+        }
+        h += '<div class="lg"><h2>' + esc(W.h) + '</h2>' + mh + '</div>';
+      }
       h += '<div class="lg"><h2>📜 ' + esc(LANG === "zh" ? "作戰說明" : LANG === "ko" ? "작전 설명" : "Battle plan") + '</h2><div class="d" style="white-space:pre-wrap;color:#e9f2e4">' + esc(SG.intro) + '</div>' +
         SG.phases.map((x, i) => '<div class="post"><b>' + esc(x.t) + '</b><p>' + esc(x.b) + '</p></div>').join("") + (SG.recover ? '<div class="post" style="border-color:#b197fc"><b style="color:#d0bfff">🟣 ' + esc(SG.recover.title) + '</b><p>' + esc(SG.recover.text) + '</p>' + (SG.recover.teams || []).map((T, ti) => { const RK = KS0[SG.roles.findIndex(r => r.k === "recover")] || []; return '<div class="ml" style="margin:4px 0"><b style="color:#d0bfff;margin-right:6px">' + esc(T.t) + '</b>' + REC_OFF.map((o, i) => RK[ti * 4 + i] ? '<span><b style="color:' + DCOL[i] + '">' + DIR(i) + '</b> · ' + esc(who(RK[ti * 4 + i]).n) + '</span>' : '').join("") + '</div>'; }).join("") + '<svg id="lgRec" viewBox="0 0 600 380" style="width:100%;max-width:600px;display:block;margin:10px auto 0;border-radius:10px;background:#6b4626"></svg></div>' : '') + '<div class="d">' + esc(SG.note) + '</div>' +
         '<h2 style="margin-top:12px">🎖 ' + esc(LANG === "zh" ? "角色分配（依參戰者神秘試煉排序）" : LANG === "ko" ? "역할 배정 (참전자 시련 순)" : "Roles (combatants by Mystic Trial)") + '</h2>' +
