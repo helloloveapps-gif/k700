@@ -525,7 +525,7 @@
     const SG = LSG();
     if (SG) {
       const tri = triK, KS0 = roleKs(L); setTimeout(recStart, 0);
-      // 🎯 내 임무: 내 게임 ID(또는 이름 고르기)로 — 역할 · 번호 · 팀 · 파트너 · 목표 · 회수 몇 조 · 동서남북 · 들어갈 집결(이박사님 11-08)
+      // 🎯 내 임무(집결장은 전체 동선 줄 빼고 자기 목표만 — 헷갈리지 않게): 내 게임 ID(또는 이름 고르기)로 — 역할 · 번호 · 팀 · 파트너 · 목표 · 회수 몇 조 · 동서남북 · 들어갈 집결(이박사님 11-08)
       {
         const LX = LANG === "zh" ? "zh" : LANG === "ko" ? "ko" : "en", W = {
           ko: {h: "🎯 내 임무", pick: "이름 고르기", none: "명단에서 이름을 고르세요(내 게임 ID 를 넣으면 저절로 나옵니다).", sub: "대체 인원 — 회수조가 18만이 넘었거나 병사가 다 죽어 전투에 못 나가면 교체합니다.", lead: "집결장 {0}번", subL: "서브 집결장 {0}번", part: "파트너", r1: "1단계 목표", r2: "15분", side: "(오른쪽 진입: {0})", gat: "채집조 채{0} — 30분에 {1}", rec: "회수 {0}조 — {1}", join: "집결원으로 들어갈 집결", noJ: "없음", j1: "1순위 집결", jr: "나머지 행군은 다른 랠리를 타도 됩니다.", mr: "권장 행군"},
@@ -554,7 +554,7 @@
           const A = assign(L), J = A.R.filter(x => x.mem.some(m => m.k === mk)).map(x => (A.R.indexOf(x) + 1) + " " + who(x.l.k).n);
           if (r.k !== "lead") lines.push(J.length ? W.j1 + ": " + J[0] + " — " + W.jr : W.join + ": " + W.noJ);
           const col = r.k === "recover" ? DCOL[ix % 4] : r.c || "#e9d48a";
-          mh += '<div class="post" style="border-color:' + col + '"><b style="color:' + col + '">' + esc(who(mk).n) + ' — ' + esc(r.t || "") + '</b>' + (r.k === "recover" ? '<div style="margin:8px 0;padding:8px 12px;border-radius:10px;background:' + col + ';color:#1b1208;font-size:20px;font-weight:900;text-align:center">' + esc(fm(W.rec, Math.floor(ix / 4) + 1, DIR(ix % 4))) + '</div>' : '') + '<p style="line-height:1.8">' + lines.map(esc).join("<br>") + '</p>' + (r.m ? '<div style="margin:6px 0;padding:6px 10px;border-left:4px solid ' + col + ';background:rgba(255,255,255,.05)"><b>' + esc(W.mr) + '</b>: ' + esc(r.m) + '</div>' : '') + (r.d ? '<ol class="d" style="margin:8px 0 0;padding-left:22px;line-height:1.7">' + r.d.map(x => '<li>' + esc(x) + '</li>').join("") + '</ol>' : '') + '</div>';
+          mh += '<div class="post" style="border-color:' + col + '"><b style="color:' + col + '">' + esc(who(mk).n) + ' — ' + esc(r.t || "") + '</b>' + (r.k === "recover" ? '<div style="margin:8px 0;padding:8px 12px;border-radius:10px;background:' + col + ';color:#1b1208;font-size:20px;font-weight:900;text-align:center">' + esc(fm(W.rec, Math.floor(ix / 4) + 1, DIR(ix % 4))) + '</div>' : '') + '<p style="line-height:1.8">' + lines.map(esc).join("<br>") + '</p>' + (r.m ? '<div style="margin:6px 0;padding:6px 10px;border-left:4px solid ' + col + ';background:rgba(255,255,255,.05)"><b>' + esc(W.mr) + '</b>: ' + esc(r.m) + '</div>' : '') + (r.d ? '<ol class="d" style="margin:8px 0 0;padding-left:22px;line-height:1.7">' + r.d.filter(x => r.k !== "lead" || x.indexOf("→") < 0).map(x => '<li>' + esc(x) + '</li>').join("") + '</ol>' : '') + '</div>';
         }
         h += '<div class="lg"><h2>' + esc(W.h) + '</h2>' + mh + '</div>';
       }
