@@ -1,4 +1,4 @@
-// 성검 리그전 작전 설명 — 이박사님 글(2026-11-08). 한국어 + 繁體中文(아래 zh). 영어는 아직
+// 성검 리그전 작전 설명 — 이박사님 글(2026-11-08). 한국어 + 繁體中文(zh) + English(en, 그 밖의 언어도)
 window.LEAGUE_STRATEGY = {
   intro: "저희는 다수 중고래 연합이며 1인 체제의 핵고래 연맹이 아닙니다. 앞으로 1인 체제의 핵고래 연합과 만날 가능성이 매우 높습니다.\n저희는 2~3인이 한 팀으로 핵고래의 1~3군을 부수고, 상대 고래가 장비를 스왑하기 전에 동시 공격하여 쌓인 전리품을 뺏는 것이 핵심입니다.",
   phases: [
@@ -66,5 +66,33 @@ window.LEAGUE_STRATEGY.zh = {
     gather: {t: "採集組", d: ["行軍 1~4 採集，其餘 2 個行軍支援集結 · 防守 — 不可缺席集結 · 防守。", "30 分地道開放時，一人一個前往地道 1~4（地圖上的 採1~採4）。", "採集點開放時前進。", "佔領敵方 · 我方採集點 2 個。", "行軍 4 防守聖所 · 修道院。"]},
     scout: {t: "偵察組", d: ["行軍 4 — 防守聖所 · 修道院。", "第 2 集結 — 偵察敵方聖所 · 修道院，並確認敵方第 1 軍位置。", "★ 讓回收組先用傳送就位；若有空位（回收位置 · 據點），由偵察組移動過去補上。"]},
     recover: {t: "回收組", d: ["目的是站在東 · 西 · 南 · 北回收戰利品（每組 4 人，共 3 組）。", "中期：專心快速撿取軍需物資。", "後期：與副集結隊長一起，是互相搶奪戰鬥的核心。"]}
+  }
+};
+// English — 이박사님 11-08. 한국어 · 繁體中文 밖의 화면 언어는 이 글을 쓴다
+window.LEAGUE_STRATEGY.en = {
+  intro: "We are an alliance of many mid-sized whales, not a one-whale alliance. We will very likely face alliances carried by a single big whale.\nOur key: teams of 2–3 break the big whale's 1st–3rd marches, and we hit at the same time before the enemy whale can swap gear, taking the loot they have piled up.",
+  phases: [
+    {t: "Phase 1 · Early (0–15 min)", b: "All 6 rally leaders head out together. The key goal is the first-capture bonus on all 6 Sanctums · Abbeys.\nEven if a first capture fails, attack and defend so we hold at least 5.\nOnce a fight starts, hold your spot and keep attacking so the enemy cannot move elsewhere.\nDon't panic if we fall behind on points."},
+    {t: "Phase 2 · Mid (15–30 min)", b: "The 2 strongest quickly take the Swordshrine · Hall of Reformation.\nThen hit the enemy Sanctum (skip if none).\nThe recovery team focuses on picking up supplies fast."},
+    {t: "Phase 3 · Late (30–60 min)", b: "The late game is take-and-retake. Sub-leaders and the recovery team matter most.\nSub-leaders must put their 1st march into any spot a main rally leader has left.\nWe take fast and lose slowly."}
+  ],
+  note: "※ Supplies: points dropped around a building when an attack succeeds or a defense fails.",
+  recover: {teams: [{t: "Recovery 1"}, {t: "Recovery 2"}, {t: "Recovery 3"}], title: "Recovery team of 12 — 3 squads · 4 each · N/E/S/W", text: "The 12 recovery players form 3 squads of 4. Each squad takes the north · east · south · west sides around the building being fought over, one player per side, and picks up only the loot that lands in their own zone, then returns to their spot. No overlap, so nothing is missed and recovery is fastest. The video below shows Recovery squad 1."},
+  teams: [{t: "Team 1"}, {t: "Team 2"}],
+  captions: [
+    {t: "Start — 6 rally leaders move to their spots"},
+    {t: "Hold your building · tell recovery when attacked"},
+    {t: "15 min — #1 {1} → Swordshrine · #2 {2} → Hall of Reformation"},
+    {t: "Sub-leaders cover the spot their partner left"},
+    {t: "30 min — tunnels open · one gatherer per tunnel"},
+    {t: "Take fast, lose slowly"}
+  ],
+  rvCap: [[0, 1.5, "① A fight breaks out at the building"], [1.5, 3.3, "② Loot (coins) sprays in every direction"], [3.3, 6.8, "③ N · E · S · W — each recovers only their zone by march line"], [6.8, 9.5, "④ Stay on your spot and bring loot in by march"]],
+  roles: {
+    lead: {t: "Rally leaders", d: ["Phase 1 route (by leader order): 1 enemy Sanctum → 2 enemy Abbey 1 → 3 our Sanctum → 4 Bell Tower → 5 enemy Abbey 2 → 6 our Abbey 1.", "Take Sanctums · Abbeys with your 1st · 2nd marches.", "When attacking, 1st march rallies for 3–5 min.", "When defending, swap gear on 1st · 2nd marches.", "15 min: #1 Yui → Swordshrine · #2 Lotto → Hall of Reformation. Everyone else holds their phase-1 building.", "★ If the building you are defending (Sanctum · Abbey · Bell Tower, etc.) is attacked, tell the recovery team at once."]},
+    sub: {t: "Sub-leaders", d: ["Partners are set by rank — #1 ↔ #7, #2 ↔ #8 … #6 ↔ #12 (shown with ↔).", "★ Always cover the spot your partner (main rally leader) left with your 1st march.", "Sub-leaders belong to their partner's team (Team 1 · Team 2).", "★ If the building you are defending (Sanctum · Abbey · Bell Tower, etc.) is attacked, tell the recovery team at once.", "10%+ buffs.", "Defend Sanctums · Abbeys that include a rally leader with your 1st march.", "Refill defense on our Sanctums · Abbeys.", "Tell joiners where a rally is short."]},
+    gather: {t: "Gatherers", d: ["Marches 1–4 gather; the other 2 marches support rallies · defense — never skip rallies · defense.", "When tunnels open at 30 min, one person per tunnel 1–4 (G1–G4 on the map).", "Advance when gathering spots open.", "Take 2 gathering spots (enemy · ours).", "March 4 defends Sanctums · Abbeys."]},
+    scout: {t: "Scouts", d: ["March 4 — defend Sanctums · Abbeys.", "2nd rally — scout enemy Sanctums · Abbeys and find the enemy 1st march.", "★ Let the recovery team teleport in first; if any spot is empty (recovery post · building), a scout moves there to fill it."]},
+    recover: {t: "Recovery", d: ["Purpose: stand N · E · S · W and recover the loot (3 squads of 4).", "Mid game: focus on picking up supplies fast.", "Late game: with the sub-leaders, the core of the take-and-retake fight."]}
   }
 };

@@ -137,8 +137,8 @@
   const score = k => { const q = who(k), s = q.d && troops(q.d); return (q.sp || 0) * 1e18 + (q.tg || 0) * 1e15 + (s ? TGW(s, 0) + TGW(s, 1) + TGW(s, 2) : 0) * 1e3 + (q.p || 0) / 1e6; };
 
   // 역할 나누기: 참전자를 시련 순으로 위에서부터, 지정된 사람(fix)은 그 역할에 먼저
-  const LSG = () => { const S = window.LEAGUE_STRATEGY, Z = S && LANG === "zh" && S.zh; if (!Z) return S; return Object.assign({}, S, {intro: Z.intro, phases: Z.phases, note: Z.note, recover: Object.assign({}, S.recover, Z.recover), teams: S.teams.map((x, i) => Object.assign({}, x, Z.teams[i])), captions: S.captions.map((c, i) => Object.assign({}, c, Z.captions[i])), roles: S.roles.map(r => Object.assign({}, r, Z.roles[r.k])), rvCap: Z.rvCap}); };
-  const DIR = i => (LANG === "zh" ? "北東南西" : "북동남서")[i], DCOL = ["#ff6b6b", "#ffd43b", "#69db7c", "#4dabf7"];   // 북 빨강 · 동 노랑 · 남 초록 · 서 파랑(헷갈리지 않게)
+  const LSG = () => { const S = window.LEAGUE_STRATEGY, Z = S && LANG !== "ko" && (S[LANG] || S.en); if (!Z) return S; return Object.assign({}, S, {intro: Z.intro, phases: Z.phases, note: Z.note, recover: Object.assign({}, S.recover, Z.recover), teams: S.teams.map((x, i) => Object.assign({}, x, Z.teams[i])), captions: S.captions.map((c, i) => Object.assign({}, c, Z.captions[i])), roles: S.roles.map(r => Object.assign({}, r, Z.roles[r.k])), rvCap: Z.rvCap}); };
+  const DIR = i => (LANG === "zh" ? "北東南西" : LANG === "ko" ? "북동남서" : "NESW")[i], DCOL = ["#ff6b6b", "#ffd43b", "#69db7c", "#4dabf7"];   // 북 빨강 · 동 노랑 · 남 초록 · 서 파랑(헷갈리지 않게)
   const triK = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; };
   function roleKs(L) {
     const SG = window.LEAGUE_STRATEGY; if (!SG || !window.LEAGUE_ROSTER) return [];
