@@ -38,6 +38,7 @@
       ph: ["초반 · 1단계", "중반 · 2단계", "후반 · 3단계"], phd: ["성소 · 수도원 · 시계탑 · 마구간 개방", "성검 제단 · 교화의 홀 · 용병 주둔지 개방", "30분 — 땅굴 4곳 개방"],
       roleNone: "저장된 성검 쟁탈 작전에 내 이름이 없습니다.", roleSub: "후보입니다 — 참전자가 빠지면 들어갑니다.", roleLead: "{0}번 집결장입니다", roleJoin: "{0}번 집결 — {1} 집결에 들어갑니다", roleSolo: "개인 부대 — 점령 유지 · 수송차 줍기 · 땅굴",
       sideL: "◀ 아군 진입 왼쪽", sideR: "아군 진입 오른쪽 ▶", mirR: "↔ 오른쪽에 대칭 복사", mirL: "↔ 왼쪽에 대칭 복사", mirAsk: "지금 작전을 반대쪽에 대칭으로 복사합니다. 반대쪽에 짜 둔 작전은 덮어씁니다. 진행할까요?",
+      play: "작전 재생", stop: "✎ 편집으로", pts: "계획 점수", me: "내 부대", playD: "▶ 를 누르면 60분 전투가 40초에 흘러갑니다. 막대를 끌어 원하는 분으로, 단계 단추로 15분 · 30분으로 바로 갑니다. 점수는 짜 둔 목표대로 됐을 때의 연맹 점수(땅굴 점수 제외)입니다.",
       cel: "⛏ 땅굴 표시", del: "✕ 좌표 지우기", soloL: "개인 부대", memo: "이 단계 작전 지시 (자유롭게)", lock: "{0}단계 개방",
       val: "이 단계 목표 건물: 첫 점령 합 {0} · 지속 {1}/분 (연맹 점수)", free: "지정 좌표",
       s4: "④ 작전 브리핑", copy: "📋 복사", copied: "복사했습니다", brief: "🗡 성검 쟁탈 작전 — {0} 군단 {1}", bMem: "집결원 {0}명", bSolo: "개인 부대",
@@ -56,6 +57,7 @@
       ph: ["Early · Phase 1", "Mid · Phase 2", "Late · Phase 3"], phd: ["Sanctums · Abbeys · Bell Tower · Stables open", "Swordshrine · Hall of Reformation · Mercenary Camp open", "30 min — four Undercellars open"],
       roleNone: "You are not in the saved Swordland plan.", roleSub: "Substitute — you join if a combatant drops out.", roleLead: "You lead rally #{0}", roleJoin: "Rally #{0} — join {1}'s rally", roleSolo: "Solo squad — hold buildings · pick up carts · tunnels",
       sideL: "◀ We enter LEFT", sideR: "We enter RIGHT ▶", mirR: "↔ Mirror to right", mirL: "↔ Mirror to left", mirAsk: "Copy this plan to the other side, mirrored? The other side's plan will be overwritten.",
+      play: "Play plan", stop: "✎ Back to edit", pts: "Plan points", me: "My unit", playD: "▶ plays the 60-minute battle in 40 seconds. Drag the bar to any minute, or jump to 15 / 30 min. Points assume every target is taken as planned (tunnels not counted).",
       cel: "⛏ Mark tunnel", del: "✕ Clear target", soloL: "Solo squads", memo: "Orders for this phase (free text)", lock: "opens in phase {0}",
       val: "Targets this phase: first capture {0} · hold {1}/min (alliance points)", free: "map point",
       s4: "④ Briefing", copy: "📋 Copy", copied: "Copied", brief: "🗡 Swordland plan — {0} Legion {1}", bMem: "{0} joiners", bSolo: "Solo squads",
@@ -173,6 +175,20 @@
 #vSword .sv{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 #vSword .sv .pass{max-width:140px}
 #vSword .warn{color:#ffa94d;font-weight:700;font-size:12.5px}
+#vSword .pl{display:flex;align-items:center;gap:10px;margin:10px 0 6px;flex-wrap:wrap}
+#vSword .pl input[type=range]{flex:1;min-width:160px;accent-color:#e8590c}
+#vSword .clk{display:inline-flex;align-items:center;font:800 22px/1 ui-monospace,Consolas,monospace;color:#ffe8a3;background:#0b130e;border:1px solid #3a5641;border-radius:8px;padding:4px 8px}
+#vSword .clk .w{display:inline-block;height:1.15em;overflow:hidden;width:.62em;text-align:center}
+#vSword .clk .w b{display:block;font-weight:800;transition:none}
+#vSword .clk .w u{display:block;height:1.15em;line-height:1.15em;text-decoration:none}
+#vSword .clk .sep{font-style:normal;padding:0 2px}
+#vSword .pts{font-weight:800;color:#ffd8a8;font-variant-numeric:tabular-nums}
+#vSword .pj button{min-height:32px}
+#vSword .pj button.on{background:#e8590c;border-color:#e8590c;color:#fff}
+#vSword .call{min-height:44px;margin:6px 0;padding:8px 12px;border-radius:12px;background:#f8f1dc;color:#2a1a08;font-size:13px;line-height:1.5;opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s cubic-bezier(.2,1.4,.4,1)}
+#vSword .call b{display:block;color:#c2410c;font-size:12px}
+#vSword .call.on{opacity:1;transform:none}
+#vSword .call.out{transition-duration:.14s;opacity:0;transform:translateY(-6px)}
 #vSword .phd{font-size:12px;color:#ffc078;margin:4px 0 8px}
 `;
   function ensureCss() { if (!document.getElementById("swCss")) { const s = document.createElement("style"); s.id = "swCss"; s.textContent = css; document.head.appendChild(s); } }
@@ -257,9 +273,8 @@
       const bx = x + 30 + (j - 1) * 30, by = y - 34;
       s += '<circle cx="' + bx + '" cy="' + by + '" r="15" fill="' + color + '" stroke="#1b1208" stroke-width="3"/><text x="' + bx + '" y="' + (by + 6.5) + '" text-anchor="middle" font-size="18" font-weight="900" fill="#1b1208">' + n + '</text>';
     };
-    lead.forEach((k, i) => tgt(k, i + 1, LC[i % LC.length]));
-    tgt("solo", "S", "#dee2e6");
-    return s + '</svg>';
+    if (!PLAY.on) { lead.forEach((k, i) => tgt(k, i + 1, LC[i % LC.length])); tgt("solo", "S", "#dee2e6"); }
+    return s + '<g id="swOv"></g></svg>';
   }
 
   const tName = t => { if (!t) return ""; const b = t.b && B.find(x => x.id === t.b); return b ? bn(b) : st("free") + " (" + Math.round(t.x) + ", " + Math.round(t.y) + ")"; };
@@ -284,6 +299,108 @@
     } finally { LANG = keep; }
   }
 
+  // ── 작전 재생 ────────────────────────────────────────────
+  // 화면은 시각 t(분)의 함수다. 단계 시작 시각 PT(2단계 15분 · 땅굴 30분), 이동 속도 MSPD(지도 단위/분)
+  const PT = [0, 15, 30], TMAX = 60, MSPD = 225;
+  let PLAY = {on: false, run: false, t: 0, spd: 1, last: 0, pi: -1};
+  const ease = u => u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+  const qpt = (a, c, b, u) => [(1 - u) * (1 - u) * a[0] + 2 * (1 - u) * u * c[0] + u * u * b[0], (1 - u) * (1 - u) * a[1] + 2 * (1 - u) * u * c[1] + u * u * b[1]];
+  const smooth = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+  // 무리(집결장 · 개인 부대)와 단계별 이동 구간
+  function playGroups(L, A) {
+    const US = SD ? RED : BLUE, home = [US[0] + (SD ? -40 : 40), US[1]];
+    const G = A.R.map((r, i) => ({k: r.l.k, n: i + 1, c: LC[i % LC.length], mem: r.mem.map(m => m.k)}));
+    if ([0, 1, 2].some(p => PH(L)[p].t.solo)) G.push({k: "solo", n: "S", c: "#dee2e6", mem: A.solo});
+    G.forEach(g => {
+      let cur = home, prev = null; g.seg = []; g.home = home;
+      [0, 1, 2].forEach(p => {
+        const t = PH(L)[p].t[g.k]; if (!t) return;
+        const key = t.b || (Math.round(t.x) + "," + Math.round(t.y)); if (key === prev) return;
+        const b = t.b && B.find(x => x.id === t.b), to = b ? [b.x, b.y] : [+t.x, +t.y];
+        const dx = to[0] - cur[0], dy = to[1] - cur[1], len = Math.hypot(dx, dy) || 1, bend = Math.min(60, len * .25);
+        const c = [(cur[0] + to[0]) / 2 + dy / len * bend, (cur[1] + to[1]) / 2 - dx / len * bend];
+        g.seg.push({t0: PT[p], t1: PT[p] + Math.max(.6, len / MSPD), a: cur, c, b: to, bd: b || null});
+        cur = to; prev = key;
+      });
+    });
+    // 건물 점령 구간: 도착(열리기 전이면 열릴 때)부터 그 무리가 다음 목표로 떠날 때까지
+    const hold = {};
+    G.forEach(g => g.seg.forEach((sg, i) => {
+      if (!sg.bd) return;
+      const open = PT[sg.bd.ph - 1] || 0, s0 = Math.max(sg.t1, open), e0 = g.seg[i + 1] ? g.seg[i + 1].t0 : TMAX;
+      if (e0 > s0) (hold[sg.bd.id] = hold[sg.bd.id] || []).push([s0, e0, g.c]);
+    }));
+    return {G, hold};
+  }
+  function posAt(g, t) {
+    let p = g.home;
+    for (const sg of g.seg) { if (t < sg.t0) break; if (t < sg.t1) return {p: qpt(sg.a, sg.c, sg.b, ease((t - sg.t0) / (sg.t1 - sg.t0))), moving: true}; p = sg.b; }
+    return {p, moving: false};
+  }
+  // 손으로 그은 듯한 동그라미(건물마다 같은 떨림) — 경로 길이 1 로 두고 dashoffset 으로 긋는다
+  function roughRing(b, color, q) {
+    let seed = 0; for (const ch of b.id) seed = (seed * 31 + ch.charCodeAt(0)) % 997;
+    const r = b.k === "alt" ? 1.8 : b.k === "san" ? 1.35 : 1, rx = 62 * r, ry = 38 * r, pts = [];
+    for (let i = 0; i <= 40; i++) { const a = -2.2 + i / 40 * Math.PI * 2.25, w = 1 + .06 * Math.sin(a * 3 + seed) + i / 40 * .08; pts.push((b.x + Math.cos(a) * rx * w).toFixed(1) + "," + (b.y + 6 + Math.sin(a) * ry * w).toFixed(1)); }
+    return '<polyline points="' + pts.join(" ") + '" pathLength="1" fill="none" stroke="' + color + '" stroke-width="4" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="' + (1 - q).toFixed(3) + '" opacity=".9"/>';
+  }
+  // 오도미터: 자리마다 숫자 띠를 굴린다(아래 자리가 넘어갈 때만 윗자리가 같이 돈다)
+  function odo(el, cols) {
+    if (!el.firstChild) el.innerHTML = cols.map(c => c === ":" ? '<i class="sep">:</i>' : '<span class="w"><b>' + c.strip.split("").map(n => "<u>" + n + "</u>").join("") + '</b></span>').join("");
+    let k = 0;
+    cols.forEach(c => { if (c === ":") return; const w = el.querySelectorAll(".w b")[k++]; if (w) w.style.transform = "translateY(" + (-c.v * 1.15).toFixed(3) + "em)"; });
+  }
+  function playFrame() {
+    const V = $("vSword"), ov = $("swOv"); if (!ov) return;
+    const P = plan(SA), L = P.L[SL], A = assign(L), t = PLAY.t, {G, hold} = playGroups(L, A);
+    const meId = typeof myId === "function" ? myId() : "", mine = G.find(g => meId && (g.k === meId || g.mem.includes(meId)));
+    const pi = PT.filter(m => m <= t).length - 1;
+    // 단계에 따라 건물 열림
+    V.querySelectorAll("#swMap g.bd").forEach(e => { const b = B.find(x => x.id === e.dataset.b); if (b) e.setAttribute("opacity", (PT[b.ph - 1] || 0) <= t ? 1 : .4); });
+    let h = "", pts = 0;
+    // 점령 표시(손 동그라미)와 계획 점수
+    Object.keys(hold).forEach(id => {
+      const b = B.find(x => x.id === id), iv = hold[id].slice().sort((x, y) => x[0] - y[0]), first = iv[0][0];
+      if (t >= first) { pts += b.f; const now = iv.find(([a0, e0]) => a0 <= t && t < e0); h += '<g opacity="' + (now ? 1 : .3) + '">' + roughRing(b, (now || iv[0])[2], smooth((t - first) / .7)) + '</g>'; }
+      let end = -1; iv.forEach(([a, e]) => { const s0 = Math.max(a, end); if (e > s0) pts += b.m * Math.max(0, Math.min(t, e) - s0); end = Math.max(end, e); });
+    });
+    // 지나온 길(점선)과 부대 말
+    G.forEach(g => {
+      g.seg.forEach(sg => {
+        if (t < sg.t0) return;
+        const u = t >= sg.t1 ? 1 : ease((t - sg.t0) / (sg.t1 - sg.t0)), c2 = [sg.a[0] + (sg.c[0] - sg.a[0]) * u, sg.a[1] + (sg.c[1] - sg.a[1]) * u], e2 = qpt(sg.a, sg.c, sg.b, u);
+        h += '<path d="M' + sg.a[0] + ' ' + sg.a[1] + ' Q ' + c2[0].toFixed(1) + ' ' + c2[1].toFixed(1) + ' ' + e2[0].toFixed(1) + ' ' + e2[1].toFixed(1) + '" fill="none" stroke="' + g.c + '" stroke-width="3" stroke-dasharray="3 7" stroke-linecap="round" opacity="' + (mine && mine !== g ? .35 : .8) + '"/>';
+      });
+    });
+    G.forEach((g, i) => {
+      const {p, moving} = posAt(g, t), dim = mine && mine !== g, off = (G.filter((x, j) => j < i && Math.hypot(posAt(x, t).p[0] - p[0], posAt(x, t).p[1] - p[1]) < 8).length) * 26;
+      const x = p[0] + off, y = p[1] - (moving ? 0 : 30);
+      h += '<g opacity="' + (dim ? .55 : 1) + '"><circle cx="' + x + '" cy="' + y + '" r="' + (mine === g ? 19 : 15) + '" fill="' + g.c + '" stroke="#1b1208" stroke-width="3"/><text x="' + x + '" y="' + (y + 6.5) + '" text-anchor="middle" font-size="18" font-weight="900" fill="#1b1208">' + g.n + '</text></g>';
+      if (mine === g) h += '<g><path d="M' + x + ' ' + (y - 22) + ' l-9 -12 h18 z" fill="#fff"/><rect x="' + (x - 44) + '" y="' + (y - 62) + '" width="88" height="28" rx="14" fill="#fff"/><text x="' + x + '" y="' + (y - 42) + '" text-anchor="middle" font-size="16" font-weight="900" fill="#1b1208">' + st("me") + '</text></g>';
+    });
+    ov.innerHTML = h;
+    // 전투 시계(분:초 오도미터) · 계획 점수 · 단계 말풍선
+    const sec = t * 60, m = Math.floor(sec / 60), cs = smooth(sec % 10 - 9), cm = smooth(sec % 60 - 59), D = "01234567890";
+    odo($("swClk"), [{v: Math.floor(m / 10) % 6 + (m % 10 === 9 ? cm : 0), strip: "0123456"}, {v: m % 10 + cm, strip: D}, ":", {v: Math.floor(sec / 10) % 6 + cs, strip: "0123450"}, {v: sec % 10, strip: D}]);
+    $("swPts").textContent = st("pts") + " " + fmt(Math.round(pts));
+    const call = $("swCall");
+    if (pi !== PLAY.pi) {
+      PLAY.pi = pi; const memo = (PH(L)[pi] || {}).memo || st("phd")[pi] || "";
+      call.classList.remove("on"); call.classList.add("out");
+      setTimeout(() => { call.innerHTML = '<b>' + esc(st("ph")[pi] + " · " + PT[pi] + "′") + '</b>' + esc(memo); call.classList.remove("out"); call.classList.add("on"); }, 160);
+    }
+    const r = $("swT"); if (r && document.activeElement !== r) r.value = t.toFixed(1);
+    V.querySelectorAll("[data-pt]").forEach(b => b.classList.toggle("on", +b.dataset.pt === PT[pi]));
+  }
+  function playLoop(now) {
+    if (!PLAY.run) return;
+    const dt = PLAY.last ? (now - PLAY.last) / 1000 : 0; PLAY.last = now;
+    PLAY.t = Math.min(TMAX, PLAY.t + dt * 1.5 * PLAY.spd);   // 60분을 40초에(×1)
+    playFrame();
+    if (PLAY.t >= TMAX) { PLAY.run = false; const b = $("swPlay"); if (b) b.textContent = "▶ " + st("play"); return; }
+    requestAnimationFrame(playLoop);
+  }
+  function playStart() { PLAY.run = true; PLAY.last = 0; if (PLAY.t >= TMAX) PLAY.t = 0; requestAnimationFrame(playLoop); }
   function render() {
     const V = $("vSword");
     if (!V) return;
@@ -318,12 +435,16 @@
     if (E) h += '<div class="chips">' + A.R.map((r, i) => '<button class="chip' + (SEL === r.l.k ? ' on' : '') + '" data-sel="' + esc(r.l.k) + '"><i style="background:' + LC[i % LC.length] + '">' + (i + 1) + '</i>' + esc(who(r.l.k).n) + (ph.t[r.l.k] ? ' → ' + esc(tName(ph.t[r.l.k])) : '') + '</button>').join("") +
       '<button class="chip' + (SEL === "solo" ? ' on' : '') + '" data-sel="solo"><i style="background:#adb5bd">S</i>' + st("soloL") + (ph.t.solo ? ' → ' + esc(tName(ph.t.solo)) : '') + '</button>' +
       '<button class="chip" id="swDel">' + st("del") + '</button></div>';
-    h += mapSvg(L, A) + '<div class="val">' + st("val", fmt(tb.reduce((t, b) => t + b.f, 0)), fmt(tb.reduce((t, b) => t + b.m, 0))) + '</div>' +
+    h += '<div class="call" id="swCall"></div>' + mapSvg(L, A) +
+      '<div class="pl"><button class="primary" id="swPlay">' + (PLAY.run ? "⏸ " : "▶ ") + st("play") + '</button><input type="range" id="swT" min="0" max="60" step="0.1" value="' + PLAY.t.toFixed(1) + '"><span class="clk" id="swClk"></span><span class="pts" id="swPts"></span></div>' +
+      '<div class="tabs pj">' + PT.map((m, i) => '<button data-pt="' + m + '">' + st("ph")[i] + ' ' + m + '′</button>').join("") + '<button id="swSpd">×' + PLAY.spd + '</button>' + (PLAY.on ? '<button id="swStop">' + st("stop") + '</button>' : '') + '</div>' +
+      '<div class="d" style="margin:4px 0 0">' + esc(st("playD")) + '</div><div class="val">' + st("val", fmt(tb.reduce((t, b) => t + b.f, 0)), fmt(tb.reduce((t, b) => t + b.m, 0))) + '</div>' +
       (E ? '<textarea id="swMemo" placeholder="' + esc(st("memo")) + '">' + esc(ph.memo || "") + '</textarea>' : (ph.memo ? '<pre>📝 ' + esc(ph.memo) + '</pre>' : '')) + '</div>';
     // ④ 브리핑
     h += '<div class="sw"><h2>' + st("s4") + '</h2><div class="tabs" id="swBl">' + [["ko", "한국어"], ["en", "English"]].map(x => '<button data-bl="' + x[0] + '"' + (BL === x[0] ? ' class="on"' : '') + '>' + x[1] + '</button>').join("") + '</div><pre id="swBrief">' + esc(briefText(L, A, BL)) + '</pre><button id="swCopy">' + st("copy") + '</button></div>';
     if (E) h += '<div class="sw"><div class="sv">' + passMe("swPass") + '<button class="primary" id="swSave">' + st("save") + '</button><span id="swMsg" class="warn">' + esc(MSG) + '</span></div></div>';
     V.innerHTML = h;
+    if (PLAY.on) { PLAY.pi = -1; playFrame(); }
   }
 
   const touch = () => { SDIRTY[SA] = true; MSG = ""; };
@@ -336,7 +457,7 @@
     const btn = el.closest("button");
     const P = plan(SA), L = P.L[SL];
     if (el.closest("#swMap")) {
-      if (!editable() || !SEL) return;
+      if (PLAY.on || !editable() || !SEL) return;
       const [x, y] = svgPt(e), ph = PH(L)[SP], CL = CEL(L);
       if (SEL === "cel") {
         const i = CL.findIndex(c => Math.hypot(c[0] - x, c[1] - y) < 30);
@@ -351,6 +472,10 @@
     if (!btn) return;
     if (btn.dataset.leg != null) { SL = +btn.dataset.leg; SEL = null; render(); return; }
     if (btn.dataset.side != null) { SD = +btn.dataset.side; render(); return; }
+    if (btn.id === "swPlay") { if (!PLAY.on) { PLAY.on = true; render(); } if (PLAY.run) { PLAY.run = false; btn.textContent = "▶ " + st("play"); } else { btn.textContent = "⏸ " + st("play"); playStart(); } return; }
+    if (btn.dataset.pt != null) { const was = PLAY.on; PLAY.on = true; PLAY.t = +btn.dataset.pt + .01; if (!was) render(); else playFrame(); return; }
+    if (btn.id === "swSpd") { PLAY.spd = PLAY.spd === 1 ? 2 : PLAY.spd === 2 ? .5 : 1; btn.textContent = "×" + PLAY.spd; return; }
+    if (btn.id === "swStop") { PLAY = {on: false, run: false, t: 0, spd: PLAY.spd, last: 0, pi: -1}; render(); return; }
     if (btn.dataset.ph != null) { SP = +btn.dataset.ph; if (SEL === "cel" && SP !== 2) SEL = null; render(); return; }
     if (btn.dataset.bl) { BL = btn.dataset.bl; render(); return; }
     if (btn.id === "swCopy") { const t = $("swBrief").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { btn.textContent = st("copied"); setTimeout(() => { btn.textContent = st("copy"); }, 1500); }, () => {}); return; }
@@ -459,7 +584,10 @@
   window.renderSword = () => {
     const V = $("vSword");
     if (!V) return;
-    if (!bound) { bound = true; V.addEventListener("click", onClick); V.addEventListener("change", onChange); }
+    if (!bound) {
+      bound = true; V.addEventListener("click", onClick); V.addEventListener("change", onChange);
+      V.addEventListener("input", e => { if (e.target.id !== "swT") return; const was = PLAY.on; PLAY.on = true; PLAY.run = false; PLAY.t = +e.target.value; if (!was) render(); else playFrame(); const b = $("swPlay"); if (b) b.textContent = "▶ " + st("play"); });
+    }
     // 고치는 중에는 새로 받은 설정으로 덮지 않는다
     Object.keys(SWD).forEach(a => { if (!SDIRTY[a]) delete SWD[a]; });
     if (V.contains(document.activeElement) && document.activeElement.tagName === "TEXTAREA") return;
