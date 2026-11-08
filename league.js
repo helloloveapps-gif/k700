@@ -602,6 +602,15 @@
       (E ? '<input class="lgt" id="lgPt" maxlength="80" placeholder="' + esc(st("bdT")) + '"><textarea id="lgPb" maxlength="2000" placeholder="' + esc(st("bdB")) + '"></textarea><div class="sv" style="margin:6px 0 10px"><button class="primary" id="lgPadd">' + st("bdAdd") + '</button></div>' : '') +
       (P.posts.length ? P.posts.slice().reverse().map((x, i) => '<div class="post"><b>' + esc(x.t || "") + '</b><div class="by">' + esc((x.by || "") + (x.at ? " · " + x.at : "")) + (E ? ' <button class="chip" style="min-height:24px;font-size:11px" data-pdel="' + (P.posts.length - 1 - i) + '">' + st("bdDel") + '</button>' : '') + '</div><p>' + esc(x.b || "") + '</p></div>').join("") : '<div class="d">' + st("bdNone") + '</div>') + '</div>';
     if (E) h += '<div class="lg"><div class="sv">' + passMe("lgPass") + '<button class="primary" id="lgSave">' + st("save") + '</button><span id="lgMsg" class="warn">' + esc(MSG) + '</span></div></div>';
+    {
+      const RK = roleOf(L, "recover"), RS = LSG() || {}, TT = ((RS.recover || {}).teams || []), A2 = assign(L), LX = LANG === "zh" ? "zh" : LANG === "ko" ? "ko" : "en";
+      const WT = {ko: {h: "📢 회수조 공지", b: "📋 한 번에 복사", t: "📢 회수조 배치 — 성검 리그전", m: "메인 집결", n: "※ 18만이 넘었거나 병사가 다 죽으면 대체 인원과 교체 · 나갈 때 메인 집결 · 몇 조 · 방향을 알려 주세요.\n※ 집결장 · 정찰조가 알려 주는 「몇 분 뒤」에 맞춰 출발."},
+        zh: {h: "📢 回收組公告", b: "📋 一鍵複製", t: "📢 回收組配置 — 聖劍聯賽", m: "主集結", n: "※ 超過 18 萬或士兵全部陣亡時與替補交換 · 離場時告知主集結 · 幾組 · 方向。\n※ 依集結隊長 · 偵察組告知的「幾分鐘後」出發。"},
+        en: {h: "📢 Recovery notice", b: "📋 Copy all", t: "📢 Recovery squads — Swordland League", m: "main rally", n: "※ Over 180,000 or all troops dead: swap with a substitute · when leaving, tell them your main rally · squad · direction.\n※ Leave when the rally leader or scout says (\"in N minutes\")."}}[LX];
+      const mainOf = k => { const r = A2.R.find(x => x.mem.some(m => m.k === k)); return r ? (A2.R.indexOf(r) + 1) + " " + who(r.l.k).n : "-"; };
+      const txt = WT.t + "\n" + TT.map((T, ti) => "\n[" + T.t + "]\n" + RK.slice(ti * 4, ti * 4 + 4).map((k, i) => DIR(i) + " " + who(k).n + " — " + WT.m + " " + mainOf(k)).join("\n")).join("\n") + "\n\n" + WT.n;
+      if (RK.length) h += '<div class="lg"><h2>' + esc(WT.h) + '</h2><div class="sv" style="margin-bottom:8px"><button class="primary" id="lgRcCopy" data-b="' + esc(WT.b) + '">' + esc(WT.b) + '</button></div><pre id="lgRcTxt" style="white-space:pre-wrap;background:#0b120d;border:1px solid #2c4232;border-radius:10px;padding:10px;color:#e9f2e4;font-size:13px;line-height:1.6">' + esc(txt) + '</pre></div>';
+    }
     V.innerHTML = h;
     if (PLAY.on) { PLAY.pi = -1; playFrame(); }
   }
@@ -637,6 +646,7 @@
     if (btn.id === "lgStop") { PLAY = {on: false, run: false, t: 0, spd: PLAY.spd, last: 0, pi: -1}; render(); return; }
     if (btn.dataset.ph != null) { SP = +btn.dataset.ph; if (SEL === "cel" && SP !== 2) SEL = null; render(); return; }
     if (btn.dataset.bl) { BL = btn.dataset.bl; render(); return; }
+    if (btn.id === "lgRcCopy") { const t = $("lgRcTxt").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { btn.textContent = st("copied"); setTimeout(() => { btn.textContent = btn.dataset.b; }, 1500); }, () => {}); return; }
     if (btn.id === "lgCopy") { const t = $("lgBrief").textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { btn.textContent = st("copied"); setTimeout(() => { btn.textContent = st("copy"); }, 1500); }, () => {}); return; }
     if (!editable()) return;
     const seg = btn.closest(".seg");
