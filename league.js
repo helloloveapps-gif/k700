@@ -38,7 +38,7 @@
       ph: ["초반 · 1단계", "중반 · 2단계", "후반 · 3단계"], phd: ["성소 · 수도원 · 시계탑 · 마구간 개방", "성검 제단 · 교화의 홀 · 용병 주둔지 개방", "30분 — 땅굴 4곳 개방"],
       roleNone: "저장된 성검 쟁탈 작전에 내 이름이 없습니다.", roleSub: "후보입니다 — 참전자가 빠지면 들어갑니다.", roleLead: "{0}번 집결장입니다", roleJoin: "{0}번 집결 — {1} 집결에 들어갑니다", roleSolo: "개인 부대 — 점령 유지 · 수송차 줍기 · 땅굴",
       sideL: "◀ 아군 진입 왼쪽", sideR: "아군 진입 오른쪽 ▶", mirR: "↔ 오른쪽에 대칭 복사", mirL: "↔ 왼쪽에 대칭 복사", mirAsk: "지금 작전을 반대쪽에 대칭으로 복사합니다. 반대쪽에 짜 둔 작전은 덮어씁니다. 진행할까요?",
-      play: "작전 재생", stop: "✎ 편집으로", pts: "계획 점수", me: "내 부대", playD: "▶ 를 누르면 60분 전투가 40초에 흘러갑니다. 막대를 끌어 원하는 분으로, 단계 단추로 15분 · 30분으로 바로 갑니다. 점수는 짜 둔 목표대로 됐을 때의 연맹 점수(땅굴 점수 제외)입니다.",
+      play: "작전 재생", stop: "✎ 편집으로", pts: "계획 점수", me: "내 부대", playD: "▶ 를 누르면 60분 전투가 60초에 흘러갑니다. 막대를 끌어 원하는 분으로, 단계 단추로 15분 · 30분으로 바로 갑니다. 점수는 짜 둔 목표대로 됐을 때의 연맹 점수(땅굴 점수 제외)입니다.",
       noId: "ID 없음", sq: "부대", gameP: "게임: 참전", gameS: "게임: 대체", gameN: "게임: 미참전", bd: "⑤ 전략 게시판", bdd: "작전 · 역할 · 주의할 점을 글로 남깁니다. 최근 글이 위에 옵니다.", bdT: "제목", bdB: "내용", bdAdd: "✍ 글 올리기", bdDel: "지우기", bdNone: "아직 글이 없습니다.",
       cel: "⛏ 땅굴 표시", del: "✕ 좌표 지우기", soloL: "개인 부대", memo: "이 단계 작전 지시 (자유롭게)", lock: "{0}단계 개방",
       val: "이 단계 목표 건물: 첫 점령 합 {0} · 지속 {1}/분 (연맹 점수)", free: "지정 좌표",
@@ -58,7 +58,7 @@
       ph: ["Early · Phase 1", "Mid · Phase 2", "Late · Phase 3"], phd: ["Sanctums · Abbeys · Bell Tower · Stables open", "Swordshrine · Hall of Reformation · Mercenary Camp open", "30 min — four Undercellars open"],
       roleNone: "You are not in the saved Swordland plan.", roleSub: "Substitute — you join if a combatant drops out.", roleLead: "You lead rally #{0}", roleJoin: "Rally #{0} — join {1}'s rally", roleSolo: "Solo squad — hold buildings · pick up carts · tunnels",
       sideL: "◀ We enter LEFT", sideR: "We enter RIGHT ▶", mirR: "↔ Mirror to right", mirL: "↔ Mirror to left", mirAsk: "Copy this plan to the other side, mirrored? The other side's plan will be overwritten.",
-      play: "Play plan", stop: "✎ Back to edit", pts: "Plan points", me: "My unit", playD: "▶ plays the 60-minute battle in 40 seconds. Drag the bar to any minute, or jump to 15 / 30 min. Points assume every target is taken as planned (tunnels not counted).",
+      play: "Play plan", stop: "✎ Back to edit", pts: "Plan points", me: "My unit", playD: "▶ plays the 60-minute battle in 60 seconds. Drag the bar to any minute, or jump to 15 / 30 min. Points assume every target is taken as planned (tunnels not counted).",
       noId: "no ID", sq: "squad", gameP: "game: fight", gameS: "game: sub", gameN: "game: out", bd: "⑤ Strategy board", bdd: "Post plans, roles and warnings. Newest first.", bdT: "Title", bdB: "Text", bdAdd: "✍ Post", bdDel: "Delete", bdNone: "No posts yet.",
       cel: "⛏ Mark tunnel", del: "✕ Clear target", soloL: "Solo squads", memo: "Orders for this phase (free text)", lock: "opens in phase {0}",
       val: "Targets this phase: first capture {0} · hold {1}/min (alliance points)", free: "map point",
@@ -317,7 +317,7 @@
       s += '<circle cx="' + bx + '" cy="' + by + '" r="15" fill="' + color + '" stroke="#1b1208" stroke-width="3"/><text x="' + bx + '" y="' + (by + 6.5) + '" text-anchor="middle" font-size="' + (String(n).length > 1 ? 12 : 18) + '" font-weight="900" fill="#1b1208">' + n + '</text>';
     };
     if (!PLAY.on) { lead.forEach((k, i) => tgt(k, i + 1, LC[i % LC.length])); tgt("solo", "S", "#dee2e6"); roleOf(L, "gather").forEach((k, i) => tgt(k, "채" + (i + 1), "#63e6be")); }
-    return s + '<g id="lgOv">' + (PLAY.on ? '' : recDemo(null)) + '</g></svg>';
+    return s + '<g id="lgOv"></g></svg>';
   }
 
   const tName = t => { if (!t) return ""; const b = t.b && B.find(x => x.id === t.b); return b ? bn(b) : st("free") + " (" + Math.round(t.x) + ", " + Math.round(t.y) + ")"; };
@@ -344,7 +344,7 @@
 
   // ── 작전 재생 ────────────────────────────────────────────
   // 화면은 시각 t(분)의 함수다. 단계 시작 시각 PT(2단계 15분 · 땅굴 30분), 이동 속도 MSPD(지도 단위/분)
-  const PT = [0, 15, 30], TMAX = 60, MSPD = 225;
+  const PT = [0, 15, 30], TMAX = 60, MSPD = 70;
   let PLAY = {on: false, run: false, t: 0, spd: 1, last: 0, pi: -1};
   const ease = u => u < .5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
   const qpt = (a, c, b, u) => [(1 - u) * (1 - u) * a[0] + 2 * (1 - u) * u * c[0] + u * u * b[0], (1 - u) * (1 - u) * a[1] + 2 * (1 - u) * u * c[1] + u * u * b[1]];
@@ -395,31 +395,62 @@
     cols.forEach(c => { if (c === ":") return; const w = el.querySelectorAll(".w b")[k++]; if (w) w.style.transform = "translateY(" + (-c.v * 1.15).toFixed(3) + "em)"; });
   }
   const REC_OFF = [[0, -60, "북"], [82, 0, "동"], [0, 62, "남"], [-82, 0, "서"]];
-  // 회수조: 4명 1조 · 조마다 거점 하나 둘레 동 · 서 · 남 · 북에 한 명씩(이박사님 11-08). 아군 진입 오른쪽이면 대칭 거점
-  function recDemo(t) {
-    const R = (window.LEAGUE_STRATEGY || {}).recover; if (!R || (t != null && t < 15)) return "";
-    const TS = R.teams || [{t: LANG === "ko" ? "회수조 예시" : "Recovery team", b: R.b}];
-    let mem = []; try { mem = roleOf(plan(SA).L[SL], "recover"); } catch (e) {}
-    return TS.map((T, ti) => {
-      const b = B.find(x => x.id === (SD ? MIR[T.b] || T.b : T.b)); if (!b) return "";
-      const home = REC_OFF.map(o => [b.x + o[0], b.y + o[1]]), pos = home.map(p => p.slice()), nm = mem.slice(ti * 4, ti * 4 + 4).map(k => who(k).n);
-      let h = '<g>' + home.map(p => '<line x1="' + b.x + '" y1="' + b.y + '" x2="' + p[0] + '" y2="' + p[1] + '" stroke="#b197fc" stroke-width="2" stroke-dasharray="2 5" opacity=".6"/>').join("");
-      if (t != null) {
-        // 15분부터 조마다 0.7분에 군수물자 하나. 방향이 맞는 사람이 0.35분 안에 주웠다가 제자리로
-        for (let i = 0; i < 64; i++) {
-          const ts = 15 + ti * .23 + i * .7; if (ts > t || ts > 60) break;
-          const ang = (i * 137.5 + ti * 71) % 360 * Math.PI / 180, rr = 34 + (i * 53) % 44, cx = b.x + Math.cos(ang) * rr * 1.3, cy = b.y + Math.sin(ang) * rr * .8;
-          const q = Math.abs(Math.cos(ang)) * 1.3 > Math.abs(Math.sin(ang)) * .8 ? (Math.cos(ang) > 0 ? 1 : 3) : (Math.sin(ang) > 0 ? 2 : 0);
-          const u = (t - ts) / .35;
-          if (u < 1) { const k = u < .5 ? u * 2 : (1 - u) * 2; pos[q] = [home[q][0] + (cx - home[q][0]) * k, home[q][1] + (cy - home[q][1]) * k]; }
-          if (u < .5) h += '<g><rect x="' + (cx - 8) + '" y="' + (cy - 7 - Math.max(0, 1 - (t - ts) / .08) * 30) + '" width="16" height="13" rx="2" fill="#c08a3e" stroke="#3b2a12" stroke-width="2"/><line x1="' + (cx - 8) + '" y1="' + (cy - 1) + '" x2="' + (cx + 8) + '" y2="' + (cy - 1) + '" stroke="#3b2a12" stroke-width="2"/></g>';
-        }
-      }
-      h += pos.map((p, i) => '<g><circle cx="' + p[0] + '" cy="' + p[1] + '" r="12" fill="#b197fc" stroke="#1b1208" stroke-width="3"/><text x="' + p[0] + '" y="' + (p[1] + 5) + '" text-anchor="middle" font-size="12" font-weight="900" fill="#1b1208">' + REC_OFF[i][2] + '</text>' + (nm[i] ? '<text x="' + p[0] + '" y="' + (p[1] + 26) + '" text-anchor="middle" font-size="11" font-weight="800" fill="#e5dbff" stroke="#1b1208" stroke-width="3" paint-order="stroke">' + esc(nm[i]) + '</text>' : '') + '</g>').join("");
-      const tx = b.x - 82, ty = b.y - 58;
-      return h + '<rect x="' + (tx - 40) + '" y="' + (ty - 11) + '" width="80" height="22" rx="11" fill="#b197fc"/><text x="' + tx + '" y="' + (ty + 5) + '" text-anchor="middle" font-size="13" font-weight="900" fill="#1b1208">' + esc(T.t) + '</text></g>';
-    }).join("");
+  // 회수조 역할 영상: 수도원 하나를 크게 — 싸움이 붙으면 전리품(동전)이 사방으로 튀고, 회수 1조 4명이 동 · 서 · 남 · 북 자기 구역만 주워 제자리로(이박사님 11-08)
+  const RV = {run: false, t0: 0, seed: 7, plan: null, nm: []};
+  const RV_POST = [[300, 84, "북"], [482, 200, "동"], [300, 316, "남"], [118, 200, "서"]], RV_C = [300, 200], RV_CYC = 9.5;
+  const RV_CAP = [[0, 1.5, "① 거점에서 공격 · 수비가 붙으면"], [1.5, 3.3, "② 전리품(동전)이 사방으로 튄다"], [3.3, 6.8, "③ 동 · 서 · 남 · 북 — 자기 구역만 줍는다"], [6.8, 9.5, "④ 줍고 바로 제자리 — 다음 전리품을 지킨다"]];
+  function rvPlan(seed) {
+    let s = seed; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+    const coins = [];
+    for (let i = 0; i < 16; i++) { const a = rnd() * Math.PI * 2, r = 45 + rnd() * 80; coins.push({x: RV_C[0] + Math.cos(a) * r * 1.55, y: RV_C[1] + Math.sin(a) * r * .95, d: rnd() * .45}); }
+    coins.forEach(c => { const dx = (c.x - RV_C[0]) / 182, dy = (c.y - RV_C[1]) / 116; c.q = Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 1 : 3) : (dy > 0 ? 2 : 0); });
+    // 사람마다 자기 구역 동전을 가까운 순으로 — 3.4초부터 하나에 0.5초
+    const runs = RV_POST.map((p, q) => {
+      let cur = [p[0], p[1]], t = 3.4; const st = [], mine = coins.filter(c => c.q === q);
+      while (mine.length) { mine.sort((a, b) => Math.hypot(a.x - cur[0], a.y - cur[1]) - Math.hypot(b.x - cur[0], b.y - cur[1])); const c = mine.shift(); st.push({a: cur, b: [c.x, c.y], t0: t, t1: t + .45}); c.pick = t + .45; cur = [c.x, c.y]; t += .5; }
+      const back = Math.max(t, 6.8); st.push({a: cur, b: [p[0], p[1]], t0: back, t1: back + .6});
+      return st;
+    });
+    return {coins, runs};
   }
+  function rvPos(q, t) {
+    let p = RV_POST[q];
+    for (const m of RV.plan.runs[q]) { if (t < m.t0) return p; if (t < m.t1) { const u = ease((t - m.t0) / (m.t1 - m.t0)); return [m.a[0] + (m.b[0] - m.a[0]) * u, m.a[1] + (m.b[1] - m.a[1]) * u]; } p = m.b; }
+    return p;
+  }
+  function rvFrame(now) {
+    const el = $("lgRec"); if (!el || !el.getClientRects().length) { RV.run = false; return; }
+    if (!RV.t0 || !RV.plan) { RV.t0 = now; RV.plan = rvPlan(RV.seed); try { RV.nm = roleOf(plan(SA).L[SL], "recover").slice(0, 4).map(k => who(k).n); } catch (e) { RV.nm = []; } }
+    const t = (now - RV.t0) / 1000;
+    if (t >= RV_CYC) { RV.seed = RV.seed * 31 % 9973 + 1; RV.plan = null; RV.t0 = 0; requestAnimationFrame(rvFrame); return; }
+    const C = RV.plan.coins;
+    let h = '<g stroke="#f3e3c3" stroke-width="2" stroke-dasharray="4 9" opacity=".3"><line x1="36" y1="32" x2="564" y2="368"/><line x1="564" y1="32" x2="36" y2="368"/></g>';
+    // 수도원
+    h += '<polygon points="300,152 384,200 300,248 216,200" fill="#d9822b" stroke="#2b1a0c" stroke-width="4"/><text x="300" y="218" text-anchor="middle" font-size="56">🏰</text><text x="300" y="272" text-anchor="middle" font-size="16" font-weight="900" fill="#fff3d6" stroke="#2b1a0c" stroke-width="4" paint-order="stroke">' + (LANG === "ko" ? "수도원" : "Abbey") + '</text>';
+    // 적 공격(붉은 화살이 들어와 부딪힌다)
+    if (t < 1.9) { const u = Math.min(1, t / 1.3); h += '<path d="M590 30 Q 470 60 372 168" pathLength="1" fill="none" stroke="#ff6b6b" stroke-width="6" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="' + (1 - u).toFixed(3) + '" opacity="' + (t < 1.5 ? 1 : (1.9 - t) / .4).toFixed(2) + '"/>'; }
+    if (t >= 1.3 && t < 2.1) { const u = (t - 1.3) / .8; h += '<circle cx="300" cy="200" r="' + (40 + u * 120).toFixed(1) + '" fill="none" stroke="#ffe066" stroke-width="' + (6 * (1 - u)).toFixed(1) + '" opacity="' + (1 - u).toFixed(2) + '"/>'; }
+    // 동전: 1.5초부터 사방으로 튀어 떨어진다 · 주우면 사라진다
+    C.forEach(c => {
+      const s0 = 1.5 + c.d; if (t < s0 || t >= c.pick) return;
+      const u = Math.min(1, (t - s0) / .55), x = RV_C[0] + (c.x - RV_C[0]) * u, y = RV_C[1] + (c.y - RV_C[1]) * u - Math.sin(u * Math.PI) * 70;
+      h += '<g><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="9" fill="#ffd43b" stroke="#8a5a00" stroke-width="2.5"/><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="4.5" fill="none" stroke="#e8a800" stroke-width="1.5"/></g>';
+    });
+    // 회수 1조 4명(동서남북)
+    RV_POST.forEach((p, q) => {
+      const [x, y] = rvPos(q, t), got = C.filter(c => c.q === q && c.pick <= t).length;
+      h += '<g><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="16" fill="#b197fc" stroke="#1b1208" stroke-width="3"/><text x="' + x.toFixed(1) + '" y="' + (y + 6).toFixed(1) + '" text-anchor="middle" font-size="15" font-weight="900" fill="#1b1208">' + p[2] + '</text>' +
+        (RV.nm[q] ? '<text x="' + x.toFixed(1) + '" y="' + (y + 34).toFixed(1) + '" text-anchor="middle" font-size="13" font-weight="800" fill="#f3f0ff" stroke="#1b1208" stroke-width="4" paint-order="stroke">' + esc(RV.nm[q]) + '</text>' : '') +
+        (got ? '<text x="' + (x + 20).toFixed(1) + '" y="' + (y - 12).toFixed(1) + '" font-size="14" font-weight="900" fill="#ffd43b" stroke="#1b1208" stroke-width="4" paint-order="stroke">+' + got + '</text>' : '') + '</g>';
+    });
+    // 자막
+    const cp = RV_CAP.find(c => c[0] <= t && t < c[1]);
+    if (cp) { const al = Math.max(0, Math.min(1, (t - cp[0]) / .25, (cp[1] - t) / .25)), w = 40 + cp[2].length * 15; h += '<g opacity="' + al.toFixed(2) + '"><rect x="' + (300 - w / 2) + '" y="8" width="' + w + '" height="32" rx="16" fill="#f8f1dc" stroke="#1b1208" stroke-width="3"/><text x="300" y="30" text-anchor="middle" font-size="16" font-weight="900" fill="#2a1a08">' + esc(cp[2]) + '</text></g>'; }
+    h += '<text x="592" y="372" text-anchor="end" font-size="12" font-weight="800" fill="#f3e3c3" opacity=".8">' + (LANG === "ko" ? "회수 1조 예시" : "Recovery squad 1") + '</text>';
+    el.innerHTML = h;
+    requestAnimationFrame(rvFrame);
+  }
+  function recStart() { if (RV.run || !$("lgRec")) return; RV.run = true; RV.plan = null; RV.t0 = 0; requestAnimationFrame(rvFrame); }
   function playFrame() {
     const V = $("vLeague"), ov = $("lgOv"); if (!ov) return;
     const P = plan(SA), L = P.L[SL], A = assign(L), t = PLAY.t, {G, hold} = playGroups(L, A);
@@ -450,7 +481,6 @@
       h += '<g opacity="' + (dim ? .55 : 1) + '"><circle cx="' + x + '" cy="' + y + '" r="' + (mine === g ? 19 : 15) + '" fill="' + g.c + '" stroke="#1b1208" stroke-width="3"/><text x="' + x + '" y="' + (y + 6.5) + '" text-anchor="middle" font-size="' + (String(g.n).length > 1 ? 12 : 18) + '" font-weight="900" fill="#1b1208">' + g.n + '</text></g>';
       if (mine === g) h += '<g><path d="M' + x + ' ' + (y - 22) + ' l-9 -12 h18 z" fill="#fff"/><rect x="' + (x - 44) + '" y="' + (y - 62) + '" width="88" height="28" rx="14" fill="#fff"/><text x="' + x + '" y="' + (y - 42) + '" text-anchor="middle" font-size="16" font-weight="900" fill="#1b1208">' + st("me") + '</text></g>';
     });
-    h += recDemo(t);
     const CP = ((window.LEAGUE_STRATEGY || {}).captions || []).find(c => c.a <= t && t < c.b);
     if (CP) {
       const al = Math.max(0, Math.min(1, (t - CP.a) / .6, (CP.b - t) / .6)), tx = CP.t.replace(/\{(\d)\}/g, (m, n) => { const l = L.ld[n - 1]; return l ? who(l.k).n : ""; }), w = Math.min(860, 60 + tx.length * 15.5);
@@ -473,7 +503,7 @@
   function playLoop(now) {
     if (!PLAY.run) return;
     const dt = PLAY.last ? (now - PLAY.last) / 1000 : 0; PLAY.last = now;
-    PLAY.t = Math.min(TMAX, PLAY.t + dt * 1.5 * PLAY.spd);   // 60분을 40초에(×1)
+    PLAY.t = Math.min(TMAX, PLAY.t + dt * PLAY.spd);   // 60분을 60초에(×1)
     playFrame();
     if (PLAY.t >= TMAX) { PLAY.run = false; const b = $("lgPlay"); if (b) b.textContent = "▶ " + st("play"); return; }
     requestAnimationFrame(playLoop);
@@ -491,9 +521,9 @@
     // 작전 설명 · 역할 배정(참전자를 시련 점수 순으로 위에서부터)
     const SG = window.LEAGUE_STRATEGY;
     if (SG) {
-      const tri = triK, KS0 = roleKs(L);
+      const tri = triK, KS0 = roleKs(L); setTimeout(recStart, 0);
       h += '<div class="lg"><h2>📜 ' + esc(LANG === "ko" ? "작전 설명" : "Battle plan") + '</h2><div class="d" style="white-space:pre-wrap;color:#e9f2e4">' + esc(SG.intro) + '</div>' +
-        SG.phases.map((x, i) => '<div class="post"><b>' + esc(x.t) + '</b><p>' + esc(x.b) + '</p></div>').join("") + (SG.recover ? '<div class="post" style="border-color:#b197fc"><b style="color:#d0bfff">🟣 ' + esc(SG.recover.title) + '</b><p>' + esc(SG.recover.text) + '</p></div>' : '') + '<div class="d">' + esc(SG.note) + '</div>' +
+        SG.phases.map((x, i) => '<div class="post"><b>' + esc(x.t) + '</b><p>' + esc(x.b) + '</p></div>').join("") + (SG.recover ? '<div class="post" style="border-color:#b197fc"><b style="color:#d0bfff">🟣 ' + esc(SG.recover.title) + '</b><p>' + esc(SG.recover.text) + '</p>' + (SG.recover.teams || []).map((T, ti) => { const RK = KS0[SG.roles.findIndex(r => r.k === "recover")] || []; return '<div class="ml" style="margin:4px 0"><b style="color:#d0bfff;margin-right:6px">' + esc(T.t) + '</b>' + REC_OFF.map((o, i) => RK[ti * 4 + i] ? '<span>' + o[2] + ' · ' + esc(who(RK[ti * 4 + i]).n) + '</span>' : '').join("") + '</div>'; }).join("") + '<svg id="lgRec" viewBox="0 0 600 380" style="width:100%;max-width:600px;display:block;margin:10px auto 0;border-radius:10px;background:#6b4626"></svg></div>' : '') + '<div class="d">' + esc(SG.note) + '</div>' +
         '<h2 style="margin-top:12px">🎖 ' + esc(LANG === "ko" ? "역할 배정 (참전자 시련 순)" : "Roles (combatants by Mystic Trial)") + '</h2>' +
         KS0.map((ks, ri, KS) => { const r = SG.roles[ri], pk = r.pair ? KS[SG.roles.findIndex(x => x.k === r.pair)] || [] : null, num = r.k === "lead" || r.pair, TM = SG.teams || [], tmOf = k => TM.findIndex(x => x.ld.indexOf(who(k).n) >= 0), tmTag = k => { const j = tmOf(k); return j < 0 ? '' : ' <small style="color:' + TM[j].c + ';font-weight:800">' + esc(TM[j].t) + '</small>'; }; return '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:' + r.c + '">' + r.n + '</i>' + esc(r.t) + '</span></div><div class="ml" style="margin:6px 0">' + (ks.map((k, i) => '<span>' + (num ? '<b style="color:' + r.c + '">' + (i + 1 + (pk ? pk.length : 0)) + '</b> ' : '') + esc(who(k).n) + ' <small style="color:#8fa98a">' + (tri(k) ? fmt(tri(k)) : '·') + '</small>' + (pk && pk[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(pk[i]).n) + '</small>' : '') + (r.k === "recover" && SG.recover && SG.recover.teams ? ' <small style="color:#d0bfff;font-weight:800">' + (Math.floor(i / 4) + 1) + '조 ' + REC_OFF[i % 4][2] + '</small>' : '') + (r.k === "gather" ? ' <small style="color:#63e6be;font-weight:800">채' + (i + 1) + '</small>' : '') + (r.k === "lead" ? tmTag(k) : pk && pk[i] ? tmTag(pk[i]) : '') + '</span>').join("") || st("none")) + '</div><div class="d" style="margin:0">' + r.d.map(esc).join(" · ") + '</div></div>' + (r.pair && TM.length ? TM.map(x => '<div class="rc" style="border-color:' + x.c + '"><div class="hd"><b style="color:' + x.c + '">' + esc(x.t) + '</b></div><div class="ml" style="margin:6px 0">' + KS[0].map((k, i) => x.ld.indexOf(who(k).n) < 0 ? '' : '<span>' + esc(who(k).n) + (pk === KS[0] && ks[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(ks[i]).n) + '</small>' : '') + '</span>').join("") + '</div></div>').join("") : ''); }).join("") + '</div>';
     }
