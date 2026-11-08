@@ -137,6 +137,8 @@
   const score = k => { const q = who(k), s = q.d && troops(q.d); return (q.sp || 0) * 1e18 + (q.tg || 0) * 1e15 + (s ? TGW(s, 0) + TGW(s, 1) + TGW(s, 2) : 0) * 1e3 + (q.p || 0) / 1e6; };
 
   // 역할 나누기: 참전자를 시련 순으로 위에서부터, 지정된 사람(fix)은 그 역할에 먼저
+  const LSG = () => { const S = window.LEAGUE_STRATEGY, Z = S && LANG === "zh" && S.zh; if (!Z) return S; return Object.assign({}, S, {intro: Z.intro, phases: Z.phases, note: Z.note, recover: Object.assign({}, S.recover, Z.recover), teams: S.teams.map((x, i) => Object.assign({}, x, Z.teams[i])), captions: S.captions.map((c, i) => Object.assign({}, c, Z.captions[i])), roles: S.roles.map(r => Object.assign({}, r, Z.roles[r.k])), rvCap: Z.rvCap}); };
+  const DIR = i => (LANG === "zh" ? "北東南西" : "북동남서")[i], DCOL = ["#ff6b6b", "#ffd43b", "#69db7c", "#4dabf7"];   // 북 빨강 · 동 노랑 · 남 초록 · 서 파랑(헷갈리지 않게)
   const triK = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; };
   function roleKs(L) {
     const SG = window.LEAGUE_STRATEGY; if (!SG || !window.LEAGUE_ROSTER) return [];
@@ -167,7 +169,15 @@
       }
       if (!done) solo.push(k);
     });
-    return {R, solo};
+    const JMAX = 2, cnt = {}; R.forEach(r => r.mem.forEach(m => cnt[m.k] = (cnt[m.k] || 0) + 1));
+    [true, false].forEach(same => pool.forEach(k => {
+      const v = marchK(k);
+      R.slice().sort((x, y) => (x.sum / x.cap) - (y.sum / y.cap)).forEach(r => {
+        if ((cnt[k] || 0) >= JMAX || r.mem.some(m => m.k === k) || r.sum + v > r.cap || (same && !!who(r.l.k).aeh !== !!who(k).aeh)) return;
+        r.mem.push({k, v, x: 1}); r.sum += v; cnt[k] = (cnt[k] || 0) + 1;
+      });
+    }));
+    return {R, solo: solo.filter(k => !cnt[k])};
   }
 
   const css = `
@@ -418,7 +428,7 @@
     const C = RV.plan.coins;
     let h = '<g stroke="#f3e3c3" stroke-width="2" stroke-dasharray="4 9" opacity=".3"><line x1="36" y1="32" x2="564" y2="368"/><line x1="564" y1="32" x2="36" y2="368"/></g>';
     // 수도원
-    h += '<polygon points="300,152 384,200 300,248 216,200" fill="#d9822b" stroke="#2b1a0c" stroke-width="4"/><text x="300" y="218" text-anchor="middle" font-size="56">🏰</text><text x="300" y="272" text-anchor="middle" font-size="16" font-weight="900" fill="#fff3d6" stroke="#2b1a0c" stroke-width="4" paint-order="stroke">' + (LANG === "ko" ? "수도원" : "Abbey") + '</text>';
+    h += '<polygon points="300,152 384,200 300,248 216,200" fill="#d9822b" stroke="#2b1a0c" stroke-width="4"/><text x="300" y="218" text-anchor="middle" font-size="56">🏰</text><text x="300" y="272" text-anchor="middle" font-size="16" font-weight="900" fill="#fff3d6" stroke="#2b1a0c" stroke-width="4" paint-order="stroke">' + (LANG === "zh" ? "修道院" : LANG === "ko" ? "수도원" : "Abbey") + '</text>';
     // 적 공격(붉은 화살이 들어와 부딪힌다)
     if (t < 1.9) { const u = Math.min(1, t / 1.3); h += '<path d="M590 30 Q 470 60 372 168" pathLength="1" fill="none" stroke="#ff6b6b" stroke-width="6" stroke-linecap="round" stroke-dasharray="1" stroke-dashoffset="' + (1 - u).toFixed(3) + '" opacity="' + (t < 1.5 ? 1 : (1.9 - t) / .4).toFixed(2) + '"/>'; }
     if (t >= 1.3 && t < 2.1) { const u = (t - 1.3) / .8; h += '<circle cx="300" cy="200" r="' + (40 + u * 120).toFixed(1) + '" fill="none" stroke="#ffe066" stroke-width="' + (6 * (1 - u)).toFixed(1) + '" opacity="' + (1 - u).toFixed(2) + '"/>'; }
@@ -433,20 +443,20 @@
       if (t < c.t0 || t >= c.home) return;
       const p = RV_POST[c.q], got = t >= c.pick, u = ease(got ? 1 : (t - c.t0) / (c.pick - c.t0)), al = got ? 1 - (t - c.pick) / (c.home - c.pick) : 1;
       const e = [p[0] + (c.x - p[0]) * u, p[1] + (c.y - p[1]) * u];
-      h += '<g opacity="' + al.toFixed(2) + '"><line x1="' + p[0] + '" y1="' + p[1] + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) + '" stroke="#1b1208" stroke-width="6" stroke-linecap="round" opacity=".5"/><line x1="' + p[0] + '" y1="' + p[1] + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) + '" stroke="#d0bfff" stroke-width="3" stroke-linecap="round"/>' +
+      h += '<g opacity="' + al.toFixed(2) + '"><line x1="' + p[0] + '" y1="' + p[1] + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) + '" stroke="#1b1208" stroke-width="6" stroke-linecap="round" opacity=".5"/><line x1="' + p[0] + '" y1="' + p[1] + '" x2="' + e[0].toFixed(1) + '" y2="' + e[1].toFixed(1) + '" stroke="' + DCOL[c.q] + '" stroke-width="3" stroke-linecap="round"/>' +
         (got ? '<circle cx="' + c.x.toFixed(1) + '" cy="' + c.y.toFixed(1) + '" r="' + (9 + (1 - al) * 12).toFixed(1) + '" fill="none" stroke="#ffd43b" stroke-width="3"/>' : '') + '</g>';
     });
     // 회수 1조 4명(동서남북) — 제자리 고정
     RV_POST.forEach((p, q) => {
       const [x, y] = p, got = C.filter(c => c.q === q && c.home <= t).length;
-      h += '<g><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="16" fill="#b197fc" stroke="#1b1208" stroke-width="3"/><text x="' + x.toFixed(1) + '" y="' + (y + 6).toFixed(1) + '" text-anchor="middle" font-size="15" font-weight="900" fill="#1b1208">' + p[2] + '</text>' +
+      h += '<g><circle cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="16" fill="' + DCOL[q] + '" stroke="#1b1208" stroke-width="3"/><text x="' + x.toFixed(1) + '" y="' + (y + 6).toFixed(1) + '" text-anchor="middle" font-size="15" font-weight="900" fill="#1b1208">' + DIR(q) + '</text>' +
         (RV.nm[q] ? '<text x="' + x.toFixed(1) + '" y="' + (y + 34).toFixed(1) + '" text-anchor="middle" font-size="13" font-weight="800" fill="#f3f0ff" stroke="#1b1208" stroke-width="4" paint-order="stroke">' + esc(RV.nm[q]) + '</text>' : '') +
         (got ? '<text x="' + (x + 20).toFixed(1) + '" y="' + (y - 12).toFixed(1) + '" font-size="14" font-weight="900" fill="#ffd43b" stroke="#1b1208" stroke-width="4" paint-order="stroke">+' + got + '</text>' : '') + '</g>';
     });
     // 자막
-    const cp = RV_CAP.find(c => c[0] <= t && t < c[1]);
+    const cp = ((LSG() || {}).rvCap || RV_CAP).find(c => c[0] <= t && t < c[1]);
     if (cp) { const al = Math.max(0, Math.min(1, (t - cp[0]) / .25, (cp[1] - t) / .25)), w = 40 + cp[2].length * 15; h += '<g opacity="' + al.toFixed(2) + '"><rect x="' + (300 - w / 2) + '" y="8" width="' + w + '" height="32" rx="16" fill="#f8f1dc" stroke="#1b1208" stroke-width="3"/><text x="300" y="30" text-anchor="middle" font-size="16" font-weight="900" fill="#2a1a08">' + esc(cp[2]) + '</text></g>'; }
-    h += '<text x="592" y="372" text-anchor="end" font-size="12" font-weight="800" fill="#f3e3c3" opacity=".8">' + (LANG === "ko" ? "회수 1조 예시" : "Recovery squad 1") + '</text>';
+    h += '<text x="592" y="372" text-anchor="end" font-size="12" font-weight="800" fill="#f3e3c3" opacity=".8">' + (LANG === "zh" ? "回收 1 組示範" : LANG === "ko" ? "회수 1조 예시" : "Recovery squad 1") + '</text>';
     el.innerHTML = h;
     requestAnimationFrame(rvFrame);
   }
@@ -481,7 +491,7 @@
       h += '<g opacity="' + (dim ? .55 : 1) + '"><circle cx="' + x + '" cy="' + y + '" r="' + (mine === g ? 19 : 15) + '" fill="' + g.c + '" stroke="#1b1208" stroke-width="3"/><text x="' + x + '" y="' + (y + 6.5) + '" text-anchor="middle" font-size="' + (String(g.n).length > 1 ? 12 : 18) + '" font-weight="900" fill="#1b1208">' + g.n + '</text></g>';
       if (mine === g) h += '<g><path d="M' + x + ' ' + (y - 22) + ' l-9 -12 h18 z" fill="#fff"/><rect x="' + (x - 44) + '" y="' + (y - 62) + '" width="88" height="28" rx="14" fill="#fff"/><text x="' + x + '" y="' + (y - 42) + '" text-anchor="middle" font-size="16" font-weight="900" fill="#1b1208">' + st("me") + '</text></g>';
     });
-    const CP = ((window.LEAGUE_STRATEGY || {}).captions || []).find(c => c.a <= t && t < c.b);
+    const CP = ((LSG() || {}).captions || []).find(c => c.a <= t && t < c.b);
     if (CP) {
       const al = Math.max(0, Math.min(1, (t - CP.a) / .6, (CP.b - t) / .6)), tx = CP.t.replace(/\{(\d)\}/g, (m, n) => { const l = L.ld[n - 1]; return l ? who(l.k).n : ""; }), w = Math.min(860, 60 + tx.length * 15.5);
       h += '<g opacity="' + al.toFixed(3) + '" transform="translate(0 ' + ((1 - al) * 10).toFixed(1) + ')"><rect x="' + (450 - w / 2) + '" y="16" width="' + w + '" height="40" rx="20" fill="#f8f1dc" stroke="#1b1208" stroke-width="3"/><text x="450" y="43" text-anchor="middle" font-size="19" font-weight="900" fill="#2a1a08">' + esc(tx) + '</text></g>';
@@ -493,7 +503,7 @@
     $("lgPts").textContent = st("pts") + " " + fmt(Math.round(pts));
     const call = $("lgCall");
     if (pi !== PLAY.pi) {
-      PLAY.pi = pi; const memo = (PH(L)[pi] || {}).memo || (((window.LEAGUE_STRATEGY || {}).phases || [])[pi] || {}).b || st("phd")[pi] || "";
+      PLAY.pi = pi; const memo = (PH(L)[pi] || {}).memo || (((LSG() || {}).phases || [])[pi] || {}).b || st("phd")[pi] || "";
       call.classList.remove("on"); call.classList.add("out");
       setTimeout(() => { call.innerHTML = '<b>' + esc(st("ph")[pi] + " · " + PT[pi] + "′") + '</b>' + esc(memo); call.classList.remove("out"); call.classList.add("on"); }, 160);
     }
@@ -519,13 +529,13 @@
     let h = '<div class="lg"><h2>' + st("h") + '</h2><div class="d">' + esc(st("sub")) + '</div><div class="lgtop"><select id="lgAlly">' + ALLIES.map(a => '<option' + (a === SA ? ' selected' : '') + '>' + esc(a) + '</option>').join("") + '</select><div class="tabs" id="lgLeg">' + [0, 1].map(i => '<button data-leg="' + i + '"' + (i === SL ? ' class="on"' : '') + '>' + st("leg", i + 1) + '</button>').join("") + '</div></div>' +
       '<div class="d" style="margin:8px 0 0">' + (sv ? esc(st("at", sv.at, sv.by || "")) : st("noSave")) + (SDIRTY[SA] ? ' · <span class="warn">' + st("dirty") + '</span>' : '') + (E ? '' : '<br>' + st("view")) + '</div>' + rulesHtml() + '</div>';
     // 작전 설명 · 역할 배정(참전자를 시련 점수 순으로 위에서부터)
-    const SG = window.LEAGUE_STRATEGY;
+    const SG = LSG();
     if (SG) {
       const tri = triK, KS0 = roleKs(L); setTimeout(recStart, 0);
-      h += '<div class="lg"><h2>📜 ' + esc(LANG === "ko" ? "작전 설명" : "Battle plan") + '</h2><div class="d" style="white-space:pre-wrap;color:#e9f2e4">' + esc(SG.intro) + '</div>' +
-        SG.phases.map((x, i) => '<div class="post"><b>' + esc(x.t) + '</b><p>' + esc(x.b) + '</p></div>').join("") + (SG.recover ? '<div class="post" style="border-color:#b197fc"><b style="color:#d0bfff">🟣 ' + esc(SG.recover.title) + '</b><p>' + esc(SG.recover.text) + '</p>' + (SG.recover.teams || []).map((T, ti) => { const RK = KS0[SG.roles.findIndex(r => r.k === "recover")] || []; return '<div class="ml" style="margin:4px 0"><b style="color:#d0bfff;margin-right:6px">' + esc(T.t) + '</b>' + REC_OFF.map((o, i) => RK[ti * 4 + i] ? '<span>' + o[2] + ' · ' + esc(who(RK[ti * 4 + i]).n) + '</span>' : '').join("") + '</div>'; }).join("") + '<svg id="lgRec" viewBox="0 0 600 380" style="width:100%;max-width:600px;display:block;margin:10px auto 0;border-radius:10px;background:#6b4626"></svg></div>' : '') + '<div class="d">' + esc(SG.note) + '</div>' +
-        '<h2 style="margin-top:12px">🎖 ' + esc(LANG === "ko" ? "역할 배정 (참전자 시련 순)" : "Roles (combatants by Mystic Trial)") + '</h2>' +
-        KS0.map((ks, ri, KS) => { const r = SG.roles[ri], pk = r.pair ? KS[SG.roles.findIndex(x => x.k === r.pair)] || [] : null, num = r.k === "lead" || r.pair, TM = SG.teams || [], tmOf = k => TM.findIndex(x => x.ld.indexOf(who(k).n) >= 0), tmTag = k => { const j = tmOf(k); return j < 0 ? '' : ' <small style="color:' + TM[j].c + ';font-weight:800">' + esc(TM[j].t) + '</small>'; }; return '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:' + r.c + '">' + r.n + '</i>' + esc(r.t) + '</span></div><div class="ml" style="margin:6px 0">' + (r.k === "recover" && SG.recover && SG.recover.teams ? SG.recover.teams.map((T, ti) => '<div style="width:100%;margin:2px 0"><b style="color:#d0bfff;margin-right:8px">' + esc(T.t) + '</b>' + ks.slice(ti * 4, ti * 4 + 4).map((k, i) => '<span>' + esc(who(k).n) + ' <small style="color:#d0bfff;font-weight:800">(' + REC_OFF[i][2] + ')</small></span>').join(" ") + '</div>').join("") : ks.map((k, i) => '<span>' + (num ? '<b style="color:' + r.c + '">' + (i + 1 + (pk ? pk.length : 0)) + '</b> ' : '') + esc(who(k).n) + ' <small style="color:#8fa98a">' + (tri(k) ? fmt(tri(k)) : '·') + '</small>' + (pk && pk[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(pk[i]).n) + '</small>' : '') + (r.k === "gather" ? ' <small style="color:#63e6be;font-weight:800">채' + (i + 1) + '</small>' : '') + (r.k === "lead" ? tmTag(k) : pk && pk[i] ? tmTag(pk[i]) : '') + '</span>').join("") || st("none")) + '</div><div class="d" style="margin:0">' + r.d.map(esc).join(" · ") + '</div></div>' + (r.pair && TM.length ? TM.map(x => '<div class="rc" style="border-color:' + x.c + '"><div class="hd"><b style="color:' + x.c + '">' + esc(x.t) + '</b></div><div class="ml" style="margin:6px 0">' + KS[0].map((k, i) => x.ld.indexOf(who(k).n) < 0 ? '' : '<span>' + esc(who(k).n) + (pk === KS[0] && ks[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(ks[i]).n) + '</small>' : '') + '</span>').join("") + '</div></div>').join("") : ''); }).join("") + '</div>';
+      h += '<div class="lg"><h2>📜 ' + esc(LANG === "zh" ? "作戰說明" : LANG === "ko" ? "작전 설명" : "Battle plan") + '</h2><div class="d" style="white-space:pre-wrap;color:#e9f2e4">' + esc(SG.intro) + '</div>' +
+        SG.phases.map((x, i) => '<div class="post"><b>' + esc(x.t) + '</b><p>' + esc(x.b) + '</p></div>').join("") + (SG.recover ? '<div class="post" style="border-color:#b197fc"><b style="color:#d0bfff">🟣 ' + esc(SG.recover.title) + '</b><p>' + esc(SG.recover.text) + '</p>' + (SG.recover.teams || []).map((T, ti) => { const RK = KS0[SG.roles.findIndex(r => r.k === "recover")] || []; return '<div class="ml" style="margin:4px 0"><b style="color:#d0bfff;margin-right:6px">' + esc(T.t) + '</b>' + REC_OFF.map((o, i) => RK[ti * 4 + i] ? '<span><b style="color:' + DCOL[i] + '">' + DIR(i) + '</b> · ' + esc(who(RK[ti * 4 + i]).n) + '</span>' : '').join("") + '</div>'; }).join("") + '<svg id="lgRec" viewBox="0 0 600 380" style="width:100%;max-width:600px;display:block;margin:10px auto 0;border-radius:10px;background:#6b4626"></svg></div>' : '') + '<div class="d">' + esc(SG.note) + '</div>' +
+        '<h2 style="margin-top:12px">🎖 ' + esc(LANG === "zh" ? "角色分配（依參戰者神秘試煉排序）" : LANG === "ko" ? "역할 배정 (참전자 시련 순)" : "Roles (combatants by Mystic Trial)") + '</h2>' +
+        KS0.map((ks, ri, KS) => { const r = SG.roles[ri], pk = r.pair ? KS[SG.roles.findIndex(x => x.k === r.pair)] || [] : null, num = r.k === "lead" || r.pair, TM = SG.teams || [], tmOf = k => TM.findIndex(x => x.ld.indexOf(who(k).n) >= 0), tmTag = k => { const j = tmOf(k); return j < 0 ? '' : ' <small style="color:' + TM[j].c + ';font-weight:800">' + esc(TM[j].t) + '</small>'; }; return '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:' + r.c + '">' + r.n + '</i>' + esc(r.t) + '</span></div><div class="ml" style="margin:6px 0">' + (r.k === "recover" && SG.recover && SG.recover.teams ? SG.recover.teams.map((T, ti) => '<div style="width:100%;margin:2px 0"><b style="color:#d0bfff;margin-right:8px">' + esc(T.t) + '</b>' + ks.slice(ti * 4, ti * 4 + 4).map((k, i) => '<span>' + esc(who(k).n) + ' <small style="color:' + DCOL[i] + ';font-weight:900">(' + DIR(i) + ')</small></span>').join(" ") + '</div>').join("") : ks.map((k, i) => '<span>' + (num ? '<b style="color:' + r.c + '">' + (i + 1 + (pk ? pk.length : 0)) + '</b> ' : '') + esc(who(k).n) + ' <small style="color:#8fa98a">' + (tri(k) ? fmt(tri(k)) : '·') + '</small>' + (pk && pk[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(pk[i]).n) + '</small>' : '') + (r.k === "gather" ? ' <small style="color:#63e6be;font-weight:800">채' + (i + 1) + '</small>' : '') + (r.k === "lead" ? tmTag(k) : pk && pk[i] ? tmTag(pk[i]) : '') + '</span>').join("") || st("none")) + '</div><div class="d" style="margin:0">' + r.d.map(esc).join(" · ") + '</div></div>' + (r.pair && TM.length ? TM.map(x => '<div class="rc" style="border-color:' + x.c + '"><div class="hd"><b style="color:' + x.c + '">' + esc(x.t) + '</b></div><div class="ml" style="margin:6px 0">' + KS[0].map((k, i) => x.ld.indexOf(who(k).n) < 0 ? '' : '<span>' + esc(who(k).n) + (pk === KS[0] && ks[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(ks[i]).n) + '</small>' : '') + '</span>').join("") + '</div></div>').join("") : ''); }).join("") + '</div>';
     }
     // ① 명단
     h += '<div class="lg"><h2>' + st("s1") + ' <span class="tag">' + st("cnt", L.m.length, L.s.length) + '</span></h2><div class="d">' + esc(st("s1d")) + '</div>' +
