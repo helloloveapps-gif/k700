@@ -92,7 +92,7 @@
     if (!Array.isArray(P.posts)) P.posts = [];
     if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; const fx = [].concat(...window.LEAGUE_STRATEGY.roles.slice(1).map(r => r.fix || [])), f0 = window.LEAGUE_STRATEGY.roles[0].fix || [], top = k => f0.indexOf(who(k).n) >= 0 ? 1 : 0; L0.ld = L0.m.slice().filter(k => fx.indexOf(who(k).n) < 0).sort((x, y) => (top(y) - top(x)) || (tri(y) - tri(x))).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
     // 1단계 동선: 집결장 순서대로 목표(아군 진입 왼쪽 기준 · 오른쪽은 대칭)
-    const RT = (window.LEAGUE_STRATEGY || {}).route; if (LR && RT && !Object.keys(L0.ph[0].t).length && !Object.keys(L0.phR[0].t).length) { const put = (p, k, id) => { if (!id) return; L0.ph[p].t[k] = {b: id}; L0.phR[p].t[k] = {b: MIR[id] || id}; }; L0.ld.forEach((l, i) => { put(0, l.k, RT.left[i]); put(1, l.k, (RT.p2 || [])[i]); }); roleOf(L0, "gather").forEach((k, i) => put(0, k, (RT.gather || [])[i])); }
+    const RT = (window.LEAGUE_STRATEGY || {}).route; if (LR && RT && !Object.keys(L0.ph[0].t).length && !Object.keys(L0.phR[0].t).length) { const put = (p, k, id) => { if (!id) return; L0.ph[p].t[k] = {b: id}; L0.phR[p].t[k] = {b: MIR[id] || id}; }; L0.ld.forEach((l, i) => { put(0, l.k, RT.left[i]); put(1, l.k, (RT.p2 || [])[i]); }); roleOf(L0, "gather").forEach((k, i) => put(2, k, (RT.gather || [])[i])); }
     return P;
   };
   const editable = () => IS_ADMIN && typeof can === "function" && can(SA);
@@ -222,6 +222,7 @@
 #vLeague .pts{font-weight:800;color:#ffd8a8;font-variant-numeric:tabular-nums}
 #vLeague .pj button{min-height:32px}
 #vLeague .pj button.on{background:#e8590c;border-color:#e8590c;color:#fff}
+#vLeague #lgCall{display:none}
 #vLeague .call{min-height:44px;margin:6px 0;padding:8px 12px;border-radius:12px;background:#f8f1dc;color:#2a1a08;font-size:13px;line-height:1.5;opacity:0;transform:translateY(8px);transition:opacity .35s ease,transform .35s cubic-bezier(.2,1.4,.4,1)}
 #vLeague .call b{display:block;color:#c2410c;font-size:12px}
 #vLeague .call.on{opacity:1;transform:none}
@@ -396,7 +397,7 @@
   const REC_OFF = [[0, -60, "북"], [82, 0, "동"], [0, 62, "남"], [-82, 0, "서"]];
   // 회수조: 4명 1조 · 조마다 거점 하나 둘레 동 · 서 · 남 · 북에 한 명씩(이박사님 11-08). 아군 진입 오른쪽이면 대칭 거점
   function recDemo(t) {
-    const R = (window.LEAGUE_STRATEGY || {}).recover; if (!R) return "";
+    const R = (window.LEAGUE_STRATEGY || {}).recover; if (!R || (t != null && t < 15)) return "";
     const TS = R.teams || [{t: LANG === "ko" ? "회수조 예시" : "Recovery team", b: R.b}];
     let mem = []; try { mem = roleOf(plan(SA).L[SL], "recover"); } catch (e) {}
     return TS.map((T, ti) => {
@@ -450,6 +451,11 @@
       if (mine === g) h += '<g><path d="M' + x + ' ' + (y - 22) + ' l-9 -12 h18 z" fill="#fff"/><rect x="' + (x - 44) + '" y="' + (y - 62) + '" width="88" height="28" rx="14" fill="#fff"/><text x="' + x + '" y="' + (y - 42) + '" text-anchor="middle" font-size="16" font-weight="900" fill="#1b1208">' + st("me") + '</text></g>';
     });
     h += recDemo(t);
+    const CP = ((window.LEAGUE_STRATEGY || {}).captions || []).find(c => c.a <= t && t < c.b);
+    if (CP) {
+      const al = Math.max(0, Math.min(1, (t - CP.a) / .6, (CP.b - t) / .6)), tx = CP.t.replace(/\{(\d)\}/g, (m, n) => { const l = L.ld[n - 1]; return l ? who(l.k).n : ""; }), w = Math.min(860, 60 + tx.length * 15.5);
+      h += '<g opacity="' + al.toFixed(3) + '" transform="translate(0 ' + ((1 - al) * 10).toFixed(1) + ')"><rect x="' + (450 - w / 2) + '" y="16" width="' + w + '" height="40" rx="20" fill="#f8f1dc" stroke="#1b1208" stroke-width="3"/><text x="450" y="43" text-anchor="middle" font-size="19" font-weight="900" fill="#2a1a08">' + esc(tx) + '</text></g>';
+    }
     ov.innerHTML = h;
     // 전투 시계(분:초 오도미터) · 계획 점수 · 단계 말풍선
     const sec = t * 60, m = Math.floor(sec / 60), cs = smooth(sec % 10 - 9), cm = smooth(sec % 60 - 59), D = "01234567890";
