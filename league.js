@@ -528,9 +528,9 @@
       // 🎯 내 임무(집결장은 전체 동선 줄 빼고 자기 목표만 — 헷갈리지 않게): 내 게임 ID(또는 이름 고르기)로 — 역할 · 번호 · 팀 · 파트너 · 목표 · 회수 몇 조 · 동서남북 · 들어갈 집결(이박사님 11-08)
       {
         const LX = LANG === "zh" ? "zh" : LANG === "ko" ? "ko" : "en", W = {
-          ko: {h: "🎯 내 임무", pick: "이름 고르기", none: "명단에서 이름을 고르세요(내 게임 ID 를 넣으면 저절로 나옵니다).", sub: "대체 인원 — 회수조가 18만이 넘었거나 병사가 다 죽어 전투에 못 나가면 교체합니다. 들어갈 때 나가는 사람에게 역할(메인 집결 · 회수 몇 조 · 방향)을 물어보고 그대로 이어받습니다.", lead: "집결장 {0}번", subL: "서브 집결장 {0}번", part: "파트너", r1: "1단계 목표", r2: "15분", side: "(오른쪽 진입: {0})", gat: "채집조 채{0} — 30분에 {1}", rec: "회수 {0}조 — {1}", join: "집결원으로 들어갈 집결", noJ: "없음", j1: "1순위 집결(본인이 맡은 집결장의 집결)", jr: "나머지 행군은 다른 집결 또는 수비에 집중하세요.", mr: "권장 행군", gl: "맡은 집결장", ho: "교체로 나갈 때 대체 인원에게 알려 줄 것: 메인 집결 {0} · 회수 {1}조 · {2}"},
-          zh: {h: "🎯 我的任務", pick: "選擇名字", none: "請從名單選擇名字（輸入遊戲 ID 會自動顯示）。", sub: "替補人員 — 回收組超過 18 萬或士兵全部陣亡無法參戰時，與其交換。進場時詢問離場的人他的角色（主集結 · 回收幾組 · 方向），並照樣接手。", lead: "集結隊長 {0} 號", subL: "副集結隊長 {0} 號", part: "搭檔", r1: "第 1 階段目標", r2: "15 分", side: "（右側進場：{0}）", gat: "採集組 採{0} — 30 分前往 {1}", rec: "回收 {0} 組 — {1}", join: "要加入的集結", noJ: "無", j1: "第 1 優先集結（自己負責的集結隊長的集結）", jr: "其餘行軍專心加入其他集結或防守。", mr: "建議行軍", gl: "負責的集結隊長", ho: "交換離場時告訴替補：主集結 {0} · 回收 {1} 組 · {2}"},
-          en: {h: "🎯 My mission", pick: "Pick your name", none: "Pick your name from the list (it appears by itself once you enter your game ID).", sub: "Substitute — swap in when a recovery player is over 180,000 or has lost all troops. When you come in, ask the player leaving for their role (main rally · recovery squad · direction) and take it over as is.", lead: "Rally leader #{0}", subL: "Sub-leader #{0}", part: "Partner", r1: "Phase 1 target", r2: "15 min", side: "(right-side entry: {0})", gat: "Gatherer G{0} — at 30 min to {1}", rec: "Recovery {0} — {1}", join: "Rallies to join", noJ: "none", j1: "1st-priority rally (your own rally leader's rally)", jr: "Put your other marches into other rallies or defense.", mr: "Recommended marches", gl: "Your rally leader", ho: "When you swap out, tell the substitute: main rally {0} · Recovery {1} · {2}"}
+          ko: {h: "🎯 내 임무", pick: "이름 고르기", none: "명단에서 이름을 고르세요(내 게임 ID 를 넣으면 저절로 나옵니다).", sub: "대체 인원 — 회수조가 18만이 넘었거나 병사가 다 죽어 전투에 못 나가면 교체합니다. 들어갈 때 나가는 사람에게 역할(메인 집결 · 회수 몇 조 · 방향)을 물어보고 그대로 이어받습니다.", lead: "집결장 {0}번", subL: "서브 집결장 {0}번", part: "파트너", r1: "1단계 목표", r2: "15분", side: "(오른쪽 진입: {0})", sl: "◀ 왼쪽 시작 시", sr: "오른쪽 시작 시 ▶", gat: "채집조 채{0} — 30분 땅굴", rec: "회수 {0}조 — {1}", join: "집결원으로 들어갈 집결", noJ: "없음", j1: "1순위 집결(본인이 맡은 집결장의 집결)", jr: "나머지 행군은 다른 집결 또는 수비에 집중하세요.", mr: "권장 행군", gl: "맡은 집결장", ho: "교체로 나갈 때 대체 인원에게 알려 줄 것: 메인 집결 {0} · 회수 {1}조 · {2}"},
+          zh: {h: "🎯 我的任務", pick: "選擇名字", none: "請從名單選擇名字（輸入遊戲 ID 會自動顯示）。", sub: "替補人員 — 回收組超過 18 萬或士兵全部陣亡無法參戰時，與其交換。進場時詢問離場的人他的角色（主集結 · 回收幾組 · 方向），並照樣接手。", lead: "集結隊長 {0} 號", subL: "副集結隊長 {0} 號", part: "搭檔", r1: "第 1 階段目標", r2: "15 分", side: "（右側進場：{0}）", sl: "◀ 左側開始時", sr: "右側開始時 ▶", gat: "採集組 採{0} — 30 分地道", rec: "回收 {0} 組 — {1}", join: "要加入的集結", noJ: "無", j1: "第 1 優先集結（自己負責的集結隊長的集結）", jr: "其餘行軍專心加入其他集結或防守。", mr: "建議行軍", gl: "負責的集結隊長", ho: "交換離場時告訴替補：主集結 {0} · 回收 {1} 組 · {2}"},
+          en: {h: "🎯 My mission", pick: "Pick your name", none: "Pick your name from the list (it appears by itself once you enter your game ID).", sub: "Substitute — swap in when a recovery player is over 180,000 or has lost all troops. When you come in, ask the player leaving for their role (main rally · recovery squad · direction) and take it over as is.", lead: "Rally leader #{0}", subL: "Sub-leader #{0}", part: "Partner", r1: "Phase 1 target", r2: "15 min", side: "(right-side entry: {0})", sl: "◀ Left-side start", sr: "Right-side start ▶", gat: "Gatherer G{0} — tunnel at 30 min", rec: "Recovery {0} — {1}", join: "Rallies to join", noJ: "none", j1: "1st-priority rally (your own rally leader's rally)", jr: "Put your other marches into other rallies or defense.", mr: "Recommended marches", gl: "Your rally leader", ho: "When you swap out, tell the substitute: main rally {0} · Recovery {1} · {2}"}
         }[LX], fm = (s, ...a) => a.reduce((x, v, i) => x.replace("{" + i + "}", v), s);
         const all = L.m.concat(L.s), mid = typeof myId === "function" ? myId() : "", auto = all.find(k => mid && (k === mid || who(k).id === mid));
         const mk = MYPICK && all.includes(MYPICK) ? MYPICK : auto || "";
@@ -543,14 +543,15 @@
           const bName = id => { const b = B.find(x => x.id === id); return b ? (LX === "ko" ? b.ko : b.en) : id; }, RT = SG.route || {};
           if (r.k === "lead") {
             lines.push(fm(W.lead, ix + 1) + tm(mk));
-            if (RT.left && RT.left[ix]) lines.push(W.r1 + ": " + bName(RT.left[ix]) + " " + fm(W.side, bName(MIR[RT.left[ix]] || RT.left[ix])));
-            if (RT.p2 && RT.p2[ix]) lines.push(W.r2 + ": " + bName(RT.p2[ix]) + " " + fm(W.side, bName(MIR[RT.p2[ix]] || RT.p2[ix])));
+            const LR2 = (lab, id) => { lines.push(lab + " — " + W.sl + ": " + bName(id)); lines.push(lab + " — " + W.sr + ": " + bName(MIR[id] || id)); };
+            if (RT.left && RT.left[ix]) LR2(W.r1, RT.left[ix]);
+            if (RT.p2 && RT.p2[ix]) LR2(W.r2, RT.p2[ix]);
             const pk = (KS0[SG.roles.findIndex(x => x.pair === "lead")] || [])[ix]; if (pk) lines.push(W.part + ": " + who(pk).n);
           } else if (r.pair) {
             const pk = (KS0[SG.roles.findIndex(x => x.k === r.pair)] || [])[ix];
             lines.push(fm(W.subL, ix + 1 + (KS0[0] || []).length) + (pk ? tm(pk) : ""));
             if (pk) lines.push(W.part + ": " + who(pk).n);
-          } else if (r.k === "gather") lines.push(fm(W.gat, ix + 1, bName((RT.gather || [])[ix]) + " " + fm(W.side, bName(MIR[(RT.gather || [])[ix]] || ""))));
+          } else if (r.k === "gather") { const id = (RT.gather || [])[ix]; lines.push(fm(W.gat, ix + 1)); if (id) { lines.push(W.sl + ": " + bName(id)); lines.push(W.sr + ": " + bName(MIR[id] || id)); } }
           const A = assign(L), J = A.R.filter(x => x.mem.some(m => m.k === mk)).map(x => (A.R.indexOf(x) + 1) + " " + who(x.l.k).n);
           // 채집조는 맡은 집결장을 수비(집결 아님) — 1순위 집결 대신 맡은 집결장만
           if (r.k === "gather") { if (J.length) lines.push(W.gl + ": " + J[0]); }
