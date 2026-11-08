@@ -90,7 +90,7 @@
     const LR = (window.LEAGUE_ROSTER || {})[a], L0 = P.L[0];
     if (LR && !L0.m.length && !L0.s.length) { const ppl = people(a); L0.m = ppl.filter(q => q.gs === "p").map(q => q.k); L0.s = ppl.filter(q => q.gs === "s").map(q => q.k); }
     if (!Array.isArray(P.posts)) P.posts = [];
-    if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; L0.ld = L0.m.slice().sort((x, y) => tri(y) - tri(x)).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
+    if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; const fx = [].concat(...window.LEAGUE_STRATEGY.roles.slice(1).map(r => r.fix || [])); L0.ld = L0.m.slice().filter(k => fx.indexOf(who(k).n) < 0).sort((x, y) => tri(y) - tri(x)).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
     return P;
   };
   const editable = () => IS_ADMIN && typeof can === "function" && can(SA);
@@ -460,11 +460,14 @@
     const SG = window.LEAGUE_STRATEGY;
     if (SG) {
       const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; };
-      const order = L.m.slice().sort((x, y) => tri(y) - tri(x)); let at = 0;
+      const order = L.m.slice().sort((x, y) => tri(y) - tri(x));
+      // 지정된 사람(fix)을 먼저 그 역할에 넣고, 나머지를 시련 순으로 채운다
+      const fixed = new Set(), byRole = SG.roles.map(r => { const ks = order.filter(k => (r.fix || []).indexOf(who(k).n) >= 0); ks.forEach(k => fixed.add(k)); return ks; });
+      const rest = order.filter(k => !fixed.has(k));
       h += '<div class="lg"><h2>📜 ' + esc(LANG === "ko" ? "작전 설명" : "Battle plan") + '</h2><div class="d" style="white-space:pre-wrap;color:#e9f2e4">' + esc(SG.intro) + '</div>' +
         SG.phases.map((x, i) => '<div class="post"><b>' + esc(x.t) + '</b><p>' + esc(x.b) + '</p></div>').join("") + (SG.recover ? '<div class="post" style="border-color:#b197fc"><b style="color:#d0bfff">🟣 ' + esc(SG.recover.title) + '</b><p>' + esc(SG.recover.text) + '</p></div>' : '') + '<div class="d">' + esc(SG.note) + '</div>' +
         '<h2 style="margin-top:12px">🎖 ' + esc(LANG === "ko" ? "역할 배정 (참전자 시련 순)" : "Roles (combatants by Mystic Trial)") + '</h2>' +
-        SG.roles.map(r => { const ks = order.slice(at, at + r.n); at += r.n; return '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:' + r.c + '">' + r.n + '</i>' + esc(r.t) + '</span></div><div class="ml" style="margin:6px 0">' + (ks.map(k => '<span>' + esc(who(k).n) + ' <small style="color:#8fa98a">' + (tri(k) ? fmt(tri(k)) : '·') + '</small></span>').join("") || st("none")) + '</div><div class="d" style="margin:0">' + r.d.map(esc).join(" · ") + '</div></div>'; }).join("") + '</div>';
+        SG.roles.map((r, ri) => { const ks = byRole[ri].concat(rest.splice(0, Math.max(0, r.n - byRole[ri].length))); return '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:' + r.c + '">' + r.n + '</i>' + esc(r.t) + '</span></div><div class="ml" style="margin:6px 0">' + (ks.map(k => '<span>' + esc(who(k).n) + ' <small style="color:#8fa98a">' + (tri(k) ? fmt(tri(k)) : '·') + '</small></span>').join("") || st("none")) + '</div><div class="d" style="margin:0">' + r.d.map(esc).join(" · ") + '</div></div>'; }).join("") + '</div>';
     }
     // ① 명단
     h += '<div class="lg"><h2>' + st("s1") + ' <span class="tag">' + st("cnt", L.m.length, L.s.length) + '</span></h2><div class="d">' + esc(st("s1d")) + '</div>' +
