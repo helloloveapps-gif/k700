@@ -107,7 +107,7 @@
     if (PC.a === a && PC.n === DATA.length) return PC.list;
     const LR = (window.LEAGUE_ROSTER || {})[a];
     if (LR) {
-      const out = LR.list.map(r => { const id = idByName(r[0], a); return {k: id || "n:" + r[0], id, n: r[0], r: r[1], sp: r[2], gs: r[3], p: id ? (LOOKUP[id].p || 0) : 0, tg: 0}; });
+      const out = LR.list.map(r => { const id = /^[0-9]{7,12}$/.test(r[4] || "") ? r[4] : idByName(r[0], a); return {k: id || "n:" + r[0], id, n: r[0], r: r[1], sp: r[2], gs: r[3], p: id ? ((LOOKUP[id] || {}).p || 0) : 0, tg: 0}; });
       out.forEach(q => { const d = q.id && DATA.find(x => x.id === q.id); q.d = d || null; const s = d && troops(d); if (s) q.tg = Math.max(s[0][0], s[1][0], s[2][0]); });
       PC = {a, n: DATA.length, list: out};
       return out;
