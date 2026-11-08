@@ -556,7 +556,7 @@
           const A = assign(L), J = A.R.filter(x => x.mem.some(m => m.k === mk)).map(x => (A.R.indexOf(x) + 1) + " " + who(x.l.k).n);
           if (r.k !== "lead") lines.push(W.join + ": " + (J.join(" · ") || W.noJ));
           const col = r.k === "recover" ? DCOL[ix % 4] : r.c || "#e9d48a";
-          mh += '<div class="post" style="border-color:' + col + '"><b style="color:' + col + '">' + esc(who(mk).n) + ' — ' + esc(r.t || "") + '</b><p>' + lines.map(esc).join("<br>") + '</p>' + (r.d ? '<div class="d" style="margin:6px 0 0">' + r.d.map(esc).join(" · ") + '</div>' : '') + '</div>';
+          mh += '<div class="post" style="border-color:' + col + '"><b style="color:' + col + '">' + esc(who(mk).n) + ' — ' + esc(r.t || "") + '</b><p style="line-height:1.8">' + lines.map(esc).join("<br>") + '</p>' + (r.d ? '<ol class="d" style="margin:8px 0 0;padding-left:22px;line-height:1.7">' + r.d.map(x => '<li>' + esc(x) + '</li>').join("") + '</ol>' : '') + '</div>';
         }
         h += '<div class="lg"><h2>' + esc(W.h) + '</h2>' + mh + '</div>';
       }
