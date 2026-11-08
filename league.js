@@ -543,7 +543,7 @@
           const bName = id => { const b = B.find(x => x.id === id); return b ? (LX === "ko" ? b.ko : b.en) : id; }, RT = SG.route || {};
           if (r.k === "lead") {
             lines.push(fm(W.lead, ix + 1) + tm(mk));
-            const LR2 = (lab, id) => { lines.push(lab + " — " + W.sl + ": " + bName(id)); lines.push(lab + " — " + W.sr + ": " + bName(MIR[id] || id)); };
+            const LR2 = (lab, id) => { if ((MIR[id] || id) === id) { lines.push(lab + ": " + bName(id)); return; } lines.push(lab + " — " + W.sl + ": " + bName(id)); lines.push(lab + " — " + W.sr + ": " + bName(MIR[id] || id)); };
             if (RT.left && RT.left[ix]) LR2(W.r1, RT.left[ix]);
             if (RT.p2 && RT.p2[ix]) LR2(W.r2, RT.p2[ix]);
             const pk = (KS0[SG.roles.findIndex(x => x.pair === "lead")] || [])[ix]; if (pk) lines.push(W.part + ": " + who(pk).n);
