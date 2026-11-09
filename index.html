@@ -610,7 +610,7 @@ details.help>.sub{margin-top:8px;padding:10px 12px;background:var(--bar);border-
     <div class="dsec" id="mSecS"></div>
     <button class="item" data-v="sword" id="mSword"></button>
     <button class="item" data-v="league" id="mLeague"></button>
-    <a class="item" href="chat.html" style="display:block;text-decoration:none">💬 오늘이 1일 · 1108</a>
+    <a class="item" href="chat.html" id="mChat" style="display:none;text-decoration:none">💬 LOVEAPPS 채팅</a>
     <div class="dsec" id="mSecP" style="display:none"></div>
     <button class="item" data-v="prof" id="mProf" style="display:none"></button>
   </div>
@@ -2916,7 +2916,8 @@ $("actbar").addEventListener("click", adminClick);
   setLang(l);
 })();
 setView(location.hash.slice(1) || "dash");
-initAdmin().then(() => { setView(VIEW); return load(); }, load);
+// 채팅 메뉴는 로그인(관리자 열쇠)한 사람에게만(이박사님 11-09)
+initAdmin().then(() => { $("mChat").style.display = ME && ME !== GUEST && ME.h ? "block" : "none"; setView(VIEW); return load(); }, load);
 setInterval(load, 60000);
 </script>
 <script src="emperor_top.js?v=4"></script>

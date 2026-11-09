@@ -613,8 +613,9 @@ async function joinVoice() {
   inbox.on("child_added", s => { const m = s.val(); s.ref.remove(); if (V && m) onSig(m).catch(() => {}); });
   for (const p of Object.keys(others)) if (p !== uid) call(p).catch(() => {});
   drawVoice(V.peers);
-  startCaps();
+  // 번역 창을 먼저 띄우고, 받아쓰기는 그다음(받아쓰기가 안 되는 폰에서 멈춰 창이 안 뜨던 것)
   $("liveLog").innerHTML = ""; $("liveT").textContent = "🗣 " + t("liveT"); liveShow(true);
+  try { startCaps(); } catch (e) { capLine("⚠ " + t("capNo")); }
 }
 function leaveVoice() {
   if (!V) return;
@@ -825,7 +826,8 @@ const sttOn = () => (store.get("chat_stt") ?? (TOUCH ? "0" : "1")) === "1";
 function startSTT() {
   if (!CAP || CAP.sr) return;
   if (!SR) { capLine("⚠ " + t("capNo")); return; }
-  const ref = CAP.ref, sr = new SR(), starts = []; sr.lang = SRL[me.l] || "ko-KR"; sr.continuous = true; sr.interimResults = true;
+  let sr; try { sr = new SR(); } catch (e) { liveRow("⚠", t("capNo"), true); return; }
+  const ref = CAP.ref, starts = []; sr.lang = SRL[me.l] || "ko-KR"; sr.continuous = true; sr.interimResults = true;
   sr.onresult = e => {
     let interim = "";
     for (let i = e.resultIndex; i < e.results.length; i++) if (!e.results[i].isFinal) interim += e.results[i][0].transcript;
@@ -847,6 +849,7 @@ function startSTT() {
   };
   CAP.sr = sr;
   try { sr.start(); } catch (e) { CAP.sr = null; }
+  if (!CAP.sr) liveRow("⚠", t("capNo"), true);
   if (V) drawVoice(V.peers);
 }
 function stopSTT(save) {
