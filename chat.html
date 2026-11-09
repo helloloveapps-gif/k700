@@ -616,7 +616,7 @@ async function joinVoice() {
   if (V) { leaveVoice(); return; }
   if (!cur || !me.n) return;
   const base = db.ref("rooms/" + cur.key), others = (await base.child("voice").once("value")).val() || {};
-  if (Object.keys(others).filter(p => p !== uid).length >= MAXV) { alert(fm(t("vFull"), MAXV)); return; }
+  if (Object.keys(others).filter(p => p !== uid).length >= MAXV - 1) {   // 나까지 6명(이전엔 남 6명 + 나 = 7명까지 들어가던 것) alert(fm(t("vFull"), MAXV)); return; }
   let stream;
   try { stream = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}}); }
   catch (e) { alert(t("micNo")); return; }
