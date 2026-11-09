@@ -224,12 +224,32 @@ async function sha(s) { const b = await crypto.subtle.digest("SHA-256", new Text
 
 // 번역 — 같은 글 · 같은 언어는 한 번만
 const TC = new Map();
-function translate(text, tl) {
+// 1순위 구글 무료 주소 — 같은 기기 · 같은 와이파이에서 너무 자주 부르면 구글이 잠시 막는다(429).
+// 막히면 2순위 MyMemory(무료 · 기기마다 하루 5천 자, 보낸 사람 언어를 알아야 함)로 넘어간다(이박사님 11-09 번역이 막힘).
+// 채팅 글 · 음성 자막 · 음성 글은 모두 이 한 함수를 쓰고, 같은 문장은 한 번만 번역한다(기억해 둠)
+let GOOGLE_OFF = 0;
+const MM = {ko: "ko", "zh-TW": "zh-TW", "zh-CN": "zh-CN", en: "en"};
+async function viaGoogle(text, tl) {
+  const r = await fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + encodeURIComponent(tl) + "&dt=t&q=" + encodeURIComponent(text));
+  if (!r.ok) throw new Error("google " + r.status);
+  return ((await r.json())[0] || []).map(x => x[0]).join("");
+}
+async function viaMyMemory(text, tl, sl) {
+  if (!sl || !MM[sl] || sl === tl) throw new Error("mm lang");
+  const r = await fetch("https://api.mymemory.translated.net/get?q=" + encodeURIComponent(text.slice(0, 480)) + "&langpair=" + MM[sl] + "|" + MM[tl]);
+  const j = await r.json();
+  if (!r.ok || j.responseStatus != 200 || !j.responseData) throw new Error("mm " + (j.responseStatus || r.status));
+  return j.responseData.translatedText;
+}
+function translate(text, tl, sl) {
   const key = tl + "\u0001" + text;
   if (TC.has(key)) return TC.get(key);
-  const p = fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + encodeURIComponent(tl) + "&dt=t&q=" + encodeURIComponent(text))
-    .then(r => { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
-    .then(j => (j[0] || []).map(x => x[0]).join(""));
+  const p = (async () => {
+    if (Date.now() > GOOGLE_OFF) {
+      try { return await viaGoogle(text, tl); } catch (e) { GOOGLE_OFF = Date.now() + 5 * 60e3; }   // 막히면 5분 쉬었다가 다시
+    }
+    return await viaMyMemory(text, tl, sl);
+  })();
   TC.set(key, p); p.catch(() => TC.delete(key));
   return p;
 }
@@ -351,9 +371,9 @@ async function render(d) {
   if (d.dataset.mine || d.dataset.l === me.l || text === "🖼️" || text === "🎤") { org.hidden = true; return; }
   org.hidden = false; org.innerHTML = '<span class="wait">' + esc(t("wait")) + '</span>';
   try {
-    const r = await translate(text, me.l);
+    const r = await translate(text, me.l, d.dataset.l);
     if (r.trim() === text.trim()) org.hidden = true; else org.textContent = r;
-  } catch (e) { org.textContent = t("fail"); org.classList.add("fail"); }
+  } catch (e) { org.textContent = t("fail") + " ↻"; org.classList.add("fail"); org.style.cursor = "pointer"; org.onclick = () => { org.onclick = null; org.style.cursor = ""; render(d); }; }
 }
 const withA = m => { const a = myAuth(); if (a) m.a = a; return m; };
 // 답장(디스코드처럼): 글에 마우스를 올리면 ↩ → 입력칸 위에 「○○에게 답장」 → 보내면 그 글 위에 ↱ 원래 글이 붙는다
@@ -821,7 +841,7 @@ function stopCaps() {
 }
 async function showCap(m) {
   let tx = m.t;
-  if (m.l !== me.l) { try { tx = await translate(m.t, me.l); } catch (e) {} }
+  if (m.l !== me.l) { try { tx = await translate(m.t, me.l, m.l); } catch (e) {} }
   capLine("🗣 " + m.n + ": " + tx + (tx !== m.t ? "  (" + m.t + ")" : ""));
 }
 function capLine(text, mine) {
