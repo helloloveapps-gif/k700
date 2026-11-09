@@ -603,6 +603,42 @@ $("log").addEventListener("click", async e => {
 // 서로 직접 잇는 WebRTC — 한 방 6명까지. 연결 주선(신호)만 Firebase 로: rooms/{열쇠}/voice/{나}(참가 표시, 나가면 지워짐),
 // rooms/{열쇠}/sig/{받는 사람}/(편지). 새로 들어온 사람이 먼저 걸고, 원래 있던 사람은 받기만(엇갈려 엉키지 않게).
 // 길 찾기는 구글 무료 STUN 만(유료 TURN 없음) — 회사 · 일부 통신망에서는 연결이 안 될 수 있다
+// 음성 중계 서버(이박사님 서버 175.126.226.132 의 LiveKit, 무료 · 직접 운영) — 되면 50명까지, 안 되면 예전처럼 서로 직접 6명
+// 서버 = loveapps-api Voice.cs(/voice/token 입장권 · /lk 중계). 시험할 땐 localStorage chat_voice_api 로 주소를 바꾼다
+const VOICE_API = store.get("chat_voice_api") || "https://appslove.duckdns.org", MAXV_LK = 50;
+const LK_JS = "https://cdn.jsdelivr.net/npm/livekit-client@2.22.4/dist/livekit-client.umd.min.js";
+let LK_LIB = null;
+const lkLib = () => LK_LIB || (LK_LIB = new Promise((res, rej) => {
+  const sc = document.createElement("script"); sc.src = LK_JS; sc.onload = () => window.LivekitClient ? res(window.LivekitClient) : rej(new Error("lk")); sc.onerror = () => { LK_LIB = null; rej(new Error("lk")); };
+  document.head.appendChild(sc);
+}));
+async function lkToken() {
+  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 4000);
+  try {
+    const room = cur.key.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 64);
+    const r = await fetch(VOICE_API + "/voice/token?room=" + encodeURIComponent(room) + "&id=" + encodeURIComponent(uid) + "&name=" + encodeURIComponent(me.n || "?"), {signal: ac.signal});
+    if (!r.ok) throw new Error("token " + r.status);
+    const j = await r.json(); await lkLib(); return j;
+  } finally { clearTimeout(tm); }
+}
+async function lkConnect(tk) {
+  const L = await lkLib(), room = new L.Room({adaptiveStream: false, dynacast: false});
+  const redraw = () => drawVoice(V ? V.peers : {});
+  room.on(L.RoomEvent.TrackSubscribed, (track, pub, part) => {
+    if (track.kind !== "audio") return;
+    const el = track.attach(); el.id = "va_" + part.identity; el.setAttribute("playsinline", ""); document.body.appendChild(el); redraw();
+  });
+  room.on(L.RoomEvent.TrackUnsubscribed, track => { track.detach().forEach(e => e.remove()); redraw(); });
+  room.on(L.RoomEvent.ParticipantConnected, redraw);
+  room.on(L.RoomEvent.ParticipantDisconnected, redraw);
+  room.on(L.RoomEvent.Disconnected, () => { if (V && V.lk === room) leaveVoice(); });
+  await room.connect(tk.url, tk.token);
+  await room.localParticipant.publishTrack(V.stream.getAudioTracks()[0], {source: L.Track.Source.Microphone, name: "mic"});
+  room.startAudio().catch(() => {});
+  // 소리 자동 재생이 막힌 폰: 화면을 한 번 누르면 켜진다
+  document.addEventListener("pointerdown", () => { try { room.startAudio(); } catch (e) {} }, {once: true});
+  return room;
+}
 const MAXV = 6, ICE = {iceServers: [{urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"]}]};
 let V = null, vWatch = null, vCount = 0;
 function watchVoice() {   // 방에 들어가면 통화 중인 사람 수를 늘 본다(참가 전에도)
@@ -618,18 +654,25 @@ async function joinVoice() {
   if (V) { leaveVoice(); return; }
   if (!cur || !me.n) return;
   const base = db.ref("rooms/" + cur.key), others = (await base.child("voice").once("value")).val() || {};
-  if (Object.keys(others).filter(p => p !== uid).length >= MAXV - 1) { alert(fm(t("vFull"), MAXV)); return; }   // 나까지 6명
-  let stream;
+  let stream, tk = null;
+  // 마이크 허용을 먼저 받고(누른 순간이어야 폰이 묻는다), 그동안 중계 서버 입장권도
+  const tkP = lkToken().catch(() => null);
   try { stream = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}}); }
   catch (e) { alert(t("micNo")); return; }
-  V = {base, stream, pcs: {}, iceq: {}, peers: others, muted: false};
+  tk = await tkP;
+  const max = tk ? MAXV_LK : MAXV;
+  if (Object.keys(others).filter(p => p !== uid).length >= max - 1) { stream.getTracks().forEach(x => x.stop()); alert(fm(t("vFull"), max)); return; }   // 나까지
+  V = {base, stream, pcs: {}, iceq: {}, peers: others, muted: false, lk: null};
+  if (tk) { try { V.lk = await lkConnect(tk); } catch (e) { V.lk = null; } }
   const meRef = base.child("voice/" + uid), inbox = base.child("sig/" + uid);
   meRef.onDisconnect().remove(); inbox.onDisconnect().remove();
   await inbox.remove();
-  await meRef.set({n: me.n, ts: firebase.database.ServerValue.TIMESTAMP});
+  await meRef.set(Object.assign({n: me.n, ts: firebase.database.ServerValue.TIMESTAMP}, V.lk ? {lk: true} : {}));
   V.meRef = meRef; V.inbox = inbox;
-  inbox.on("child_added", s => { const m = s.val(); s.ref.remove(); if (V && m) onSig(m).catch(() => {}); });
-  for (const p of Object.keys(others)) if (p !== uid) call(p).catch(() => {});
+  if (!V.lk) {   // 중계 서버가 안 될 때만 예전 방식(서로 직접)
+    inbox.on("child_added", s => { const m = s.val(); s.ref.remove(); if (V && m) onSig(m).catch(() => {}); });
+    for (const [p, x] of Object.entries(others)) if (p !== uid && !(x && x.lk)) call(p).catch(() => {});
+  }
   drawVoice(V.peers);
   // 번역 창을 먼저 띄우고, 받아쓰기는 그다음(받아쓰기가 안 되는 폰에서 멈춰 창이 안 뜨던 것)
   $("liveLog").innerHTML = ""; $("liveT").textContent = "🗣 " + t("liveT"); liveShow(true);
@@ -641,6 +684,7 @@ function leaveVoice() {
   $("live").hidden = true; $("liveOpen").hidden = true;
   const v = V; V = null;
   v.inbox.off(); v.inbox.remove(); v.meRef.remove(); v.meRef.onDisconnect().cancel();
+  if (v.lk) { try { v.lk.disconnect(); } catch (e) {} document.querySelectorAll('audio[id^="va_"]').forEach(a => a.remove()); }
   Object.keys(v.pcs).forEach(p => { try { v.pcs[p].close(); } catch (e) {} const a = document.getElementById("va_" + p); if (a) a.remove(); });
   v.stream.getTracks().forEach(x => x.stop());
   drawVoice({});
@@ -689,7 +733,7 @@ function drawVoice(peers) {
   if (!V) { pn.hidden = true; return; }
   pn.hidden = false;
   pn.innerHTML = Object.entries(peers || {}).map(([p, x]) => {
-    const st = p === uid ? (V.muted ? "mute" : "ok") : (V.pcs[p] && V.pcs[p].connectionState === "connected" ? "ok" : "wait");
+    const st = p === uid ? (V.muted ? "mute" : "ok") : (V.lk ? (V.lk.remoteParticipants.has(p) ? "ok" : "wait") : (V.pcs[p] && V.pcs[p].connectionState === "connected" ? "ok" : "wait"));
     return '<span class="vp ' + st + '"><i></i>' + esc(x.n || "?") + (p === uid ? " (" + t("vMe") + ")" : "") + '</span>';
   }).join("") + '<button id="vmute" class="vtool">' + (V.muted ? "🎙️ " + t("vUnmute") : "🔇 " + t("vMute")) + '</button>' +
     '<button id="vstt" class="vtool" style="margin-left:0">' + (CAP && CAP.sr ? "📝 " + t("sttOff") : "📝 " + t("sttOn")) + '</button>';
