@@ -47,6 +47,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 #clip{background:none;border:0;color:var(--sub);font-size:20px;padding:6px;cursor:pointer}
 #clip:hover,#mic:hover{color:var(--head)}
 .room .own{font-size:12px}
+.msg{position:relative}
+.mdel{position:absolute;right:16px;top:-6px;display:none;background:#2b2d31;border:1px solid #1f2023;border-radius:6px;padding:2px 6px;cursor:pointer;font-size:14px}
+.msg:hover .mdel,.msg:focus-within .mdel{display:block}
+@media (hover:none){.mdel{display:block}}
 .body{min-width:0;flex:1}
 .hd{display:flex;align-items:baseline;gap:8px}
 .hd b{font-weight:600}
@@ -61,6 +65,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .day{display:flex;align-items:center;gap:8px;margin:20px 16px 4px;color:var(--sub);font-size:12px;font-weight:600}
 .day:before,.day:after{content:"";flex:1;height:1px;background:#3f4147}
 .empty{color:var(--sub);text-align:center;margin-top:40px}
+.sys{display:flex;align-items:center;gap:8px;padding:4px 16px 4px 72px;margin-top:8px;color:var(--sub);font-size:14px}
+.sys:before{content:"→";color:var(--green);font-weight:700}
 #bar{padding:0 16px calc(20px + env(safe-area-inset-bottom))}
 #bar .box{display:flex;align-items:flex-end;background:var(--input);border-radius:8px;padding:0 6px 0 16px}
 #msg{flex:1;background:none;border:0;outline:none;resize:none;padding:11px 0;max-height:200px;height:44px}
@@ -119,7 +125,7 @@ button,input,select,textarea{font:inherit;color:inherit}
     <div id="me"><div class="av" id="meAv"></div><div class="who" id="meWho"><b id="meN"></b><small id="mode"></small></div><select id="lang" aria-label="language"></select></div>
   </nav>
   <main id="main">
-    <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><button id="delRoom" hidden title="delete" style="background:none;border:0;font-size:18px;cursor:pointer">🗑</button><button id="vbtn"></button><button id="bell" aria-label="sound" style="background:none;border:0;font-size:18px;cursor:pointer">🔔</button><a href="./" title="k700">⌂</a></div>
+    <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="delRoom" hidden title="delete" style="background:none;border:0;font-size:18px;cursor:pointer">🗑</button><button id="vbtn"></button><button id="bell" aria-label="sound" style="background:none;border:0;font-size:18px;cursor:pointer">🔔</button><a href="./" title="k700">⌂</a></div>
     <div id="vpanel" hidden></div>
     <div id="log"></div>
     <div id="bar"><div class="box"><textarea id="msg" maxlength="1000" rows="1"></textarea><button id="clip" aria-label="attach">📎</button><input id="file" type="file" accept="image/*" multiple hidden><button id="mic" aria-label="voice message">🎤</button><button id="emo" aria-label="emoji">😀</button><button id="send" aria-label="send">➤</button></div><div id="pick"></div></div>
@@ -175,10 +181,10 @@ const DEFAULT_ROOM = "1108";   // 기본 방 번호(이름은 화면에 「채�
 const roomName = (id, r) => id === DEFAULT_ROOM ? t("defRoom") : ((r && r.n) || id);
 const LANGS = [["ko", "한국어"], ["zh-TW", "繁體中文"], ["zh-CN", "简体中文"], ["en", "English"]];
 const T = {
-  ko: {rooms: "채팅방", join: "어서 오세요!", joinD: "닉네임과 내 언어를 고르세요. 다른 사람의 글은 내 언어로 번역되어 보입니다.", name: "닉네임", lang: "내 언어", go: "들어가기", ph: "#{0}에 메시지 보내기", wait: "번역 중…", fail: "번역 실패", local: "연결 안 됨", newT: "채팅방 만들기", newD: "비밀번호를 넣으면 비밀번호를 아는 사람만 들어올 수 있습니다.", rname: "방 이름", pw: "비밀번호 (비우면 공개 방)", make: "만들기", cancel: "취소", pwT: "비밀번호 방", pwD: "「{0}」 방의 비밀번호를 넣으세요.", pwL: "비밀번호", enter: "들어가기", wrong: "비밀번호가 맞지 않습니다.", needName: "방 이름을 넣으세요.", empty: "아직 글이 없습니다. 첫 글을 남겨 보세요!", today: "오늘", micNo: "마이크를 쓸 수 없습니다. 브라우저에서 마이크를 허용해 주세요.", tooLong: "녹음이 너무 깁니다(1분 이하).", vJoin: "음성 참가", vLeave: "나가기", vFull: "음성은 {0}명까지입니다.", vMute: "음소거", vUnmute: "소리 켜기", vMe: "나", defRoom: "채팅방", avL: "프로필 사진", avPick: "사진 고르기", avDel: "지우기", imgFail: "사진을 읽지 못했습니다.", imgBig: "사진이 너무 큽니다.", delQ: "「{0}」 방과 모든 글을 지울까요? 되돌릴 수 없습니다.", authNo: "로그인 연결이 안 되어 방을 만들 수 없습니다."},
-  "zh-TW": {rooms: "聊天室", join: "歡迎！", joinD: "請輸入暱稱並選擇你的語言。其他人的訊息會翻譯成你的語言。", name: "暱稱", lang: "我的語言", go: "加入", ph: "傳送訊息到 #{0}", wait: "翻譯中…", fail: "翻譯失敗", local: "未連線", newT: "建立聊天室", newD: "設定密碼後，只有知道密碼的人才能進入。", rname: "聊天室名稱", pw: "密碼（留空為公開）", make: "建立", cancel: "取消", pwT: "密碼聊天室", pwD: "請輸入「{0}」的密碼。", pwL: "密碼", enter: "進入", wrong: "密碼錯誤。", needName: "請輸入聊天室名稱。", empty: "還沒有訊息，留下第一則吧！", today: "今天", micNo: "無法使用麥克風，請在瀏覽器允許麥克風。", tooLong: "錄音太長（1 分鐘以內）。", vJoin: "加入語音", vLeave: "離開", vFull: "語音最多 {0} 人。", vMute: "靜音", vUnmute: "開麥", vMe: "我", defRoom: "聊天室", avL: "頭像", avPick: "選擇照片", avDel: "刪除", imgFail: "無法讀取照片。", imgBig: "照片太大。", delQ: "要刪除「{0}」及所有訊息嗎？無法復原。", authNo: "無法連線登入，不能建立聊天室。"},
-  "zh-CN": {rooms: "聊天室", join: "欢迎！", joinD: "请输入昵称并选择你的语言。其他人的消息会翻译成你的语言。", name: "昵称", lang: "我的语言", go: "加入", ph: "发送消息到 #{0}", wait: "翻译中…", fail: "翻译失败", local: "未连接", newT: "创建聊天室", newD: "设置密码后，只有知道密码的人才能进入。", rname: "聊天室名称", pw: "密码（留空为公开）", make: "创建", cancel: "取消", pwT: "密码聊天室", pwD: "请输入「{0}」的密码。", pwL: "密码", enter: "进入", wrong: "密码错误。", needName: "请输入聊天室名称。", empty: "还没有消息，留下第一条吧！", today: "今天", micNo: "无法使用麦克风，请在浏览器允许麦克风。", tooLong: "录音太长（1 分钟以内）。", vJoin: "加入语音", vLeave: "离开", vFull: "语音最多 {0} 人。", vMute: "静音", vUnmute: "开麦", vMe: "我", defRoom: "聊天室", avL: "头像", avPick: "选择照片", avDel: "删除", imgFail: "无法读取照片。", imgBig: "照片太大。", delQ: "要删除「{0}」及所有消息吗？无法恢复。", authNo: "无法连接登录，不能创建聊天室。"},
-  en: {rooms: "Chat rooms", join: "Welcome!", joinD: "Pick a nickname and your language. Everyone else's messages are shown translated into it.", name: "Nickname", lang: "My language", go: "Join", ph: "Message #{0}", wait: "Translating…", fail: "Translation failed", local: "Offline", newT: "Create a chat room", newD: "With a password, only people who know it can enter.", rname: "Room name", pw: "Password (leave empty for a public room)", make: "Create", cancel: "Cancel", pwT: "Password room", pwD: "Enter the password for \"{0}\".", pwL: "Password", enter: "Enter", wrong: "Wrong password.", needName: "Enter a room name.", empty: "No messages yet. Say hi!", today: "Today", micNo: "Can't use the microphone. Please allow it in your browser.", tooLong: "Recording too long (1 minute max).", vJoin: "Join voice", vLeave: "Leave", vFull: "Voice is limited to {0} people.", vMute: "Mute", vUnmute: "Unmute", vMe: "me", defRoom: "Chat", avL: "Profile photo", avPick: "Choose photo", avDel: "Remove", imgFail: "Could not read the photo.", imgBig: "The photo is too large.", delQ: "Delete \"{0}\" and all its messages? This cannot be undone.", authNo: "Sign-in failed, so the room cannot be created."}
+  ko: {rooms: "채팅방", join: "어서 오세요!", joinD: "닉네임과 내 언어를 고르세요. 다른 사람의 글은 내 언어로 번역되어 보입니다.", name: "닉네임", lang: "내 언어", go: "들어가기", ph: "#{0}에 메시지 보내기", wait: "번역 중…", fail: "번역 실패", local: "연결 안 됨", newT: "채팅방 만들기", newD: "비밀번호를 넣으면 비밀번호를 아는 사람만 들어올 수 있습니다.", rname: "방 이름", pw: "비밀번호 (비우면 공개 방)", make: "만들기", cancel: "취소", pwT: "비밀번호 방", pwD: "「{0}」 방의 비밀번호를 넣으세요.", pwL: "비밀번호", enter: "들어가기", wrong: "비밀번호가 맞지 않습니다.", needName: "방 이름을 넣으세요.", empty: "아직 글이 없습니다. 첫 글을 남겨 보세요!", today: "오늘", micNo: "마이크를 쓸 수 없습니다. 브라우저에서 마이크를 허용해 주세요.", tooLong: "녹음이 너무 깁니다(1분 이하).", vJoin: "음성 참가", vLeave: "나가기", vFull: "음성은 {0}명까지입니다.", vMute: "음소거", vUnmute: "소리 켜기", vMe: "나", defRoom: "채팅방", avL: "프로필 사진", avPick: "사진 고르기", avDel: "지우기", imgFail: "사진을 읽지 못했습니다.", imgBig: "사진이 너무 큽니다.", delQ: "「{0}」 방과 모든 글을 지울까요? 되돌릴 수 없습니다.", authNo: "로그인 연결이 안 되어 방을 만들 수 없습니다.", joined: "{0} 님이 들어왔습니다", mdelQ: "이 글을 지울까요?", mdelNo: "지울 수 없습니다(1분이 지났습니다)."},
+  "zh-TW": {rooms: "聊天室", join: "歡迎！", joinD: "請輸入暱稱並選擇你的語言。其他人的訊息會翻譯成你的語言。", name: "暱稱", lang: "我的語言", go: "加入", ph: "傳送訊息到 #{0}", wait: "翻譯中…", fail: "翻譯失敗", local: "未連線", newT: "建立聊天室", newD: "設定密碼後，只有知道密碼的人才能進入。", rname: "聊天室名稱", pw: "密碼（留空為公開）", make: "建立", cancel: "取消", pwT: "密碼聊天室", pwD: "請輸入「{0}」的密碼。", pwL: "密碼", enter: "進入", wrong: "密碼錯誤。", needName: "請輸入聊天室名稱。", empty: "還沒有訊息，留下第一則吧！", today: "今天", micNo: "無法使用麥克風，請在瀏覽器允許麥克風。", tooLong: "錄音太長（1 分鐘以內）。", vJoin: "加入語音", vLeave: "離開", vFull: "語音最多 {0} 人。", vMute: "靜音", vUnmute: "開麥", vMe: "我", defRoom: "聊天室", avL: "頭像", avPick: "選擇照片", avDel: "刪除", imgFail: "無法讀取照片。", imgBig: "照片太大。", delQ: "要刪除「{0}」及所有訊息嗎？無法復原。", authNo: "無法連線登入，不能建立聊天室。", joined: "{0} 加入了聊天", mdelQ: "要刪除這則訊息嗎？", mdelNo: "無法刪除（已超過 1 分鐘）。"},
+  "zh-CN": {rooms: "聊天室", join: "欢迎！", joinD: "请输入昵称并选择你的语言。其他人的消息会翻译成你的语言。", name: "昵称", lang: "我的语言", go: "加入", ph: "发送消息到 #{0}", wait: "翻译中…", fail: "翻译失败", local: "未连接", newT: "创建聊天室", newD: "设置密码后，只有知道密码的人才能进入。", rname: "聊天室名称", pw: "密码（留空为公开）", make: "创建", cancel: "取消", pwT: "密码聊天室", pwD: "请输入「{0}」的密码。", pwL: "密码", enter: "进入", wrong: "密码错误。", needName: "请输入聊天室名称。", empty: "还没有消息，留下第一条吧！", today: "今天", micNo: "无法使用麦克风，请在浏览器允许麦克风。", tooLong: "录音太长（1 分钟以内）。", vJoin: "加入语音", vLeave: "离开", vFull: "语音最多 {0} 人。", vMute: "静音", vUnmute: "开麦", vMe: "我", defRoom: "聊天室", avL: "头像", avPick: "选择照片", avDel: "删除", imgFail: "无法读取照片。", imgBig: "照片太大。", delQ: "要删除「{0}」及所有消息吗？无法恢复。", authNo: "无法连接登录，不能创建聊天室。", joined: "{0} 加入了聊天", mdelQ: "要删除这条消息吗？", mdelNo: "无法删除（已超过 1 分钟）。"},
+  en: {rooms: "Chat rooms", join: "Welcome!", joinD: "Pick a nickname and your language. Everyone else's messages are shown translated into it.", name: "Nickname", lang: "My language", go: "Join", ph: "Message #{0}", wait: "Translating…", fail: "Translation failed", local: "Offline", newT: "Create a chat room", newD: "With a password, only people who know it can enter.", rname: "Room name", pw: "Password (leave empty for a public room)", make: "Create", cancel: "Cancel", pwT: "Password room", pwD: "Enter the password for \"{0}\".", pwL: "Password", enter: "Enter", wrong: "Wrong password.", needName: "Enter a room name.", empty: "No messages yet. Say hi!", today: "Today", micNo: "Can't use the microphone. Please allow it in your browser.", tooLong: "Recording too long (1 minute max).", vJoin: "Join voice", vLeave: "Leave", vFull: "Voice is limited to {0} people.", vMute: "Mute", vUnmute: "Unmute", vMe: "me", defRoom: "Chat", avL: "Profile photo", avPick: "Choose photo", avDel: "Remove", imgFail: "Could not read the photo.", imgBig: "The photo is too large.", delQ: "Delete \"{0}\" and all its messages? This cannot be undone.", authNo: "Sign-in failed, so the room cannot be created.", joined: "{0} joined", mdelQ: "Delete this message?", mdelNo: "Can't delete it (more than 1 minute has passed)."}
 };
 const $ = id => document.getElementById(id);
 const store = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
@@ -250,7 +256,9 @@ function enter(id, r, key) {
   drawRooms(); $("app").classList.remove("open");
   curRef = db.ref("rooms/" + key + "/msgs");
   if (typeof watchVoice === "function") watchVoice();
+  if (typeof joinHere === "function") joinHere();
   curRef.orderByChild("ts").limitToLast(300).on("child_added", s => addMsg(s.key, s.val()));
+  curRef.on("child_removed", s => { const el = document.getElementById("m_" + s.key); if (el) { const nx = el.nextElementSibling; if (nx && nx.classList.contains("cont") && !el.classList.contains("cont")) nx.classList.remove("cont"); el.remove(); } });
 }
 $("pGo").onclick = async () => {
   if (!pending) return;
@@ -296,10 +304,12 @@ function addMsg(id, m) {
   const d = document.createElement("div");
   d.className = "msg" + (cont ? " cont" : ""); d.id = "m_" + id; d.dataset.t = m.t; d.dataset.l = m.l || ""; d.dataset.mine = mine ? "1" : "";
   const col = colorOf(m.u || m.n), ln = (LANGS.find(x => x[0] === m.l) || ["", m.l || "?"])[1];
-  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b><span class="lg">' + esc(ln) + '</span><span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="tx"></div><div class="org" hidden></div></div>';
+  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b><span class="lg">' + esc(ln) + '</span><span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="tx"></div><div class="org" hidden></div></div>' + (m.a && m.a === myAuth() ? '<button class="mdel" title="delete">🗑</button>' : '');
   log.appendChild(d);
   lastMsg = {u: m.u, ts};
   avatarOf(m.u); paintAv(m.u);
+  d.dataset.ts = ts; if (m.v) d.dataset.v = "1"; if (m.i) d.dataset.i = "1";
+  const del = d.querySelector(".mdel"); if (del) { const left = ts + 60e3 - Date.now(); if (left <= 0) del.remove(); else setTimeout(() => del.remove(), left); }
   if (m.i) { if (m.t === "🖼️") d.querySelector(".tx").hidden = true; loadImg(d.querySelector(".pic")); }
   if (!mine && ts > OPENED && (document.hidden || !document.hasFocus())) ding();
   render(d);
@@ -316,12 +326,14 @@ async function render(d) {
     if (r.trim() === text.trim()) org.hidden = true; else org.textContent = r;
   } catch (e) { org.textContent = t("fail"); org.classList.add("fail"); }
 }
+const withA = m => { const a = myAuth(); if (a) m.a = a; return m; };
 function send() {
   const box = $("msg"), text = box.value.trim();
   if (!text || !me.n || !curRef) return;
   box.value = ""; grow();
-  curRef.push({n: me.n, l: me.l, t: text.slice(0, 1000), u: uid, ts: firebase.database.ServerValue.TIMESTAMP});
+  curRef.push(withA({n: me.n, l: me.l, t: text.slice(0, 1000), u: uid, ts: firebase.database.ServerValue.TIMESTAMP}));
 }
+function sys(text) { const em = $("empty"); if (em) em.remove(); const stick = nearBottom(), d = document.createElement("div"); d.className = "sys"; d.textContent = text; log.appendChild(d); if (stick) log.scrollTop = log.scrollHeight; }
 function grow() { const b = $("msg"); b.style.height = "44px"; b.style.height = Math.min(200, b.scrollHeight) + "px"; }
 $("send").onclick = send;
 // 이모지 고르기(디스코드처럼 입력칸 오른쪽 😀) — 누르면 커서 자리에 넣는다
@@ -391,11 +403,23 @@ function applyLang() {
 }
 $("lang").onchange = e => { me.l = e.target.value; store.set("chat_lang", me.l); applyLang(); log.querySelectorAll(".msg").forEach(render); };
 $("jLang").onchange = e => { me.l = e.target.value; applyLang(); };
-$("jGo").onclick = () => { const n = $("jName").value.trim().slice(0, 40); if (!n) { $("jName").focus(); return; } me.n = n; store.set("chat_name", n); store.set("chat_lang", me.l); hide("mJoin"); applyLang(); log.querySelectorAll(".msg").forEach(render); $("msg").focus(); };
+$("jGo").onclick = () => { const n = $("jName").value.trim().slice(0, 40); if (!n) { $("jName").focus(); return; } me.n = n; store.set("chat_name", n); store.set("chat_lang", me.l); hide("mJoin"); applyLang(); if (cur) joinHere(); log.querySelectorAll(".msg").forEach(render); $("msg").focus(); };
 $("jName").addEventListener("keydown", e => { if (e.key === "Enter") $("jGo").click(); });
 $("meWho").onclick = () => { $("jName").value = me.n; show("mJoin"); };
 $("burger").onclick = () => $("app").classList.toggle("open");
 $("log").addEventListener("click", () => $("app").classList.remove("open"));
+// 내 글 지우기(1분 안) — 사진 · 녹음 먼저, 그다음 글
+$("log").addEventListener("click", async e => {
+  const b = e.target.closest(".mdel"); if (!b || !cur) return;
+  const d = b.closest(".msg"), id = d.id.slice(2);
+  if (Date.now() - +d.dataset.ts > 60e3) { b.remove(); return; }
+  if (!confirm(t("mdelQ"))) return;
+  try {
+    if (d.dataset.i) await db.ref("rooms/" + cur.key + "/img/" + id).remove();
+    if (d.dataset.v) await db.ref("rooms/" + cur.key + "/audio/" + id).remove();
+    await curRef.child(id).remove();
+  } catch (x) { alert(t("mdelNo")); }
+});
 
 // ── 음성 메시지(이박사님 11-09, 무료만) ─────────────────────────────────────
 // 🎤 누르면 녹음 시작, 다시 누르면 끝(최대 60초). 녹음하는 동안 브라우저 받아쓰기(크롬 · 안드로이드)로 글자를 받아,
@@ -440,7 +464,7 @@ async function finishRec(r) {
   const ref = curRef.push();
   try {
     await db.ref("rooms/" + cur.key + "/audio/" + ref.key).set(data);
-    await ref.set({n: me.n, l: me.l, t: (r.text.trim() || "🎤").slice(0, 1000), u: uid, v: Math.min(70, dur), ts: firebase.database.ServerValue.TIMESTAMP});
+    await ref.set(withA({n: me.n, l: me.l, t: (r.text.trim() || "🎤").slice(0, 1000), u: uid, v: Math.min(70, dur), ts: firebase.database.ServerValue.TIMESTAMP}));
   } catch (e) { alert(String(e.message || e)); }
 }
 $("mic").onclick = () => rec ? stopRec() : startRec();
@@ -590,7 +614,7 @@ async function sendImage(file) {
   const cap = $("msg").value.trim().slice(0, 1000), ref = curRef.push();
   try {
     await db.ref("rooms/" + cur.key + "/img/" + ref.key).set(data);
-    await ref.set({n: me.n, l: me.l, t: cap || "🖼️", u: uid, i: true, ts: firebase.database.ServerValue.TIMESTAMP});
+    await ref.set(withA({n: me.n, l: me.l, t: cap || "🖼️", u: uid, i: true, ts: firebase.database.ServerValue.TIMESTAMP}));
     if (cap) { $("msg").value = ""; grow(); }
   } catch (e) { alert(String(e.message || e)); }
 }
@@ -646,6 +670,32 @@ $("delRoom").onclick = async () => {
   try { leaveVoice(); await db.ref("rooms/" + id).remove(); await db.ref("roomlist/" + id).remove(); delete keys[id]; store.set("chat_keys", JSON.stringify(keys)); openRoom(DEFAULT_ROOM); }
   catch (e) { alert(String(e.message || e)); }
 };
+
+// ── 들어온 사람 알림(이박사님 11-09) ─────────────────────────────────────────
+// 방에 들어오면 rooms/{열쇠}/here/{내 번호} 에 이름을 남기고(나가면 · 창을 닫으면 지워짐), 다른 사람이 새로 들어오면
+// 대화창에 「○○ 님이 들어왔습니다」 + 위쪽 접속 인원. 안 보고 있으면 띵동 · 제목 숫자도
+let HERE = null, hereReady = false;
+function joinHere() {
+  leaveHere();
+  if (!cur || !me.n) return;
+  const ref = db.ref("rooms/" + cur.key + "/here"), mine = ref.child(uid);
+  HERE = {ref, mine}; hereReady = false;
+  mine.onDisconnect().remove();
+  mine.set({n: me.n, ts: firebase.database.ServerValue.TIMESTAMP});
+  ref.on("child_added", s => {
+    if (hereReady && s.key !== uid) {
+      const v = s.val() || {}; sys(fm(t("joined"), v.n || "?"));
+      if (document.hidden || !document.hasFocus()) ding();
+    }
+  });
+  ref.on("value", s => { hereReady = true; $("here").textContent = "👥 " + Object.keys(s.val() || {}).length; });
+}
+function leaveHere() {
+  if (!HERE) return;
+  HERE.ref.off(); HERE.mine.onDisconnect().cancel(); HERE.mine.remove(); HERE = null;
+  $("here").textContent = "";
+}
+window.addEventListener("pagehide", leaveHere);
 
 applyLang();
 // 처음 열 방: 주소의 #방 → ?room= → 지난번 방 → 1108
