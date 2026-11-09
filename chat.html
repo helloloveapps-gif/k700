@@ -5,65 +5,126 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>오늘이 1일 · 1108</title>
 <style>
-:root{--bg:#0f1115;--card:#171a21;--line:#262b36;--text:#e8ecf3;--sub:#8b95a7;--me:#2b4a7a;--acc:#ffd43b;--ok:#69db7c;--bad:#ff6b6b}
+/* 디스코드 느낌: 왼쪽 방 목록 · 가운데 대화(말풍선 없이 줄마다 동그라미 얼굴 · 이름 · 시각) · 아래 둥근 입력칸 */
+:root{--rail:#1e1f22;--side:#2b2d31;--main:#313338;--input:#383a40;--hover:#2e3035;--line:#1f2023;--text:#dbdee1;--sub:#949ba4;--head:#f2f3f5;--blurple:#5865f2;--green:#23a559;--red:#f23f43}
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI","Malgun Gothic","Microsoft JhengHei",sans-serif}
-#app{display:flex;flex-direction:column;height:100dvh;max-width:760px;margin:0 auto}
-header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--card)}
-header h1{font-size:16px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-header a{color:var(--sub);text-decoration:none;font-size:13px}
-select,input,button{font:inherit;color:var(--text);background:#10131a;border:1px solid var(--line);border-radius:10px;min-height:40px;padding:0 10px}
-button{cursor:pointer;background:#22324d;border-color:#2f4670;font-weight:700}
-#log{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
-.m{max-width:86%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 12px}
-.m.me{align-self:flex-end;background:var(--me);border-color:#3b5f99}
-.m .who{font-size:12px;color:var(--sub);display:flex;gap:6px;align-items:center}
-.m .who b{color:var(--acc);font-weight:800}
-.m .tx{font-size:16px;white-space:pre-wrap;word-break:break-word}
-.m .org{font-size:12.5px;color:var(--sub);white-space:pre-wrap;word-break:break-word;margin-top:3px;border-top:1px dashed var(--line);padding-top:3px}
-.m .wait{color:var(--sub);font-size:13px}
-.sys{align-self:center;font-size:12px;color:var(--sub)}
-footer{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--card)}
-footer textarea{flex:1;resize:none;font:inherit;color:var(--text);background:#10131a;border:1px solid var(--line);border-radius:10px;padding:9px 10px;height:44px;max-height:120px}
-#join{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px}
-#join .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px}
-#join h2{margin:0 0 4px;font-size:18px}
-#join p{margin:0;color:var(--sub);font-size:13px}
-.badge{font-size:11px;padding:1px 6px;border-radius:999px;background:#2a2f3a;color:var(--sub)}
-#mode{font-size:11px;color:var(--bad)}
+html,body{margin:0;height:100%;background:var(--main);color:var(--text);font:15px/1.375 "gg sans","Noto Sans KR","Malgun Gothic","Microsoft JhengHei",system-ui,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+#app{display:flex;height:100dvh}
+#side{width:240px;flex:none;background:var(--side);display:flex;flex-direction:column}
+#side .srv{height:48px;display:flex;align-items:center;padding:0 16px;font-weight:700;color:var(--head);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(0,0,0,.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#side .cat{display:flex;align-items:center;justify-content:space-between;padding:18px 8px 4px 16px;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--sub);text-transform:uppercase}
+#side .cat button{background:none;border:0;color:var(--sub);font-size:20px;line-height:1;cursor:pointer;padding:0 6px}
+#side .cat button:hover{color:var(--head)}
+#rooms{flex:1;overflow:auto;padding:0 8px}
+.room{display:flex;align-items:center;gap:6px;width:100%;padding:6px 8px;margin:1px 0;border:0;border-radius:4px;background:none;color:var(--sub);cursor:pointer;text-align:left;font-size:15px}
+.room:hover{background:var(--hover);color:var(--text)}
+.room.on{background:#404249;color:var(--head)}
+.room .h{font-size:20px;opacity:.7;width:20px;text-align:center}
+.room span.nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#me{height:52px;background:#232428;display:flex;align-items:center;gap:8px;padding:0 8px}
+#me .av{width:32px;height:32px;font-size:14px}
+#me .who{flex:1;min-width:0;cursor:pointer}
+#me .who b{display:block;color:var(--head);font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#me .who small{color:var(--red);font-size:12px}
+#me select{background:var(--input);border:0;border-radius:4px;padding:4px;color:var(--text);max-width:96px}
+#main{flex:1;min-width:0;display:flex;flex-direction:column}
+#top{height:48px;flex:none;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(0,0,0,.2);color:var(--head);font-weight:700}
+#top .h{font-size:20px;color:var(--sub);font-weight:400}
+#top .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#top a,#burger{color:var(--sub);text-decoration:none;background:none;border:0;font-size:20px;cursor:pointer}
+#burger{display:none}
+#log{flex:1;overflow:auto;padding:16px 0 8px}
+.msg{display:flex;gap:16px;padding:2px 16px;margin-top:17px}
+.msg.cont{margin-top:0}
+.msg:hover{background:var(--hover)}
+.av{width:40px;height:40px;flex:none;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px}
+.msg.cont .av{visibility:hidden;height:0}
+.body{min-width:0;flex:1}
+.hd{display:flex;align-items:baseline;gap:8px}
+.hd b{font-weight:600}
+.hd .tm{font-size:12px;color:var(--sub)}
+.hd .lg{font-size:10px;padding:0 5px;border-radius:3px;background:#4e5058;color:#dbdee1;font-weight:700}
+.msg.cont .hd{display:none}
+.tx{white-space:pre-wrap;word-break:break-word}
+.org{white-space:pre-wrap;word-break:break-word;color:var(--sub);font-size:13px;margin-top:1px}
+.org:before{content:"↳ "}
+.wait{color:var(--sub);font-style:italic}
+.day{display:flex;align-items:center;gap:8px;margin:20px 16px 4px;color:var(--sub);font-size:12px;font-weight:600}
+.day:before,.day:after{content:"";flex:1;height:1px;background:#3f4147}
+.empty{color:var(--sub);text-align:center;margin-top:40px}
+#bar{padding:0 16px calc(20px + env(safe-area-inset-bottom))}
+#bar .box{display:flex;align-items:flex-end;background:var(--input);border-radius:8px;padding:0 6px 0 16px}
+#msg{flex:1;background:none;border:0;outline:none;resize:none;padding:11px 0;max-height:200px;height:44px}
+#msg::placeholder{color:#6d6f78}
+#send{background:none;border:0;color:var(--sub);font-size:20px;padding:8px 10px;cursor:pointer}
+#send:hover{color:var(--head)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+.modal.on{display:flex}
+.card{background:var(--main);border-radius:8px;width:100%;max-width:440px;padding:24px 16px 16px;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.card h2{margin:0 0 6px;text-align:center;color:var(--head);font-size:22px}
+.card p{margin:0 0 16px;text-align:center;color:var(--sub);font-size:14px}
+.card label{display:block;font-size:12px;font-weight:700;color:#b5bac1;text-transform:uppercase;margin:12px 0 6px}
+.card input,.card select{width:100%;background:var(--rail);border:0;border-radius:4px;padding:10px;outline:none}
+.card .row{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+.btn{border:0;border-radius:4px;padding:10px 18px;font-weight:600;cursor:pointer;background:var(--blurple);color:#fff}
+.btn.ghost{background:none;color:var(--text)}
+.err{color:var(--red);font-size:13px;min-height:18px;margin-top:6px}
+@media (max-width:720px){
+  #side{position:fixed;left:0;top:0;bottom:0;z-index:5;transform:translateX(-100%);transition:transform .2s}
+  #app.open #side{transform:none;box-shadow:4px 0 16px rgba(0,0,0,.5)}
+  #burger{display:block}
+  .msg{gap:12px;padding:2px 12px}
+  .av{width:36px;height:36px}
+}
 </style>
 </head>
 <body>
 <div id="app">
-  <header>
-    <h1 id="hT">💬 오늘이 1일 · 1108</h1>
-    <span id="mode"></span>
-    <select id="lang" aria-label="language"></select>
-    <a href="./" id="back">⌂</a>
-  </header>
-  <div id="log"></div>
-  <footer>
-    <textarea id="msg" maxlength="1000"></textarea>
-    <button id="send"></button>
-  </footer>
+  <nav id="side">
+    <div class="srv">오늘이 1일 · 1108</div>
+    <div class="cat"><span id="cT"></span><button id="addRoom" title="+">＋</button></div>
+    <div id="rooms"></div>
+    <div id="me"><div class="av" id="meAv"></div><div class="who" id="meWho"><b id="meN"></b><small id="mode"></small></div><select id="lang" aria-label="language"></select></div>
+  </nav>
+  <main id="main">
+    <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><a href="./" title="k700">⌂</a></div>
+    <div id="log"></div>
+    <div id="bar"><div class="box"><textarea id="msg" maxlength="1000" rows="1"></textarea><button id="send" aria-label="send">➤</button></div></div>
+  </main>
 </div>
-<div id="join" style="display:none">
-  <div class="box">
-    <h2 id="jT"></h2>
-    <p id="jD"></p>
-    <input id="jName" maxlength="40" autocomplete="nickname">
-    <select id="jLang"></select>
-    <button id="jGo"></button>
-  </div>
-</div>
+
+<div class="modal" id="mJoin"><div class="card">
+  <h2 id="jT"></h2><p id="jD"></p>
+  <label id="jNL"></label><input id="jName" maxlength="40" autocomplete="nickname">
+  <label id="jLL"></label><select id="jLang"></select>
+  <div class="row"><button class="btn" id="jGo"></button></div>
+</div></div>
+
+<div class="modal" id="mNew"><div class="card">
+  <h2 id="nT"></h2><p id="nD"></p>
+  <label id="nNL"></label><input id="nName" maxlength="30">
+  <label id="nPL"></label><input id="nPw" type="password" maxlength="40" autocomplete="new-password">
+  <div class="err" id="nErr"></div>
+  <div class="row"><button class="btn ghost" id="nNo"></button><button class="btn" id="nGo"></button></div>
+</div></div>
+
+<div class="modal" id="mPw"><div class="card">
+  <h2 id="pT"></h2><p id="pD"></p>
+  <label id="pPL"></label><input id="pPw" type="password" maxlength="40" autocomplete="current-password">
+  <div class="err" id="pErr"></div>
+  <div class="row"><button class="btn ghost" id="pNo"></button><button class="btn" id="pGo"></button></div>
+</div></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
-// 1108 번역 채팅 — 원문만 저장하고, 보는 사람마다 자기 언어로 번역해 보여 준다(이박사님 11-09)
-// 저장소: Firebase Realtime Database. 설정이 비어 있으면 이 기기 안에서만 도는 시험 모드(탭끼리 BroadcastChannel)
-// 번역: 각자 브라우저에서 구글 번역 무료 주소(translate.googleapis.com, client=gtx) — 공용 글자 한도 없음
-// Firebase 프로젝트 chat1108(이박사님 계정) — 웹 설정값은 공개용(비밀 아님). 쓰기 · 읽기 제한은 DB 규칙(rooms/$room/msgs, 새 글만 · 길이 제한)
+// 오늘이 1일 · 1108 번역 채팅 — 디스코드처럼 왼쪽 방 목록 · 방 만들기 · 비밀번호 방(이박사님 11-09)
+// 원문만 저장하고, 보는 사람마다 자기 언어로 번역해 보여 준다(각자 브라우저에서 구글 번역 무료 주소 — 공용 한도 없음)
+// 저장소: Firebase Realtime Database(chat1108). 방 목록 = roomlist/{id}, 글 = rooms/{열쇠}/msgs
+//   열린 방의 열쇠 = id, 비밀번호 방의 열쇠 = id + "_" + sha256(id + 비번) 앞 20자 → 비번을 모르면 글이 있는 자리를 알 수 없다
+//   roomlist 의 chk = sha256(열쇠 + "chk") 앞 12자 — 들어갈 때 비번이 맞는지만 확인(열쇠 자체는 저장하지 않는다)
+// 설정값은 공개용(비밀 아님). 쓰기 · 읽기 제한은 DB 규칙
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyBYLf6m03K2-bJeuJuV9cf67cFRv_1czfU",
   authDomain: "chat1108-d4d5f.firebaseapp.com",
@@ -73,110 +134,174 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "891325964868",
   appId: "1:891325964868:web:7518b5498b3a5dac339211"
 };
-
-const ROOM = (new URLSearchParams(location.search).get("room") || "1108").replace(/[^\w-]/g, "").slice(0, 30) || "1108";
+const DEFAULT_ROOM = "1108";
 const LANGS = [["ko", "한국어"], ["zh-TW", "繁體中文"], ["zh-CN", "简体中文"], ["en", "English"]];
 const T = {
-  ko: {title: "번역 채팅", join: "채팅 들어가기", joinD: "이름과 내 언어를 고르세요. 다른 사람의 글은 내 언어로 번역되어 보입니다.", name: "게임 닉네임", go: "들어가기", send: "보내기", ph: "메시지 입력 (Enter 보내기, Shift+Enter 줄바꿈)", wait: "번역 중…", fail: "번역 실패 — 원문", local: "시험 모드(이 기기만)", hello: "{0} 님이 들어왔습니다"},
-  "zh-TW": {title: "翻譯聊天", join: "加入聊天", joinD: "請輸入名字並選擇你的語言。其他人的訊息會翻譯成你的語言。", name: "遊戲暱稱", go: "加入", send: "發送", ph: "輸入訊息（Enter 發送，Shift+Enter 換行）", wait: "翻譯中…", fail: "翻譯失敗 — 原文", local: "測試模式（僅此裝置）", hello: "{0} 加入了聊天"},
-  "zh-CN": {title: "翻译聊天", join: "加入聊天", joinD: "请输入名字并选择你的语言。其他人的消息会翻译成你的语言。", name: "游戏昵称", go: "加入", send: "发送", ph: "输入消息（Enter 发送，Shift+Enter 换行）", wait: "翻译中…", fail: "翻译失败 — 原文", local: "测试模式（仅此设备）", hello: "{0} 加入了聊天"},
-  en: {title: "Translated chat", join: "Join chat", joinD: "Enter your name and pick your language. Everyone else's messages are shown translated into it.", name: "In-game nickname", go: "Join", send: "Send", ph: "Type a message (Enter to send, Shift+Enter for a new line)", wait: "Translating…", fail: "Translation failed — original", local: "Test mode (this device only)", hello: "{0} joined"}
+  ko: {rooms: "채팅방", join: "어서 오세요!", joinD: "닉네임과 내 언어를 고르세요. 다른 사람의 글은 내 언어로 번역되어 보입니다.", name: "닉네임", lang: "내 언어", go: "들어가기", ph: "#{0}에 메시지 보내기", wait: "번역 중…", fail: "번역 실패", local: "연결 안 됨", newT: "채팅방 만들기", newD: "비밀번호를 넣으면 비밀번호를 아는 사람만 들어올 수 있습니다.", rname: "방 이름", pw: "비밀번호 (비우면 공개 방)", make: "만들기", cancel: "취소", pwT: "비밀번호 방", pwD: "「{0}」 방의 비밀번호를 넣으세요.", pwL: "비밀번호", enter: "들어가기", wrong: "비밀번호가 맞지 않습니다.", needName: "방 이름을 넣으세요.", empty: "아직 글이 없습니다. 첫 글을 남겨 보세요!", today: "오늘"},
+  "zh-TW": {rooms: "聊天室", join: "歡迎！", joinD: "請輸入暱稱並選擇你的語言。其他人的訊息會翻譯成你的語言。", name: "暱稱", lang: "我的語言", go: "加入", ph: "傳送訊息到 #{0}", wait: "翻譯中…", fail: "翻譯失敗", local: "未連線", newT: "建立聊天室", newD: "設定密碼後，只有知道密碼的人才能進入。", rname: "聊天室名稱", pw: "密碼（留空為公開）", make: "建立", cancel: "取消", pwT: "密碼聊天室", pwD: "請輸入「{0}」的密碼。", pwL: "密碼", enter: "進入", wrong: "密碼錯誤。", needName: "請輸入聊天室名稱。", empty: "還沒有訊息，留下第一則吧！", today: "今天"},
+  "zh-CN": {rooms: "聊天室", join: "欢迎！", joinD: "请输入昵称并选择你的语言。其他人的消息会翻译成你的语言。", name: "昵称", lang: "我的语言", go: "加入", ph: "发送消息到 #{0}", wait: "翻译中…", fail: "翻译失败", local: "未连接", newT: "创建聊天室", newD: "设置密码后，只有知道密码的人才能进入。", rname: "聊天室名称", pw: "密码（留空为公开）", make: "创建", cancel: "取消", pwT: "密码聊天室", pwD: "请输入「{0}」的密码。", pwL: "密码", enter: "进入", wrong: "密码错误。", needName: "请输入聊天室名称。", empty: "还没有消息，留下第一条吧！", today: "今天"},
+  en: {rooms: "Chat rooms", join: "Welcome!", joinD: "Pick a nickname and your language. Everyone else's messages are shown translated into it.", name: "Nickname", lang: "My language", go: "Join", ph: "Message #{0}", wait: "Translating…", fail: "Translation failed", local: "Offline", newT: "Create a chat room", newD: "With a password, only people who know it can enter.", rname: "Room name", pw: "Password (leave empty for a public room)", make: "Create", cancel: "Cancel", pwT: "Password room", pwD: "Enter the password for \"{0}\".", pwL: "Password", enter: "Enter", wrong: "Wrong password.", needName: "Enter a room name.", empty: "No messages yet. Say hi!", today: "Today"}
 };
 const $ = id => document.getElementById(id);
 const store = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const fm = (s, ...a) => a.reduce((x, v, i) => x.replace("{" + i + "}", v), s);
+const guessLang = () => { const n = (navigator.language || "ko").toLowerCase(); return n.startsWith("ko") ? "ko" : n.startsWith("zh") ? (/tw|hk|hant/.test(n) ? "zh-TW" : "zh-CN") : "en"; };
 let me = {n: store.get("chat_name") || "", l: store.get("chat_lang") || guessLang()};
 const t = k => (T[me.l] || T.ko)[k];
-function guessLang() { const n = (navigator.language || "ko").toLowerCase(); return n.startsWith("ko") ? "ko" : n.startsWith("zh") ? (/tw|hk|hant/.test(n) ? "zh-TW" : "zh-CN") : "en"; }
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const uid = store.get("chat_uid") || (() => { const v = Math.random().toString(36).slice(2, 12); store.set("chat_uid", v); return v; })();
+const COLORS = ["#5865f2", "#3ba55c", "#faa61a", "#ed4245", "#eb459e", "#9b59b6", "#1abc9c", "#e67e22"];
+const colorOf = s => { let h = 0; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
+async function sha(s) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
 
-// 번역 — 같은 글 · 같은 언어는 한 번만(기기에 남겨 둔다)
+// 번역 — 같은 글 · 같은 언어는 한 번만
 const TC = new Map();
-async function translate(text, tl) {
+function translate(text, tl) {
   const key = tl + "\u0001" + text;
   if (TC.has(key)) return TC.get(key);
-  const p = (async () => {
-    const u = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + encodeURIComponent(tl) + "&dt=t&q=" + encodeURIComponent(text);
-    const r = await fetch(u);
-    if (!r.ok) throw new Error("http " + r.status);
-    const j = await r.json();
-    return {t: (j[0] || []).map(x => x[0]).join("")};
-  })();
-  TC.set(key, p);
-  p.catch(() => TC.delete(key));
+  const p = fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + encodeURIComponent(tl) + "&dt=t&q=" + encodeURIComponent(text))
+    .then(r => { if (!r.ok) throw new Error("http " + r.status); return r.json(); })
+    .then(j => (j[0] || []).map(x => x[0]).join(""));
+  TC.set(key, p); p.catch(() => TC.delete(key));
   return p;
 }
 
-// 화면
+// Firebase
+firebase.initializeApp(FIREBASE_CONFIG);
+const db = firebase.database();
+let ROOMS = {}, cur = null, curRef = null, lastMsg = null;
+const keys = (() => { try { return JSON.parse(store.get("chat_keys") || "{}"); } catch (e) { return {}; } })();   // 이 기기에서 연 비밀번호 방의 열쇠(다시 묻지 않게)
+
+// 방 목록
+function drawRooms() {
+  const list = Object.entries(ROOMS).sort((a, b) => (a[0] === DEFAULT_ROOM ? -1 : b[0] === DEFAULT_ROOM ? 1 : (a[1].ts || 0) - (b[1].ts || 0)));
+  if (!ROOMS[DEFAULT_ROOM]) list.unshift([DEFAULT_ROOM, {n: DEFAULT_ROOM}]);
+  $("rooms").innerHTML = list.map(([id, r]) => '<button class="room' + (cur && cur.id === id ? " on" : "") + '" data-id="' + esc(id) + '"><span class="h">' + (r.lock ? "🔒" : "#") + '</span><span class="nm">' + esc(r.n || id) + '</span></button>').join("");
+}
+db.ref("roomlist").on("value", s => { ROOMS = s.val() || {}; drawRooms(); });
+db.ref(".info/connected").on("value", s => { $("mode").textContent = s.val() ? "" : t("local"); });
+$("rooms").addEventListener("click", e => { const b = e.target.closest(".room"); if (b) openRoom(b.dataset.id); });
+
+let pending = null;
+async function openRoom(id) {
+  const r = ROOMS[id] || (id === DEFAULT_ROOM ? {n: DEFAULT_ROOM} : null);
+  if (!r) return;
+  if (r.lock) {
+    const k = keys[id];
+    if (k && (await sha(k + "chk")).slice(0, 12) === r.chk) return enter(id, r, k);
+    pending = {id, r}; $("pD").textContent = fm(t("pwD"), r.n); $("pPw").value = ""; $("pErr").textContent = ""; show("mPw"); $("pPw").focus();
+    return;
+  }
+  enter(id, r, id);
+}
+function enter(id, r, key) {
+  if (curRef) curRef.off();
+  cur = {id, r, key}; lastMsg = null;
+  store.set("chat_room", id);
+  history.replaceState(null, "", "#" + encodeURIComponent(id));
+  $("topH").textContent = r.lock ? "🔒" : "#"; $("topT").textContent = r.n || id;
+  $("msg").placeholder = fm(t("ph"), r.n || id);
+  $("log").innerHTML = '<div class="empty" id="empty">' + esc(t("empty")) + '</div>';
+  drawRooms(); $("app").classList.remove("open");
+  curRef = db.ref("rooms/" + key + "/msgs");
+  curRef.orderByChild("ts").limitToLast(300).on("child_added", s => addMsg(s.key, s.val()));
+}
+$("pGo").onclick = async () => {
+  if (!pending) return;
+  const key = pending.id + "_" + (await sha(pending.id + $("pPw").value)).slice(0, 20);
+  if ((await sha(key + "chk")).slice(0, 12) !== pending.r.chk) { $("pErr").textContent = t("wrong"); return; }
+  keys[pending.id] = key; store.set("chat_keys", JSON.stringify(keys));
+  hide("mPw"); enter(pending.id, pending.r, key); pending = null;
+};
+$("pPw").addEventListener("keydown", e => { if (e.key === "Enter") $("pGo").click(); });
+$("pNo").onclick = () => { hide("mPw"); pending = null; };
+
+// 방 만들기
+$("addRoom").onclick = () => { $("nName").value = ""; $("nPw").value = ""; $("nErr").textContent = ""; show("mNew"); $("nName").focus(); };
+$("nNo").onclick = () => hide("mNew");
+$("nGo").onclick = async () => {
+  const name = $("nName").value.trim().slice(0, 30), pw = $("nPw").value;
+  if (!name) { $("nErr").textContent = t("needName"); return; }
+  const id = db.ref("roomlist").push().key, lock = !!pw, key = lock ? id + "_" + (await sha(id + pw)).slice(0, 20) : id;
+  const meta = {n: name, lock, by: (me.n || "?").slice(0, 40), ts: firebase.database.ServerValue.TIMESTAMP};
+  if (lock) meta.chk = (await sha(key + "chk")).slice(0, 12);
+  try { await db.ref("roomlist/" + id).set(meta); } catch (e) { $("nErr").textContent = String(e.message || e); return; }
+  if (lock) { keys[id] = key; store.set("chat_keys", JSON.stringify(keys)); }
+  hide("mNew"); enter(id, Object.assign({}, meta, {ts: Date.now()}), key);
+};
+$("nName").addEventListener("keydown", e => { if (e.key === "Enter") $("nPw").focus(); });
+$("nPw").addEventListener("keydown", e => { if (e.key === "Enter") $("nGo").click(); });
+
+// 글
 const log = $("log");
-const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 120;
+const dayKey = ts => { const d = new Date(ts); return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); };
 function addMsg(id, m) {
-  if (document.getElementById("m_" + id)) return;
-  const stick = nearBottom(), mine = m.u === uid, d = document.createElement("div");
-  d.className = "m" + (mine ? " me" : ""); d.id = "m_" + id; d.dataset.t = m.t; d.dataset.l = m.l || "";
-  const tm = m.ts ? new Date(m.ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) : "";
-  d.innerHTML = '<div class="who"><b>' + esc(m.n) + '</b><span class="badge">' + esc((LANGS.find(x => x[0] === m.l) || ["", m.l || "?"])[1]) + '</span><span>' + tm + '</span></div><div class="tx"></div><div class="org" hidden></div>';
+  if (!m || document.getElementById("m_" + id)) return;
+  const e = $("empty"); if (e) e.remove();
+  const stick = nearBottom(), mine = m.u === uid, ts = m.ts || Date.now();
+  if (!lastMsg || dayKey(lastMsg.ts) !== dayKey(ts)) {
+    const dd = document.createElement("div"); dd.className = "day";
+    dd.textContent = dayKey(ts) === dayKey(Date.now()) ? t("today") : new Date(ts).toLocaleDateString(); log.appendChild(dd); lastMsg = null;
+  }
+  const cont = lastMsg && lastMsg.u === m.u && ts - lastMsg.ts < 5 * 60e3;
+  const d = document.createElement("div");
+  d.className = "msg" + (cont ? " cont" : ""); d.id = "m_" + id; d.dataset.t = m.t; d.dataset.l = m.l || ""; d.dataset.mine = mine ? "1" : "";
+  const col = colorOf(m.u || m.n), ln = (LANGS.find(x => x[0] === m.l) || ["", m.l || "?"])[1];
+  d.innerHTML = '<div class="av" style="background:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b><span class="lg">' + esc(ln) + '</span><span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div><div class="tx"></div><div class="org" hidden></div></div>';
   log.appendChild(d);
+  lastMsg = {u: m.u, ts};
   render(d);
   if (stick || mine) log.scrollTop = log.scrollHeight;
 }
 async function render(d) {
   const text = d.dataset.t, tx = d.querySelector(".tx"), org = d.querySelector(".org");
-  if (d.classList.contains("me") || d.dataset.l === me.l) { tx.textContent = text; org.hidden = true; return; }
+  if (d.dataset.mine || d.dataset.l === me.l) { tx.textContent = text; org.hidden = true; return; }
   tx.innerHTML = '<span class="wait">' + esc(t("wait")) + '</span>';
   try {
     const r = await translate(text, me.l);
-    // 감지 언어(j[2])는 믿을 수 없어서(번체를 ko 로 돌려줌) 번역 결과가 원문과 같을 때만 원문 그대로
-    if (r.t.trim() === text.trim()) { tx.textContent = text; org.hidden = true; }
-    else { tx.textContent = r.t; org.textContent = text; org.hidden = false; }
+    if (r.trim() === text.trim()) { tx.textContent = text; org.hidden = true; }
+    else { tx.textContent = r; org.textContent = text; org.hidden = false; }
   } catch (e) { tx.textContent = text; org.textContent = t("fail"); org.hidden = false; }
-}
-function rerenderAll() { log.querySelectorAll(".m").forEach(render); }
-function sys(s) { const d = document.createElement("div"); d.className = "sys"; d.textContent = s; log.appendChild(d); log.scrollTop = log.scrollHeight; }
-function applyLang() {
-  document.documentElement.lang = me.l;
-  // 사이트 이름은 「오늘이 1일 · 1108」로 고정(이박사님 11-09)
-  $("hT").textContent = "💬 오늘이 1일 · " + ROOM;
-  document.title = "오늘이 1일 · " + ROOM;
-  $("send").textContent = t("send"); $("msg").placeholder = t("ph");
-  $("jT").textContent = t("join"); $("jD").textContent = t("joinD"); $("jName").placeholder = t("name"); $("jGo").textContent = t("go");
-  $("mode").textContent = DB ? "" : t("local");
-  for (const s of [$("lang"), $("jLang")]) { s.innerHTML = LANGS.map(([v, n]) => '<option value="' + v + '"' + (v === me.l ? " selected" : "") + ">" + n + "</option>").join(""); }
-}
-
-// 저장소
-const uid = store.get("chat_uid") || (() => { const v = Math.random().toString(36).slice(2, 12); store.set("chat_uid", v); return v; })();
-let DB = null, bc = null;
-if (FIREBASE_CONFIG && window.firebase) {
-  firebase.initializeApp(FIREBASE_CONFIG);
-  DB = firebase.database().ref("rooms/" + ROOM + "/msgs");
-  DB.orderByChild("ts").limitToLast(200).on("child_added", s => addMsg(s.key, s.val()));
-} else {
-  // 시험 모드: 이 기기의 탭끼리만(설정 전 화면 · 번역 확인용)
-  const KEY = "chat_local_" + ROOM, load = () => { try { return JSON.parse(store.get(KEY) || "[]"); } catch (e) { return []; } };
-  load().forEach(m => addMsg(m.id, m));
-  if ("BroadcastChannel" in window) { bc = new BroadcastChannel(KEY); bc.onmessage = e => addMsg(e.data.id, e.data); }
-  window.__localPush = m => { const a = load(); a.push(m); store.set(KEY, JSON.stringify(a.slice(-200))); addMsg(m.id, m); if (bc) bc.postMessage(m); };
 }
 function send() {
   const box = $("msg"), text = box.value.trim();
-  if (!text || !me.n) return;
-  box.value = "";
-  const m = {n: me.n, l: me.l, t: text.slice(0, 1000), u: uid};
-  if (DB) DB.push(Object.assign(m, {ts: firebase.database.ServerValue.TIMESTAMP}));
-  else window.__localPush(Object.assign(m, {ts: Date.now(), id: Date.now() + "_" + uid}));
+  if (!text || !me.n || !curRef) return;
+  box.value = ""; grow();
+  curRef.push({n: me.n, l: me.l, t: text.slice(0, 1000), u: uid, ts: firebase.database.ServerValue.TIMESTAMP});
 }
+function grow() { const b = $("msg"); b.style.height = "44px"; b.style.height = Math.min(200, b.scrollHeight) + "px"; }
 $("send").onclick = send;
+$("msg").addEventListener("input", grow);
 $("msg").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); } });
-$("lang").onchange = e => { me.l = e.target.value; store.set("chat_lang", me.l); applyLang(); rerenderAll(); };
+
+// 화면 글 · 언어 · 내 정보
+function show(id) { $(id).classList.add("on"); }
+function hide(id) { $(id).classList.remove("on"); }
+function applyLang() {
+  document.documentElement.lang = me.l;
+  $("cT").textContent = t("rooms");
+  $("jT").textContent = t("join"); $("jD").textContent = t("joinD"); $("jNL").textContent = t("name"); $("jLL").textContent = t("lang"); $("jGo").textContent = t("go"); $("jName").placeholder = t("name");
+  $("nT").textContent = t("newT"); $("nD").textContent = t("newD"); $("nNL").textContent = t("rname"); $("nPL").textContent = t("pw"); $("nGo").textContent = t("make"); $("nNo").textContent = t("cancel");
+  $("pT").textContent = t("pwT"); $("pPL").textContent = t("pwL"); $("pGo").textContent = t("enter"); $("pNo").textContent = t("cancel");
+  if (cur) $("msg").placeholder = fm(t("ph"), cur.r.n || cur.id);
+  for (const s of [$("lang"), $("jLang")]) s.innerHTML = LANGS.map(([v, n]) => '<option value="' + v + '"' + (v === me.l ? " selected" : "") + ">" + n + "</option>").join("");
+  $("meN").textContent = me.n || "—";
+  $("meAv").textContent = (me.n || "?").charAt(0).toUpperCase(); $("meAv").style.background = colorOf(uid);
+}
+$("lang").onchange = e => { me.l = e.target.value; store.set("chat_lang", me.l); applyLang(); log.querySelectorAll(".msg").forEach(render); };
 $("jLang").onchange = e => { me.l = e.target.value; applyLang(); };
-$("jGo").onclick = () => {
-  const n = $("jName").value.trim().slice(0, 40); if (!n) { $("jName").focus(); return; }
-  me.n = n; store.set("chat_name", n); store.set("chat_lang", me.l);
-  $("join").style.display = "none"; $("msg").focus(); rerenderAll();
-};
+$("jGo").onclick = () => { const n = $("jName").value.trim().slice(0, 40); if (!n) { $("jName").focus(); return; } me.n = n; store.set("chat_name", n); store.set("chat_lang", me.l); hide("mJoin"); applyLang(); log.querySelectorAll(".msg").forEach(render); $("msg").focus(); };
 $("jName").addEventListener("keydown", e => { if (e.key === "Enter") $("jGo").click(); });
+$("meWho").onclick = () => { $("jName").value = me.n; show("mJoin"); };
+$("burger").onclick = () => $("app").classList.toggle("open");
+$("log").addEventListener("click", () => $("app").classList.remove("open"));
+
 applyLang();
-if (!me.n) { $("join").style.display = "flex"; $("jName").focus(); }
+// 처음 열 방: 주소의 #방 → ?room= → 지난번 방 → 1108
+const want = decodeURIComponent(location.hash.slice(1)) || new URLSearchParams(location.search).get("room") || store.get("chat_room") || DEFAULT_ROOM;
+db.ref("roomlist").once("value").then(s => { ROOMS = s.val() || {}; drawRooms(); openRoom(ROOMS[want] ? want : DEFAULT_ROOM); }, () => openRoom(DEFAULT_ROOM));
+if (!me.n) { show("mJoin"); $("jName").focus(); }
 </script>
 </body>
 </html>
