@@ -815,7 +815,7 @@ function drawVoice(peers) {
   }).join("") + '<button id="vmute" class="vtool">' + (V.muted ? "🎙️ " + t("vUnmute") : "🔇 " + t("vMute")) + '</button>' +
     '<button id="vstt" class="vtool" style="margin-left:0">' + (CAP && CAP.sr ? "📝 " + t("sttOff") : "📝 " + t("sttOn")) + '</button>';
   $("vmute").onclick = () => { V.muted = !V.muted; V.stream.getAudioTracks().forEach(x => x.enabled = !V.muted); drawVoice(V.peers); };
-  $("vstt").onclick = () => { if (CAP && CAP.sr) stopSTT(true); else { store.set("chat_stt", "1"); startSTT(); } };
+  $("vstt").onclick = () => { if (CAP && CAP.sr) stopSTT(true); else { store.set("chat_stt2", "1"); startSTT(); } };
 }
 $("vbtn").onclick = joinVoice;
 window.addEventListener("pagehide", () => leaveVoice());
@@ -1014,7 +1014,8 @@ function startCaps() {
 }
 const TOUCH = matchMedia("(hover:none)").matches;
 // 받아쓰기는 모두 기본으로 켠다(11-09 휴대폰에서 꺼져 있어 한쪽 말만 번역됨). 허용 창이 자꾸 뜨는 폰은 저절로 꺼진다(stopSTT)
-const sttOn = () => (store.get("chat_stt") ?? "1") === "1";
+// 받아쓰기 켜짐 여부 — 사람이 직접 끈 것만 기억한다(11-10: 저절로 꺼진 것까지 「꺼짐」으로 저장돼 실시간 번역이 영영 멈추던 것. 새 이름 chat_stt2 로 모두 다시 켬)
+const sttOn = () => (store.get("chat_stt2") ?? "1") === "1";
 function startSTT() {
   if (!CAP || CAP.sr) return;
   if (!SR) { capLine("⚠ " + t("capNo")); return; }
@@ -1032,12 +1033,12 @@ function startSTT() {
     }
   };
   // 마이크 허용을 거절했거나 자꾸 다시 묻는 폰이면 받아쓰기만 끈다(음성 통화는 그대로)
-  sr.onerror = e => { if (/not-allowed|service-not-allowed|audio-capture/.test(e.error || "")) { stopSTT(true); capLine("⚠ " + t("sttDenied")); } };
+  sr.onerror = e => { if (/not-allowed|service-not-allowed/.test(e.error || "")) { stopSTT(false); capLine("⚠ " + t("sttDenied")); } };   // 마이크 거절만 멈춤(저장 안 함). 그 밖(조용함 · 잠깐 마이크 못 잡음)은 onend 가 다시 켠다
   sr.onend = () => {
     if (!CAP || CAP.sr !== sr) return;
     const now = Date.now(); starts.push(now); while (starts.length && now - starts[0] > 15000) starts.shift();
-    if (starts.length > 4) { stopSTT(true); capLine("⚠ " + t("sttDenied")); return; }   // 15초에 다섯 번 넘게 끊기면 그만(허용 창이 계속 뜨는 경우)
-    setTimeout(() => { try { if (CAP && CAP.sr === sr) sr.start(); } catch (x) {} }, 600);   // 조용하면 저절로 멈추니 다시
+    const wait = starts.length > 4 ? 3000 : 600;   // 자주 끊기면 끄지 않고 천천히 다시(허용 창이 자꾸 뜨는 폰 배려)
+    setTimeout(() => { try { if (CAP && CAP.sr === sr) sr.start(); } catch (x) {} }, wait);   // 조용하면 저절로 멈추니 다시
   };
   CAP.sr = sr;
   try { sr.start(); } catch (e) { CAP.sr = null; }
@@ -1045,7 +1046,7 @@ function startSTT() {
   if (V) drawVoice(V.peers);
 }
 function stopSTT(save) {
-  if (save) store.set("chat_stt", "0");
+  if (save) store.set("chat_stt2", "0");
   if (CAP && CAP.sr) { const sr = CAP.sr; CAP.sr = null; try { sr.stop(); } catch (e) {} }
   if (V) drawVoice(V.peers);
 }
