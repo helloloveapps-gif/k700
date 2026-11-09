@@ -47,8 +47,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .hd .lg{font-size:10px;padding:0 5px;border-radius:3px;background:#4e5058;color:#dbdee1;font-weight:700}
 .msg.cont .hd{display:none}
 .tx{white-space:pre-wrap;word-break:break-word}
-.org{white-space:pre-wrap;word-break:break-word;color:var(--sub);font-size:13px;margin-top:1px}
-.org:before{content:"↳ "}
+/* 원문이 위, 내가 고른 언어 번역이 아래(이박사님 11-09) */
+.org{white-space:pre-wrap;word-break:break-word;color:#a5b4fc;font-size:14px;margin-top:2px;padding-left:8px;border-left:2px solid #5865f2}
+.org.fail{color:var(--sub);border-left-color:#4e5058}
 .wait{color:var(--sub);font-style:italic}
 .day{display:flex;align-items:center;gap:8px;margin:20px 16px 4px;color:var(--sub);font-size:12px;font-weight:600}
 .day:before,.day:after{content:"";flex:1;height:1px;background:#3f4147}
@@ -97,7 +98,7 @@ button,input,select,textarea{font:inherit;color:inherit}
     <div id="me"><div class="av" id="meAv"></div><div class="who" id="meWho"><b id="meN"></b><small id="mode"></small></div><select id="lang" aria-label="language"></select></div>
   </nav>
   <main id="main">
-    <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><a href="./" title="k700">⌂</a></div>
+    <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><button id="bell" aria-label="sound" style="background:none;border:0;font-size:18px;cursor:pointer">🔔</button><a href="./" title="k700">⌂</a></div>
     <div id="log"></div>
     <div id="bar"><div class="box"><textarea id="msg" maxlength="1000" rows="1"></textarea><button id="emo" aria-label="emoji">😀</button><button id="send" aria-label="send">➤</button></div><div id="pick"></div></div>
   </main>
@@ -208,6 +209,7 @@ function enter(id, r, key) {
   cur = {id, r, key}; lastMsg = null;
   store.set("chat_room", id);
   history.replaceState(null, "", "#" + encodeURIComponent(id));
+  document.title = "오늘이 1일 · " + (r.n || id);
   $("topH").textContent = r.lock ? "🔒" : "#"; $("topT").textContent = r.n || id;
   $("msg").placeholder = fm(t("ph"), r.n || id);
   $("log").innerHTML = '<div class="empty" id="empty">' + esc(t("empty")) + '</div>';
@@ -260,18 +262,20 @@ function addMsg(id, m) {
   d.innerHTML = '<div class="av" style="background:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b><span class="lg">' + esc(ln) + '</span><span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div><div class="tx"></div><div class="org" hidden></div></div>';
   log.appendChild(d);
   lastMsg = {u: m.u, ts};
+  if (!mine && ts > OPENED && (document.hidden || !document.hasFocus())) ding();
   render(d);
   if (stick || mine) log.scrollTop = log.scrollHeight;
 }
+// 원문은 그대로 위에, 번역은 그 밑에(.org 칸을 번역 칸으로 쓴다)
 async function render(d) {
   const text = d.dataset.t, tx = d.querySelector(".tx"), org = d.querySelector(".org");
-  if (d.dataset.mine || d.dataset.l === me.l) { tx.textContent = text; org.hidden = true; return; }
-  tx.innerHTML = '<span class="wait">' + esc(t("wait")) + '</span>';
+  tx.textContent = text; org.classList.remove("fail");
+  if (d.dataset.mine || d.dataset.l === me.l) { org.hidden = true; return; }
+  org.hidden = false; org.innerHTML = '<span class="wait">' + esc(t("wait")) + '</span>';
   try {
     const r = await translate(text, me.l);
-    if (r.trim() === text.trim()) { tx.textContent = text; org.hidden = true; }
-    else { tx.textContent = r; org.textContent = text; org.hidden = false; }
-  } catch (e) { tx.textContent = text; org.textContent = t("fail"); org.hidden = false; }
+    if (r.trim() === text.trim()) org.hidden = true; else org.textContent = r;
+  } catch (e) { org.textContent = t("fail"); org.classList.add("fail"); }
 }
 function send() {
   const box = $("msg"), text = box.value.trim();
@@ -300,6 +304,33 @@ $("pick").addEventListener("click", e => {
 document.addEventListener("click", e => { if (!e.target.closest("#pick") && !e.target.closest("#emo")) { $("pick").classList.remove("on"); $("emo").classList.remove("on"); } });
 $("msg").addEventListener("input", grow);
 $("msg").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); } });
+
+// 알림: 화면을 안 보고 있을 때 남의 새 글이 오면 띵 소리 + 탭 제목에 안 읽은 수(이박사님 11-09). 🔔 로 끄고 켠다
+const OPENED = Date.now();
+let unread = 0, actx = null, muted = store.get("chat_mute") === "1";
+const baseTitle = () => "오늘이 1일 · " + (cur ? (cur.r.n || cur.id) : DEFAULT_ROOM);
+function ding() {
+  unread++; document.title = "(" + unread + ") " + baseTitle();
+  if (muted) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    const now = actx.currentTime;
+    [[880, 0], [1320, .12]].forEach(([f, dt]) => {
+      const o = actx.createOscillator(), g = actx.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, now + dt); g.gain.exponentialRampToValueAtTime(0.25, now + dt + .02); g.gain.exponentialRampToValueAtTime(0.0001, now + dt + .35);
+      o.connect(g).connect(actx.destination); o.start(now + dt); o.stop(now + dt + .4);
+    });
+  } catch (e) {}
+}
+// 브라우저는 사람이 한 번 누른 뒤에야 소리를 허락한다 — 첫 클릭 · 입력 때 미리 깨워 둔다
+["click", "keydown", "touchstart"].forEach(ev => document.addEventListener(ev, () => { try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === "suspended") actx.resume(); } catch (e) {} }, {once: true, passive: true}));
+const clearUnread = () => { if (!document.hidden && document.hasFocus()) { unread = 0; document.title = baseTitle(); } };
+document.addEventListener("visibilitychange", clearUnread); window.addEventListener("focus", clearUnread);
+function drawBell() { $("bell").textContent = muted ? "🔕" : "🔔"; }
+$("bell").onclick = () => { muted = !muted; store.set("chat_mute", muted ? "1" : "0"); drawBell(); };
+drawBell();
 
 // 화면 글 · 언어 · 내 정보
 function show(id) { $(id).classList.add("on"); }
