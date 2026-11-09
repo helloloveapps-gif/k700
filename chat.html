@@ -1040,7 +1040,8 @@ function startCaps() {
 const TOUCH = matchMedia("(hover:none)").matches;
 // 받아쓰기는 모두 기본으로 켠다(11-09 휴대폰에서 꺼져 있어 한쪽 말만 번역됨). 허용 창이 자꾸 뜨는 폰은 저절로 꺼진다(stopSTT)
 // 받아쓰기 켜짐 여부 — 사람이 직접 끈 것만 기억한다(11-10: 저절로 꺼진 것까지 「꺼짐」으로 저장돼 실시간 번역이 영영 멈추던 것. 새 이름 chat_stt2 로 모두 다시 켬)
-const sttOn = () => (store.get("chat_stt2") ?? "1") === "1";
+// 폰(터치)에서는 크롬 받아쓰기를 쓰지 않는다 — 통화가 마이크를 쥐고 있어 소리를 못 듣고, 10초마다 다시 켜지며 「마이크 허용」 창만 계속 뜸(11-10 원격 진단: start→audio 반복, speech 0)
+const sttOn = () => !TOUCH && (store.get("chat_stt2") ?? "1") === "1";
 // 진단(11-10): 받아쓰기 상태를 내 음성 참가 정보(voice/{나}.st)에 올린다 — 원격으로 원인 확인용
 let STT_LAST = "";
 function sttStat(x) { if (x === STT_LAST) return; STT_LAST = x; try { if (V && V.meRef) V.meRef.update({st: String(x).slice(0, 80), stt: firebase.database.ServerValue.TIMESTAMP}); } catch (e) {} }
