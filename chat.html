@@ -140,7 +140,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 .vtool{margin-left:auto;background:#383a40;border:0;border-radius:12px;padding:4px 10px;font-size:13px;cursor:pointer;color:var(--text)}
 .vtool.on{background:#23a559;color:#fff;font-weight:700}
 .vtool.off{background:#da373c;color:#fff;font-weight:700}
-#vlvl{display:inline-block;width:0;height:8px;background:#fff;margin-left:6px;border-radius:2px;vertical-align:middle;transition:width .08s}
+.vtool{white-space:nowrap}
+.vtool.on.talk{background:#57f287;color:#111;box-shadow:0 0 0 2px #57f287aa}   /* 말하는 중 = 밝은 초록 */
 #pick{position:absolute;right:16px;bottom:calc(100% + 4px);width:min(352px,calc(100vw - 32px));max-height:300px;overflow:auto;background:#2b2d31;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.45);padding:8px;display:none;z-index:4}
 #pick.on{display:block}
 #pick .cat2{font-size:12px;font-weight:700;color:var(--sub);margin:6px 4px 4px}
@@ -804,7 +805,7 @@ async function onSig(m) {
     if (pc && pc.remoteDescription) await pc.addIceCandidate(c).catch(() => {}); else (V.iceq[p] = V.iceq[p] || []).push(c);
   }
 }
-// 내 마이크 소리 크기 막대(켜져 있는지 눈으로 확인 · 이박사님 11-10)
+// 내 마이크에 소리가 들어오면 「마이크 켜짐」 단추 색이 밝아진다(막대는 줄바꿈돼 뺌 · 이박사님 11-10)
 let METER = null;
 function meter() {
   if (!V || METER && METER.v === V) return;
@@ -815,7 +816,7 @@ function meter() {
     const tick = () => {
       if (V !== v) { ac.close().catch(() => {}); if (METER && METER.v === v) METER = null; return; }
       an.getFloatTimeDomainData(buf); let q = 0; for (const x of buf) q += x * x;
-      const el = document.getElementById("vlvl"); if (el) el.style.width = (v.muted ? 0 : Math.min(36, Math.sqrt(q / buf.length) * 300)) + "px";
+      const el = document.getElementById("vmute"); if (el) el.classList.toggle("talk", !v.muted && Math.sqrt(q / buf.length) > 0.02);   // 소리가 들어오면 단추 색이 밝아진다
       requestAnimationFrame(tick);
     };
     tick();
@@ -832,7 +833,7 @@ function drawVoice(peers) {
   pn.innerHTML = Object.entries(peers || {}).map(([p, x]) => {
     const st = p === uid ? (V.muted ? "mute" : "ok") : (V.lk ? (V.lk.remoteParticipants.has(p) ? "ok" : "wait") : (V.pcs[p] && V.pcs[p].connectionState === "connected" ? "ok" : "wait"));
     return '<span class="vp ' + st + '"><i></i>' + esc(x.n || "?") + (p === uid ? " (" + t("vMe") + ")" : "") + '</span>';
-  }).join("") + '<button id="vmute" class="vtool ' + (V.muted ? "off" : "on") + '" title="' + esc(V.muted ? t("vUnmute") : t("vMute")) + '">' + (V.muted ? "🔇 " + t("micOff") : "🎙️ " + t("micOn") + '<i id="vlvl"></i>') + '</button>' +
+  }).join("") + '<button id="vmute" class="vtool ' + (V.muted ? "off" : "on") + '" title="' + esc(V.muted ? t("vUnmute") : t("vMute")) + '">' + (V.muted ? "🔇 " + t("micOff") : "🎙️ " + t("micOn")) + '</button>' +
     '<button id="vstt" class="vtool ' + (CAP && CAP.sr ? "on" : "off") + '" style="margin-left:0" title="' + esc(CAP && CAP.sr ? t("sttOff") : t("sttOn")) + '">📝 ' + (CAP && CAP.sr ? t("sttIsOn") : t("sttIsOff")) + '</button>';
   meter();
   $("vmute").onclick = () => { V.muted = !V.muted; V.stream.getAudioTracks().forEach(x => x.enabled = !V.muted); drawVoice(V.peers); };
@@ -1045,7 +1046,7 @@ function startSTT() {
   sr.onresult = e => {
     let interim = "";
     for (let i = e.resultIndex; i < e.results.length; i++) if (!e.results[i].isFinal) interim += e.results[i][0].transcript;
-    $("liveMe").textContent = interim ? "🎙 " + me.n + ": " + interim : "";
+    $("liveMe").textContent = interim ? "🎙 " + me.n + ": " + interim : "✅ STT";
     for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) {
       const tx = e.results[i][0].transcript.trim();
       if (tx && V && !V.muted && curRef) curRef.push(withA({n: me.n, l: me.l, t: tx.slice(0, 1000), u: uid, s: true, ts: firebase.database.ServerValue.TIMESTAMP}));   // 채팅에도 글로(이박사님 11-09)
@@ -1054,7 +1055,10 @@ function startSTT() {
     }
   };
   // 마이크 허용을 거절했거나 자꾸 다시 묻는 폰이면 받아쓰기만 끈다(음성 통화는 그대로)
-  sr.onerror = e => { if (/not-allowed|service-not-allowed/.test(e.error || "")) { stopSTT(false); capLine("⚠ " + t("sttDenied")); } };   // 마이크 거절만 멈춤(저장 안 함). 그 밖(조용함 · 잠깐 마이크 못 잡음)은 onend 가 다시 켠다
+  // 진단(11-10): 받아쓰기 오류를 실시간 번역 칸 위 한 줄에 보인다 — no-speech 는 조용할 때 나는 정상 오류라 뺌
+  sr.onaudiostart = () => { if (!/^🎙|^⚠/.test($("liveMe").textContent)) $("liveMe").textContent = "👂 STT"; };   // 받아쓰기가 마이크 소리를 받기 시작함
+  sr.onerror = e => { if (e.error && e.error !== "no-speech" && e.error !== "aborted") $("liveMe").textContent = "⚠ STT: " + e.error; };
+  sr.addEventListener("error", e => { if (/not-allowed|service-not-allowed/.test(e.error || "")) { stopSTT(false); capLine("⚠ " + t("sttDenied")); } });   // 마이크 거절만 멈춤(저장 안 함). 그 밖(조용함 · 잠깐 마이크 못 잡음)은 onend 가 다시 켠다
   sr.onend = () => {
     if (!CAP || CAP.sr !== sr) return;
     const now = Date.now(); starts.push(now); while (starts.length && now - starts[0] > 15000) starts.shift();
