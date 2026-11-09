@@ -204,10 +204,10 @@ const DEFAULT_ROOM = "1108";   // 기본 방 번호(이름은 화면에 「채�
 const roomName = (id, r) => id === DEFAULT_ROOM ? t("defRoom") : ((r && r.n) || id);
 const LANGS = [["ko", "한국어"], ["zh-TW", "繁體中文"], ["zh-CN", "简体中文"], ["en", "English"]];
 const T = {
-  ko: {rooms: "채팅방", join: "어서 오세요!", joinD: "닉네임과 내 언어를 고르세요. 다른 사람의 글은 내 언어로 번역되어 보입니다.", name: "닉네임", lang: "내 언어", go: "들어가기", ph: "#{0}에 메시지 보내기", wait: "번역 중…", fail: "번역 실패", local: "연결 안 됨", newT: "채팅방 만들기", newD: "비밀번호를 넣으면 비밀번호를 아는 사람만 들어올 수 있습니다.", rname: "방 이름", pw: "비밀번호 (비우면 공개 방)", make: "만들기", cancel: "취소", pwT: "비밀번호 방", pwD: "「{0}」 방의 비밀번호를 넣으세요.", pwL: "비밀번호", enter: "들어가기", wrong: "비밀번호가 맞지 않습니다.", needName: "방 이름을 넣으세요.", empty: "아직 글이 없습니다. 첫 글을 남겨 보세요!", today: "오늘", micNo: "마이크를 쓸 수 없습니다. 브라우저에서 마이크를 허용해 주세요.", tooLong: "녹음이 너무 깁니다(1분 이하).", vJoin: "음성 참가", vLeave: "나가기", vFull: "음성은 {0}명까지입니다.", vMute: "음소거", vUnmute: "소리 켜기", vMe: "나", defRoom: "채팅방", avL: "프로필 사진", avPick: "사진 고르기", avDel: "지우기", imgFail: "사진을 읽지 못했습니다.", imgBig: "사진이 너무 큽니다.", delQ: "「{0}」 방과 모든 글을 지울까요? 되돌릴 수 없습니다.", authNo: "로그인 연결이 안 되어 방을 만들 수 없습니다.", joined: "{0} 님이 들어왔습니다", left: "{0} 님이 나갔습니다", mdelQ: "이 글을 지울까요?", mdelNo: "지울 수 없습니다(1분이 지났습니다).", replyTo: "답장{0}: ", ppl: "{0}명", pplMax: "{0}/{1}명", maxL: "인원 제한 (비우면 제한 없음)", maxPh: "예: 10", full: "「{0}」 방이 꽉 찼습니다({1}명).", capNo: "이 브라우저는 받아쓰기를 못 해서 내 말 자막은 안 나갑니다(크롬 권장)."},
-  "zh-TW": {rooms: "聊天室", join: "歡迎！", joinD: "請輸入暱稱並選擇你的語言。其他人的訊息會翻譯成你的語言。", name: "暱稱", lang: "我的語言", go: "加入", ph: "傳送訊息到 #{0}", wait: "翻譯中…", fail: "翻譯失敗", local: "未連線", newT: "建立聊天室", newD: "設定密碼後，只有知道密碼的人才能進入。", rname: "聊天室名稱", pw: "密碼（留空為公開）", make: "建立", cancel: "取消", pwT: "密碼聊天室", pwD: "請輸入「{0}」的密碼。", pwL: "密碼", enter: "進入", wrong: "密碼錯誤。", needName: "請輸入聊天室名稱。", empty: "還沒有訊息，留下第一則吧！", today: "今天", micNo: "無法使用麥克風，請在瀏覽器允許麥克風。", tooLong: "錄音太長（1 分鐘以內）。", vJoin: "加入語音", vLeave: "離開", vFull: "語音最多 {0} 人。", vMute: "靜音", vUnmute: "開麥", vMe: "我", defRoom: "聊天室", avL: "頭像", avPick: "選擇照片", avDel: "刪除", imgFail: "無法讀取照片。", imgBig: "照片太大。", delQ: "要刪除「{0}」及所有訊息嗎？無法復原。", authNo: "無法連線登入，不能建立聊天室。", joined: "{0} 加入了聊天", left: "{0} 離開了聊天", mdelQ: "要刪除這則訊息嗎？", mdelNo: "無法刪除（已超過 1 分鐘）。", replyTo: "回覆{0}：", ppl: "{0} 人", pplMax: "{0}/{1} 人", maxL: "人數上限（留空為不限）", maxPh: "例：10", full: "「{0}」已滿（{1} 人）。", capNo: "此瀏覽器不支援語音辨識，無法傳送你的字幕（建議用 Chrome）。"},
-  "zh-CN": {rooms: "聊天室", join: "欢迎！", joinD: "请输入昵称并选择你的语言。其他人的消息会翻译成你的语言。", name: "昵称", lang: "我的语言", go: "加入", ph: "发送消息到 #{0}", wait: "翻译中…", fail: "翻译失败", local: "未连接", newT: "创建聊天室", newD: "设置密码后，只有知道密码的人才能进入。", rname: "聊天室名称", pw: "密码（留空为公开）", make: "创建", cancel: "取消", pwT: "密码聊天室", pwD: "请输入「{0}」的密码。", pwL: "密码", enter: "进入", wrong: "密码错误。", needName: "请输入聊天室名称。", empty: "还没有消息，留下第一条吧！", today: "今天", micNo: "无法使用麦克风，请在浏览器允许麦克风。", tooLong: "录音太长（1 分钟以内）。", vJoin: "加入语音", vLeave: "离开", vFull: "语音最多 {0} 人。", vMute: "静音", vUnmute: "开麦", vMe: "我", defRoom: "聊天室", avL: "头像", avPick: "选择照片", avDel: "删除", imgFail: "无法读取照片。", imgBig: "照片太大。", delQ: "要删除「{0}」及所有消息吗？无法恢复。", authNo: "无法连接登录，不能创建聊天室。", joined: "{0} 加入了聊天", left: "{0} 离开了聊天", mdelQ: "要删除这条消息吗？", mdelNo: "无法删除（已超过 1 分钟）。", replyTo: "回复{0}：", ppl: "{0} 人", pplMax: "{0}/{1} 人", maxL: "人数上限（留空为不限）", maxPh: "例：10", full: "「{0}」已满（{1} 人）。", capNo: "此浏览器不支持语音识别，无法发送你的字幕（建议用 Chrome）。"},
-  en: {rooms: "Chat rooms", join: "Welcome!", joinD: "Pick a nickname and your language. Everyone else's messages are shown translated into it.", name: "Nickname", lang: "My language", go: "Join", ph: "Message #{0}", wait: "Translating…", fail: "Translation failed", local: "Offline", newT: "Create a chat room", newD: "With a password, only people who know it can enter.", rname: "Room name", pw: "Password (leave empty for a public room)", make: "Create", cancel: "Cancel", pwT: "Password room", pwD: "Enter the password for \"{0}\".", pwL: "Password", enter: "Enter", wrong: "Wrong password.", needName: "Enter a room name.", empty: "No messages yet. Say hi!", today: "Today", micNo: "Can't use the microphone. Please allow it in your browser.", tooLong: "Recording too long (1 minute max).", vJoin: "Join voice", vLeave: "Leave", vFull: "Voice is limited to {0} people.", vMute: "Mute", vUnmute: "Unmute", vMe: "me", defRoom: "Chat", avL: "Profile photo", avPick: "Choose photo", avDel: "Remove", imgFail: "Could not read the photo.", imgBig: "The photo is too large.", delQ: "Delete \"{0}\" and all its messages? This cannot be undone.", authNo: "Sign-in failed, so the room cannot be created.", joined: "{0} joined", left: "{0} left", mdelQ: "Delete this message?", mdelNo: "Can't delete it (more than 1 minute has passed).", replyTo: "Replying to{0} ", ppl: "{0} online", pplMax: "{0}/{1}", maxL: "Max people (leave empty for no limit)", maxPh: "e.g. 10", full: "\"{0}\" is full ({1} people).", capNo: "This browser can't do speech recognition, so your captions won't be sent (use Chrome)."}
+  ko: {rooms: "채팅방", join: "어서 오세요!", joinD: "닉네임과 내 언어를 고르세요. 다른 사람의 글은 내 언어로 번역되어 보입니다.", name: "닉네임", lang: "내 언어", go: "들어가기", ph: "#{0}에 메시지 보내기", wait: "번역 중…", fail: "번역 실패", local: "연결 안 됨", newT: "채팅방 만들기", newD: "비밀번호를 넣으면 비밀번호를 아는 사람만 들어올 수 있습니다.", rname: "방 이름", pw: "비밀번호 (비우면 공개 방)", make: "만들기", cancel: "취소", pwT: "비밀번호 방", pwD: "「{0}」 방의 비밀번호를 넣으세요.", pwL: "비밀번호", enter: "들어가기", wrong: "비밀번호가 맞지 않습니다.", needName: "방 이름을 넣으세요.", empty: "아직 글이 없습니다. 첫 글을 남겨 보세요!", today: "오늘", micNo: "마이크를 쓸 수 없습니다. 브라우저에서 마이크를 허용해 주세요.", tooLong: "녹음이 너무 깁니다(1분 이하).", vJoin: "음성 참가", vLeave: "나가기", vFull: "음성은 {0}명까지입니다.", vMute: "음소거", vUnmute: "소리 켜기", vMe: "나", defRoom: "채팅방", avL: "프로필 사진", avPick: "사진 고르기", avDel: "지우기", imgFail: "사진을 읽지 못했습니다.", imgBig: "사진이 너무 큽니다.", delQ: "「{0}」 방과 모든 글을 지울까요? 되돌릴 수 없습니다.", authNo: "로그인 연결이 안 되어 방을 만들 수 없습니다.", joined: "{0} 님이 들어왔습니다", left: "{0} 님이 나갔습니다", mdelQ: "이 글을 지울까요?", mdelNo: "지울 수 없습니다(1분이 지났습니다).", replyTo: "답장{0}: ", ppl: "{0}명", pplMax: "{0}/{1}명", maxL: "인원 제한 (비우면 제한 없음)", maxPh: "예: 10", full: "「{0}」 방이 꽉 찼습니다({1}명).", capNo: "이 브라우저는 받아쓰기를 못 해서 내 말 자막은 안 나갑니다(크롬 권장).", sttOn: "받아쓰기 켜기", sttOff: "받아쓰기 끄기", sttDenied: "받아쓰기를 껐습니다(마이크 허용이 계속 뜨면 크롬 주소창 🔒 → 마이크 「허용」으로 바꿔 주세요). 음성 통화는 그대로입니다."},
+  "zh-TW": {rooms: "聊天室", join: "歡迎！", joinD: "請輸入暱稱並選擇你的語言。其他人的訊息會翻譯成你的語言。", name: "暱稱", lang: "我的語言", go: "加入", ph: "傳送訊息到 #{0}", wait: "翻譯中…", fail: "翻譯失敗", local: "未連線", newT: "建立聊天室", newD: "設定密碼後，只有知道密碼的人才能進入。", rname: "聊天室名稱", pw: "密碼（留空為公開）", make: "建立", cancel: "取消", pwT: "密碼聊天室", pwD: "請輸入「{0}」的密碼。", pwL: "密碼", enter: "進入", wrong: "密碼錯誤。", needName: "請輸入聊天室名稱。", empty: "還沒有訊息，留下第一則吧！", today: "今天", micNo: "無法使用麥克風，請在瀏覽器允許麥克風。", tooLong: "錄音太長（1 分鐘以內）。", vJoin: "加入語音", vLeave: "離開", vFull: "語音最多 {0} 人。", vMute: "靜音", vUnmute: "開麥", vMe: "我", defRoom: "聊天室", avL: "頭像", avPick: "選擇照片", avDel: "刪除", imgFail: "無法讀取照片。", imgBig: "照片太大。", delQ: "要刪除「{0}」及所有訊息嗎？無法復原。", authNo: "無法連線登入，不能建立聊天室。", joined: "{0} 加入了聊天", left: "{0} 離開了聊天", mdelQ: "要刪除這則訊息嗎？", mdelNo: "無法刪除（已超過 1 分鐘）。", replyTo: "回覆{0}：", ppl: "{0} 人", pplMax: "{0}/{1} 人", maxL: "人數上限（留空為不限）", maxPh: "例：10", full: "「{0}」已滿（{1} 人）。", capNo: "此瀏覽器不支援語音辨識，無法傳送你的字幕（建議用 Chrome）。", sttOn: "開啟語音轉文字", sttOff: "關閉語音轉文字", sttDenied: "已關閉語音轉文字（若一直詢問麥克風權限，請在網址列 🔒 → 麥克風設為「允許」）。語音通話不受影響。"},
+  "zh-CN": {rooms: "聊天室", join: "欢迎！", joinD: "请输入昵称并选择你的语言。其他人的消息会翻译成你的语言。", name: "昵称", lang: "我的语言", go: "加入", ph: "发送消息到 #{0}", wait: "翻译中…", fail: "翻译失败", local: "未连接", newT: "创建聊天室", newD: "设置密码后，只有知道密码的人才能进入。", rname: "聊天室名称", pw: "密码（留空为公开）", make: "创建", cancel: "取消", pwT: "密码聊天室", pwD: "请输入「{0}」的密码。", pwL: "密码", enter: "进入", wrong: "密码错误。", needName: "请输入聊天室名称。", empty: "还没有消息，留下第一条吧！", today: "今天", micNo: "无法使用麦克风，请在浏览器允许麦克风。", tooLong: "录音太长（1 分钟以内）。", vJoin: "加入语音", vLeave: "离开", vFull: "语音最多 {0} 人。", vMute: "静音", vUnmute: "开麦", vMe: "我", defRoom: "聊天室", avL: "头像", avPick: "选择照片", avDel: "删除", imgFail: "无法读取照片。", imgBig: "照片太大。", delQ: "要删除「{0}」及所有消息吗？无法恢复。", authNo: "无法连接登录，不能创建聊天室。", joined: "{0} 加入了聊天", left: "{0} 离开了聊天", mdelQ: "要删除这条消息吗？", mdelNo: "无法删除（已超过 1 分钟）。", replyTo: "回复{0}：", ppl: "{0} 人", pplMax: "{0}/{1} 人", maxL: "人数上限（留空为不限）", maxPh: "例：10", full: "「{0}」已满（{1} 人）。", capNo: "此浏览器不支持语音识别，无法发送你的字幕（建议用 Chrome）。", sttOn: "开启语音转文字", sttOff: "关闭语音转文字", sttDenied: "已关闭语音转文字（若一直询问麦克风权限，请在地址栏 🔒 → 麦克风设为「允许」）。语音通话不受影响。"},
+  en: {rooms: "Chat rooms", join: "Welcome!", joinD: "Pick a nickname and your language. Everyone else's messages are shown translated into it.", name: "Nickname", lang: "My language", go: "Join", ph: "Message #{0}", wait: "Translating…", fail: "Translation failed", local: "Offline", newT: "Create a chat room", newD: "With a password, only people who know it can enter.", rname: "Room name", pw: "Password (leave empty for a public room)", make: "Create", cancel: "Cancel", pwT: "Password room", pwD: "Enter the password for \"{0}\".", pwL: "Password", enter: "Enter", wrong: "Wrong password.", needName: "Enter a room name.", empty: "No messages yet. Say hi!", today: "Today", micNo: "Can't use the microphone. Please allow it in your browser.", tooLong: "Recording too long (1 minute max).", vJoin: "Join voice", vLeave: "Leave", vFull: "Voice is limited to {0} people.", vMute: "Mute", vUnmute: "Unmute", vMe: "me", defRoom: "Chat", avL: "Profile photo", avPick: "Choose photo", avDel: "Remove", imgFail: "Could not read the photo.", imgBig: "The photo is too large.", delQ: "Delete \"{0}\" and all its messages? This cannot be undone.", authNo: "Sign-in failed, so the room cannot be created.", joined: "{0} joined", left: "{0} left", mdelQ: "Delete this message?", mdelNo: "Can't delete it (more than 1 minute has passed).", replyTo: "Replying to{0} ", ppl: "{0} online", pplMax: "{0}/{1}", maxL: "Max people (leave empty for no limit)", maxPh: "e.g. 10", full: "\"{0}\" is full ({1} people).", capNo: "This browser can't do speech recognition, so your captions won't be sent (use Chrome).", sttOn: "Speech-to-text on", sttOff: "Speech-to-text off", sttDenied: "Speech-to-text turned off (if the mic prompt keeps appearing, set Microphone to Allow via the 🔒 in the address bar). Voice chat still works."}
 };
 const $ = id => document.getElementById(id);
 const store = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
@@ -633,8 +633,10 @@ function drawVoice(peers) {
   pn.innerHTML = Object.entries(peers || {}).map(([p, x]) => {
     const st = p === uid ? (V.muted ? "mute" : "ok") : (V.pcs[p] && V.pcs[p].connectionState === "connected" ? "ok" : "wait");
     return '<span class="vp ' + st + '"><i></i>' + esc(x.n || "?") + (p === uid ? " (" + t("vMe") + ")" : "") + '</span>';
-  }).join("") + '<button id="vmute" class="vtool">' + (V.muted ? "🎙️ " + t("vUnmute") : "🔇 " + t("vMute")) + '</button>';
+  }).join("") + '<button id="vmute" class="vtool">' + (V.muted ? "🎙️ " + t("vUnmute") : "🔇 " + t("vMute")) + '</button>' +
+    '<button id="vstt" class="vtool" style="margin-left:0">' + (CAP && CAP.sr ? "📝 " + t("sttOff") : "📝 " + t("sttOn")) + '</button>';
   $("vmute").onclick = () => { V.muted = !V.muted; V.stream.getAudioTracks().forEach(x => x.enabled = !V.muted); drawVoice(V.peers); };
+  $("vstt").onclick = () => { if (CAP && CAP.sr) stopSTT(true); else { store.set("chat_stt", "1"); startSTT(); } };
 }
 $("vbtn").onclick = joinVoice;
 window.addEventListener("pagehide", () => leaveVoice());
@@ -777,8 +779,14 @@ function startCaps() {
     if (m.u !== uid && m.ts > since - 5000) showCap(m);
     if (Date.now() - (m.ts || 0) > 20000) s.ref.remove().catch(() => {});
   });
+  if (sttOn()) startSTT();
+}
+const TOUCH = matchMedia("(hover:none)").matches;
+const sttOn = () => (store.get("chat_stt") ?? (TOUCH ? "0" : "1")) === "1";
+function startSTT() {
+  if (!CAP || CAP.sr) return;
   if (!SR) { capLine("⚠ " + t("capNo")); return; }
-  const sr = new SR(); sr.lang = SRL[me.l] || "ko-KR"; sr.continuous = true; sr.interimResults = false;
+  const ref = CAP.ref, sr = new SR(), starts = []; sr.lang = SRL[me.l] || "ko-KR"; sr.continuous = true; sr.interimResults = false;
   sr.onresult = e => {
     for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) {
       const tx = e.results[i][0].transcript.trim();
@@ -786,12 +794,26 @@ function startCaps() {
       if (tx && V && !V.muted) { const r = ref.push(); r.set({n: me.n, l: me.l, t: tx.slice(0, 300), u: uid, ts: firebase.database.ServerValue.TIMESTAMP}); setTimeout(() => r.remove().catch(() => {}), 25000); capLine("🗣 " + me.n + ": " + tx, true); }
     }
   };
-  sr.onerror = () => {};
-  sr.onend = () => { if (CAP && CAP.on) setTimeout(() => { try { CAP && CAP.on && sr.start(); } catch (e) {} }, 300); };   // 조용하면 저절로 멈추니 다시
-  try { sr.start(); CAP.sr = sr; } catch (e) {}
+  // 마이크 허용을 거절했거나 자꾸 다시 묻는 폰이면 받아쓰기만 끈다(음성 통화는 그대로)
+  sr.onerror = e => { if (/not-allowed|service-not-allowed|audio-capture/.test(e.error || "")) { stopSTT(true); capLine("⚠ " + t("sttDenied")); } };
+  sr.onend = () => {
+    if (!CAP || CAP.sr !== sr) return;
+    const now = Date.now(); starts.push(now); while (starts.length && now - starts[0] > 15000) starts.shift();
+    if (starts.length > 4) { stopSTT(true); capLine("⚠ " + t("sttDenied")); return; }   // 15초에 다섯 번 넘게 끊기면 그만(허용 창이 계속 뜨는 경우)
+    setTimeout(() => { try { if (CAP && CAP.sr === sr) sr.start(); } catch (x) {} }, 600);   // 조용하면 저절로 멈추니 다시
+  };
+  CAP.sr = sr;
+  try { sr.start(); } catch (e) { CAP.sr = null; }
+  if (V) drawVoice(V.peers);
+}
+function stopSTT(save) {
+  if (save) store.set("chat_stt", "0");
+  if (CAP && CAP.sr) { const sr = CAP.sr; CAP.sr = null; try { sr.stop(); } catch (e) {} }
+  if (V) drawVoice(V.peers);
 }
 function stopCaps() {
   if (!CAP) return;
+  stopSTT(false);
   CAP.on = false; CAP.ref.off();
   try { if (CAP.sr) CAP.sr.stop(); } catch (e) {}
   CAP = null; const c = $("caps"); if (c) c.innerHTML = "";
