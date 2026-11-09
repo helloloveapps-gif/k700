@@ -332,7 +332,7 @@ function addMsg(id, m) {
   const d = document.createElement("div");
   d.className = "msg" + (cont ? " cont" : ""); d.id = "m_" + id; d.dataset.t = m.t; d.dataset.l = m.l || ""; d.dataset.mine = mine ? "1" : "";
   const col = colorOf(m.u || m.n), ln = (LANGS.find(x => x[0] === m.l) || ["", m.l || "?"])[1];
-  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b><span class="lg">' + esc(ln) + '</span><span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.r && m.r.id ? '<div class="rep" data-to="' + esc(m.r.id) + '">↱ <b>' + esc(m.r.n || "?") + '</b> ' + esc(m.r.t || "") + '</div>' : '') + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="tx"></div><div class="org" hidden></div></div>' + '<button class="mrep" title="reply">↩</button>' + (m.a && m.a === myAuth() ? '<button class="mdel" title="delete">🗑</button>' : '');
+  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b><span class="lg">' + esc(ln) + '</span>' + (m.s ? '<span class="lg" style="background:#23a559;color:#fff">🎙</span>' : '') + '<span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.r && m.r.id ? '<div class="rep" data-to="' + esc(m.r.id) + '">↱ <b>' + esc(m.r.n || "?") + '</b> ' + esc(m.r.t || "") + '</div>' : '') + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="tx"></div><div class="org" hidden></div></div>' + '<button class="mrep" title="reply">↩</button>' + (m.a && m.a === myAuth() ? '<button class="mdel" title="delete">🗑</button>' : '');
   log.appendChild(d);
   lastMsg = {u: m.u, ts};
   avatarOf(m.u); paintAv(m.u);
@@ -782,6 +782,7 @@ function startCaps() {
   sr.onresult = e => {
     for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) {
       const tx = e.results[i][0].transcript.trim();
+      if (tx && V && !V.muted && curRef) curRef.push(withA({n: me.n, l: me.l, t: tx.slice(0, 1000), u: uid, s: true, ts: firebase.database.ServerValue.TIMESTAMP}));   // 채팅에도 글로(이박사님 11-09)
       if (tx && V && !V.muted) { const r = ref.push(); r.set({n: me.n, l: me.l, t: tx.slice(0, 300), u: uid, ts: firebase.database.ServerValue.TIMESTAMP}); setTimeout(() => r.remove().catch(() => {}), 25000); capLine("🗣 " + me.n + ": " + tx, true); }
     }
   };
