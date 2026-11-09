@@ -1,0 +1,23 @@
+// LOVEAPPS 채팅 알림 일꾼(서비스 워커) — 푸시 알림 받기 · 누르면 채팅 열기. 페이지 저장(캐시)은 하지 않는다(늘 새 판)
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
+self.addEventListener("push", e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (x) { d = {body: e.data ? e.data.text() : ""}; }
+  e.waitUntil((async () => {
+    // 지금 채팅을 보고 있으면 안 띄운다(아이폰은 매번 띄워야 알림 권한이 유지돼 늘 띄움)
+    const ios = /iPhone|iPad|iPod/.test(self.navigator.userAgent);
+    const cs = await self.clients.matchAll({type: "window", includeUncontrolled: true});
+    if (!ios && cs.some(c => c.visibilityState === "visible" && c.focused)) return;
+    await self.registration.showNotification(d.title || "LOVEAPPS", {body: d.body || "", tag: d.tag || "chat", renotify: true, icon: "icon-192.png", badge: "icon-192.png"});
+  })());
+});
+self.addEventListener("notificationclick", e => {
+  e.notification.close();
+  e.waitUntil((async () => {
+    const cs = await self.clients.matchAll({type: "window", includeUncontrolled: true});
+    const c = cs.find(x => /chat\.html/.test(x.url));
+    if (c) return c.focus();
+    return self.clients.openWindow("chat.html");
+  })());
+});
