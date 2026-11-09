@@ -367,7 +367,7 @@ function enter(id, r, key) {
   $("topH").textContent = r.lock ? "🔒" : "#"; $("topT").textContent = roomName(id, r);
   $("owner").textContent = ownerName(r) ? "👑 " + t("owner") + ": " + ownerName(r) : "";
   $("delRoom").hidden = !canCfg(id, r);
-  $("msg").placeholder = fm(t("ph"), roomName(id, r));
+  $("msg").placeholder = "";   // 입력창 안내 글 없음(이박사님 11-09)
   $("log").innerHTML = '<div class="empty" id="empty">' + esc(t("empty")) + '</div>';
   drawRooms(); $("app").classList.remove("open");
   curRef = db.ref("rooms/" + key + "/msgs");
@@ -560,7 +560,7 @@ function applyLang() {
   $("jT").textContent = t("join"); $("jD").textContent = t("joinD"); $("jNL").textContent = t("name"); $("jLL").textContent = t("lang"); $("jGo").textContent = t("go"); $("jName").placeholder = t("name");
   $("nT").textContent = t("newT"); $("nD").textContent = t("newD"); $("nNL").textContent = t("rname"); $("nPL").textContent = t("pw"); $("nGo").textContent = t("make"); $("nNo").textContent = t("cancel"); $("nML").textContent = t("maxL"); $("nMax").placeholder = t("maxPh");
   $("pT").textContent = t("pwT"); $("pPL").textContent = t("pwL"); $("pGo").textContent = t("enter"); $("pNo").textContent = t("cancel");
-  if (cur) { $("msg").placeholder = fm(t("ph"), roomName(cur.id, cur.r)); $("topT").textContent = roomName(cur.id, cur.r); }
+  if (cur) { $("topT").textContent = roomName(cur.id, cur.r); }
   drawRooms();
   for (const s of [$("lang"), $("jLang")]) s.innerHTML = LANGS.map(([v, n]) => '<option value="' + v + '"' + (v === me.l ? " selected" : "") + ">" + n + "</option>").join("");
   $("meN").textContent = me.n || "—";
