@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>오늘이 1일 · 1108</title>
+<style>
+:root{--bg:#0f1115;--card:#171a21;--line:#262b36;--text:#e8ecf3;--sub:#8b95a7;--me:#2b4a7a;--acc:#ffd43b;--ok:#69db7c;--bad:#ff6b6b}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI","Malgun Gothic","Microsoft JhengHei",sans-serif}
+#app{display:flex;flex-direction:column;height:100dvh;max-width:760px;margin:0 auto}
+header{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--card)}
+header h1{font-size:16px;margin:0;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+header a{color:var(--sub);text-decoration:none;font-size:13px}
+select,input,button{font:inherit;color:var(--text);background:#10131a;border:1px solid var(--line);border-radius:10px;min-height:40px;padding:0 10px}
+button{cursor:pointer;background:#22324d;border-color:#2f4670;font-weight:700}
+#log{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:8px}
+.m{max-width:86%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 12px}
+.m.me{align-self:flex-end;background:var(--me);border-color:#3b5f99}
+.m .who{font-size:12px;color:var(--sub);display:flex;gap:6px;align-items:center}
+.m .who b{color:var(--acc);font-weight:800}
+.m .tx{font-size:16px;white-space:pre-wrap;word-break:break-word}
+.m .org{font-size:12.5px;color:var(--sub);white-space:pre-wrap;word-break:break-word;margin-top:3px;border-top:1px dashed var(--line);padding-top:3px}
+.m .wait{color:var(--sub);font-size:13px}
+.sys{align-self:center;font-size:12px;color:var(--sub)}
+footer{display:flex;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--card)}
+footer textarea{flex:1;resize:none;font:inherit;color:var(--text);background:#10131a;border:1px solid var(--line);border-radius:10px;padding:9px 10px;height:44px;max-height:120px}
+#join{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px}
+#join .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;width:100%;max-width:380px;display:flex;flex-direction:column;gap:10px}
+#join h2{margin:0 0 4px;font-size:18px}
+#join p{margin:0;color:var(--sub);font-size:13px}
+.badge{font-size:11px;padding:1px 6px;border-radius:999px;background:#2a2f3a;color:var(--sub)}
+#mode{font-size:11px;color:var(--bad)}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1 id="hT">💬 오늘이 1일 · 1108</h1>
+    <span id="mode"></span>
+    <select id="lang" aria-label="language"></select>
+    <a href="./" id="back">⌂</a>
+  </header>
+  <div id="log"></div>
+  <footer>
+    <textarea id="msg" maxlength="1000"></textarea>
+    <button id="send"></button>
+  </footer>
+</div>
+<div id="join" style="display:none">
+  <div class="box">
+    <h2 id="jT"></h2>
+    <p id="jD"></p>
+    <input id="jName" maxlength="40" autocomplete="nickname">
+    <select id="jLang"></select>
+    <button id="jGo"></button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+// 1108 번역 채팅 — 원문만 저장하고, 보는 사람마다 자기 언어로 번역해 보여 준다(이박사님 11-09)
+// 저장소: Firebase Realtime Database. 설정이 비어 있으면 이 기기 안에서만 도는 시험 모드(탭끼리 BroadcastChannel)
+// 번역: 각자 브라우저에서 구글 번역 무료 주소(translate.googleapis.com, client=gtx) — 공용 글자 한도 없음
+const FIREBASE_CONFIG = null;   // Firebase 프로젝트를 만든 뒤 { apiKey, authDomain, databaseURL, projectId, ... } 를 넣는다
+
+const ROOM = (new URLSearchParams(location.search).get("room") || "1108").replace(/[^\w-]/g, "").slice(0, 30) || "1108";
+const LANGS = [["ko", "한국어"], ["zh-TW", "繁體中文"], ["zh-CN", "简体中文"], ["en", "English"]];
+const T = {
+  ko: {title: "번역 채팅", join: "채팅 들어가기", joinD: "이름과 내 언어를 고르세요. 다른 사람의 글은 내 언어로 번역되어 보입니다.", name: "게임 닉네임", go: "들어가기", send: "보내기", ph: "메시지 입력 (Enter 보내기, Shift+Enter 줄바꿈)", wait: "번역 중…", fail: "번역 실패 — 원문", local: "시험 모드(이 기기만)", hello: "{0} 님이 들어왔습니다"},
+  "zh-TW": {title: "翻譯聊天", join: "加入聊天", joinD: "請輸入名字並選擇你的語言。其他人的訊息會翻譯成你的語言。", name: "遊戲暱稱", go: "加入", send: "發送", ph: "輸入訊息（Enter 發送，Shift+Enter 換行）", wait: "翻譯中…", fail: "翻譯失敗 — 原文", local: "測試模式（僅此裝置）", hello: "{0} 加入了聊天"},
+  "zh-CN": {title: "翻译聊天", join: "加入聊天", joinD: "请输入名字并选择你的语言。其他人的消息会翻译成你的语言。", name: "游戏昵称", go: "加入", send: "发送", ph: "输入消息（Enter 发送，Shift+Enter 换行）", wait: "翻译中…", fail: "翻译失败 — 原文", local: "测试模式（仅此设备）", hello: "{0} 加入了聊天"},
+  en: {title: "Translated chat", join: "Join chat", joinD: "Enter your name and pick your language. Everyone else's messages are shown translated into it.", name: "In-game nickname", go: "Join", send: "Send", ph: "Type a message (Enter to send, Shift+Enter for a new line)", wait: "Translating…", fail: "Translation failed — original", local: "Test mode (this device only)", hello: "{0} joined"}
+};
+const $ = id => document.getElementById(id);
+const store = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
+let me = {n: store.get("chat_name") || "", l: store.get("chat_lang") || guessLang()};
+const t = k => (T[me.l] || T.ko)[k];
+function guessLang() { const n = (navigator.language || "ko").toLowerCase(); return n.startsWith("ko") ? "ko" : n.startsWith("zh") ? (/tw|hk|hant/.test(n) ? "zh-TW" : "zh-CN") : "en"; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+
+// 번역 — 같은 글 · 같은 언어는 한 번만(기기에 남겨 둔다)
+const TC = new Map();
+async function translate(text, tl) {
+  const key = tl + "\u0001" + text;
+  if (TC.has(key)) return TC.get(key);
+  const p = (async () => {
+    const u = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + encodeURIComponent(tl) + "&dt=t&q=" + encodeURIComponent(text);
+    const r = await fetch(u);
+    if (!r.ok) throw new Error("http " + r.status);
+    const j = await r.json();
+    return {t: (j[0] || []).map(x => x[0]).join("")};
+  })();
+  TC.set(key, p);
+  p.catch(() => TC.delete(key));
+  return p;
+}
+
+// 화면
+const log = $("log");
+const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+function addMsg(id, m) {
+  if (document.getElementById("m_" + id)) return;
+  const stick = nearBottom(), mine = m.u === uid, d = document.createElement("div");
+  d.className = "m" + (mine ? " me" : ""); d.id = "m_" + id; d.dataset.t = m.t; d.dataset.l = m.l || "";
+  const tm = m.ts ? new Date(m.ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) : "";
+  d.innerHTML = '<div class="who"><b>' + esc(m.n) + '</b><span class="badge">' + esc((LANGS.find(x => x[0] === m.l) || ["", m.l || "?"])[1]) + '</span><span>' + tm + '</span></div><div class="tx"></div><div class="org" hidden></div>';
+  log.appendChild(d);
+  render(d);
+  if (stick || mine) log.scrollTop = log.scrollHeight;
+}
+async function render(d) {
+  const text = d.dataset.t, tx = d.querySelector(".tx"), org = d.querySelector(".org");
+  if (d.classList.contains("me") || d.dataset.l === me.l) { tx.textContent = text; org.hidden = true; return; }
+  tx.innerHTML = '<span class="wait">' + esc(t("wait")) + '</span>';
+  try {
+    const r = await translate(text, me.l);
+    // 감지 언어(j[2])는 믿을 수 없어서(번체를 ko 로 돌려줌) 번역 결과가 원문과 같을 때만 원문 그대로
+    if (r.t.trim() === text.trim()) { tx.textContent = text; org.hidden = true; }
+    else { tx.textContent = r.t; org.textContent = text; org.hidden = false; }
+  } catch (e) { tx.textContent = text; org.textContent = t("fail"); org.hidden = false; }
+}
+function rerenderAll() { log.querySelectorAll(".m").forEach(render); }
+function sys(s) { const d = document.createElement("div"); d.className = "sys"; d.textContent = s; log.appendChild(d); log.scrollTop = log.scrollHeight; }
+function applyLang() {
+  document.documentElement.lang = me.l;
+  // 사이트 이름은 「오늘이 1일 · 1108」로 고정(이박사님 11-09)
+  $("hT").textContent = "💬 오늘이 1일 · " + ROOM;
+  document.title = "오늘이 1일 · " + ROOM;
+  $("send").textContent = t("send"); $("msg").placeholder = t("ph");
+  $("jT").textContent = t("join"); $("jD").textContent = t("joinD"); $("jName").placeholder = t("name"); $("jGo").textContent = t("go");
+  $("mode").textContent = DB ? "" : t("local");
+  for (const s of [$("lang"), $("jLang")]) { s.innerHTML = LANGS.map(([v, n]) => '<option value="' + v + '"' + (v === me.l ? " selected" : "") + ">" + n + "</option>").join(""); }
+}
+
+// 저장소
+const uid = store.get("chat_uid") || (() => { const v = Math.random().toString(36).slice(2, 12); store.set("chat_uid", v); return v; })();
+let DB = null, bc = null;
+if (FIREBASE_CONFIG && window.firebase) {
+  firebase.initializeApp(FIREBASE_CONFIG);
+  DB = firebase.database().ref("rooms/" + ROOM + "/msgs");
+  DB.orderByChild("ts").limitToLast(200).on("child_added", s => addMsg(s.key, s.val()));
+} else {
+  // 시험 모드: 이 기기의 탭끼리만(설정 전 화면 · 번역 확인용)
+  const KEY = "chat_local_" + ROOM, load = () => { try { return JSON.parse(store.get(KEY) || "[]"); } catch (e) { return []; } };
+  load().forEach(m => addMsg(m.id, m));
+  if ("BroadcastChannel" in window) { bc = new BroadcastChannel(KEY); bc.onmessage = e => addMsg(e.data.id, e.data); }
+  window.__localPush = m => { const a = load(); a.push(m); store.set(KEY, JSON.stringify(a.slice(-200))); addMsg(m.id, m); if (bc) bc.postMessage(m); };
+}
+function send() {
+  const box = $("msg"), text = box.value.trim();
+  if (!text || !me.n) return;
+  box.value = "";
+  const m = {n: me.n, l: me.l, t: text.slice(0, 1000), u: uid};
+  if (DB) DB.push(Object.assign(m, {ts: firebase.database.ServerValue.TIMESTAMP}));
+  else window.__localPush(Object.assign(m, {ts: Date.now(), id: Date.now() + "_" + uid}));
+}
+$("send").onclick = send;
+$("msg").addEventListener("keydown", e => { if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); send(); } });
+$("lang").onchange = e => { me.l = e.target.value; store.set("chat_lang", me.l); applyLang(); rerenderAll(); };
+$("jLang").onchange = e => { me.l = e.target.value; applyLang(); };
+$("jGo").onclick = () => {
+  const n = $("jName").value.trim().slice(0, 40); if (!n) { $("jName").focus(); return; }
+  me.n = n; store.set("chat_name", n); store.set("chat_lang", me.l);
+  $("join").style.display = "none"; $("msg").focus(); rerenderAll();
+};
+$("jName").addEventListener("keydown", e => { if (e.key === "Enter") $("jGo").click(); });
+applyLang();
+if (!me.n) { $("join").style.display = "flex"; $("jName").focus(); }
+</script>
+</body>
+</html>
