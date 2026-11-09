@@ -727,6 +727,7 @@ let vBusy = false, vLast = {};
 async function joinVoice() {
   if (V) { leaveVoice(); return; }
   if (vBusy || !cur || !me.n) return;
+  audioCtx();
   vBusy = true; const b = $("vbtn"); b.textContent = "⏳ " + t("vConn"); b.disabled = true;
   try { await joinVoiceRun(); } finally { vBusy = false; b.disabled = false; drawVoice(V ? V.peers : vLast); }
 }
@@ -837,10 +838,10 @@ function drawVoice(peers) {
     const st = p === uid ? (V.muted ? "mute" : "ok") : (V.lk ? (V.lk.remoteParticipants.has(p) ? "ok" : "wait") : (V.pcs[p] && V.pcs[p].connectionState === "connected" ? "ok" : "wait"));
     return '<span class="vp ' + st + '"><i></i>' + esc(x.n || "?") + (p === uid ? " (" + t("vMe") + ")" : "") + '</span>';
   }).join("") + '<button id="vmute" class="vtool ' + (V.muted ? "off" : "on") + '" title="' + esc(V.muted ? t("vUnmute") : t("vMute")) + '">' + (V.muted ? "🔇 " + t("micOff") : "🎙️ " + t("micOn")) + '</button>' +
-    '<button id="vstt" class="vtool ' + (CAP && CAP.sr ? "on" : "off") + '" style="margin-left:0" title="' + esc(CAP && CAP.sr ? t("sttOff") : t("sttOn")) + '">📝 ' + (CAP && CAP.sr ? t("sttIsOn") : t("sttIsOff")) + '</button>';
+    '<button id="vstt" class="vtool ' + (sttActive() ? "on" : "off") + '" style="margin-left:0" title="' + esc(sttActive() ? t("sttOff") : t("sttOn")) + '">📝 ' + (sttActive() ? t("sttIsOn") : t("sttIsOff")) + '</button>';
   meter();
   $("vmute").onclick = () => { V.muted = !V.muted; V.stream.getAudioTracks().forEach(x => x.enabled = !V.muted); drawVoice(V.peers); };
-  $("vstt").onclick = () => { if (CAP && CAP.sr) stopSTT(true); else { store.set("chat_stt2", "1"); startSTT(); } };
+  $("vstt").onclick = () => { if (sttActive()) stopSTT(true); else { store.set("chat_stt2", "1"); if (!startSrvStt() && !TOUCH) startSTT(); if (V) drawVoice(V.peers); } };
 }
 $("vbtn").onclick = joinVoice;
 window.addEventListener("pagehide", () => leaveVoice());
@@ -1035,16 +1036,99 @@ function startCaps() {
     if (m.u !== uid && m.ts > since - 5000) showCap(m);
     if (Date.now() - (m.ts || 0) > 20000) s.ref.remove().catch(() => {});
   });
-  if (sttOn()) startSTT();
+  if (sttOn() && !startSrvStt() && !TOUCH) startSTT();
 }
 const TOUCH = matchMedia("(hover:none)").matches;
 // 받아쓰기는 모두 기본으로 켠다(11-09 휴대폰에서 꺼져 있어 한쪽 말만 번역됨). 허용 창이 자꾸 뜨는 폰은 저절로 꺼진다(stopSTT)
 // 받아쓰기 켜짐 여부 — 사람이 직접 끈 것만 기억한다(11-10: 저절로 꺼진 것까지 「꺼짐」으로 저장돼 실시간 번역이 영영 멈추던 것. 새 이름 chat_stt2 로 모두 다시 켬)
 // 폰(터치)에서는 크롬 받아쓰기를 쓰지 않는다 — 통화가 마이크를 쥐고 있어 소리를 못 듣고, 10초마다 다시 켜지며 「마이크 허용」 창만 계속 뜸(11-10 원격 진단: start→audio 반복, speech 0)
-const sttOn = () => !TOUCH && (store.get("chat_stt2") ?? "1") === "1";
+const sttOn = () => (store.get("chat_stt2") ?? "1") === "1";
 // 진단(11-10): 받아쓰기 상태를 내 음성 참가 정보(voice/{나}.st)에 올린다 — 원격으로 원인 확인용
 let STT_LAST = "";
 function sttStat(x) { if (x === STT_LAST) return; STT_LAST = x; try { if (V && V.meRef) V.meRef.update({st: String(x).slice(0, 80), stt: firebase.database.ServerValue.TIMESTAMP}); } catch (e) {} }
+// 받아쓰기 한 마디 → 채팅 글 · 실시간 번역 칸 · 자막(상대가 번역해 봄)
+function sttFinal(tx, said) {
+  tx = (tx || "").trim();
+  if (!tx || !V || V.muted || !CAP) return;
+  // 말한 언어(서버가 알아냄)로 표시 — 설정과 다른 언어로 말해도 상대가 바르게 번역받게
+  const L = !said ? me.l : said === "zh" ? (me.l.startsWith("zh") ? me.l : "zh-CN") : said;
+  if (curRef) curRef.push(withA({n: me.n, l: L, t: tx.slice(0, 1000), u: uid, s: true, ts: firebase.database.ServerValue.TIMESTAMP}));   // 채팅에도 글로(이박사님 11-09)
+  $("liveMe").textContent = ""; liveRow(me.n, tx, true, uid);
+  const r = CAP.ref.push(); r.set({n: me.n, l: L, t: tx.slice(0, 300), u: uid, ts: firebase.database.ServerValue.TIMESTAMP}); setTimeout(() => r.remove().catch(() => {}), 25000);
+  capLine("🗣 " + me.n + ": " + tx, true);
+}
+
+// ── 서버 받아쓰기(11-10) ─────────────────────────────────────────
+// 통화에 쓰는 마이크 소리를 그대로 말 단위(조용 0.8초 · 최대 14초)로 잘라 서버로 보낸다 → 서버가 Groq → SenseVoice 순서로 글로 바꿈.
+// 폰 크롬 받아쓰기는 통화 중 마이크를 못 써서(원격 진단 start→audio 반복, 말소리 0) 이 길이 1순위. 서버가 세 번 연속 실패하면 PC 는 크롬 받아쓰기로
+const SRV_LANG = {ko: "ko", "zh-TW": "zh", "zh-CN": "zh", en: "en"};
+let SRV = null, ACX = null;
+function audioCtx() { try { if (!ACX) ACX = new (window.AudioContext || window.webkitAudioContext)(); ACX.resume().catch(() => {}); } catch (e) {} return ACX; }
+document.addEventListener("pointerdown", () => { if (ACX && ACX.state !== "running") ACX.resume().catch(() => {}); });
+function startSrvStt() {
+  if (!V || !CAP || SRV) return !!SRV;
+  const ac = audioCtx(); if (!ac || !ac.createScriptProcessor) return false;
+  try {
+    const src = ac.createMediaStreamSource(V.stream), node = ac.createScriptProcessor(4096, 1, 1);
+    const st = {src, node, v: V, buf: [], len: 0, talking: false, quiet: 0, floor: 0.008, pre: null, fails: 0, q: Promise.resolve()};
+    node.onaudioprocess = e => {
+      const x = e.inputBuffer.getChannelData(0), dur = x.length / ac.sampleRate;
+      let q = 0; for (let i = 0; i < x.length; i++) q += x[i] * x[i];
+      const rms = Math.sqrt(q / x.length);
+      if (st.v.muted || V !== st.v) { st.talking = false; st.buf = []; st.len = 0; return; }
+      if (!st.talking) st.floor = st.floor * 0.95 + Math.min(rms, 0.05) * 0.05;   // 주변 소음 크기 따라가기
+      const th = Math.max(0.012, st.floor * 3);
+      if (rms > th) {
+        st.quiet = 0;
+        if (!st.talking) { st.talking = true; st.buf = st.pre ? [st.pre] : []; st.len = st.pre ? st.pre.length : 0; $("liveMe").textContent = "🎙 " + me.n + " …"; }
+      }
+      if (st.talking) {
+        st.buf.push(new Float32Array(x)); st.len += x.length;
+        if (rms <= th) st.quiet += dur;
+        if (st.quiet > 0.8 || st.len / ac.sampleRate > 14) srvFlush(st, ac.sampleRate);
+      } else st.pre = new Float32Array(x);   // 말 시작이 잘리지 않게 바로 앞 조각을 붙인다
+    };
+    src.connect(node); node.connect(ac.destination);   // 출력은 0(소리 안 남) — 연결해야 돌아감
+    SRV = st; sttStat("srv");
+    if (V) drawVoice(V.peers);
+    return true;
+  } catch (e) { sttStat("srv-start " + (e.message || e)); return false; }
+}
+function stopSrvStt() {
+  if (!SRV) return;
+  try { SRV.node.onaudioprocess = null; SRV.src.disconnect(); SRV.node.disconnect(); } catch (e) {}
+  SRV = null;
+}
+function srvFlush(st, rate) {
+  const n = st.len, parts = st.buf, speech = n / rate - st.quiet;
+  st.talking = false; st.buf = []; st.len = 0; st.quiet = 0;
+  if (speech < 0.35) { $("liveMe").textContent = ""; return; }
+  const all = new Float32Array(n); let o = 0; for (const p of parts) { all.set(p, o); o += p.length; }
+  const wav = toWav16k(all, rate);
+  st.q = st.q.then(async () => {   // 순서대로 하나씩
+    try {
+      const r = await fetch(VOICE_API + "/voice/stt?lang=" + (SRV_LANG[me.l] || ""), {method: "POST", headers: {"Content-Type": "audio/wav"}, body: wav});
+      if (!r.ok) throw new Error("stt " + r.status);
+      const j = await r.json(); st.fails = 0; sttStat("srv:" + (j.engine || "?"));
+      if (j.text) sttFinal(j.text, j.lang); else $("liveMe").textContent = "";
+    } catch (e) {
+      st.fails++; sttStat("srv-fail " + (e.message || e)); $("liveMe").textContent = "⚠ STT";
+      if (st.fails >= 3 && SRV === st) { stopSrvStt(); if (!TOUCH && SR) startSTT(); else if (V) drawVoice(V.peers); }   // ③ 서버까지 안 되면 PC 는 크롬 받아쓰기
+    }
+  });
+}
+function toWav16k(x, rate) {
+  const k = rate / 16000, n = Math.floor(x.length / k), b = new ArrayBuffer(44 + n * 2), d = new DataView(b);
+  const w = (o, s) => { for (let i = 0; i < s.length; i++) d.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, "RIFF"); d.setUint32(4, 36 + n * 2, true); w(8, "WAVE"); w(12, "fmt "); d.setUint32(16, 16, true); d.setUint16(20, 1, true); d.setUint16(22, 1, true);
+  d.setUint32(24, 16000, true); d.setUint32(28, 32000, true); d.setUint16(32, 2, true); d.setUint16(34, 16, true); w(36, "data"); d.setUint32(40, n * 2, true);
+  for (let i = 0; i < n; i++) {
+    const a = Math.floor(i * k), z = Math.min(x.length, Math.floor((i + 1) * k)); let v = 0; for (let j = a; j < z; j++) v += x[j]; v /= Math.max(1, z - a);
+    d.setInt16(44 + i * 2, Math.max(-1, Math.min(1, v)) * 32767, true);
+  }
+  return b;
+}
+const sttActive = () => !!(CAP && (CAP.sr || SRV));
 function startSTT() {
   if (!CAP || CAP.sr) return;
   if (!SR) { capLine("⚠ " + t("capNo")); sttStat("nosr " + navigator.userAgent.slice(-60)); return; }
@@ -1055,12 +1139,7 @@ function startSTT() {
     for (let i = e.resultIndex; i < e.results.length; i++) if (!e.results[i].isFinal) interim += e.results[i][0].transcript;
     $("liveMe").textContent = interim ? "🎙 " + me.n + ": " + interim : "✅ STT";
     sttStat("result");
-    for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) {
-      const tx = e.results[i][0].transcript.trim();
-      if (tx && V && !V.muted && curRef) curRef.push(withA({n: me.n, l: me.l, t: tx.slice(0, 1000), u: uid, s: true, ts: firebase.database.ServerValue.TIMESTAMP}));   // 채팅에도 글로(이박사님 11-09)
-      if (tx && V && !V.muted) { $("liveMe").textContent = ""; liveRow(me.n, tx, true, uid); }
-      if (tx && V && !V.muted) { const r = ref.push(); r.set({n: me.n, l: me.l, t: tx.slice(0, 300), u: uid, ts: firebase.database.ServerValue.TIMESTAMP}); setTimeout(() => r.remove().catch(() => {}), 25000); capLine("🗣 " + me.n + ": " + tx, true); }
-    }
+    for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) sttFinal(e.results[i][0].transcript);
   };
   // 마이크 허용을 거절했거나 자꾸 다시 묻는 폰이면 받아쓰기만 끈다(음성 통화는 그대로)
   // 진단(11-10): 받아쓰기 오류를 실시간 번역 칸 위 한 줄에 보인다 — no-speech 는 조용할 때 나는 정상 오류라 뺌
@@ -1082,6 +1161,7 @@ function startSTT() {
 }
 function stopSTT(save) {
   if (save) store.set("chat_stt2", "0");
+  stopSrvStt();
   if (CAP && CAP.sr) { const sr = CAP.sr; CAP.sr = null; try { sr.stop(); } catch (e) {} }
   if (V) drawVoice(V.peers);
 }
