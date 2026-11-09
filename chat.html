@@ -1185,13 +1185,14 @@ function srvFlush(st, rate) {
   const wav = toWav16k(all, rate);
   st.q = st.q.then(async () => {   // 순서대로 하나씩
     try {
-      const r = await fetch(VOICE_API + "/voice/stt?lang=" + (SRV_LANG[me.l] || ""), {method: "POST", headers: {"Content-Type": "audio/wav"}, body: wav});
+      const ac2 = new AbortController(), tm = setTimeout(() => ac2.abort(), 15000);   // 서버가 멈춰도 줄이 막히지 않게
+      const r = await fetch(VOICE_API + "/voice/stt?lang=" + (SRV_LANG[me.l] || ""), {method: "POST", headers: {"Content-Type": "audio/wav"}, body: wav, signal: ac2.signal}).finally(() => clearTimeout(tm));
       if (!r.ok) throw new Error("stt " + r.status);
       const j = await r.json(); st.fails = 0; sttStat("srv:" + (j.engine || "?"));
       if (j.text) sttFinal(j.text, j.lang); else $("liveMe").textContent = "";
     } catch (e) {
       st.fails++; sttStat("srv-fail " + (e.message || e)); $("liveMe").textContent = "⚠ STT";
-      if (st.fails >= 3 && SRV === st) { stopSrvStt(); if (!TOUCH && SR) startSTT(); else if (V) drawVoice(V.peers); }   // ③ 서버까지 안 되면 PC 는 크롬 받아쓰기
+      if (st.fails >= 3 && SRV === st && !TOUCH && SR) { stopSrvStt(); startSTT(); }   // ③ 서버까지 안 되면 PC 는 크롬 받아쓰기. 폰은 끄지 않고 계속 서버에 보낸다(서버가 살아나면 바로 됨)
     }
   });
 }
