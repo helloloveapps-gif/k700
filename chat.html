@@ -283,15 +283,23 @@ const db = firebase.database();
 const authReady = firebase.auth().signInAnonymously().catch(() => null);
 const myAuth = () => (firebase.auth().currentUser || {}).uid || "";
 firebase.auth().onAuthStateChanged(() => { drawRooms(); if (cur) $("delRoom").hidden = !(cur.id !== DEFAULT_ROOM && cur.r.own && cur.r.own === myAuth()); });
+let OPEN = null;   // 열린 방만(cfg/open), null 이면 모두
 let ROOMS = withDef(), cur = null, curRef = null, lastMsg = null;
 const keys = (() => { try { return JSON.parse(store.get("chat_keys") || "{}"); } catch (e) { return {}; } })();   // 이 기기에서 연 비밀번호 방의 열쇠(다시 묻지 않게)
 
 // 방 목록
 function drawRooms() {
-  const list = Object.entries(ROOMS).sort((a, b) => (a[0] === DEFAULT_ROOM ? -1 : b[0] === DEFAULT_ROOM ? 1 : (a[1].ts || 0) - (b[1].ts || 0)));
+  const list = Object.entries(ROOMS).filter(([id]) => !OPEN || OPEN[id]).sort((a, b) => (a[0] === DEFAULT_ROOM ? -1 : b[0] === DEFAULT_ROOM ? 1 : (a[1].ts || 0) - (b[1].ts || 0)));
   $("rooms").innerHTML = list.map(([id, r]) => '<button class="room' + (cur && cur.id === id ? " on" : "") + '" data-id="' + esc(id) + '"><span class="h">' + (r.lock ? "🔒" : "#") + '</span><span class="nm">' + esc(roomName(id, r)) + '<small class="cnt">👥 ' + (r.max ? fm(t("pplMax"), ONLINE[id] || 0, r.max) : fm(t("ppl"), ONLINE[id] || 0)) + '</small></span>' + (r.own && r.own === myAuth() ? '<span class="own" title="owner">👑</span>' : '') + '</button>').join("");
 }
 db.ref("roomlist").on("value", s => { ROOMS = withDef(s.val()); drawRooms(); });
+const cfgP = db.ref("cfg/open").once("value").then(s => s.val(), () => null);
+db.ref("cfg/open").on("value", s => {
+  OPEN = s.val() || null;
+  $("addRoom").style.display = OPEN ? "none" : "";
+  drawRooms();
+  if (cur && OPEN && !OPEN[cur.id]) noRoom();
+});
 // 방마다 접속 인원 — 비밀번호 방도 숫자는 보이게 online/{방 번호}/{내 번호} = true 만 남긴다(이름 · 글은 안 남김)
 let ONLINE = {};
 db.ref("online").on("value", s => { const v = s.val() || {}; ONLINE = {}; Object.keys(v).forEach(k => ONLINE[k] = Object.keys(v[k] || {}).length); drawRooms(); });
@@ -313,7 +321,7 @@ function noRoom() {
   drawRooms(); $("app").classList.add("open");
 }
 async function openRoom(id) {
-  if (!ROOMS[id]) return noRoom();
+  if (!ROOMS[id] || (OPEN && !OPEN[id])) return noRoom();
   const r = ROOMS[id];
   if (r.max && (!cur || cur.id !== id) && (ONLINE[id] || 0) >= r.max && r.own !== myAuth()) { alert(fm(t("full"), roomName(id, r), r.max)); return; }
   if (r.lock) {
@@ -959,7 +967,7 @@ applyLang();
 // 처음 열 방: 주소의 #방 → ?room= → 지난번 방 → 1108
 const want = decodeURIComponent(location.hash.slice(1)) || new URLSearchParams(location.search).get("room") || store.get("chat_room") || DEFAULT_ROOM;
 // 비밀번호 방인데 이 기기에 열쇠가 없으면 처음엔 묻지 않고 「방을 고르세요」
-const first = () => { const r = ROOMS[want]; r && (!r.lock || keys[want]) ? openRoom(want) : noRoom(); };
+const first = async () => { OPEN = (await cfgP) || null; const r = ROOMS[want]; r && (!r.lock || keys[want]) ? openRoom(want) : noRoom(); };
 db.ref("roomlist").once("value").then(s => { ROOMS = withDef(s.val()); drawRooms(); first(); }, () => { ROOMS = withDef(); drawRooms(); first(); });
 if (!me.n) { show("mJoin"); $("jName").focus(); }
 </script>
