@@ -675,6 +675,8 @@ $("log").addEventListener("click", async e => {
 // 길 찾기는 구글 무료 STUN 만(유료 TURN 없음) — 회사 · 일부 통신망에서는 연결이 안 될 수 있다
 // 음성 중계 서버(이박사님 서버 175.126.226.132 의 LiveKit, 무료 · 직접 운영) — 되면 50명까지, 안 되면 예전처럼 서로 직접 6명
 // 서버 = loveapps-api Voice.cs(/voice/token 입장권 · /lk 중계). 시험할 땐 localStorage chat_voice_api 로 주소를 바꾼다
+// 진단용 주소 꼬리(11-10): chat.html?mesh · ?nometer · ?mesh&nometer — 폰 음성인식이 무엇 때문에 막히는지 비교
+const DIAG = new URLSearchParams(location.search);
 const VOICE_API = store.get("chat_voice_api") || "https://appslove.duckdns.org", MAXV_LK = 50;
 const LK_JS = "https://cdn.jsdelivr.net/npm/livekit-client@2.22.4/dist/livekit-client.umd.min.js";
 let LK_LIB = null;
@@ -733,7 +735,7 @@ async function joinVoiceRun() {
   const base = db.ref("rooms/" + cur.key), others = (await base.child("voice").once("value")).val() || {};
   let stream, tk = null;
   // 마이크 허용을 먼저 받고(누른 순간이어야 폰이 묻는다), 그동안 중계 서버 입장권도
-  const tkP = lkToken().catch(() => null);
+  const tkP = DIAG.has("mesh") ? Promise.resolve(null) : lkToken().catch(() => null);   // ?mesh 시험: 서버 중계 없이 예전 방식
   try { stream = await navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}}); }
   catch (e) { alert(t("micNo")); return; }
   tk = await tkP;
@@ -808,6 +810,7 @@ async function onSig(m) {
 // 내 마이크에 소리가 들어오면 「마이크 켜짐」 단추 색이 밝아진다(막대는 줄바꿈돼 뺌 · 이박사님 11-10)
 let METER = null;
 function meter() {
+  if (DIAG.has("nometer")) return;   // ?nometer 시험: 마이크 색 표시 끔
   if (!V || METER && METER.v === V) return;
   try {
     const ac = new (window.AudioContext || window.webkitAudioContext)(), an = ac.createAnalyser(); an.fftSize = 512;
