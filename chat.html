@@ -22,6 +22,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .room.on{background:#404249;color:var(--head)}
 .room .h{font-size:20px;opacity:.7;width:20px;text-align:center}
 .room span.nm{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room .cnt{display:block;font-size:11px;color:var(--sub);line-height:1.2}
 #me{height:52px;background:#232428;display:flex;align-items:center;gap:8px;padding:0 8px}
 #me .av{width:32px;height:32px;font-size:14px}
 #me .who{flex:1;min-width:0;cursor:pointer}
@@ -49,7 +50,9 @@ button,input,select,textarea{font:inherit;color:inherit}
 .room .own{font-size:12px}
 .msg{position:relative}
 .mrep{position:absolute;right:56px;top:-6px;display:none;background:#2b2d31;border:1px solid #1f2023;border-radius:6px;padding:2px 6px;cursor:pointer;font-size:14px;color:var(--text)}
-.msg:hover .mrep,.msg:focus-within .mrep{display:block}
+.msg:hover .mrep,.msg:focus-within .mrep,.msg.sel .mrep,.msg.sel .mdel{display:block}
+.msg.sel{background:var(--hover)}
+.msg{-webkit-touch-callout:none}
 .msg:not(:has(.mdel)) .mrep{right:16px}
 .rep{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--sub);margin:0 0 2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rep b{color:var(--text);font-weight:600}
@@ -157,6 +160,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   <h2 id="nT"></h2><p id="nD"></p>
   <label id="nNL"></label><input id="nName" maxlength="30">
   <label id="nPL"></label><input id="nPw" type="password" maxlength="40" autocomplete="new-password">
+  <label id="nML"></label><input id="nMax" type="number" min="2" max="100" inputmode="numeric">
   <div class="err" id="nErr"></div>
   <div class="row"><button class="btn ghost" id="nNo"></button><button class="btn" id="nGo"></button></div>
 </div></div>
@@ -194,10 +198,10 @@ const DEFAULT_ROOM = "1108";   // 기본 방 번호(이름은 화면에 「채�
 const roomName = (id, r) => id === DEFAULT_ROOM ? t("defRoom") : ((r && r.n) || id);
 const LANGS = [["ko", "한국어"], ["zh-TW", "繁體中文"], ["zh-CN", "简体中文"], ["en", "English"]];
 const T = {
-  ko: {rooms: "채팅방", join: "어서 오세요!", joinD: "닉네임과 내 언어를 고르세요. 다른 사람의 글은 내 언어로 번역되어 보입니다.", name: "닉네임", lang: "내 언어", go: "들어가기", ph: "#{0}에 메시지 보내기", wait: "번역 중…", fail: "번역 실패", local: "연결 안 됨", newT: "채팅방 만들기", newD: "비밀번호를 넣으면 비밀번호를 아는 사람만 들어올 수 있습니다.", rname: "방 이름", pw: "비밀번호 (비우면 공개 방)", make: "만들기", cancel: "취소", pwT: "비밀번호 방", pwD: "「{0}」 방의 비밀번호를 넣으세요.", pwL: "비밀번호", enter: "들어가기", wrong: "비밀번호가 맞지 않습니다.", needName: "방 이름을 넣으세요.", empty: "아직 글이 없습니다. 첫 글을 남겨 보세요!", today: "오늘", micNo: "마이크를 쓸 수 없습니다. 브라우저에서 마이크를 허용해 주세요.", tooLong: "녹음이 너무 깁니다(1분 이하).", vJoin: "음성 참가", vLeave: "나가기", vFull: "음성은 {0}명까지입니다.", vMute: "음소거", vUnmute: "소리 켜기", vMe: "나", defRoom: "채팅방", avL: "프로필 사진", avPick: "사진 고르기", avDel: "지우기", imgFail: "사진을 읽지 못했습니다.", imgBig: "사진이 너무 큽니다.", delQ: "「{0}」 방과 모든 글을 지울까요? 되돌릴 수 없습니다.", authNo: "로그인 연결이 안 되어 방을 만들 수 없습니다.", joined: "{0} 님이 들어왔습니다", mdelQ: "이 글을 지울까요?", mdelNo: "지울 수 없습니다(1분이 지났습니다).", replyTo: "답장{0}: "},
-  "zh-TW": {rooms: "聊天室", join: "歡迎！", joinD: "請輸入暱稱並選擇你的語言。其他人的訊息會翻譯成你的語言。", name: "暱稱", lang: "我的語言", go: "加入", ph: "傳送訊息到 #{0}", wait: "翻譯中…", fail: "翻譯失敗", local: "未連線", newT: "建立聊天室", newD: "設定密碼後，只有知道密碼的人才能進入。", rname: "聊天室名稱", pw: "密碼（留空為公開）", make: "建立", cancel: "取消", pwT: "密碼聊天室", pwD: "請輸入「{0}」的密碼。", pwL: "密碼", enter: "進入", wrong: "密碼錯誤。", needName: "請輸入聊天室名稱。", empty: "還沒有訊息，留下第一則吧！", today: "今天", micNo: "無法使用麥克風，請在瀏覽器允許麥克風。", tooLong: "錄音太長（1 分鐘以內）。", vJoin: "加入語音", vLeave: "離開", vFull: "語音最多 {0} 人。", vMute: "靜音", vUnmute: "開麥", vMe: "我", defRoom: "聊天室", avL: "頭像", avPick: "選擇照片", avDel: "刪除", imgFail: "無法讀取照片。", imgBig: "照片太大。", delQ: "要刪除「{0}」及所有訊息嗎？無法復原。", authNo: "無法連線登入，不能建立聊天室。", joined: "{0} 加入了聊天", mdelQ: "要刪除這則訊息嗎？", mdelNo: "無法刪除（已超過 1 分鐘）。", replyTo: "回覆{0}："},
-  "zh-CN": {rooms: "聊天室", join: "欢迎！", joinD: "请输入昵称并选择你的语言。其他人的消息会翻译成你的语言。", name: "昵称", lang: "我的语言", go: "加入", ph: "发送消息到 #{0}", wait: "翻译中…", fail: "翻译失败", local: "未连接", newT: "创建聊天室", newD: "设置密码后，只有知道密码的人才能进入。", rname: "聊天室名称", pw: "密码（留空为公开）", make: "创建", cancel: "取消", pwT: "密码聊天室", pwD: "请输入「{0}」的密码。", pwL: "密码", enter: "进入", wrong: "密码错误。", needName: "请输入聊天室名称。", empty: "还没有消息，留下第一条吧！", today: "今天", micNo: "无法使用麦克风，请在浏览器允许麦克风。", tooLong: "录音太长（1 分钟以内）。", vJoin: "加入语音", vLeave: "离开", vFull: "语音最多 {0} 人。", vMute: "静音", vUnmute: "开麦", vMe: "我", defRoom: "聊天室", avL: "头像", avPick: "选择照片", avDel: "删除", imgFail: "无法读取照片。", imgBig: "照片太大。", delQ: "要删除「{0}」及所有消息吗？无法恢复。", authNo: "无法连接登录，不能创建聊天室。", joined: "{0} 加入了聊天", mdelQ: "要删除这条消息吗？", mdelNo: "无法删除（已超过 1 分钟）。", replyTo: "回复{0}："},
-  en: {rooms: "Chat rooms", join: "Welcome!", joinD: "Pick a nickname and your language. Everyone else's messages are shown translated into it.", name: "Nickname", lang: "My language", go: "Join", ph: "Message #{0}", wait: "Translating…", fail: "Translation failed", local: "Offline", newT: "Create a chat room", newD: "With a password, only people who know it can enter.", rname: "Room name", pw: "Password (leave empty for a public room)", make: "Create", cancel: "Cancel", pwT: "Password room", pwD: "Enter the password for \"{0}\".", pwL: "Password", enter: "Enter", wrong: "Wrong password.", needName: "Enter a room name.", empty: "No messages yet. Say hi!", today: "Today", micNo: "Can't use the microphone. Please allow it in your browser.", tooLong: "Recording too long (1 minute max).", vJoin: "Join voice", vLeave: "Leave", vFull: "Voice is limited to {0} people.", vMute: "Mute", vUnmute: "Unmute", vMe: "me", defRoom: "Chat", avL: "Profile photo", avPick: "Choose photo", avDel: "Remove", imgFail: "Could not read the photo.", imgBig: "The photo is too large.", delQ: "Delete \"{0}\" and all its messages? This cannot be undone.", authNo: "Sign-in failed, so the room cannot be created.", joined: "{0} joined", mdelQ: "Delete this message?", mdelNo: "Can't delete it (more than 1 minute has passed).", replyTo: "Replying to{0} "}
+  ko: {rooms: "채팅방", join: "어서 오세요!", joinD: "닉네임과 내 언어를 고르세요. 다른 사람의 글은 내 언어로 번역되어 보입니다.", name: "닉네임", lang: "내 언어", go: "들어가기", ph: "#{0}에 메시지 보내기", wait: "번역 중…", fail: "번역 실패", local: "연결 안 됨", newT: "채팅방 만들기", newD: "비밀번호를 넣으면 비밀번호를 아는 사람만 들어올 수 있습니다.", rname: "방 이름", pw: "비밀번호 (비우면 공개 방)", make: "만들기", cancel: "취소", pwT: "비밀번호 방", pwD: "「{0}」 방의 비밀번호를 넣으세요.", pwL: "비밀번호", enter: "들어가기", wrong: "비밀번호가 맞지 않습니다.", needName: "방 이름을 넣으세요.", empty: "아직 글이 없습니다. 첫 글을 남겨 보세요!", today: "오늘", micNo: "마이크를 쓸 수 없습니다. 브라우저에서 마이크를 허용해 주세요.", tooLong: "녹음이 너무 깁니다(1분 이하).", vJoin: "음성 참가", vLeave: "나가기", vFull: "음성은 {0}명까지입니다.", vMute: "음소거", vUnmute: "소리 켜기", vMe: "나", defRoom: "채팅방", avL: "프로필 사진", avPick: "사진 고르기", avDel: "지우기", imgFail: "사진을 읽지 못했습니다.", imgBig: "사진이 너무 큽니다.", delQ: "「{0}」 방과 모든 글을 지울까요? 되돌릴 수 없습니다.", authNo: "로그인 연결이 안 되어 방을 만들 수 없습니다.", joined: "{0} 님이 들어왔습니다", mdelQ: "이 글을 지울까요?", mdelNo: "지울 수 없습니다(1분이 지났습니다).", replyTo: "답장{0}: ", ppl: "{0}명", pplMax: "{0}/{1}명", maxL: "인원 제한 (비우면 제한 없음)", maxPh: "예: 10", full: "「{0}」 방이 꽉 찼습니다({1}명)."},
+  "zh-TW": {rooms: "聊天室", join: "歡迎！", joinD: "請輸入暱稱並選擇你的語言。其他人的訊息會翻譯成你的語言。", name: "暱稱", lang: "我的語言", go: "加入", ph: "傳送訊息到 #{0}", wait: "翻譯中…", fail: "翻譯失敗", local: "未連線", newT: "建立聊天室", newD: "設定密碼後，只有知道密碼的人才能進入。", rname: "聊天室名稱", pw: "密碼（留空為公開）", make: "建立", cancel: "取消", pwT: "密碼聊天室", pwD: "請輸入「{0}」的密碼。", pwL: "密碼", enter: "進入", wrong: "密碼錯誤。", needName: "請輸入聊天室名稱。", empty: "還沒有訊息，留下第一則吧！", today: "今天", micNo: "無法使用麥克風，請在瀏覽器允許麥克風。", tooLong: "錄音太長（1 分鐘以內）。", vJoin: "加入語音", vLeave: "離開", vFull: "語音最多 {0} 人。", vMute: "靜音", vUnmute: "開麥", vMe: "我", defRoom: "聊天室", avL: "頭像", avPick: "選擇照片", avDel: "刪除", imgFail: "無法讀取照片。", imgBig: "照片太大。", delQ: "要刪除「{0}」及所有訊息嗎？無法復原。", authNo: "無法連線登入，不能建立聊天室。", joined: "{0} 加入了聊天", mdelQ: "要刪除這則訊息嗎？", mdelNo: "無法刪除（已超過 1 分鐘）。", replyTo: "回覆{0}：", ppl: "{0} 人", pplMax: "{0}/{1} 人", maxL: "人數上限（留空為不限）", maxPh: "例：10", full: "「{0}」已滿（{1} 人）。"},
+  "zh-CN": {rooms: "聊天室", join: "欢迎！", joinD: "请输入昵称并选择你的语言。其他人的消息会翻译成你的语言。", name: "昵称", lang: "我的语言", go: "加入", ph: "发送消息到 #{0}", wait: "翻译中…", fail: "翻译失败", local: "未连接", newT: "创建聊天室", newD: "设置密码后，只有知道密码的人才能进入。", rname: "聊天室名称", pw: "密码（留空为公开）", make: "创建", cancel: "取消", pwT: "密码聊天室", pwD: "请输入「{0}」的密码。", pwL: "密码", enter: "进入", wrong: "密码错误。", needName: "请输入聊天室名称。", empty: "还没有消息，留下第一条吧！", today: "今天", micNo: "无法使用麦克风，请在浏览器允许麦克风。", tooLong: "录音太长（1 分钟以内）。", vJoin: "加入语音", vLeave: "离开", vFull: "语音最多 {0} 人。", vMute: "静音", vUnmute: "开麦", vMe: "我", defRoom: "聊天室", avL: "头像", avPick: "选择照片", avDel: "删除", imgFail: "无法读取照片。", imgBig: "照片太大。", delQ: "要删除「{0}」及所有消息吗？无法恢复。", authNo: "无法连接登录，不能创建聊天室。", joined: "{0} 加入了聊天", mdelQ: "要删除这条消息吗？", mdelNo: "无法删除（已超过 1 分钟）。", replyTo: "回复{0}：", ppl: "{0} 人", pplMax: "{0}/{1} 人", maxL: "人数上限（留空为不限）", maxPh: "例：10", full: "「{0}」已满（{1} 人）。"},
+  en: {rooms: "Chat rooms", join: "Welcome!", joinD: "Pick a nickname and your language. Everyone else's messages are shown translated into it.", name: "Nickname", lang: "My language", go: "Join", ph: "Message #{0}", wait: "Translating…", fail: "Translation failed", local: "Offline", newT: "Create a chat room", newD: "With a password, only people who know it can enter.", rname: "Room name", pw: "Password (leave empty for a public room)", make: "Create", cancel: "Cancel", pwT: "Password room", pwD: "Enter the password for \"{0}\".", pwL: "Password", enter: "Enter", wrong: "Wrong password.", needName: "Enter a room name.", empty: "No messages yet. Say hi!", today: "Today", micNo: "Can't use the microphone. Please allow it in your browser.", tooLong: "Recording too long (1 minute max).", vJoin: "Join voice", vLeave: "Leave", vFull: "Voice is limited to {0} people.", vMute: "Mute", vUnmute: "Unmute", vMe: "me", defRoom: "Chat", avL: "Profile photo", avPick: "Choose photo", avDel: "Remove", imgFail: "Could not read the photo.", imgBig: "The photo is too large.", delQ: "Delete \"{0}\" and all its messages? This cannot be undone.", authNo: "Sign-in failed, so the room cannot be created.", joined: "{0} joined", mdelQ: "Delete this message?", mdelNo: "Can't delete it (more than 1 minute has passed).", replyTo: "Replying to{0} ", ppl: "{0} online", pplMax: "{0}/{1}", maxL: "Max people (leave empty for no limit)", maxPh: "e.g. 10", full: "\"{0}\" is full ({1} people)."}
 };
 const $ = id => document.getElementById(id);
 const store = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
@@ -237,9 +241,12 @@ const keys = (() => { try { return JSON.parse(store.get("chat_keys") || "{}"); }
 function drawRooms() {
   const list = Object.entries(ROOMS).sort((a, b) => (a[0] === DEFAULT_ROOM ? -1 : b[0] === DEFAULT_ROOM ? 1 : (a[1].ts || 0) - (b[1].ts || 0)));
   if (!ROOMS[DEFAULT_ROOM]) list.unshift([DEFAULT_ROOM, {n: DEFAULT_ROOM}]);
-  $("rooms").innerHTML = list.map(([id, r]) => '<button class="room' + (cur && cur.id === id ? " on" : "") + '" data-id="' + esc(id) + '"><span class="h">' + (r.lock ? "🔒" : "#") + '</span><span class="nm">' + esc(roomName(id, r)) + '</span>' + (r.own && r.own === myAuth() ? '<span class="own" title="owner">👑</span>' : '') + '</button>').join("");
+  $("rooms").innerHTML = list.map(([id, r]) => '<button class="room' + (cur && cur.id === id ? " on" : "") + '" data-id="' + esc(id) + '"><span class="h">' + (r.lock ? "🔒" : "#") + '</span><span class="nm">' + esc(roomName(id, r)) + '<small class="cnt">👥 ' + (r.max ? fm(t("pplMax"), ONLINE[id] || 0, r.max) : fm(t("ppl"), ONLINE[id] || 0)) + '</small></span>' + (r.own && r.own === myAuth() ? '<span class="own" title="owner">👑</span>' : '') + '</button>').join("");
 }
 db.ref("roomlist").on("value", s => { ROOMS = s.val() || {}; drawRooms(); });
+// 방마다 접속 인원 — 비밀번호 방도 숫자는 보이게 online/{방 번호}/{내 번호} = true 만 남긴다(이름 · 글은 안 남김)
+let ONLINE = {};
+db.ref("online").on("value", s => { const v = s.val() || {}; ONLINE = {}; Object.keys(v).forEach(k => ONLINE[k] = Object.keys(v[k] || {}).length); drawRooms(); });
 db.ref(".info/connected").on("value", s => { $("mode").textContent = s.val() ? "" : t("local"); });
 $("rooms").addEventListener("click", e => { const b = e.target.closest(".room"); if (b) openRoom(b.dataset.id); });
 
@@ -247,6 +254,7 @@ let pending = null;
 async function openRoom(id) {
   const r = ROOMS[id] || (id === DEFAULT_ROOM ? {n: DEFAULT_ROOM} : null);
   if (!r) return;
+  if (r.max && (!cur || cur.id !== id) && (ONLINE[id] || 0) >= r.max && r.own !== myAuth()) { alert(fm(t("full"), roomName(id, r), r.max)); return; }
   if (r.lock) {
     const k = keys[id];
     if (k && (await sha(k + "chk")).slice(0, 12) === r.chk) return enter(id, r, k);
@@ -284,7 +292,7 @@ $("pPw").addEventListener("keydown", e => { if (e.key === "Enter") $("pGo").clic
 $("pNo").onclick = () => { hide("mPw"); pending = null; };
 
 // 방 만들기
-$("addRoom").onclick = () => { $("nName").value = ""; $("nPw").value = ""; $("nErr").textContent = ""; show("mNew"); $("nName").focus(); };
+$("addRoom").onclick = () => { $("nName").value = ""; $("nPw").value = ""; $("nMax").value = ""; $("nErr").textContent = ""; show("mNew"); $("nName").focus(); };
 $("nNo").onclick = () => hide("mNew");
 $("nGo").onclick = async () => {
   const name = $("nName").value.trim().slice(0, 30), pw = $("nPw").value;
@@ -293,6 +301,7 @@ $("nGo").onclick = async () => {
   if (!myAuth()) { $("nErr").textContent = t("authNo"); return; }
   const id = db.ref("roomlist").push().key, lock = !!pw, key = lock ? id + "/" + (await sha(id + pw)).slice(0, 20) : id + "/o";
   const meta = {n: name, lock, by: (me.n || "?").slice(0, 40), own: myAuth(), ts: firebase.database.ServerValue.TIMESTAMP};
+  const mx = parseInt($("nMax").value, 10); if (mx >= 2 && mx <= 100) meta.max = mx;   // 인원 제한(비우면 제한 없음)
   if (lock) meta.chk = (await sha(key + "chk")).slice(0, 12);
   try { await db.ref("roomlist/" + id).set(meta); } catch (e) { $("nErr").textContent = String(e.message || e); return; }
   if (lock) { keys[id] = key; store.set("chat_keys", JSON.stringify(keys)); }
@@ -354,6 +363,21 @@ $("log").addEventListener("click", e => {
   if (q) { const to = document.getElementById("m_" + q.dataset.to); if (to) { to.scrollIntoView({block: "center", behavior: "smooth"}); to.classList.add("flash"); setTimeout(() => to.classList.remove("flash"), 1400); } }
 });
 $("msg").addEventListener("keydown", e => { if (e.key === "Escape" && REPLY) setReply(null); });
+// 휴대폰: 글을 꾹 누르면(0.45초) 바로 답장, 살짝 누르면 ↩ · 🗑 단추가 보인다(이박사님 11-09 — 꾹 눌러도 안 된다)
+const replyTo = d => setReply({id: d.id.slice(2), n: d.dataset.n.slice(0, 40), t: d.dataset.t.replace(/\s+/g, " ").slice(0, 80)});
+let pressT = null, pressXY = null;
+$("log").addEventListener("touchstart", e => {
+  const d = e.target.closest(".msg"); if (!d || e.target.closest("button,img,a")) return;
+  pressXY = [e.touches[0].clientX, e.touches[0].clientY];
+  pressT = setTimeout(() => { pressT = null; if (navigator.vibrate) navigator.vibrate(15); replyTo(d); }, 450);
+}, {passive: true});
+$("log").addEventListener("touchmove", e => { if (pressT && pressXY && Math.hypot(e.touches[0].clientX - pressXY[0], e.touches[0].clientY - pressXY[1]) > 10) { clearTimeout(pressT); pressT = null; } }, {passive: true});
+$("log").addEventListener("touchend", () => { if (pressT) { clearTimeout(pressT); pressT = null; } }, {passive: true});
+$("log").addEventListener("contextmenu", e => { const d = e.target.closest(".msg"); if (d && !e.target.closest("img,a")) e.preventDefault(); });
+$("log").addEventListener("click", e => {
+  const d = e.target.closest(".msg"); if (!d || e.target.closest("button,.rep,img")) return;
+  const on = !d.classList.contains("sel"); log.querySelectorAll(".msg.sel").forEach(x => x.classList.remove("sel")); if (on) d.classList.add("sel");
+});
 function send() {
   const box = $("msg"), text = box.value.trim();
   if (!text || !me.n || !curRef) return;
@@ -419,7 +443,7 @@ function applyLang() {
   document.documentElement.lang = me.l;
   $("cT").textContent = t("rooms");
   $("jT").textContent = t("join"); $("jD").textContent = t("joinD"); $("jNL").textContent = t("name"); $("jLL").textContent = t("lang"); $("jGo").textContent = t("go"); $("jName").placeholder = t("name");
-  $("nT").textContent = t("newT"); $("nD").textContent = t("newD"); $("nNL").textContent = t("rname"); $("nPL").textContent = t("pw"); $("nGo").textContent = t("make"); $("nNo").textContent = t("cancel");
+  $("nT").textContent = t("newT"); $("nD").textContent = t("newD"); $("nNL").textContent = t("rname"); $("nPL").textContent = t("pw"); $("nGo").textContent = t("make"); $("nNo").textContent = t("cancel"); $("nML").textContent = t("maxL"); $("nMax").placeholder = t("maxPh");
   $("pT").textContent = t("pwT"); $("pPL").textContent = t("pwL"); $("pGo").textContent = t("enter"); $("pNo").textContent = t("cancel");
   if (cur) { $("msg").placeholder = fm(t("ph"), roomName(cur.id, cur.r)); $("topT").textContent = roomName(cur.id, cur.r); }
   drawRooms();
@@ -711,6 +735,7 @@ function joinHere() {
   HERE = {ref, mine}; hereReady = false;
   mine.onDisconnect().remove();
   mine.set({n: me.n, ts: firebase.database.ServerValue.TIMESTAMP});
+  HERE.on = db.ref("online/" + cur.id + "/" + uid); HERE.on.onDisconnect().remove(); HERE.on.set(true);
   ref.on("child_added", s => {
     if (hereReady && s.key !== uid) {
       const v = s.val() || {}; sys(fm(t("joined"), v.n || "?"));
@@ -721,7 +746,9 @@ function joinHere() {
 }
 function leaveHere() {
   if (!HERE) return;
-  HERE.ref.off(); HERE.mine.onDisconnect().cancel(); HERE.mine.remove(); HERE = null;
+  HERE.ref.off(); HERE.mine.onDisconnect().cancel(); HERE.mine.remove();
+  if (HERE.on) { HERE.on.onDisconnect().cancel(); HERE.on.remove(); }
+  HERE = null;
   $("here").textContent = "";
 }
 window.addEventListener("pagehide", leaveHere);
