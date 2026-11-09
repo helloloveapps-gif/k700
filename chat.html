@@ -372,6 +372,8 @@ function enter(id, r, key) {
   drawRooms(); $("app").classList.remove("open");
   curRef = db.ref("rooms/" + key + "/msgs");
   if (typeof watchVoice === "function") watchVoice();
+  // 음성 중계 서버 미리 깨우기 · 라이브러리 미리 받기(첫 음성 참가가 6명 방식으로 빠지지 않게)
+  try { fetch(VOICE_API + "/health", {mode: "no-cors"}).catch(() => {}); lkLib().catch(() => {}); } catch (e) {}
   if (typeof joinHere === "function") joinHere();
   // 처음 들어온 뒤의 글만(이박사님 11-09): 방마다 joined/{열쇠}/{내 로그인 번호} = 처음 들어온 시각(서버 시각, 한 번만 쓰임).
   // DB 규칙도 그 시각부터 묻는 읽기만 허락한다 — 새로 온 사람은 예전 대화를 볼 수 없다
@@ -667,7 +669,7 @@ const lkLib = () => LK_LIB || (LK_LIB = new Promise((res, rej) => {
   document.head.appendChild(sc);
 }));
 async function lkToken() {
-  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 4000);
+  const ac = new AbortController(), tm = setTimeout(() => ac.abort(), 8000);   // 서버가 쉬다 깨면 첫 응답이 늦다
   try {
     const room = cur.key.replace(/[^A-Za-z0-9_-]/g, "_").slice(0, 64);
     const r = await fetch(VOICE_API + "/voice/token?room=" + encodeURIComponent(room) + "&id=" + encodeURIComponent(uid) + "&name=" + encodeURIComponent(me.n || "?"), {signal: ac.signal});
