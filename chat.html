@@ -63,7 +63,16 @@ footer textarea{flex:1;resize:none;font:inherit;color:var(--text);background:#10
 // 1108 번역 채팅 — 원문만 저장하고, 보는 사람마다 자기 언어로 번역해 보여 준다(이박사님 11-09)
 // 저장소: Firebase Realtime Database. 설정이 비어 있으면 이 기기 안에서만 도는 시험 모드(탭끼리 BroadcastChannel)
 // 번역: 각자 브라우저에서 구글 번역 무료 주소(translate.googleapis.com, client=gtx) — 공용 글자 한도 없음
-const FIREBASE_CONFIG = null;   // Firebase 프로젝트를 만든 뒤 { apiKey, authDomain, databaseURL, projectId, ... } 를 넣는다
+// Firebase 프로젝트 chat1108(이박사님 계정) — 웹 설정값은 공개용(비밀 아님). 쓰기 · 읽기 제한은 DB 규칙(rooms/$room/msgs, 새 글만 · 길이 제한)
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyBYLf6m03K2-bJeuJuV9cf67cFRv_1czfU",
+  authDomain: "chat1108-d4d5f.firebaseapp.com",
+  databaseURL: "https://chat1108-d4d5f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "chat1108-d4d5f",
+  storageBucket: "chat1108-d4d5f.firebasestorage.app",
+  messagingSenderId: "891325964868",
+  appId: "1:891325964868:web:7518b5498b3a5dac339211"
+};
 
 const ROOM = (new URLSearchParams(location.search).get("room") || "1108").replace(/[^\w-]/g, "").slice(0, 30) || "1108";
 const LANGS = [["ko", "한국어"], ["zh-TW", "繁體中文"], ["zh-CN", "简体中文"], ["en", "English"]];
