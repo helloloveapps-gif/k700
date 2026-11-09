@@ -284,7 +284,7 @@ const authReady = firebase.auth().signInAnonymously().catch(() => null);
 const myAuth = () => (firebase.auth().currentUser || {}).uid || "";
 firebase.auth().onAuthStateChanged(() => { drawRooms(); if (cur) $("delRoom").hidden = !(cur.id !== DEFAULT_ROOM && cur.r.own && cur.r.own === myAuth()); });
 let OPEN = null;   // 열린 방만(cfg/open), null 이면 모두
-let ROOMS = withDef(), cur = null, curRef = null, lastMsg = null;
+let ROOMS = withDef(), cur = null, curRef = null, curQ = null, lastMsg = null;
 const keys = (() => { try { return JSON.parse(store.get("chat_keys") || "{}"); } catch (e) { return {}; } })();   // 이 기기에서 연 비밀번호 방의 열쇠(다시 묻지 않게)
 
 // 방 목록
@@ -308,6 +308,7 @@ $("rooms").addEventListener("click", e => { const b = e.target.closest(".room");
 
 let pending = null;
 function noRoom() {
+  if (curQ) { curQ.off(); curQ = null; }
   if (curRef) curRef.off();
   if (typeof leaveVoice === "function") leaveVoice();
   if (typeof leaveHere === "function") leaveHere();
@@ -333,6 +334,7 @@ async function openRoom(id) {
   enter(id, r, r.own ? id + "/o" : id);   // 방장 표시 없는 방(바꾸기 전에 만든 방 · 기본 방)은 옛 자리 그대로
 }
 function enter(id, r, key) {
+  if (curQ) { curQ.off(); curQ = null; }
   if (curRef) curRef.off();
   if (typeof leaveVoice === "function") leaveVoice();
   cur = {id, r, key}; lastMsg = null; if (typeof setReply === "function") setReply(null);
@@ -347,9 +349,25 @@ function enter(id, r, key) {
   curRef = db.ref("rooms/" + key + "/msgs");
   if (typeof watchVoice === "function") watchVoice();
   if (typeof joinHere === "function") joinHere();
-  curRef.orderByChild("ts").limitToLast(300).on("child_added", s => addMsg(s.key, s.val()));
-  curRef.on("child_removed", s => { const el = document.getElementById("m_" + s.key); if (el) { const nx = el.nextElementSibling; if (nx && nx.classList.contains("cont") && !el.classList.contains("cont")) nx.classList.remove("cont"); el.remove(); } });
+  // 처음 들어온 뒤의 글만(이박사님 11-09): 방마다 joined/{열쇠}/{내 로그인 번호} = 처음 들어온 시각(서버 시각, 한 번만 쓰임).
+  // DB 규칙도 그 시각부터 묻는 읽기만 허락한다 — 새로 온 사람은 예전 대화를 볼 수 없다
+  const ref0 = curRef;
+  sinceOf(key).then(since => {
+    if (curRef !== ref0 || since == null) return;
+    curQ = ref0.orderByChild("ts").startAt(since).limitToLast(300);
+    curQ.on("child_added", s => addMsg(s.key, s.val()));
+    curQ.on("child_removed", rmMsg);
+  });
 }
+async function sinceOf(key) {
+  await authReady;
+  const a = myAuth(); if (!a) return null;
+  const r = db.ref("joined/" + key.replace("/", "_") + "/" + a);
+  let v = (await r.once("value").catch(() => null))?.val();
+  if (v == null) { await r.set(firebase.database.ServerValue.TIMESTAMP).catch(() => {}); v = (await r.once("value").catch(() => null))?.val(); }
+  return v == null ? null : v;
+}
+function rmMsg(s) { const el = document.getElementById("m_" + s.key); if (el) { const nx = el.nextElementSibling; if (nx && nx.classList.contains("cont") && !el.classList.contains("cont")) nx.classList.remove("cont"); el.remove(); } }
 $("pGo").onclick = async () => {
   if (!pending) return;
   const h = (await sha(pending.id + $("pPw").value)).slice(0, 20), key = pending.id + (pending.r.own ? "/" : "_") + h;
