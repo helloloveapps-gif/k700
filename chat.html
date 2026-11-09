@@ -240,14 +240,14 @@ const FIREBASE_CONFIG = {
 };
 const DEFAULT_ROOM = "1108";   // 기본 방 번호(이름은 화면에 「채팅방」)
 const DEF_ROOM = {n: "1108", lock: true, own: "-", ts: 0, chk: "1a5fc0308eb6", closed: true};   // 11-09 닫음(목록에서 숨김)   // 비밀번호 방 — chk = sha256(열쇠 + "chk") 앞 12자
-const ownerName = r => (r && r.own !== "-" && r.by) ? r.by : "";
+const ownerName = r => (r && !r.lock && r.own !== "-" && r.by) ? r.by : "";   // 비공개 방은 방장 이름을 아무에게도 안 보인다(이박사님 11-10)
 // 이 글이 방장 글인가: 방장 기기 번호(own)가 있으면 그것으로, 옛 방(번호 없음)은 이름으로
 const isMine = r => !!(r && r.own && r.own !== "-" && r.own === myAuth());
 const sameName = (a, b) => !!a && !!b && a.trim().toLowerCase() === b.trim().toLowerCase();   // Donnlove = donnlove
 const canCfg = (id, r) => id !== DEFAULT_ROOM && !!r && (isMine(r) || (!r.own && sameName(r.by, me.n)));
 // 비공개(비밀번호) 방은 이 기기에서 비밀번호를 넣기 전까지 방 이름 · 인원 · 방장을 숨긴다(이박사님 11-09)
 const secret = (id, r) => !!(r && r.lock && !keys[id] && !isMine(r));
-const isOwnerMsg = (m, r) => !!(r && (r.own && r.own !== "-" ? m.a && m.a === r.own : sameName(r.by, m.n)));
+const isOwnerMsg = (m, r) => !!(r && !r.lock && (r.own && r.own !== "-" ? m.a && m.a === r.own : sameName(r.by, m.n)));
 const withDef = v => Object.assign({[DEFAULT_ROOM]: DEF_ROOM}, v || {}, {[DEFAULT_ROOM]: DEF_ROOM});
 const roomName = (id, r) => id === DEFAULT_ROOM ? t("defRoom") : ((r && r.n) || id);
 const LANGS = [["ko", "한국어"], ["zh-TW", "繁體中文"], ["zh-CN", "简体中文"], ["en", "English"]];
