@@ -111,7 +111,11 @@ button,input,select,textarea{font:inherit;color:inherit}
 #liveMe{flex:1;min-width:0;color:var(--sub);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-style:italic}
 #live .lh button{background:none;border:0;color:var(--sub);font-size:16px;cursor:pointer}
 #liveLog{flex:1;overflow:auto;padding:8px 12px;display:flex;flex-direction:column;gap:8px}
-.lv b{font-size:12px}
+.lv{display:flex;gap:10px}
+.lv .la{width:30px;height:30px;font-size:13px;flex:none}
+.lv .lb{min-width:0;flex:1}
+.lv .ln{font-size:14px;font-weight:800}
+.lv .ln small{font-weight:400;color:var(--sub);font-size:11px;margin-left:6px}
 .lv .lt{font-size:17px;line-height:1.35;color:#fff}
 .lv .lo{font-size:12px;color:var(--sub)}
 .lv.mine .lt{color:#c9cdfb}
@@ -831,11 +835,11 @@ function startSTT() {
   sr.onresult = e => {
     let interim = "";
     for (let i = e.resultIndex; i < e.results.length; i++) if (!e.results[i].isFinal) interim += e.results[i][0].transcript;
-    $("liveMe").textContent = interim ? "🎙 " + interim : "";
+    $("liveMe").textContent = interim ? "🎙 " + me.n + ": " + interim : "";
     for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) {
       const tx = e.results[i][0].transcript.trim();
       if (tx && V && !V.muted && curRef) curRef.push(withA({n: me.n, l: me.l, t: tx.slice(0, 1000), u: uid, s: true, ts: firebase.database.ServerValue.TIMESTAMP}));   // 채팅에도 글로(이박사님 11-09)
-      if (tx && V && !V.muted) { $("liveMe").textContent = ""; liveRow(me.n, tx, true); }
+      if (tx && V && !V.muted) { $("liveMe").textContent = ""; liveRow(me.n, tx, true, uid); }
       if (tx && V && !V.muted) { const r = ref.push(); r.set({n: me.n, l: me.l, t: tx.slice(0, 300), u: uid, ts: firebase.database.ServerValue.TIMESTAMP}); setTimeout(() => r.remove().catch(() => {}), 25000); capLine("🗣 " + me.n + ": " + tx, true); }
     }
   };
@@ -865,7 +869,7 @@ function stopCaps() {
   CAP = null; const c = $("caps"); if (c) c.innerHTML = "";
 }
 async function showCap(m) {
-  const row = liveRow(m.n, m.t, false);
+  const row = liveRow(m.n, m.t, false, m.u);
   let tx = m.t;
   if (m.l !== me.l) { try { tx = await translate(m.t, me.l, m.l); } catch (e) {} }
   capLine("🗣 " + m.n + ": " + tx + (tx !== m.t ? "  (" + m.t + ")" : ""));
@@ -875,7 +879,9 @@ async function showCap(m) {
 function liveRow(n, text, mine) {
   const lg = $("liveLog"), d = document.createElement("div"), stick = lg.scrollHeight - lg.scrollTop - lg.clientHeight < 60;
   d.className = "lv" + (mine ? " mine" : "");
-  d.innerHTML = '<b style="color:' + colorOf(n) + '">' + esc(n) + '</b><div class="lt">' + esc(text) + '</div><div class="lo"></div>';
+  const u = arguments[3] || "", tm = new Date().toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", second: "2-digit"});
+  d.innerHTML = '<div class="av la" data-u="' + esc(u) + '" style="background-color:' + colorOf(u || n) + '">' + esc((n || "?").charAt(0).toUpperCase()) + '</div><div class="lb"><div class="ln" style="color:' + colorOf(u || n) + '">' + esc(n) + (mine ? ' (' + esc(t("vMe")) + ')' : '') + '<small>' + tm + '</small></div><div class="lt">' + esc(text) + '</div><div class="lo"></div></div>';
+  if (u && typeof paintAv === "function") { avatarOf(u); paintAv(u); }
   lg.appendChild(d); while (lg.children.length > 60) lg.firstChild.remove();
   if (stick) lg.scrollTop = lg.scrollHeight;
   return d;
