@@ -1041,15 +1041,19 @@ const TOUCH = matchMedia("(hover:none)").matches;
 // 받아쓰기는 모두 기본으로 켠다(11-09 휴대폰에서 꺼져 있어 한쪽 말만 번역됨). 허용 창이 자꾸 뜨는 폰은 저절로 꺼진다(stopSTT)
 // 받아쓰기 켜짐 여부 — 사람이 직접 끈 것만 기억한다(11-10: 저절로 꺼진 것까지 「꺼짐」으로 저장돼 실시간 번역이 영영 멈추던 것. 새 이름 chat_stt2 로 모두 다시 켬)
 const sttOn = () => (store.get("chat_stt2") ?? "1") === "1";
+// 진단(11-10): 받아쓰기 상태를 내 음성 참가 정보(voice/{나}.st)에 올린다 — 원격으로 원인 확인용
+let STT_LAST = "";
+function sttStat(x) { if (x === STT_LAST) return; STT_LAST = x; try { if (V && V.meRef) V.meRef.update({st: String(x).slice(0, 80), stt: firebase.database.ServerValue.TIMESTAMP}); } catch (e) {} }
 function startSTT() {
   if (!CAP || CAP.sr) return;
-  if (!SR) { capLine("⚠ " + t("capNo")); return; }
+  if (!SR) { capLine("⚠ " + t("capNo")); sttStat("nosr " + navigator.userAgent.slice(-60)); return; }
   let sr; try { sr = new SR(); } catch (e) { liveRow("⚠", t("capNo"), true); return; }
   const ref = CAP.ref, starts = []; sr.lang = SRL[me.l] || "ko-KR"; sr.continuous = true; sr.interimResults = true;
   sr.onresult = e => {
     let interim = "";
     for (let i = e.resultIndex; i < e.results.length; i++) if (!e.results[i].isFinal) interim += e.results[i][0].transcript;
     $("liveMe").textContent = interim ? "🎙 " + me.n + ": " + interim : "✅ STT";
+    sttStat("result");
     for (let i = e.resultIndex; i < e.results.length; i++) if (e.results[i].isFinal) {
       const tx = e.results[i][0].transcript.trim();
       if (tx && V && !V.muted && curRef) curRef.push(withA({n: me.n, l: me.l, t: tx.slice(0, 1000), u: uid, s: true, ts: firebase.database.ServerValue.TIMESTAMP}));   // 채팅에도 글로(이박사님 11-09)
@@ -1059,8 +1063,10 @@ function startSTT() {
   };
   // 마이크 허용을 거절했거나 자꾸 다시 묻는 폰이면 받아쓰기만 끈다(음성 통화는 그대로)
   // 진단(11-10): 받아쓰기 오류를 실시간 번역 칸 위 한 줄에 보인다 — no-speech 는 조용할 때 나는 정상 오류라 뺌
-  sr.onaudiostart = () => { if (!/^🎙|^⚠/.test($("liveMe").textContent)) $("liveMe").textContent = "👂 STT"; };   // 받아쓰기가 마이크 소리를 받기 시작함
-  sr.onerror = e => { if (e.error && e.error !== "no-speech" && e.error !== "aborted") $("liveMe").textContent = "⚠ STT: " + e.error; };
+  sr.onstart = () => sttStat("start");
+  sr.onspeechstart = () => sttStat("speech");
+  sr.onaudiostart = () => { sttStat("audio"); if (!/^🎙|^⚠/.test($("liveMe").textContent)) $("liveMe").textContent = "👂 STT"; };   // 받아쓰기가 마이크 소리를 받기 시작함
+  sr.onerror = e => { sttStat("err:" + e.error); if (e.error && e.error !== "no-speech" && e.error !== "aborted") $("liveMe").textContent = "⚠ STT: " + e.error; };
   sr.addEventListener("error", e => { if (/not-allowed|service-not-allowed/.test(e.error || "")) { stopSTT(false); capLine("⚠ " + t("sttDenied")); } });   // 마이크 거절만 멈춤(저장 안 함). 그 밖(조용함 · 잠깐 마이크 못 잡음)은 onend 가 다시 켠다
   sr.onend = () => {
     if (!CAP || CAP.sr !== sr) return;
@@ -1069,7 +1075,7 @@ function startSTT() {
     setTimeout(() => { try { if (CAP && CAP.sr === sr) sr.start(); } catch (x) {} }, wait);   // 조용하면 저절로 멈추니 다시
   };
   CAP.sr = sr;
-  try { sr.start(); } catch (e) { CAP.sr = null; }
+  try { sr.start(); } catch (e) { CAP.sr = null; sttStat("startfail " + (e.message || e).toString().slice(0, 60)); }
   if (!CAP.sr) liveRow("⚠", t("capNo"), true);
   if (V) drawVoice(V.peers);
 }
