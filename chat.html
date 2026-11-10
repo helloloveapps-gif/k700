@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-10h</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-10i</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -350,7 +350,7 @@ const keys = (() => { try { return JSON.parse(store.get("chat_keys") || "{}"); }
 // 방 목록
 function drawRooms() {
   const list = Object.entries(ROOMS).filter(([id, r]) => (!OPEN || OPEN[id]) && (!r.closed || isMine(r))).sort((a, b) => (a[0] === DEFAULT_ROOM ? -1 : b[0] === DEFAULT_ROOM ? 1 : (a[1].ts || 0) - (b[1].ts || 0)));
-  $("rooms").innerHTML = list.map(([id, r]) => '<button class="room' + (cur && cur.id === id ? " on" : "") + '" data-id="' + esc(id) + '"><span class="h">' + (r.closed ? "🚫" : r.lock ? "🔒" : "#") + '</span><span class="nm">' + (secret(id, r) ? esc(roomName(id, r)) + '<small class="cnt">' + esc(t("privD")) + '</small>' : esc(roomName(id, r)) + '<small class="cnt">👥 ' + (r.max ? fm(t("pplMax"), ONLINE[id] || 0, r.max) : fm(t("ppl"), ONLINE[id] || 0)) + (ownerName(r) ? ' · 👑 ' + esc(ownerName(r)) : '') + '</small>') + '</span>' + (r.own && r.own === myAuth() ? '<span class="own" title="owner">👑</span>' : '') + '</button>').join("");
+  $("rooms").innerHTML = list.map(([id, r]) => '<button class="room' + (cur && cur.id === id ? " on" : "") + '" data-id="' + esc(id) + '"><span class="h">' + (r.closed ? "🚫" : r.lock ? "🔒" : "#") + '</span><span class="nm">' + (secret(id, r) ? esc(roomName(id, r)) + '<small class="cnt">' + esc(t("privD")) + '</small>' : esc(roomName(id, r)) + '<small class="cnt">👥 ' + (r.max ? fm(t("pplMax"), ONLINE[id] || 0, r.max) : fm(t("ppl"), ONLINE[id] || 0)) + (ownerName(r) ? ' · 👑 ' + esc(ownerName(r)) : '') + '</small>') + '</span>' + (r.own && r.own === myAuth() ? '<span class="own" title="settings" style="cursor:pointer">👑⚙️</span>' : '') + '</button>').join("");
 }
 db.ref("roomlist").on("value", s => {
   ROOMS = withDef(s.val()); drawRooms();
@@ -375,7 +375,12 @@ db.ref(".info/connected").on("value", s => {
   // 다시 연결되면(화면을 다시 켬 등) 접속 인원에 다시 올린다
   if (s.val() && typeof HERE !== "undefined" && HERE && HERE.on) { HERE.on.onDisconnect().remove(); HERE.on.set(true).catch(() => {}); }
 });
-$("rooms").addEventListener("click", e => { const b = e.target.closest(".room"); if (b) openRoom(b.dataset.id); });
+// 방장: 목록의 👑(⚙️) 를 누르면 방에 들어가지 않고 설정을 연다(이박사님 11-10 「밖에서도 설정」)
+$("rooms").addEventListener("click", e => {
+  const b = e.target.closest(".room"); if (!b) return;
+  if (e.target.closest(".own")) { e.stopPropagation(); if (typeof openCfg === "function") openCfg(b.dataset.id); return; }
+  openRoom(b.dataset.id);
+});
 
 let pending = null;
 function noRoom() {
