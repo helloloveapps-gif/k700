@@ -1020,13 +1020,15 @@ function drawVoice(peers) {
   const pn = $("vpanel");
   if (!V) { pn.hidden = true; return; }
   pn.hidden = false;
-  pn.innerHTML = Object.entries(peers || {}).map(([p, x]) => {
+  // 단추(마이크 · 받아쓰기)를 왼쪽 맨 앞에 — 사람이 많으면 오른쪽 단추가 화면 밖으로 밀리던 것(이박사님 11-10)
+  const btns = '<button id="vmute" class="vtool ' + (V.muted ? "off" : "on") + '" style="margin-left:0" title="' + esc(V.muted ? t("vUnmute") : t("vMute")) + '">' + (V.muted ? "🔇 " + t("micOff") : "🎙️ " + t("micOn")) + '</button>' +
+    '<button id="vstt" class="vtool ' + (sttActive() ? "on" : "off") + '" style="margin-left:0" title="' + esc(sttActive() ? t("sttOff") : t("sttOn")) + '">📝 ' + (sttActive() ? t("sttIsOn") : t("sttIsOff")) + '</button>';
+  pn.innerHTML = btns + Object.entries(peers || {}).map(([p, x]) => {
     const st = p === uid ? (V.muted ? "mute" : "ok") : (V.lk ? (V.lk.remoteParticipants.has(p) ? "ok" : "wait") : (V.pcs[p] && V.pcs[p].connectionState === "connected" ? "ok" : "wait"));
     // 그 사람 받아쓰기 상태(voice/{번호}.st): 📝 = 서버 받아쓰기 도는 중 · ⚠ = 오류 · 없음 = 꺼짐(상대 말이 안 보일 때 원인 보기 · 11-10)
     const sx = String(x.st || ""), sb = p === uid ? "" : /^srv(:|$)|^result|^audio|^start|^speech/.test(sx) ? " 📝" : /fail|err|nosr|startfail/.test(sx) ? " ⚠" : " 🚫📝";
     return '<span class="vp ' + st + '" title="' + esc(sx) + '"><i></i>' + esc(x.n || "?") + sb + (p === uid ? " (" + t("vMe") + ")" : "") + '</span>';
-  }).join("") + '<button id="vmute" class="vtool ' + (V.muted ? "off" : "on") + '" title="' + esc(V.muted ? t("vUnmute") : t("vMute")) + '">' + (V.muted ? "🔇 " + t("micOff") : "🎙️ " + t("micOn")) + '</button>' +
-    '<button id="vstt" class="vtool ' + (sttActive() ? "on" : "off") + '" style="margin-left:0" title="' + esc(sttActive() ? t("sttOff") : t("sttOn")) + '">📝 ' + (sttActive() ? t("sttIsOn") : t("sttIsOff")) + '</button>';
+  }).join("");
   meter();
   $("vmute").onclick = () => { V.muted = !V.muted; V.stream.getAudioTracks().forEach(x => x.enabled = !V.muted); drawVoice(V.peers); };
   $("vstt").onclick = () => { if (sttActive()) stopSTT(true); else { store.set("chat_stt2", "1"); if (!startSrvStt() && !TOUCH) startSTT(); if (V) drawVoice(V.peers); } };
