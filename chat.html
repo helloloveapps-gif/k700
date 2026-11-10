@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-10c</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -1301,7 +1301,7 @@ function startSrvStt() {
       const rms = Math.sqrt(q / x.length);
       if (st.v.muted || V !== st.v) { st.talking = false; st.buf = []; st.len = 0; return; }
       if (!st.talking) st.floor = st.floor * 0.95 + Math.min(rms, 0.05) * 0.05;   // 주변 소음 크기 따라가기
-      const th = Math.max(0.012, st.floor * 3);   // 말 감지 문턱(11-10 너무 높여 조용한 폰 말이 안 잡히던 것 되돌림 · 잡음 말은 GHOST 로 거름)
+      const th = Math.max(0.02, st.floor * 3.5);   // 11-10 다시 올림(잡음 · 먼 소리) — 먼 소리는 아래 크기 거르기로 한 번 더   // 말 감지 문턱(11-10 너무 높여 조용한 폰 말이 안 잡히던 것 되돌림 · 잡음 말은 GHOST 로 거름)
       if (rms > th) {
         st.quiet = 0;
         if (!st.talking) { st.talking = true; st.buf = st.pre ? [st.pre] : []; st.len = st.pre ? st.pre.length : 0; $("liveMe").textContent = "🎙 " + me.n + " …"; }
@@ -1328,11 +1328,11 @@ function srvFlush(st, rate) {
   const n = st.len, parts = st.buf, speech = n / rate - st.quiet, avg = st.cnt ? st.sum / st.cnt : 0, peak = st.peak;
   const echo = st.echo || 0;
   st.talking = false; st.buf = []; st.len = 0; st.quiet = 0; st.sum = 0; st.cnt = 0; st.peak = 0; st.echo = 0;
-  if (speech < 0.5) { $("liveMe").textContent = ""; return; }
+  if (speech < 0.6) { $("liveMe").textContent = ""; return; }
   // 이 말 덩어리의 절반 넘게 상대가 말하고 있었으면 = 스피커 소리가 다시 들어온 것(메아리) → 버림. 내가 훨씬 크게 말했으면 살림
   if (echo > (n / rate) * 0.5 && avg < st.lvl * 1.3) { $("liveMe").textContent = ""; return; }
   // 먼 데서 들리는 말 · 주변 소리 거르기(이박사님 11-10 「멀리서 들리는 것도 다 녹음」): 내 평소 목소리보다 많이 작으면 버린다
-  if (avg < Math.max(0.018, st.lvl * 0.45) || peak < Math.max(0.04, st.lvl * 0.8)) { $("liveMe").textContent = ""; return; }
+  if (avg < Math.max(0.03, st.lvl * 0.5) || peak < Math.max(0.07, st.lvl * 0.9)) { $("liveMe").textContent = ""; return; }
   st.lvl = Math.min(0.3, st.lvl * 0.8 + avg * 0.2);   // 내 목소리 크기를 계속 배운다
   const all = new Float32Array(n); let o = 0; for (const p of parts) { all.set(p, o); o += p.length; }
   const wav = toWav16k(all, rate);
