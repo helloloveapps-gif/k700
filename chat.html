@@ -470,6 +470,7 @@ function drawUnread() {
     const ms = Object.entries(READ.map);
     for (const d of log.querySelectorAll(".msg")) {
       const ts = +d.dataset.ts, u = d.dataset.u;
+      if (u === uid || d.dataset.mine === "1") { const e0 = d.querySelector(".unr"); if (e0) e0.textContent = ""; continue; }   // 내 글은 세지 않음
       const nm = (d.dataset.n || "").trim().toLowerCase();
       // 글쓴이 본인(같은 기기 · 같은 이름의 다른 기기)과 자리 비운 사람은 빼고 센다(11-10 내 글에 2가 뜨던 것)
       const n = ms.filter(([p, x]) => p !== u && x && !x.a && (x.n || "").trim().toLowerCase() !== nm && x.j <= ts && x.r < ts).length;
@@ -637,6 +638,17 @@ function ding() {
 }
 // 누가 나가면 「흥~」(이박사님 11-10 · hmph.mp3)
 const HMPH = new Audio("hmph.mp3"); HMPH.preload = "auto";
+let AUDIO_OK = false;
+function unlockAudio() {
+  if (AUDIO_OK) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    for (const a of [SLEEP, HMPH]) { a.muted = true; const p = a.play(); if (p) p.then(() => { a.pause(); a.currentTime = 0; a.muted = false; }).catch(() => { a.muted = false; }); }
+    AUDIO_OK = actx.state !== "suspended" || true;
+  } catch (e) {}
+}
+["pointerdown", "keydown", "touchstart"].forEach(ev => document.addEventListener(ev, unlockAudio, {passive: true}));
 function hmph() { if (muted) return; try { HMPH.currentTime = 0; const p = HMPH.play(); if (p) p.catch(() => {}); } catch (e) {} }
 function tone() {
   try {
