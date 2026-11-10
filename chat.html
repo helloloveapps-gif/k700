@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-11a</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-11b</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -939,7 +939,7 @@ const vStep = k => { const b = $("vbtn"); if (vBusy && b) b.textContent = "⏳ "
 const within = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), ms))]);
 async function lkRetryLoop(myV) {
   for (let i = 0; i < 20 && V === myV && !myV.lk; i++) {
-    await new Promise(r => setTimeout(r, 15000));
+    await new Promise(r => setTimeout(r, i === 0 ? 5000 : 15000));   // 첫 재시도는 5초 뒤(느린 망에서 빨리 옮겨 붙게 · 11-11)
     if (V !== myV || myV.lk) return;
     const a = {};
     try {
@@ -1356,7 +1356,7 @@ function sttFinal(tx, said) {
 // ── 서버 받아쓰기(11-10) ─────────────────────────────────────────
 // 통화에 쓰는 마이크 소리를 그대로 말 단위(조용 0.8초 · 최대 14초)로 잘라 서버로 보낸다 → 서버가 Groq → SenseVoice 순서로 글로 바꿈.
 // 폰 크롬 받아쓰기는 통화 중 마이크를 못 써서(원격 진단 start→audio 반복, 말소리 0) 이 길이 1순위. 서버가 세 번 연속 실패하면 PC 는 크롬 받아쓰기로
-const SRV_LANG = {ko: "ko", "zh-TW": "zh", "zh-CN": "zh", en: "en"};
+const SRV_LANG = {ko: "ko", "zh-TW": "zh-TW", "zh-CN": "zh-CN", en: "en"};   // 번체 · 간체를 서버에 그대로 알려 그 글자로 받아쓰게(11-11)
 let SRV = null, ACX = null, REMOTE_TALK = false, REMOTE_AT = 0;
 // 마이크 감도: 말로 치는 최소 소리 크기(dBFS) — 높음 -38 · 보통 -30 · 낮음 -24. 숫자가 클수록(0 에 가까울수록) 큰 소리만
 const SENS = {hi: -38, mid: -30, lo: -24};
@@ -1385,7 +1385,7 @@ function startSrvStt() {
         st.buf.push(new Float32Array(x)); st.len += x.length;
         if (REMOTE_TALK || Date.now() - REMOTE_AT < 400) st.echo = (st.echo || 0) + dur;   // 상대가 말하던 시간
         if (rms <= th) st.quiet += dur; else { st.sum += rms; st.cnt++; if (rms > st.peak) st.peak = rms; }   // 말하는 조각의 크기
-        if (st.quiet > 0.8 || st.len / ac.sampleRate > 14) srvFlush(st, ac.sampleRate);
+        if (st.quiet > 1.0 || st.len / ac.sampleRate > 14) srvFlush(st, ac.sampleRate);   // 1초 쉬면 한 마디 끝(0.8초는 문장 중간에서 잘림 · 11-11)
       } else st.pre = new Float32Array(x);   // 말 시작이 잘리지 않게 바로 앞 조각을 붙인다
     };
     src.connect(node); node.connect(ac.destination);   // 출력은 0(소리 안 남) — 연결해야 돌아감
