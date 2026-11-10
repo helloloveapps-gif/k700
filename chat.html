@@ -364,7 +364,7 @@ $("rooms").addEventListener("click", e => { const b = e.target.closest(".room");
 let pending = null;
 function noRoom() {
   if (curQ) { curQ.off(); curQ = null; }
-  if (READ) { READ.ref.off(); READ = null; }
+  leaveRead();
   if (curRef) curRef.off();
   if (typeof leaveVoice === "function") leaveVoice();
   if (typeof leaveHere === "function") leaveHere();
@@ -392,7 +392,7 @@ async function openRoom(id) {
 }
 function enter(id, r, key) {
   if (curQ) { curQ.off(); curQ = null; }
-  if (READ) { READ.ref.off(); READ = null; }
+  leaveRead();
   if (curRef) curRef.off();
   if (typeof leaveVoice === "function") leaveVoice();
   cur = {id, r, key}; lastMsg = null; if (typeof setReply === "function") setReply(null);
@@ -425,6 +425,7 @@ function enter(id, r, key) {
     READ.ref.on("value", x => { READ.map = x.val() || {}; drawUnread(); });
     // 들어오면 화면을 안 보고 있어도 「방 사람」으로는 먼저 올린다(본 시각은 처음 들어온 시각부터)
     READ.ref.child(uid).transaction(v => v && v.j ? v : {j: since, r: since}).then(markRead, markRead);
+    READ.ref.child(uid).onDisconnect().remove();   // 창을 닫거나 연결이 끊기면 셈에서 빠진다(이박사님 11-10)
   });
 }
 async function sinceOf(key) {
@@ -438,6 +439,13 @@ async function sinceOf(key) {
 // ── 안 읽은 수(이박사님 11-10 「카톡처럼 1」) ─────────────────────────────
 // 셈: 이 방에 그 글보다 먼저 들어와 있던 사람(j ≤ 글 시각) 중 아직 못 본 사람(r < 글 시각), 글쓴이 빼고. 모두 보면 숫자가 사라진다
 let READ = null, readT = 0, readQ = null;
+// 방에서 나가면(🚪 · 다른 방 · 대기화면) 그 방 셈에서 빠진다 — 다시 들어오면 다시 들어감
+function leaveRead() {
+  if (!READ) return;
+  const me1 = READ.ref.child(uid);
+  READ.ref.off(); me1.onDisconnect().cancel(); me1.remove().catch(() => {});
+  READ = null; clearTimeout(readQ);
+}
 function markRead() {
   if (!READ || document.visibilityState !== "visible") return;
   const now = Date.now();
