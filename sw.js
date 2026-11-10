@@ -12,8 +12,10 @@ self.addEventListener("push", e => {
     try { const r = await (await caches.open("chat-cfg")).match("cfg"); if (r) quiet = !!(await r.json()).quiet; } catch (x) {}
     const cs = await self.clients.matchAll({type: "window", includeUncontrolled: true});
     if (!ios && cs.some(c => c.visibilityState === "visible" && c.focused)) return;
+    // 채팅 화면이 살아 있으면(내려 둔 상태) 그 화면이 「슬립~ 슬립~」을 낸다 → 알림은 소리 없이(소리 두 번 겹치지 않게). 아이폰은 화면이 멈춰 있어 기본음 유지
+    const alive = !ios && cs.some(c => /chat\.html/.test(c.url));
     // 소리 · 진동: silent:false + renotify(같은 방 알림이 겹쳐도 매번 울림) + 진동 무늬. 소리 종류는 폰 설정을 따른다(웹 알림은 소리 파일을 못 고름)
-    await self.registration.showNotification(d.title || "LOVEAPPS", {body: d.body || "", tag: d.tag || "chat", renotify: !quiet, silent: quiet, vibrate: quiet ? [] : [200, 100, 200], icon: "icon-192.png", badge: "icon-192.png", timestamp: Date.now()});
+    await self.registration.showNotification(d.title || "LOVEAPPS", {body: d.body || "", tag: d.tag || "chat", renotify: !(quiet || alive), silent: quiet || alive, vibrate: quiet ? [] : [200, 100, 200], icon: "icon-192.png", badge: "icon-192.png", timestamp: Date.now()});
   })());
 });
 self.addEventListener("notificationclick", e => {
