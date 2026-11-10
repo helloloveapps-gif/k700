@@ -9,7 +9,8 @@ self.addEventListener("push", e => {
     const ios = /iPhone|iPad|iPod/.test(self.navigator.userAgent);
     const cs = await self.clients.matchAll({type: "window", includeUncontrolled: true});
     if (!ios && cs.some(c => c.visibilityState === "visible" && c.focused)) return;
-    await self.registration.showNotification(d.title || "LOVEAPPS", {body: d.body || "", tag: d.tag || "chat", renotify: true, icon: "icon-192.png", badge: "icon-192.png"});
+    // 소리 · 진동: silent:false + renotify(같은 방 알림이 겹쳐도 매번 울림) + 진동 무늬. 소리 종류는 폰 설정을 따른다(웹 알림은 소리 파일을 못 고름)
+    await self.registration.showNotification(d.title || "LOVEAPPS", {body: d.body || "", tag: d.tag || "chat", renotify: true, silent: false, vibrate: [200, 100, 200], icon: "icon-192.png", badge: "icon-192.png", timestamp: Date.now()});
   })());
 });
 self.addEventListener("notificationclick", e => {
