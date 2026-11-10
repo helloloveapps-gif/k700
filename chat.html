@@ -80,8 +80,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 #rbar button{background:none;border:0;color:var(--sub);font-size:16px;cursor:pointer}
 #rbar.on + .box{border-radius:0 0 8px 8px}
 .mdel{position:absolute;right:16px;top:-6px;display:none;background:#2b2d31;border:1px solid #1f2023;border-radius:6px;padding:2px 6px;cursor:pointer;font-size:14px}
-.unr{display:block;font-size:11px;font-weight:700;color:#f0b232;line-height:1.2;margin-top:1px}
-.unr:empty{display:none}
+/* 안 읽은 수는 글 앞 고정 칸(비어 있어도 자리 유지 — 숫자가 사라져도 글이 움직이지 않게 · 이박사님 11-10) */
+.txr{display:flex;align-items:baseline;gap:4px}
+.txr .tx{flex:1;min-width:0}
+.unr{flex:none;width:16px;text-align:right;font-size:11px;font-weight:700;color:#f0b232}
 .msg:hover .mdel,.msg:focus-within .mdel{display:block}
 @media (hover:none){.mdel,.mrep{display:block}}
 .body{min-width:0;flex:1}
@@ -528,7 +530,7 @@ function addMsg(id, m) {
   const d = document.createElement("div");
   d.className = "msg" + (cont ? " cont" : ""); d.id = "m_" + id; d.dataset.ts = ts; d.dataset.u = m.u || ""; d.dataset.n = m.n || ""; d.dataset.t = m.t; d.dataset.l = m.l || ""; d.dataset.mine = mine ? "1" : "";
   const col = colorOf(m.u || m.n), ln = (LANGS.find(x => x[0] === m.l) || ["", m.l || "?"])[1];
-  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b>' + (cur && isOwnerMsg(m, cur.r) ? '<span title="owner" style="font-size:13px">👑</span>' : '') + '<span class="lg">' + esc(ln) + '</span>' + (m.s ? '<span class="lg" style="background:#23a559;color:#fff">🎙</span>' : '') + '<span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.r && m.r.id ? '<div class="rep" data-to="' + esc(m.r.id) + '">↱ <b>' + esc(m.r.n || "?") + '</b> ' + esc(m.r.t || "") + '</div>' : '') + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="tx"></div><span class="unr"></span><div class="org" hidden></div></div>' + '<button class="mrep" title="reply">↩</button>' + (m.a && m.a === myAuth() ? '<button class="mdel" title="delete">🗑</button>' : '');
+  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b>' + (cur && isOwnerMsg(m, cur.r) ? '<span title="owner" style="font-size:13px">👑</span>' : '') + '<span class="lg">' + esc(ln) + '</span>' + (m.s ? '<span class="lg" style="background:#23a559;color:#fff">🎙</span>' : '') + '<span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.r && m.r.id ? '<div class="rep" data-to="' + esc(m.r.id) + '">↱ <b>' + esc(m.r.n || "?") + '</b> ' + esc(m.r.t || "") + '</div>' : '') + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="txr"><span class="unr"></span><div class="tx"></div></div><div class="org" hidden></div></div>' + '<button class="mrep" title="reply">↩</button>' + (m.a && m.a === myAuth() ? '<button class="mdel" title="delete">🗑</button>' : '');
   if (late) {
     const nx = [...log.querySelectorAll(".msg")].find(x => +x.dataset.ts > ts);
     if (nx) { log.insertBefore(d, nx); if (nx.classList.contains("cont")) nx.classList.remove("cont"); }   // 뒤 글은 이름을 다시 단다
