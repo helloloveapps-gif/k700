@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-11c</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-11d</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -436,6 +436,7 @@ function enter(id, r, key) {
   // 음성 중계 서버 미리 깨우기 · 라이브러리 미리 받기(첫 음성 참가가 6명 방식으로 빠지지 않게)
   try { fetch(VOICE_API + "/health", {mode: "no-cors"}).catch(() => {}); lkLib().catch(() => {}); } catch (e) {}
   if (typeof joinHere === "function") joinHere();
+  setTimeout(() => { if (typeof voiceAutoRejoin === "function") voiceAutoRejoin(); }, 1500);
   // 처음 들어온 뒤의 글만(이박사님 11-09): 방마다 joined/{열쇠}/{내 로그인 번호} = 처음 들어온 시각(서버 시각, 한 번만 쓰임).
   // DB 규칙도 그 시각부터 묻는 읽기만 허락한다 — 새로 온 사람은 예전 대화를 볼 수 없다
   const ref0 = curRef;
@@ -900,7 +901,7 @@ async function lkConnect(tk, att) {
   // 메아리 막기(이박사님 11-10): 상대가 말하는 중인지(서버가 알려 줌) — 그동안 내 마이크에 들어온 소리는 내 말로 치지 않는다
   room.on(L.RoomEvent.ActiveSpeakersChanged, sp => { REMOTE_TALK = sp.some(p => p.identity !== uid); if (REMOTE_TALK) REMOTE_AT = Date.now(); });
   room.on(L.RoomEvent.ParticipantDisconnected, redraw);
-  room.on(L.RoomEvent.Disconnected, () => { if (V && V.lk === room) leaveVoice(); });
+  room.on(L.RoomEvent.Disconnected, () => { if (V && V.lk === room) leaveVoice("drop"); });   // 끊김 — 돌아오면 자동으로 다시
   await room.connect(tk.url, tk.token);
   if (att.dead) { room.disconnect(); throw new Error("late"); }   // 시간 제한이 지난 뒤 붙은 연결은 버린다(유령 연결 방지)
   await room.localParticipant.publishTrack(V.stream.getAudioTracks()[0], {source: L.Track.Source.Microphone, name: "mic"});
@@ -955,6 +956,17 @@ async function lkRetryLoop(myV) {
     } catch (e) { a.dead = true; myV.lkErr = String((e && e.message) || e).slice(0, 80); if (myV.meRef) myV.meRef.update({lkErr: myV.lkErr}).catch(() => {}); }
   }
 }
+// 음성 자동 재접속: 화면으로 돌아왔을 때 · 다시 연결됐을 때 · 새로고침 뒤 방에 들어왔을 때
+// (아이폰은 화면을 내리면 페이지가 멈춰 통화가 끊긴다 — 돌아오면 저절로 다시 붙게 · 이박사님 11-11 「페이지가 내려가도 대화 계속」)
+function voiceAutoRejoin() {
+  if (V || vBusy || !cur || !me.n || document.hidden) return;
+  if (store.get("chat_voice_on") !== cur.id) return;
+  AUTO_JOIN = true; joinVoice();
+}
+let AUTO_JOIN = false;   // 자동 재접속 중 — 마이크가 안 되면 알림창 없이 조용히 그만(다시 누르면 됨)
+document.addEventListener("visibilitychange", () => { if (!document.hidden) setTimeout(voiceAutoRejoin, 800); });
+window.addEventListener("pageshow", () => setTimeout(voiceAutoRejoin, 800));
+window.addEventListener("online", () => setTimeout(voiceAutoRejoin, 1500));
 async function joinVoiceRun(gum) {
   if (!cur || !me.n) { if (gum) gum.then(x => x.getTracks().forEach(t2 => t2.stop()), () => {}); return; }
   const base = db.ref("rooms/" + cur.key), others = (await base.child("voice").once("value")).val() || {};
@@ -962,7 +974,8 @@ async function joinVoiceRun(gum) {
   // 마이크 허용을 먼저 받고(누른 순간이어야 폰이 묻는다), 그동안 중계 서버 입장권도
   const tkP = DIAG.has("mesh") ? Promise.resolve(null) : lkToken().catch(() => null);   // ?mesh 시험: 서버 중계 없이 예전 방식
   try { stream = await (gum || navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}})); }
-  catch (e) { alert(t("micNo")); return; }
+  catch (e) { if (AUTO_JOIN) { AUTO_JOIN = false; store.set("chat_voice_on", ""); return; } alert(t("micNo")); return; }
+  AUTO_JOIN = false;
   vStep("stepSrv");
   tk = await within(tkP, 9000).catch(() => null);
   vStep("stepRelay");
@@ -997,6 +1010,7 @@ async function joinVoiceRun(gum) {
   drawVoice(V.peers);
   // 번역 창을 먼저 띄우고, 받아쓰기는 그다음(받아쓰기가 안 되는 폰에서 멈춰 창이 안 뜨던 것)
   $("liveLog").innerHTML = ""; $("liveT").textContent = "🗣 " + t("liveT"); liveShow(true);
+  store.set("chat_voice_on", cur.id);   // 음성 채팅 중 — 끊겨도 돌아오면 다시 들어간다
   try {
     if ("mediaSession" in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({title: "🎧 " + t("vWhoT"), artist: "LOVEAPPS · " + roomName(cur.id, cur.r), artwork: [{src: "icon-192.png", sizes: "192x192", type: "image/png"}]});
@@ -1006,9 +1020,10 @@ async function joinVoiceRun(gum) {
   } catch (e) {}
   try { startCaps(); } catch (e) { capLine("⚠ " + t("capNo")); }
 }
-function leaveVoice() {
+function leaveVoice(why) {
+  if (!V) return;   // 음성 중이 아니면 아무것도 안 함(새로고침 직후 자동 재접속 기억을 지우지 않게)
+  if (why !== "drop") store.set("chat_voice_on", "");   // 사용자가 나간 것 · 방을 옮긴 것은 자동 재접속 안 함
   try { if ("mediaSession" in navigator) { navigator.mediaSession.playbackState = "none"; navigator.mediaSession.metadata = null; } } catch (e) {}
-  if (!V) return;
   stopCaps();
   liveShow(false);
   const v = V; V = null;
