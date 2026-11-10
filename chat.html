@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-10f</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-10g</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -370,7 +370,11 @@ db.ref("cfg/open").on("value", s => {
 // 방마다 접속 인원 — 비밀번호 방도 숫자는 보이게 online/{방 번호}/{내 번호} = true 만 남긴다(이름 · 글은 안 남김)
 let ONLINE = {};
 db.ref("online").on("value", s => { const v = s.val() || {}; ONLINE = {}; Object.keys(v).forEach(k => ONLINE[k] = Object.keys(v[k] || {}).length); drawRooms(); });
-db.ref(".info/connected").on("value", s => { $("mode").textContent = s.val() ? "" : t("local"); });
+db.ref(".info/connected").on("value", s => {
+  $("mode").textContent = s.val() ? "" : t("local");
+  // 다시 연결되면(화면을 다시 켬 등) 접속 인원에 다시 올린다
+  if (s.val() && typeof HERE !== "undefined" && HERE && HERE.on) { HERE.on.onDisconnect().remove(); HERE.on.set(true).catch(() => {}); }
+});
 $("rooms").addEventListener("click", e => { const b = e.target.closest(".room"); if (b) openRoom(b.dataset.id); });
 
 let pending = null;
@@ -1227,7 +1231,8 @@ function joinHere() {
   HERE = {ref, mine}; hereReady = false;
   mine.onDisconnect().cancel();   // 화면을 내리거나 연결이 끊겨도 방에 남는다 — 🚪 방 나가기로만 나감(이박사님 11-10)
   mine.set({n: me.n, ts: firebase.database.ServerValue.TIMESTAMP});
-  HERE.on = db.ref("online/" + cur.id + "/" + uid); HERE.on.onDisconnect().cancel(); HERE.on.set(true);
+  // 접속 인원(online)은 「지금 실제로 연결된 사람」만 — 창을 닫거나 끊기면 빠진다. 방 목록 숫자 · 인원 제한이 이것을 본다(11-10 닫은 사람까지 세어 「꽉 참」으로 막히던 것)
+  HERE.on = db.ref("online/" + cur.id + "/" + uid); HERE.on.onDisconnect().remove(); HERE.on.set(true);
   ref.on("child_added", s => {
     if (hereReady && s.key !== uid) {
       const v = s.val() || {}; sys(fm(t("joined"), v.n || "?"));
