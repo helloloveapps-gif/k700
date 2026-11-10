@@ -1278,7 +1278,7 @@ function startSrvStt() {
   const ac = audioCtx(); if (!ac || !ac.createScriptProcessor) return false;
   try {
     const src = ac.createMediaStreamSource(V.stream), node = ac.createScriptProcessor(4096, 1, 1);
-    const st = {src, node, v: V, buf: [], len: 0, talking: false, quiet: 0, floor: 0.008, pre: null, fails: 0, q: Promise.resolve()};
+    const st = {src, node, v: V, buf: [], len: 0, talking: false, quiet: 0, floor: 0.008, pre: null, fails: 0, q: Promise.resolve(), sum: 0, cnt: 0, peak: 0, lvl: 0.06};   // lvl = 내 목소리 평소 크기(배움)
     node.onaudioprocess = e => {
       const x = e.inputBuffer.getChannelData(0), dur = x.length / ac.sampleRate;
       let q = 0; for (let i = 0; i < x.length; i++) q += x[i] * x[i];
@@ -1292,7 +1292,7 @@ function startSrvStt() {
       }
       if (st.talking) {
         st.buf.push(new Float32Array(x)); st.len += x.length;
-        if (rms <= th) st.quiet += dur;
+        if (rms <= th) st.quiet += dur; else { st.sum += rms; st.cnt++; if (rms > st.peak) st.peak = rms; }   // 말하는 조각의 크기
         if (st.quiet > 0.8 || st.len / ac.sampleRate > 14) srvFlush(st, ac.sampleRate);
       } else st.pre = new Float32Array(x);   // 말 시작이 잘리지 않게 바로 앞 조각을 붙인다
     };
@@ -1308,9 +1308,12 @@ function stopSrvStt() {
   SRV = null;
 }
 function srvFlush(st, rate) {
-  const n = st.len, parts = st.buf, speech = n / rate - st.quiet;
-  st.talking = false; st.buf = []; st.len = 0; st.quiet = 0;
+  const n = st.len, parts = st.buf, speech = n / rate - st.quiet, avg = st.cnt ? st.sum / st.cnt : 0, peak = st.peak;
+  st.talking = false; st.buf = []; st.len = 0; st.quiet = 0; st.sum = 0; st.cnt = 0; st.peak = 0;
   if (speech < 0.5) { $("liveMe").textContent = ""; return; }
+  // 먼 데서 들리는 말 · 주변 소리 거르기(이박사님 11-10 「멀리서 들리는 것도 다 녹음」): 내 평소 목소리보다 많이 작으면 버린다
+  if (avg < Math.max(0.018, st.lvl * 0.45) || peak < Math.max(0.04, st.lvl * 0.8)) { $("liveMe").textContent = ""; return; }
+  st.lvl = Math.min(0.3, st.lvl * 0.8 + avg * 0.2);   // 내 목소리 크기를 계속 배운다
   const all = new Float32Array(n); let o = 0; for (const p of parts) { all.set(p, o); o += p.length; }
   const wav = toWav16k(all, rate);
   st.q = st.q.then(async () => {   // 순서대로 하나씩
