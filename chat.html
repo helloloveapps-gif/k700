@@ -80,6 +80,8 @@ button,input,select,textarea{font:inherit;color:inherit}
 #rbar button{background:none;border:0;color:var(--sub);font-size:16px;cursor:pointer}
 #rbar.on + .box{border-radius:0 0 8px 8px}
 .mdel{position:absolute;right:16px;top:-6px;display:none;background:#2b2d31;border:1px solid #1f2023;border-radius:6px;padding:2px 6px;cursor:pointer;font-size:14px}
+.unr{display:block;font-size:11px;font-weight:700;color:#f0b232;line-height:1.2;margin-top:1px}
+.unr:empty{display:none}
 .msg:hover .mdel,.msg:focus-within .mdel{display:block}
 @media (hover:none){.mdel,.mrep{display:block}}
 .body{min-width:0;flex:1}
@@ -336,7 +338,7 @@ const keys = (() => { try { return JSON.parse(store.get("chat_keys") || "{}"); }
 // 방 목록
 function drawRooms() {
   const list = Object.entries(ROOMS).filter(([id, r]) => (!OPEN || OPEN[id]) && (!r.closed || isMine(r))).sort((a, b) => (a[0] === DEFAULT_ROOM ? -1 : b[0] === DEFAULT_ROOM ? 1 : (a[1].ts || 0) - (b[1].ts || 0)));
-  $("rooms").innerHTML = list.map(([id, r]) => '<button class="room' + (cur && cur.id === id ? " on" : "") + '" data-id="' + esc(id) + '"><span class="h">' + (r.closed ? "🚫" : r.lock ? "🔒" : "#") + '</span><span class="nm">' + (secret(id, r) ? esc(t("privRoom")) + '<small class="cnt">' + esc(t("privD")) + '</small>' : esc(roomName(id, r)) + '<small class="cnt">👥 ' + (r.max ? fm(t("pplMax"), ONLINE[id] || 0, r.max) : fm(t("ppl"), ONLINE[id] || 0)) + (ownerName(r) ? ' · 👑 ' + esc(ownerName(r)) : '') + '</small>') + '</span>' + (r.own && r.own === myAuth() ? '<span class="own" title="owner">👑</span>' : '') + '</button>').join("");
+  $("rooms").innerHTML = list.map(([id, r]) => '<button class="room' + (cur && cur.id === id ? " on" : "") + '" data-id="' + esc(id) + '"><span class="h">' + (r.closed ? "🚫" : r.lock ? "🔒" : "#") + '</span><span class="nm">' + (secret(id, r) ? esc(roomName(id, r)) + '<small class="cnt">' + esc(t("privD")) + '</small>' : esc(roomName(id, r)) + '<small class="cnt">👥 ' + (r.max ? fm(t("pplMax"), ONLINE[id] || 0, r.max) : fm(t("ppl"), ONLINE[id] || 0)) + (ownerName(r) ? ' · 👑 ' + esc(ownerName(r)) : '') + '</small>') + '</span>' + (r.own && r.own === myAuth() ? '<span class="own" title="owner">👑</span>' : '') + '</button>').join("");
 }
 db.ref("roomlist").on("value", s => {
   ROOMS = withDef(s.val()); drawRooms();
@@ -362,6 +364,7 @@ $("rooms").addEventListener("click", e => { const b = e.target.closest(".room");
 let pending = null;
 function noRoom() {
   if (curQ) { curQ.off(); curQ = null; }
+  if (READ) { READ.ref.off(); READ = null; }
   if (curRef) curRef.off();
   if (typeof leaveVoice === "function") leaveVoice();
   if (typeof leaveHere === "function") leaveHere();
@@ -389,6 +392,7 @@ async function openRoom(id) {
 }
 function enter(id, r, key) {
   if (curQ) { curQ.off(); curQ = null; }
+  if (READ) { READ.ref.off(); READ = null; }
   if (curRef) curRef.off();
   if (typeof leaveVoice === "function") leaveVoice();
   cur = {id, r, key}; lastMsg = null; if (typeof setReply === "function") setReply(null);
@@ -416,6 +420,11 @@ function enter(id, r, key) {
     curQ = ref0.orderByChild("ts").startAt(since).limitToLast(300);
     curQ.on("child_added", s => addMsg(s.key, s.val()));
     curQ.on("child_removed", rmMsg);
+    // 읽음 표시: 내가 본 시각을 올리고, 방 사람들의 본 시각으로 글마다 안 읽은 수를 센다
+    READ = {ref: db.ref("rooms/" + key + "/read"), map: {}, since};
+    READ.ref.on("value", x => { READ.map = x.val() || {}; drawUnread(); });
+    // 들어오면 화면을 안 보고 있어도 「방 사람」으로는 먼저 올린다(본 시각은 처음 들어온 시각부터)
+    READ.ref.child(uid).transaction(v => v && v.j ? v : {j: since, r: since}).then(markRead, markRead);
   });
 }
 async function sinceOf(key) {
@@ -426,6 +435,32 @@ async function sinceOf(key) {
   if (v == null) { await r.set(firebase.database.ServerValue.TIMESTAMP).catch(() => {}); v = (await r.once("value").catch(() => null))?.val(); }
   return v == null ? null : v;
 }
+// ── 안 읽은 수(이박사님 11-10 「카톡처럼 1」) ─────────────────────────────
+// 셈: 이 방에 그 글보다 먼저 들어와 있던 사람(j ≤ 글 시각) 중 아직 못 본 사람(r < 글 시각), 글쓴이 빼고. 모두 보면 숫자가 사라진다
+let READ = null, readT = 0, readQ = null;
+function markRead() {
+  if (!READ || document.visibilityState !== "visible") return;
+  const now = Date.now();
+  if (now - readT < 1500) { clearTimeout(readQ); readQ = setTimeout(markRead, 1600); return; }   // 너무 자주 쓰지 않게
+  readT = now;
+  READ.ref.child(uid).set({j: READ.since, r: firebase.database.ServerValue.TIMESTAMP}).catch(() => {});
+}
+let unrQ = 0;
+function drawUnread() {
+  if (unrQ) return;
+  unrQ = setTimeout(() => {   // requestAnimationFrame 은 뒤에 있는 창에서 멈춰 숫자가 안 바뀌어 타이머로
+    unrQ = 0;
+    if (!READ) return;
+    const ms = Object.entries(READ.map);
+    for (const d of log.querySelectorAll(".msg")) {
+      const ts = +d.dataset.ts, u = d.dataset.u;
+      const n = ms.filter(([p, x]) => p !== u && x && x.j <= ts && x.r < ts).length;
+      const el = d.querySelector(".unr"); if (el) el.textContent = n > 0 ? String(n) : "";
+    }
+  }, 50);
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") markRead(); });
+window.addEventListener("focus", markRead);
 function rmMsg(s) { const el = document.getElementById("m_" + s.key); if (el) { const nx = el.nextElementSibling; if (nx && nx.classList.contains("cont") && !el.classList.contains("cont")) nx.classList.remove("cont"); el.remove(); } }
 $("pGo").onclick = async () => {
   if (!pending) return;
@@ -479,12 +514,13 @@ function addMsg(id, m) {
   const d = document.createElement("div");
   d.className = "msg" + (cont ? " cont" : ""); d.id = "m_" + id; d.dataset.ts = ts; d.dataset.u = m.u || ""; d.dataset.n = m.n || ""; d.dataset.t = m.t; d.dataset.l = m.l || ""; d.dataset.mine = mine ? "1" : "";
   const col = colorOf(m.u || m.n), ln = (LANGS.find(x => x[0] === m.l) || ["", m.l || "?"])[1];
-  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b>' + (cur && isOwnerMsg(m, cur.r) ? '<span title="owner" style="font-size:13px">👑</span>' : '') + '<span class="lg">' + esc(ln) + '</span>' + (m.s ? '<span class="lg" style="background:#23a559;color:#fff">🎙</span>' : '') + '<span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.r && m.r.id ? '<div class="rep" data-to="' + esc(m.r.id) + '">↱ <b>' + esc(m.r.n || "?") + '</b> ' + esc(m.r.t || "") + '</div>' : '') + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="tx"></div><div class="org" hidden></div></div>' + '<button class="mrep" title="reply">↩</button>' + (m.a && m.a === myAuth() ? '<button class="mdel" title="delete">🗑</button>' : '');
+  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b>' + (cur && isOwnerMsg(m, cur.r) ? '<span title="owner" style="font-size:13px">👑</span>' : '') + '<span class="lg">' + esc(ln) + '</span>' + (m.s ? '<span class="lg" style="background:#23a559;color:#fff">🎙</span>' : '') + '<span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.r && m.r.id ? '<div class="rep" data-to="' + esc(m.r.id) + '">↱ <b>' + esc(m.r.n || "?") + '</b> ' + esc(m.r.t || "") + '</div>' : '') + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="tx"></div><span class="unr"></span><div class="org" hidden></div></div>' + '<button class="mrep" title="reply">↩</button>' + (m.a && m.a === myAuth() ? '<button class="mdel" title="delete">🗑</button>' : '');
   if (late) {
     const nx = [...log.querySelectorAll(".msg")].find(x => +x.dataset.ts > ts);
     if (nx) { log.insertBefore(d, nx); if (nx.classList.contains("cont")) nx.classList.remove("cont"); }   // 뒤 글은 이름을 다시 단다
     else { log.appendChild(d); lastMsg = {u: m.u, n: m.n, ts}; }
   } else { log.appendChild(d); lastMsg = {u: m.u, n: m.n, ts}; }
+  if (READ) { drawUnread(); markRead(); }
   avatarOf(m.u); paintAv(m.u);
   d.dataset.ts = ts; d.dataset.n = m.n || ""; if (m.v) d.dataset.v = "1"; if (m.i) d.dataset.i = "1";
   const del = d.querySelector(".mdel"); if (del) { const left = ts + 60e3 - Date.now(); if (left <= 0) del.remove(); else setTimeout(() => del.remove(), left); }
