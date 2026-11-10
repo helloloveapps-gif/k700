@@ -923,7 +923,14 @@ async function joinVoiceRun() {
   if (Object.keys(others).filter(p => p !== uid).length >= max - 1) { stream.getTracks().forEach(x => x.stop()); alert(fm(t("vFull"), max)); return; }   // 나까지
   V = {base, stream, pcs: {}, iceq: {}, peers: others, muted: false, lk: null};
   const myV = V;
-  if (tk) { try { myV.lk = await lkConnect(tk); } catch (e) { myV.lk = null; } }
+  if (tk) {
+    try { myV.lk = await lkConnect(tk); }
+    catch (e) {
+      myV.lk = null;
+      await new Promise(r => setTimeout(r, 1500));   // 한 번 더(11-10: 한쪽만 예전 방식으로 빠져 서로 안 들리던 것)
+      try { const tk2 = await lkToken(); if (V === myV) myV.lk = await lkConnect(tk2); } catch (e2) { myV.lk = null; }
+    }
+  }
   if (V !== myV) { if (myV.lk) try { myV.lk.disconnect(); } catch (e) {} myV.stream.getTracks().forEach(x => x.stop()); return; }   // 연결 중에 나갔으면 정리
   const meRef = base.child("voice/" + uid), inbox = base.child("sig/" + uid);
   meRef.onDisconnect().remove(); inbox.onDisconnect().remove();
@@ -1015,7 +1022,9 @@ function drawVoice(peers) {
   pn.hidden = false;
   pn.innerHTML = Object.entries(peers || {}).map(([p, x]) => {
     const st = p === uid ? (V.muted ? "mute" : "ok") : (V.lk ? (V.lk.remoteParticipants.has(p) ? "ok" : "wait") : (V.pcs[p] && V.pcs[p].connectionState === "connected" ? "ok" : "wait"));
-    return '<span class="vp ' + st + '"><i></i>' + esc(x.n || "?") + (p === uid ? " (" + t("vMe") + ")" : "") + '</span>';
+    // 그 사람 받아쓰기 상태(voice/{번호}.st): 📝 = 서버 받아쓰기 도는 중 · ⚠ = 오류 · 없음 = 꺼짐(상대 말이 안 보일 때 원인 보기 · 11-10)
+    const sx = String(x.st || ""), sb = p === uid ? "" : /^srv(:|$)|^result|^audio|^start|^speech/.test(sx) ? " 📝" : /fail|err|nosr|startfail/.test(sx) ? " ⚠" : " 🚫📝";
+    return '<span class="vp ' + st + '" title="' + esc(sx) + '"><i></i>' + esc(x.n || "?") + sb + (p === uid ? " (" + t("vMe") + ")" : "") + '</span>';
   }).join("") + '<button id="vmute" class="vtool ' + (V.muted ? "off" : "on") + '" title="' + esc(V.muted ? t("vUnmute") : t("vMute")) + '">' + (V.muted ? "🔇 " + t("micOff") : "🎙️ " + t("micOn")) + '</button>' +
     '<button id="vstt" class="vtool ' + (sttActive() ? "on" : "off") + '" style="margin-left:0" title="' + esc(sttActive() ? t("sttOff") : t("sttOn")) + '">📝 ' + (sttActive() ? t("sttIsOn") : t("sttIsOff")) + '</button>';
   meter();
@@ -1274,7 +1283,7 @@ function startSrvStt() {
       const rms = Math.sqrt(q / x.length);
       if (st.v.muted || V !== st.v) { st.talking = false; st.buf = []; st.len = 0; return; }
       if (!st.talking) st.floor = st.floor * 0.95 + Math.min(rms, 0.05) * 0.05;   // 주변 소음 크기 따라가기
-      const th = Math.max(0.02, st.floor * 3.5);   // 잡음에 덜 반응하게(11-10)
+      const th = Math.max(0.012, st.floor * 3);   // 말 감지 문턱(11-10 너무 높여 조용한 폰 말이 안 잡히던 것 되돌림 · 잡음 말은 GHOST 로 거름)
       if (rms > th) {
         st.quiet = 0;
         if (!st.talking) { st.talking = true; st.buf = st.pre ? [st.pre] : []; st.len = st.pre ? st.pre.length : 0; $("liveMe").textContent = "🎙 " + me.n + " …"; }
@@ -1358,7 +1367,7 @@ function startSTT() {
   if (V) drawVoice(V.peers);
 }
 function stopSTT(save) {
-  if (save) store.set("chat_stt2", "0");
+  if (save) { store.set("chat_stt2", "0"); sttStat("off"); }
   stopSrvStt();
   if (CAP && CAP.sr) { const sr = CAP.sr; CAP.sr = null; try { sr.stop(); } catch (e) {} }
   if (V) drawVoice(V.peers);
