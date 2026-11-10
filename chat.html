@@ -633,6 +633,9 @@ function ding() {
   try { SLEEP.currentTime = 0; const p = SLEEP.play(); if (p) { p.catch(tone); } return; } catch (e) {}
   tone();
 }
+// 누가 나가면 「흥~」(이박사님 11-10 · hmph.mp3)
+const HMPH = new Audio("hmph.mp3"); HMPH.preload = "auto";
+function hmph() { if (muted) return; try { HMPH.currentTime = 0; const p = HMPH.play(); if (p) p.catch(() => {}); } catch (e) {} }
 function tone() {
   try {
     actx = actx || new (window.AudioContext || window.webkitAudioContext)();
@@ -1162,7 +1165,8 @@ function joinHere() {
     }
   });
   ref.on("value", s => { hereReady = true; $("here").textContent = "👥 " + Object.keys(s.val() || {}).length; });
-  // 「○○ 님이 나갔습니다」는 대화창에 띄우지 않는다(이박사님 11-10) — 인원 숫자만 줄어든다
+  // 「○○ 님이 나갔습니다」 + 「흥~」 — 그 사람이 다른 방으로 옮겼거나 🚪 방 나가기를 눌렀을 때만(화면 내림 · 끊김은 방에 남으니 안 뜸 · 이박사님 11-10)
+  ref.on("child_removed", s => { if (hereReady && s.key !== uid) { sys(fm(t("left"), (s.val() || {}).n || "?"), true); hmph(); } });
 }
 // out = true 일 때만(🚪 방 나가기) 방에서 지운다. 그 밖(다른 방 보기 · 화면 내림)은 보기만 멈춤
 function leaveHere(out) {
