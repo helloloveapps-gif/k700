@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-11b</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-11c</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -1342,7 +1342,14 @@ let STT_LAST = "";
 function sttStat(x) { if (x === STT_LAST) return; STT_LAST = x; try { if (V && V.meRef) V.meRef.update({st: String(x).slice(0, 80), stt: firebase.database.ServerValue.TIMESTAMP}); } catch (e) {} }
 // 받아쓰기 한 마디 → 채팅 글 · 실시간 번역 칸 · 자막(상대가 번역해 봄)
 const GHOST = new Set(["thank you", "thanks", "thank you very much", "thank you for watching", "thanks for watching", "you", "bye", "okay", "ok", "감사합니다", "고맙습니다", "시청해주셔서 감사합니다", "谢谢", "謝謝", "谢谢观看", "謝謝觀看", "ご視聴ありがとうございました", "ありがとうございました"]);
-const isGhost = t => GHOST.has(t.toLowerCase().replace(/[\s.,!?。，！？、…~]+/g, " ").trim());
+const isGhost = t => {
+  const b = t.toLowerCase().replace(/[\s.,!?。，！？、…~]+/g, " ").trim();
+  if (GHOST.has(b)) return true;
+  const w = b.split(" ").filter(Boolean);   // 같은 낱말 반복(「雷 雷 雷」) — 잡음을 지어낸 것(11-11)
+  if (w.length < 3) return false;
+  const top = Math.max(...Object.values(w.reduce((m, x) => (m[x] = (m[x] || 0) + 1, m), {})));
+  return top === w.length || (w.length >= 6 && top * 3 >= w.length * 2);   // 같은 낱말만 반복일 때만(「하오 하오 하오 안녕」은 살림)
+};
 function sttFinal(tx, said) {
   tx = (tx || "").trim();
   if (!tx || !V || V.muted || !CAP || isGhost(tx)) { $("liveMe").textContent = ""; return; }
