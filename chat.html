@@ -363,6 +363,7 @@ $("rooms").addEventListener("click", e => { const b = e.target.closest(".room");
 
 let pending = null;
 function noRoom() {
+  store.set("chat_in", "");   // 방에서 나감
   if (curQ) { curQ.off(); curQ = null; }
   leaveRead(true);
   if (curRef) curRef.off();
@@ -398,7 +399,7 @@ function enter(id, r, key) {
   if (curRef) curRef.off();
   if (typeof leaveVoice === "function") leaveVoice();
   cur = {id, r, key}; lastMsg = null; if (typeof setReply === "function") setReply(null);
-  store.set("chat_room", id);
+  store.set("chat_room", id); store.set("chat_in", id);   // 지금 들어가 있는 방(나가기 전까지)
   history.replaceState(null, "", "#" + encodeURIComponent(id));
   document.title = "LOVEAPPS · " + roomName(id, r);
   $("topH").textContent = r.lock ? "🔒" : "#"; $("topT").textContent = roomName(id, r);
@@ -538,7 +539,7 @@ function addMsg(id, m) {
   d.dataset.ts = ts; d.dataset.n = m.n || ""; if (m.v) d.dataset.v = "1"; if (m.i) d.dataset.i = "1";
   const del = d.querySelector(".mdel"); if (del) { const left = ts + 60e3 - Date.now(); if (left <= 0) del.remove(); else setTimeout(() => del.remove(), left); }
   if (m.i) { if (m.t === "🖼️") d.querySelector(".tx").hidden = true; loadImg(d.querySelector(".pic")); }
-  if (!mine && ts > OPENED && document.hidden) ding();   // 화면을 내려 둔(안 보이는) 동안만 남의 글에 「슬립~ 슬립~」(이박사님 11-10)
+  if (!mine && ts > OPENED) ding();   // 남의 글: 화면이 안 보이면 「슬립~」, 보고 있으면 「띵」(이박사님 11-10)
   render(d);
   if (stick || mine) log.scrollTop = log.scrollHeight;
 }
@@ -622,10 +623,11 @@ const OPENED = Date.now();
 let unread = 0, actx = null, muted = store.get("chat_mute") === "1";
 const baseTitle = () => "LOVEAPPS · " + (cur ? roomName(cur.id, cur.r) : t("defRoom"));
 // 알림음 「Sleep~!」(이박사님 11-10 1번 고름 · sleep.mp3). 못 틀면 예전 「띵」
-const SLEEP = new Audio("sleep2.mp3"); SLEEP.preload = "auto";   // 「슬립~ 슬립~」 두 번
+const SLEEP = new Audio("sleep.mp3"); SLEEP.preload = "auto";   // 「슬립~」 한 번(11-10)
 function ding() {
   if (document.hidden || !document.hasFocus()) { unread++; document.title = "(" + unread + ") " + baseTitle(); }   // 제목 숫자는 안 보고 있을 때만
   if (muted) return;
+  if (!document.hidden) { tone(); return; }   // 보고 있을 때는 원래 채팅 소리
   try { SLEEP.currentTime = 0; const p = SLEEP.play(); if (p) { p.catch(tone); } return; } catch (e) {}
   tone();
 }
@@ -688,7 +690,7 @@ function drawPushMenu() {
   $("installB").textContent = "📲 " + t("installB"); $("installB").hidden = STANDALONE;
 }
 $("soundB").onclick = () => {
-  const a = document.createElement("a"); a.href = "sleep2.mp3"; a.download = "LOVEAPPS_sleep.mp3"; document.body.appendChild(a); a.click(); a.remove();
+  const a = document.createElement("a"); a.href = "sleep.mp3"; a.download = "LOVEAPPS_sleep.mp3"; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => alert(IOS ? t("soundIos") : t("soundHow")), 300);
 };
 $("installB").onclick = async () => {
@@ -1158,8 +1160,7 @@ function joinHere() {
     }
   });
   ref.on("value", s => { hereReady = true; $("here").textContent = "👥 " + Object.keys(s.val() || {}).length; });
-  // 나간 사람(창 닫기 · 다른 방으로)도 표시(이박사님 11-09)
-  ref.on("child_removed", s => { if (hereReady && s.key !== uid) sys(fm(t("left"), (s.val() || {}).n || "?"), true); });
+  // 「○○ 님이 나갔습니다」는 대화창에 띄우지 않는다(이박사님 11-10) — 인원 숫자만 줄어든다
 }
 // out = true 일 때만(🚪 방 나가기) 방에서 지운다. 그 밖(다른 방 보기 · 화면 내림)은 보기만 멈춤
 function leaveHere(out) {
@@ -1357,7 +1358,12 @@ applyLang();
 const want = decodeURIComponent(location.hash.slice(1)) || new URLSearchParams(location.search).get("room") || store.get("chat_room") || DEFAULT_ROOM;
 // 비밀번호 방인데 이 기기에 열쇠가 없으면 처음엔 묻지 않고 「방을 고르세요」
 // 모든 사용자는 대기화면(방 고르기)부터 시작한다(이박사님 11-09)
-const first = async () => { OPEN = (await cfgP) || null; noRoom(); };
+// 처음 열 때: 나가기를 안 한 방이 있으면 그 방으로(비밀번호 방은 이 기기에 열쇠가 있을 때), 없으면 대기화면
+const first = async () => {
+  OPEN = (await cfgP) || null;
+  const inId = store.get("chat_in"), r = inId && ROOMS[inId];
+  if (r && !r.closed && (!r.lock || keys[inId])) openRoom(inId); else noRoom();
+};
 db.ref("roomlist").once("value").then(s => { ROOMS = withDef(s.val()); drawRooms(); first(); }, () => { ROOMS = withDef(); drawRooms(); first(); });
 if (!me.n) { show("mJoin"); $("jName").focus(); }
 </script>
