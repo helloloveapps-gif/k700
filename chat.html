@@ -431,8 +431,8 @@ function enter(id, r, key) {
     // 들어오면 화면을 안 보고 있어도 「방 사람」으로는 먼저 올린다(본 시각은 처음 들어온 시각부터)
     // 다시 들어오면: 「자리 비움」만 풀고 읽은 시각은 그대로(11-10 나갔다 오면 1이 다시 생기던 것). 화면을 보고 있으면 읽음도 한 번에
     const me1 = READ.ref.child(uid);
-    if (document.visibilityState === "visible") { readT = Date.now(); me1.update({j: since, r: firebase.database.ServerValue.TIMESTAMP, a: null}).catch(() => {}); }
-    else me1.transaction(v => v && v.r ? Object.assign(v, {j: since, a: null}) : {j: since, r: since}).catch(() => {});
+    if (document.visibilityState === "visible") { readT = Date.now(); me1.update({j: since, r: firebase.database.ServerValue.TIMESTAMP, a: null, n: (me.n || "").slice(0, 40)}).catch(() => {}); }
+    else me1.transaction(v => v && v.r ? Object.assign(v, {j: since, a: null, n: (me.n || "").slice(0, 40)}) : {j: since, r: since, n: (me.n || "").slice(0, 40)}).catch(() => {});
     me1.onDisconnect().cancel();   // 화면을 내리거나 끊겨도 셈에 남는다(🚪 방 나가기로만 빠짐)
   });
 }
@@ -459,7 +459,7 @@ function markRead() {
   const now = Date.now();
   if (now - readT < 1500) { clearTimeout(readQ); readQ = setTimeout(markRead, 1600); return; }   // 너무 자주 쓰지 않게
   readT = now;
-  READ.ref.child(uid).update({j: READ.since, r: firebase.database.ServerValue.TIMESTAMP, a: null}).catch(() => {});
+  READ.ref.child(uid).update({j: READ.since, r: firebase.database.ServerValue.TIMESTAMP, a: null, n: (me.n || "").slice(0, 40)}).catch(() => {});
 }
 let unrQ = 0;
 function drawUnread() {
@@ -470,7 +470,9 @@ function drawUnread() {
     const ms = Object.entries(READ.map);
     for (const d of log.querySelectorAll(".msg")) {
       const ts = +d.dataset.ts, u = d.dataset.u;
-      const n = ms.filter(([p, x]) => p !== u && x && !x.a && x.j <= ts && x.r < ts).length;   // 자리 비운 사람은 빼고
+      const nm = (d.dataset.n || "").trim().toLowerCase();
+      // 글쓴이 본인(같은 기기 · 같은 이름의 다른 기기)과 자리 비운 사람은 빼고 센다(11-10 내 글에 2가 뜨던 것)
+      const n = ms.filter(([p, x]) => p !== u && x && !x.a && (x.n || "").trim().toLowerCase() !== nm && x.j <= ts && x.r < ts).length;
       const el = d.querySelector(".unr"); if (el) el.textContent = n > 0 ? String(n) : "";
     }
   }, 50);
