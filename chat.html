@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-10i</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-11a</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -948,8 +948,7 @@ async function lkRetryLoop(myV) {
       if (V !== myV) { room.disconnect(); return; }
       // 중계로 옮김: 직접 연결은 닫고, 참가 정보에 lk 표시
       myV.lk = room; myV.lkErr = null;
-      Object.keys(myV.pcs).forEach(p => closePeer(p));
-      if (myV.inbox) myV.inbox.off();
+      Object.keys(myV.pcs).forEach(p => { if (myV.peers[p] && myV.peers[p].lk) closePeer(p); });   // 중계 못 붙은 사람과는 직접 연결 유지
       if (myV.meRef) myV.meRef.update({lk: true, lkErr: null}).catch(() => {});
       drawVoice(myV.peers);
       return;
@@ -987,10 +986,13 @@ async function joinVoiceRun(gum) {
   if (!tk && !V.lk) V.lkErr = V.lkErr || "token";
   await meRef.set(Object.assign({n: me.n, ts: firebase.database.ServerValue.TIMESTAMP, ua: ((navigator.userAgent.match(/\(([^)]*)\)/) || [])[1] || "").slice(0, 60)}, V.lk ? {lk: true} : {lkErr: V.lkErr || "?"}));
   V.meRef = meRef; V.inbox = inbox;
-  if (!V.lk) {   // 중계 서버가 안 될 때만 예전 방식(서로 직접)
-    inbox.on("child_added", s => { const m = s.val(); s.ref.remove(); if (V && m) onSig(m).catch(() => {}); });
-    for (const [p, x] of Object.entries(others)) if (p !== uid && !(x && x.lk)) call(p).catch(() => {});
+  // 직접 연결 편지함은 늘 연다 — 서버 중계에 못 붙은 사람(아이폰 차단기 등)이 걸어오면 중계로 붙은 나도 받아 준다(11-11 섞인 방에서 서로 안 들리던 것)
+  inbox.on("child_added", s => { const m = s.val(); s.ref.remove(); if (V && m) onSig(m).catch(() => {}); });
+  if (!V.lk) {   // 나는 중계 못 붙음 → 방 사람 모두에게 직접 건다(중계로 붙은 사람 포함)
+    for (const [p] of Object.entries(others)) if (p !== uid) call(p).catch(() => {});
     if (!DIAG.has("mesh")) lkRetryLoop(V);
+  } else {   // 나는 중계 · 이미 있는 사람 중 중계 못 붙은 사람에게는 직접 건다(새로 온 사람이 건다는 규칙)
+    for (const [p, x] of Object.entries(others)) if (p !== uid && !(x && x.lk)) call(p).catch(() => {});
   }
   drawVoice(V.peers);
   // 번역 창을 먼저 띄우고, 받아쓰기는 그다음(받아쓰기가 안 되는 폰에서 멈춰 창이 안 뜨던 것)
@@ -1278,7 +1280,7 @@ function drawVoiceWho() {
   list.sort((a, b) => (a[0] === uid ? -1 : b[0] === uid ? 1 : (a[1].ts || 0) - (b[1].ts || 0)));
   $("wList").innerHTML = list.map(([p, x]) => {
     const n = x.n || "?", col = colorOf(p), tags = [];
-    const ok = p === uid || (V && (V.lk ? V.lk.remoteParticipants.has(p) : V.pcs[p] && V.pcs[p].connectionState === "connected"));
+    const ok = p === uid || !!(V && ((V.lk && V.lk.remoteParticipants.has(p)) || (V.pcs[p] && V.pcs[p].connectionState === "connected")));
     if (p === uid) tags.push(t("vMe") + (V && V.muted ? " · 🔇" : ""));
     else tags.push(ok ? "🟢 " + t("vOk") : "⚪ " + t("vWait"));
     if (!x.lk) tags.push("⚠ " + t("vRelayFail"));   // 서버 중계 못 붙음 — 중계로 붙은 사람과 서로 안 들림(15초마다 다시 시도 중)
@@ -1418,7 +1420,7 @@ function srvFlush(st, rate) {
       if (j.text) sttFinal(j.text, j.lang); else $("liveMe").textContent = "";
     } catch (e) {
       st.fails++; sttStat("srv-fail " + (e.message || e)); $("liveMe").textContent = "⚠ STT";
-      if (st.fails >= 3 && SRV === st && !TOUCH && SR) { stopSrvStt(); startSTT(); }   // ③ 서버까지 안 되면 PC 는 크롬 받아쓰기. 폰은 끄지 않고 계속 서버에 보낸다(서버가 살아나면 바로 됨)
+      if (st.fails >= 3 && SRV === st && (!TOUCH || IOS) && SR) { stopSrvStt(); startSTT(); }   // ③ 서버까지 안 되면 PC 는 크롬 받아쓰기. 폰은 끄지 않고 계속 서버에 보낸다(서버가 살아나면 바로 됨)
     }
   });
 }
