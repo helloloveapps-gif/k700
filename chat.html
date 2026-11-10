@@ -480,7 +480,7 @@ function drawUnread() {
     const ms = Object.entries(READ.map);
     for (const d of log.querySelectorAll(".msg")) {
       const ts = +d.dataset.ts, u = d.dataset.u;
-      if (u === uid || d.dataset.mine === "1") { const e0 = d.querySelector(".unr"); if (e0) e0.textContent = ""; continue; }   // 내 글은 세지 않음
+      if (!(u === uid || d.dataset.mine === "1")) { const e0 = d.querySelector(".unr"); if (e0) e0.textContent = ""; continue; }   // 카톡처럼 숫자는 내 글에만(남이 아직 안 본 수 · 이박사님 11-10)
       const nm = (d.dataset.n || "").trim().toLowerCase();
       // 글쓴이 본인(같은 기기 · 같은 이름의 다른 기기)과 자리 비운 사람은 빼고 센다(11-10 내 글에 2가 뜨던 것)
       const n = ms.filter(([p, x]) => p !== u && x && !x.a && (x.n || "").trim().toLowerCase() !== nm && x.j <= ts && x.r < ts).length;
