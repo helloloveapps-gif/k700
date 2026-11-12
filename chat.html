@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-12d</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-12e</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -574,10 +574,10 @@ function addMsg(id, m) {
 async function render(d) {
   const text = d.dataset.t, tx = d.querySelector(".tx"), org = d.querySelector(".org");
   tx.textContent = text; org.classList.remove("fail");
-  if (d.dataset.mine || d.dataset.l === me.l || text === "🖼️" || text === "🎤") { org.hidden = true; return; }
+  if (d.dataset.mine || d.dataset.l === me.l || text === "🖼️" || text === "🎤" || !/\p{L}/u.test(text)) { org.hidden = true; return; }   // 글자 없는 글(？ · 👀 · 710 · 00:50)은 번역할 것이 없다 — 「번역 중」에 멈춰 있던 것(11-12)
   org.hidden = false; org.innerHTML = '<span class="wait">' + esc(t("wait")) + '</span>';
   try {
-    const r = await translate(text, me.l, d.dataset.l);
+    const r = await Promise.race([translate(text, me.l, d.dataset.l), new Promise((_, no) => setTimeout(() => no(new Error("timeout")), 15000))]);   // 15초 넘게 답이 없으면 「번역 실패 ↻」(다시 누를 수 있게)
     if (r.trim() === text.trim()) org.hidden = true; else org.textContent = r;
   } catch (e) { org.textContent = t("fail") + " ↻"; org.classList.add("fail"); org.style.cursor = "pointer"; org.onclick = () => { org.onclick = null; org.style.cursor = ""; render(d); }; }
 }
