@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-12c</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-12d</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -643,10 +643,11 @@ async function verCheck() {
     const mine = ($("verL").textContent.match(/\d+-\d+[a-z]?/) || [""])[0];
     const txt = await (await fetch("chat.html?v=" + Date.now(), {cache: "no-store"})).text();
     const live = (txt.match(/id="verL"[^>]*>[^<]*?(\d+-\d+[a-z]?)</) || [])[1];
-    if (mine && live && live !== mine && !$("msg").value.trim()) location.reload();
+    if (mine && live && live !== mine && !$("msg").value.trim()) { const q = new URLSearchParams(location.search); q.set("v", live); location.replace(location.pathname + "?" + q + location.hash); }   // 주소를 바꿔 열어야 캐시(최대 10분)를 건너뛴다
   } catch (e) {}
 }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") verCheck(); });
+setTimeout(verCheck, 3000);   // 열자마자도 한 번(캐시에서 옛 판이 열렸을 때)
 setInterval(() => { if (document.visibilityState === "visible") verCheck(); }, 10 * 60e3);
 function sysPost(ref, k) { if (ref && me.n) ref.push(withA({n: me.n, l: me.l, t: fm(t(k === "l" ? "left" : "joined"), me.n), k, u: uid, ts: firebase.database.ServerValue.TIMESTAMP})).catch(() => {}); }
 function sys(text, out) { const em = $("empty"); if (em) em.remove(); const stick = nearBottom(), d = document.createElement("div"); d.className = "sys" + (out ? " out" : ""); d.textContent = text; log.appendChild(d); if (stick) log.scrollTop = log.scrollHeight; }
