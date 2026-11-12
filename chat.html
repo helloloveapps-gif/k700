@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-11e</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-12a</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -540,6 +540,7 @@ const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 1
 const dayKey = ts => { const d = new Date(ts); return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); };
 function addMsg(id, m) {
   if (!m || document.getElementById("m_" + id)) return;
+  if (m.k === "j" || m.k === "l") return sysMsg(id, m);
   const e = $("empty"); if (e) e.remove();
   const stick = nearBottom(), mine = m.u === uid, ts = m.ts || Date.now();
   if (!lastMsg || dayKey(lastMsg.ts) !== dayKey(ts)) {
@@ -620,6 +621,21 @@ function send() {
   const mention = [...text.matchAll(/@([^\s@,.!?]{1,40})/g)].map(x => x[1]);
   pushNotify(text, {to: m.r && m.r.u && m.r.u !== uid ? [m.r.u] : [], mention});
 }
+// 들어옴 · 나감 줄(11-12): 대화 기록(msgs)에 k = "j" | "l" 로 남아 새로고침해도 시간 자리에 다시 그려진다. 글은 보는 사람 말로
+function sysMsg(id, m) {
+  const em = $("empty"); if (em) em.remove();
+  const stick = nearBottom(), ts = m.ts || Date.now(), out = m.k === "l";
+  const d = document.createElement("div"); d.className = "sys" + (out ? " out" : ""); d.id = "m_" + id; d.dataset.ts = ts;
+  d.textContent = fm(t(out ? "left" : "joined"), m.n || "?");
+  const nx = [...log.querySelectorAll(".msg,.sys[data-ts]")].find(x => +x.dataset.ts > ts);
+  if (nx) { log.insertBefore(d, nx); if (nx.classList.contains("cont")) nx.classList.remove("cont"); }
+  else {
+    if (!lastMsg || dayKey(lastMsg.ts) !== dayKey(ts)) { const dd = document.createElement("div"); dd.className = "day"; dd.textContent = dayKey(ts) === dayKey(Date.now()) ? t("today") : new Date(ts).toLocaleDateString(); log.appendChild(dd); }
+    log.appendChild(d); lastMsg = {u: "", n: "", ts};   // 다음 글은 이름부터
+  }
+  if (stick) log.scrollTop = log.scrollHeight;
+}
+function sysPost(ref, k) { if (ref && me.n) ref.push(withA({n: me.n, l: me.l, t: fm(t(k === "l" ? "left" : "joined"), me.n), k, u: uid, ts: firebase.database.ServerValue.TIMESTAMP})).catch(() => {}); }
 function sys(text, out) { const em = $("empty"); if (em) em.remove(); const stick = nearBottom(), d = document.createElement("div"); d.className = "sys" + (out ? " out" : ""); d.textContent = text; log.appendChild(d); if (stick) log.scrollTop = log.scrollHeight; }
 function grow() { const b = $("msg"); b.style.height = "44px"; b.style.height = Math.min(200, b.scrollHeight) + "px"; }
 $("send").onclick = send;
@@ -1289,18 +1305,19 @@ function joinHere() {
   const ref = db.ref("rooms/" + cur.key + "/here"), mine = ref.child(uid);
   HERE = {ref, mine}; hereReady = false;
   mine.onDisconnect().cancel();   // 화면을 내리거나 연결이 끊겨도 방에 남는다 — 🚪 방 나가기로만 나감(이박사님 11-10)
-  mine.set({n: me.n, ts: firebase.database.ServerValue.TIMESTAMP});
+  const msgs = curRef;
+  // 새로 들어올 때만(새로고침 · 화면 내림 뒤 다시 붙음은 이미 자리가 있으니 안 남김) 기록에 「들어왔습니다」
+  mine.once("value").then(s => { if (!s.exists()) sysPost(msgs, "j"); mine.set({n: me.n, ts: firebase.database.ServerValue.TIMESTAMP}); }).catch(() => mine.set({n: me.n, ts: firebase.database.ServerValue.TIMESTAMP}));
+  HERE.msgs = msgs;
   // 접속 인원(online)은 「지금 실제로 연결된 사람」만 — 창을 닫거나 끊기면 빠진다. 방 목록 숫자 · 인원 제한이 이것을 본다(11-10 닫은 사람까지 세어 「꽉 참」으로 막히던 것)
   HERE.on = db.ref("online/" + cur.id + "/" + uid); HERE.on.onDisconnect().remove(); HERE.on.set(true);
   ref.on("child_added", s => {
-    if (hereReady && s.key !== uid) {
-      const v = s.val() || {}; sys(fm(t("joined"), v.n || "?"));
-      if (document.hidden || !document.hasFocus()) ding();
-    }
+    // 글 줄은 기록(msgs)에서 그린다 — 여기서는 띵동만
+    if (hereReady && s.key !== uid && (document.hidden || !document.hasFocus())) ding();
   });
   ref.on("value", s => { hereReady = true; HERE.list = s.val() || {}; $("here").textContent = "👥 " + Object.keys(HERE.list).length; if ($("mWho").classList.contains("on")) drawWho(); });
   // 「○○ 님이 나갔습니다」 + 「흥~」 — 그 사람이 다른 방으로 옮겼거나 🚪 방 나가기를 눌렀을 때만(화면 내림 · 끊김은 방에 남으니 안 뜸 · 이박사님 11-10)
-  ref.on("child_removed", s => { if (hereReady && s.key !== uid) { sys(fm(t("left"), (s.val() || {}).n || "?"), true); hmph(); } });
+  ref.on("child_removed", s => { if (hereReady && s.key !== uid) hmph(); });
 }
 // out = true 일 때만(🚪 방 나가기) 방에서 지운다. 그 밖(다른 방 보기 · 화면 내림)은 보기만 멈춤
 let WHO_MODE = "room";
@@ -1342,7 +1359,7 @@ $("mWho").onclick = e => { if (e.target.id === "mWho") hide("mWho"); };
 function leaveHere(out) {
   if (!HERE) return;
   HERE.ref.off();
-  if (out === true) { HERE.mine.remove(); if (HERE.on) HERE.on.remove(); }
+  if (out === true) { sysPost(HERE.msgs, "l"); HERE.mine.remove(); if (HERE.on) HERE.on.remove(); }
   HERE = null;
   $("here").textContent = "";
 }
