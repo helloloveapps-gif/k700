@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-12a</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-12b</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -541,6 +541,7 @@ const dayKey = ts => { const d = new Date(ts); return d.getFullYear() + "-" + d.
 function addMsg(id, m) {
   if (!m || document.getElementById("m_" + id)) return;
   if (m.k === "j" || m.k === "l") return sysMsg(id, m);
+  if (m.s) return;   // 옛 판(11-09)이 음성 말을 채팅 글로도 올린 것 — 음성 말은 음성 칸에만(11-12)
   const e = $("empty"); if (e) e.remove();
   const stick = nearBottom(), mine = m.u === uid, ts = m.ts || Date.now();
   if (!lastMsg || dayKey(lastMsg.ts) !== dayKey(ts)) {
@@ -635,6 +636,18 @@ function sysMsg(id, m) {
   }
   if (stick) log.scrollTop = log.scrollHeight;
 }
+// 새 판 알아채기(11-12): 폰에 오래 열어 둔 옛 판이 지운 기능을 계속 돌리던 것. 화면으로 돌아올 때 · 10분마다 판 번호를 보고 다르면 새로고침
+// 글 쓰는 중이면 미룸. 음성 중이어도 새로고침 — 다시 열리면 음성은 저절로 다시 붙는다
+async function verCheck() {
+  try {
+    const mine = ($("verL").textContent.match(/\d+-\d+[a-z]?/) || [""])[0];
+    const txt = await (await fetch("chat.html?v=" + Date.now(), {cache: "no-store"})).text();
+    const live = (txt.match(/id="verL"[^>]*>[^<]*?(\d+-\d+[a-z]?)</) || [])[1];
+    if (mine && live && live !== mine && !$("msg").value.trim()) location.reload();
+  } catch (e) {}
+}
+document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") verCheck(); });
+setInterval(() => { if (document.visibilityState === "visible") verCheck(); }, 10 * 60e3);
 function sysPost(ref, k) { if (ref && me.n) ref.push(withA({n: me.n, l: me.l, t: fm(t(k === "l" ? "left" : "joined"), me.n), k, u: uid, ts: firebase.database.ServerValue.TIMESTAMP})).catch(() => {}); }
 function sys(text, out) { const em = $("empty"); if (em) em.remove(); const stick = nearBottom(), d = document.createElement("div"); d.className = "sys" + (out ? " out" : ""); d.textContent = text; log.appendChild(d); if (stick) log.scrollTop = log.scrollHeight; }
 function grow() { const b = $("msg"); b.style.height = "44px"; b.style.height = Math.min(200, b.scrollHeight) + "px"; }
