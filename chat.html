@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-12e</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-13a</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -368,8 +368,8 @@ db.ref("cfg/open").on("value", s => {
   if (cur && OPEN && !OPEN[cur.id]) noRoom();
 });
 // 방마다 접속 인원 — 비밀번호 방도 숫자는 보이게 online/{방 번호}/{내 번호} = true 만 남긴다(이름 · 글은 안 남김)
-let ONLINE = {};
-db.ref("online").on("value", s => { const v = s.val() || {}; ONLINE = {}; Object.keys(v).forEach(k => ONLINE[k] = Object.keys(v[k] || {}).length); drawRooms(); });
+let ONLINE = {}, ONLINE_U = {};
+db.ref("online").on("value", s => { const v = s.val() || {}; ONLINE = {}; ONLINE_U = v; Object.keys(v).forEach(k => ONLINE[k] = Object.keys(v[k] || {}).length); drawRooms(); if (typeof drawHereN === "function") drawHereN(); });
 db.ref(".info/connected").on("value", s => {
   $("mode").textContent = s.val() ? "" : t("local");
   // 다시 연결되면(화면을 다시 켬 등) 접속 인원에 다시 올린다
@@ -1355,7 +1355,7 @@ function joinHere() {
     // 글 줄은 기록(msgs)에서 그린다 — 여기서는 띵동만
     if (hereReady && s.key !== uid && (document.hidden || !document.hasFocus())) ding();
   });
-  ref.on("value", s => { hereReady = true; HERE.list = s.val() || {}; $("here").textContent = "👥 " + Object.keys(HERE.list).length; if ($("mWho").classList.contains("on")) drawWho(); });
+  ref.on("value", s => { hereReady = true; HERE.list = s.val() || {}; drawHereN(); if ($("mWho").classList.contains("on")) drawWho(); });
   // 「○○ 님이 나갔습니다」 + 「흥~」 — 그 사람이 다른 방으로 옮겼거나 🚪 방 나가기를 눌렀을 때만(화면 내림 · 끊김은 방에 남으니 안 뜸 · 이박사님 11-10)
   ref.on("child_removed", s => { if (hereReady && s.key !== uid) hmph(); });
 }
@@ -1378,15 +1378,20 @@ function drawVoiceWho() {
     return '<div class="who1"><div class="av" style="background-color:' + col + '">' + esc(n.trim().charAt(0).toUpperCase()) + '</div><b>' + esc(n) + '</b><small>' + esc(tags.join(" · ")) + '</small></div>';
   }).join("") || '<p>' + esc(t("empty")) + '</p>';
 }
+// 위쪽 👥 숫자 = 지금 이 방에 접속한 사람(방 목록 숫자와 같음). 예전엔 한 번 들어와 🚪 안 누른 기기까지 세어 2명인데 5로 보였다(11-13)
+const onNow = () => (cur && ONLINE_U[cur.id]) || {};
+function drawHereN() { if (!HERE || !cur) return; $("here").textContent = "👥 " + Object.keys(onNow()).length; if ($("mWho").classList.contains("on") && WHO_MODE !== "voice") drawWho(); }
 function drawWho() {
   if (WHO_MODE === "voice") return drawVoiceWho();
   if (!HERE || !cur) return;
   const list = Object.entries(HERE.list || {}), rd = (READ && READ.map) || {}, vc = (V && V.peers) || vLast || {};
-  $("wT").textContent = "👥 " + t("whoT") + " · " + list.length;
-  list.sort((a, b) => (a[0] === uid ? -1 : b[0] === uid ? 1 : (a[1].ts || 0) - (b[1].ts || 0)));
+  const on = onNow();
+  $("wT").textContent = "👥 " + t("whoT") + " · " + list.filter(([p]) => on[p]).length;
+  list.sort((a, b) => (a[0] === uid ? -1 : b[0] === uid ? 1 : (on[b[0]] ? 1 : 0) - (on[a[0]] ? 1 : 0) || (a[1].ts || 0) - (b[1].ts || 0)));   // 접속한 사람 먼저
   $("wList").innerHTML = list.map(([p, x]) => {
     const n = x.n || "?", col = colorOf(p), tags = [];
     if (p === uid) tags.push(t("vMe"));
+    tags.push(on[p] ? "🟢" : "⚪");
     if (ownerName(cur.r) && sameName(cur.r.by, n)) tags.push("👑 " + t("owner"));
     if (vc[p]) tags.push("🔊");
     if (rd[p] && rd[p].a) tags.push(t("away"));
