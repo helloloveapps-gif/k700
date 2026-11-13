@@ -45,7 +45,7 @@
       s4: "④ 작전 브리핑", copy: "📋 복사", copied: "복사했습니다", brief: "🗡 성검 쟁탈 작전 — {0} 군단 {1}", bMem: "집결원 {0}명", bSolo: "개인 부대",
       save: "💾 작전 저장", saving: "저장 중…", saved: "저장했습니다", fail: "저장 확인이 안 됩니다. 잠시 뒤 새로 고침해 보세요.", dirty: "저장하지 않은 변경이 있습니다",
       view: "보기 전용 — 관리자 링크로 열면 고칠 수 있습니다.", at: "저장 {0} · {1}", noSave: "아직 저장된 작전이 없습니다.",
-      bTh: ["건물", "개방", "첫 점령", "지속", "효과"]
+      gl: "채", bTh: ["건물", "개방", "첫 점령", "지속", "효과"]
     },
     en: {
       h: "🏆 Swordland League — War Room", sub: "Legion 1 only · roster from the in-game list. Legion roster → rally leaders → auto-placed joiners → phase-by-phase battle map → briefing. 1-hour battle; the side with more Relic Points wins.",
@@ -65,16 +65,37 @@
       s4: "④ Briefing", copy: "📋 Copy", copied: "Copied", brief: "🗡 Swordland plan — {0} Legion {1}", bMem: "{0} joiners", bSolo: "Solo squads",
       save: "💾 Save plan", saving: "Saving…", saved: "Saved", fail: "Could not confirm the save. Reload in a moment.", dirty: "Unsaved changes",
       view: "View only — open with an admin link to edit.", at: "Saved {0} · {1}", noSave: "No saved plan yet.",
-      bTh: ["Building", "Opens", "First", "Hold", "Effect"]
+      bTh: ["Building", "Opens", "First", "Hold", "Effect"], gl: "G"
+    },
+    zh: {
+      h: "🏆 聖劍聯賽 — 作戰室", sub: "只有軍團 1 · 名單依遊戲畫面。軍團名單 → 集結隊長 → 自動分配集結成員 → 各階段作戰地圖 → 作戰簡報。戰鬥 1 小時，聖物分數高的一方獲勝。",
+      ally: "聯盟", leg: "軍團 {0}", rules: "📜 規則 · 建築簡報（依遊戲內規則說明）",
+      s1: "① 參戰 · 替補名單（依遊戲畫面）", s1d: "與遊戲內「軍團 1 參戰人員」相同 — 參戰最多 30 人 · 替補最多 20 人。數字是部隊戰力。總督 ID 依名字自動配對，找不到的會標示。",
+      auto: "↺ 依遊戲名單", clr: "清空", cnt: "參戰 {0}/30 · 替補 {1}/20", inP: "參戰", inS: "替補", inN: "—", other: "軍團 {0}", absent: "KvK 缺席",
+      s2: "② 集結隊長 · 自動分配集結成員", s2d: "在名單中點名字設為集結隊長，其餘的人會依 TG → 戰力順序輪流（蛇形）分給各集結隊長。超過集結人數的人成為個人部隊。集結成員的行軍量 = 未開增益的數量。",
+      pickL: "集結隊長（從名單點選）", cap: "集結人數", own: "本人", sum: "已填 {0} / {1}", solo: "個人部隊（守點 · 撿補給車 · 地道）", none: "無",
+      s3: "③ 作戰地圖", s3d: "我方從左邊進場和從右邊進場要分開規劃（先對稱複製再修改比較快）。選擇階段，在下方點集結隊長（或個人部隊），再點地圖上的建築或任意位置設定目標。再點一次可以更改。",
+      ph: ["前期 · 第 1 階段", "中期 · 第 2 階段", "後期 · 第 3 階段"], phd: ["聖所 · 修道院 · 鐘樓 · 馬廄開放", "聖劍祭壇 · 教化之廳 · 傭兵營地開放", "30 分 — 4 條地道開放"],
+      roleNone: "你不在已儲存的作戰中。", roleSub: "替補 — 參戰者離開時進場。", roleLead: "你是第 {0} 號集結隊長", roleJoin: "第 {0} 號集結 — 加入 {1} 的集結", roleSolo: "個人部隊 — 守建築 · 撿補給車 · 地道",
+      sideL: "◀ 我方從左邊進場", sideR: "我方從右邊進場 ▶", mirR: "↔ 對稱複製到右邊", mirL: "↔ 對稱複製到左邊", mirAsk: "要把目前的作戰對稱複製到另一邊嗎？另一邊已規劃的作戰會被覆蓋。",
+      play: "播放作戰", stop: "✎ 回到編輯", pts: "作戰分數", me: "我的部隊", playD: "▶ 用 60 秒播放 60 分鐘的戰鬥。拖動進度條可跳到任意分鐘，或直接跳到 15 / 30 分。分數假設所有目標都照計畫佔領（不含地道）。",
+      noId: "無 ID", sq: "部隊", gameP: "遊戲：參戰", gameS: "遊戲：替補", gameN: "遊戲：未參加", bd: "⑤ 戰略公告欄", bdd: "張貼作戰 · 角色 · 注意事項，最新的在最上面。", bdT: "標題", bdB: "內容", bdAdd: "✍ 張貼", bdDel: "刪除", bdNone: "還沒有貼文。",
+      cel: "⛏ 標記地道", del: "✕ 清除目標", soloL: "個人部隊", memo: "本階段指示（自由輸入）", lock: "第 {0} 階段開放",
+      val: "本階段目標：首佔 {0} · 每分鐘 {1}（聯盟分數）", free: "地圖位置",
+      s4: "④ 作戰簡報", copy: "📋 複製", copied: "已複製", brief: "🗡 聖劍作戰 — {0} 軍團 {1}", bMem: "集結成員 {0} 人", bSolo: "個人部隊",
+      save: "💾 儲存作戰", saving: "儲存中…", saved: "已儲存", fail: "無法確認是否已儲存，請稍後重新整理。", dirty: "有未儲存的變更",
+      view: "僅供檢視 — 用管理員連結開啟才能編輯。", at: "儲存 {0} · {1}", noSave: "還沒有儲存的作戰。",
+      bTh: ["建築", "開放", "首佔", "每分鐘", "效果"], gl: "採"
     }
   };
-  const st = (k, ...a) => { const d = T[LANG === "ko" ? "ko" : "en"]; let s = d[k] != null ? d[k] : T.ko[k]; if (typeof s === "string") a.forEach((v, i) => { s = s.split("{" + i + "}").join(v); }); return s; };
-  const bn = b => LANG === "ko" ? b.ko : b.en;
+  const st = (k, ...a) => { const d = T[LANG === "ko" ? "ko" : LANG === "zh" ? "zh" : "en"]; let s = d[k] != null ? d[k] : T.en[k] != null ? T.en[k] : T.ko[k]; if (typeof s === "string") a.forEach((v, i) => { s = s.split("{" + i + "}").join(v); }); return s; };
+  const ZHB = {alt: "聖劍祭壇", sa1: "聖所（西）", sa2: "聖所（東）", ab1: "修道院（北）", ab2: "修道院（東）", ab3: "修道院（西）", ab4: "修道院（南）", bel: "鐘樓", sta: "皇家馬廄", mer: "傭兵營地", hal: "教化之廳", tu1: "地道 1", tu2: "地道 2", tu3: "地道 3", tu4: "地道 4"}, ZHFX = {bel: "建築佔領時間 −50%", sta: "高級遷城冷卻 −50%", mer: "派出傭兵攻擊敵方建築", hal: "部隊攻擊 / 防禦 +15% / −15%", tu1: "30 分開放", tu2: "30 分開放", tu3: "30 分開放", tu4: "30 分開放"};
+  const bn = b => LANG === "ko" ? b.ko : LANG === "zh" ? ZHB[b.id] || b.en : b.en;
   // ph = 아군 진입이 왼쪽일 때, phR = 오른쪽일 때(어느 쪽에 배치될지 모르니 둘 다 미리 짠다)
   const blankPh = () => [{t: {}, memo: ""}, {t: {}, memo: ""}, {t: {}, memo: ""}];
   const blankLeg = () => ({m: [], s: [], ld: [], ph: blankPh(), phR: blankPh(), cel: [], celR: []});
   const blank = a => ({a, L: [blankLeg(), blankLeg()]});
-  let SA = "", SL = 0, SP = 0, SD = 0, SEL = null, BL = "ko", MSG = "";
+  let SA = "", SL = 0, SP = 0, SD = 0, SEL = null, BL = "", MSG = "";
   const PH = (L, d) => (d == null ? SD : d) ? L.phR : L.ph, CEL = (L, d) => (d == null ? SD : d) ? L.celR : L.cel;
   const both = (L, f) => { L.ph.forEach(f); L.phR.forEach(f); };
   // 전장은 가운데를 중심으로 점대칭 — 왼쪽 작전을 오른쪽으로 뒤집을 때 쓰는 짝
@@ -92,7 +113,7 @@
     if (!Array.isArray(P.posts)) P.posts = [];
     if (LR && !L0.ld.length && window.LEAGUE_STRATEGY) { const tri = k => { const q = who(k), e = q.id && window.EMP_TOP ? (EMP_TOP.rows[700] || EMP_TOP.rows['700'] || []).find(r => String(r[12]) === q.id) : null; return q.mt || (q.id && (LOOKUP[q.id] || {}).m) || (e && e[3]) || (q.d && q.d.mystic) || 0; }; const fx = [].concat(...window.LEAGUE_STRATEGY.roles.slice(1).map(r => r.fix || [])), f0 = window.LEAGUE_STRATEGY.roles[0].fix || [], top = k => f0.indexOf(who(k).n) >= 0 ? 1 : 0; L0.ld = L0.m.slice().filter(k => fx.indexOf(who(k).n) < 0).sort((x, y) => (top(y) - top(x)) || (tri(y) - tri(x))).slice(0, window.LEAGUE_STRATEGY.roles[0].n).map(k => ({k, cap: 0})); }
     // 1단계 동선: 집결장 순서대로 목표(아군 진입 왼쪽 기준 · 오른쪽은 대칭)
-    const RT = (window.LEAGUE_STRATEGY || {}).route; if (LR && RT && !Object.keys(L0.ph[0].t).length && !Object.keys(L0.phR[0].t).length) { const put = (p, k, id) => { if (!id) return; L0.ph[p].t[k] = {b: id}; L0.phR[p].t[k] = {b: MIR[id] || id}; }; L0.ld.forEach((l, i) => { put(0, l.k, RT.left[i]); put(1, l.k, (RT.p2 || [])[i]); }); roleOf(L0, "gather").forEach((k, i) => put(2, k, (RT.gather || [])[i])); }
+    const RT = (window.LEAGUE_STRATEGY || {}).route; if (LR && RT && !Object.keys(L0.ph[0].t).length && !Object.keys(L0.phR[0].t).length) { const put = (p, k, id, same) => { if (!id) return; L0.ph[p].t[k] = {b: id}; L0.phR[p].t[k] = {b: same ? id : MIR[id] || id}; }; L0.ld.forEach((l, i) => { put(0, l.k, RT.left[i]); put(1, l.k, (RT.p2 || [])[i], true); }); roleOf(L0, "gather").forEach((k, i) => put(2, k, (RT.gather || [])[i])); }
     return P;
   };
   const editable = () => IS_ADMIN && typeof can === "function" && can(SA);
@@ -242,7 +263,16 @@
 
   function rulesHtml() {
     const ko = LANG === "ko";
-    const li = ko ? [
+    const li = LANG === "zh" ? [
+      "前 20 名聯盟參加 · 兩個軍團（第 2 軍團需聯盟 Lv.6 + 本週累計登入 40 人）· 參戰 + 替補 15 人以上才能配對",
+      "盟主 · R4 以上最多選 30 名參戰 + 10 名替補（本頁以軍團 1 的 30 + 20 為準）· 一人只能在一個軍團",
+      "配對分數 = 報名者中部隊戰力前 25 名（領主裝備 · 英雄裝備 · 戰鬥科技）。聯盟獎勵依軍團 1 的勝負",
+      "士兵不會死亡 — 傷兵送到戰場醫院（無上限），離開戰場立即痊癒。沒有幫助按鈕，請準備治療加速",
+      "戰鬥開始時高級遷城免費 1 次（冷卻後恢復）· 離開戰場 12 分鐘後才能再進場",
+      "分數：首佔 + 持續佔領 + 擊殺（防守時每擊殺 1 萬戰力個人 40 · 進攻時每 1 萬個人 80，沒有聯盟分數）",
+      "超過建築上限的分數會變成「軍需物資」散落 → 撿起來取得。據點被佔領時，累積分數 50% 歸進攻方，50% 歸防守方（防守失敗則失去）",
+      "第 1 階段：聖所 · 修道院 · 鐘樓 · 馬廄 / 第 2 階段：聖劍祭壇 · 教化之廳 · 傭兵營地 / 第 3 階段（30 分）：4 條地道"
+    ] : ko ? [
       "상위 20위 연맹 참여 · 군단 2개(제2군단은 연맹 Lv.6 + 이번 주 누적 접속 40명) · 참전+후보 15명 이상이어야 매칭",
       "맹주 · R4 이상이 참전 최대 30명 · 후보 10명 선택(본 사이트는 참전 20 · 후보 10 기준) · 한 사람은 한 군단에만",
       "매칭 점수 = 지원자 중 부대 전투력 상위 25명(영주 장비 · 영웅 장비 · 전투 과학). 연맹 보상은 군단 1의 승패 기준",
@@ -261,7 +291,7 @@
       "Points above a building's cap drop as supply carts to pick up. When a building falls, 50% of stored points go to the attacker, 50% to the defender (lost if defence fails)",
       "Phase 1: Sanctums · Abbeys · Bell Tower · Stables / Phase 2: Swordshrine · Hall · Mercenary Camp / Phase 3 (30 min): four Undercellars"
     ];
-    const rows = B.map(b => '<tr><td>' + ICON[b.k] + ' ' + esc(bn(b)) + '</td><td class="n">' + b.ph + '</td><td class="n">' + (b.f ? fmt(b.f) : '?') + '</td><td class="n">' + (b.m ? '+' + fmt(b.m) : '?') + '</td><td>' + esc(b.fx ? b.fx[ko ? "ko" : "en"] : "") + '</td></tr>').join("");
+    const rows = B.map(b => '<tr><td>' + ICON[b.k] + ' ' + esc(bn(b)) + '</td><td class="n">' + b.ph + '</td><td class="n">' + (b.f ? fmt(b.f) : '?') + '</td><td class="n">' + (b.m ? '+' + fmt(b.m) : '?') + '</td><td>' + esc(b.fx ? (LANG === "zh" ? ZHFX[b.id] || b.fx.en : b.fx[ko ? "ko" : "en"]) : "") + '</td></tr>').join("");
     return '<details class="rl"><summary>' + st("rules") + '</summary><ul>' + li.map(x => '<li>' + esc(x) + '</li>').join("") + '</ul><table class="bt"><tr>' + st("bTh").map(h => '<th>' + esc(h) + '</th>').join("") + '</tr>' + rows + '</table></details>';
   }
 
@@ -320,7 +350,7 @@
       const bx = x + 30 + (j - 1) * 30, by = y - 34;
       s += '<circle cx="' + bx + '" cy="' + by + '" r="15" fill="' + color + '" stroke="#1b1208" stroke-width="3"/><text x="' + bx + '" y="' + (by + 6.5) + '" text-anchor="middle" font-size="' + (String(n).length > 1 ? 12 : 18) + '" font-weight="900" fill="#1b1208">' + n + '</text>';
     };
-    if (!PLAY.on) { lead.forEach((k, i) => tgt(k, i + 1, LC[i % LC.length])); tgt("solo", "S", "#dee2e6"); roleOf(L, "gather").forEach((k, i) => tgt(k, "채" + (i + 1), "#63e6be")); }
+    if (!PLAY.on) { lead.forEach((k, i) => tgt(k, i + 1, LC[i % LC.length])); tgt("solo", "S", "#dee2e6"); roleOf(L, "gather").forEach((k, i) => tgt(k, st("gl") + (i + 1), "#63e6be")); }
     return s + '<g id="lgOv"></g></svg>';
   }
 
@@ -337,7 +367,7 @@
         A.R.forEach((r, i) => { const t = ph.t[r.l.k]; lines.push("①②③④⑤⑥⑦⑧".charAt(i) + " " + nm(r.l.k) + (t ? " → " + tName(t) : "") + "  (" + st("bMem", r.mem.length) + (r.mem.length ? ": " + r.mem.map(m => nm(m.k)).join(", ") : "") + ")"); });
         const ts = ph.t.solo;
         if (A.solo.length || ts) lines.push("Ⓢ " + st("bSolo") + (ts ? " → " + tName(ts) : "") + (A.solo.length ? ": " + A.solo.map(nm).join(", ") : ""));
-        if (p > 0 && !Object.keys(ph.t).length && !ph.memo) { out += "\n━ " + st("ph")[p] + " ━\n" + (lang === "ko" ? "↳ 앞 단계 그대로" : "↳ same as before") + "\n"; return; }
+        if (p > 0 && !Object.keys(ph.t).length && !ph.memo) { out += "\n━ " + st("ph")[p] + " ━\n" + (lang === "ko" ? "↳ 앞 단계 그대로" : lang === "zh" ? "↳ 與前一階段相同" : "↳ same as before") + "\n"; return; }
         if (!lines.length && !ph.memo) return;
         out += "\n━ " + st("ph")[p] + " — " + st("phd")[p] + " ━\n" + lines.join("\n") + (ph.memo ? "\n📝 " + ph.memo : "") + "\n";
       });
@@ -358,7 +388,7 @@
     const US = SD ? RED : BLUE, home = [US[0] + (SD ? -40 : 40), US[1]];
     const G = A.R.map((r, i) => ({k: r.l.k, n: i + 1, c: LC[i % LC.length], mem: r.mem.map(m => m.k)}));
     if ([0, 1, 2].some(p => PH(L)[p].t.solo)) G.push({k: "solo", n: "S", c: "#dee2e6", mem: A.solo});
-    roleOf(L, "gather").forEach((k, i) => G.push({k, n: "채" + (i + 1), c: "#63e6be", mem: []}));
+    roleOf(L, "gather").forEach((k, i) => G.push({k, n: st("gl") + (i + 1), c: "#63e6be", mem: []}));
     G.forEach(g => {
       let cur = home, prev = null; g.seg = []; g.home = home;
       [0, 1, 2].forEach(p => {
@@ -544,8 +574,9 @@
           if (r.k === "lead") {
             lines.push(fm(W.lead, ix + 1) + tm(mk));
             const LR2 = (lab, id) => { if ((MIR[id] || id) === id) { lines.push(lab + ": " + bName(id)); return; } lines.push(lab + " — " + W.sl + ": " + bName(id)); lines.push(lab + " — " + W.sr + ": " + bName(MIR[id] || id)); };
-            if (RT.left && RT.left[ix]) LR2(W.r1, RT.left[ix]);
-            if (RT.p2 && RT.p2[ix]) LR2(W.r2, RT.p2[ix]);
+            if (RT.left && RT.left[ix]) LR2(W.r1 + (LX === "ko" && RT.names && RT.names[ix] ? " · " + RT.names[ix] : ""), RT.left[ix]);
+            // 15분 목표는 진입 방향과 상관없이 같은 건물(이박사님 11-13: 1번 성검 제단 · 2번 교화의 홀)
+            if (RT.p2 && RT.p2[ix]) lines.push(W.r2 + ": " + bName(RT.p2[ix]));
             const pk = (KS0[SG.roles.findIndex(x => x.pair === "lead")] || [])[ix]; if (pk) lines.push(W.part + ": " + who(pk).n);
           } else if (r.pair) {
             const pk = (KS0[SG.roles.findIndex(x => x.k === r.pair)] || [])[ix];
@@ -565,7 +596,7 @@
       h += '<div class="lg"><h2>📜 ' + esc(LANG === "zh" ? "作戰說明" : LANG === "ko" ? "작전 설명" : "Battle plan") + '</h2><div class="d" style="white-space:pre-wrap;color:#e9f2e4">' + esc(SG.intro) + '</div>' +
         SG.phases.map((x, i) => '<div class="post"><b>' + esc(x.t) + '</b><p>' + esc(x.b) + '</p></div>').join("") + (SG.recover ? '<div class="post" style="border-color:#b197fc"><b style="color:#d0bfff">🟣 ' + esc(SG.recover.title) + '</b><p>' + esc(SG.recover.text) + '</p>' + (SG.recover.teams || []).map((T, ti) => { const RK = KS0[SG.roles.findIndex(r => r.k === "recover")] || []; return '<div class="ml" style="margin:4px 0"><b style="color:#d0bfff;margin-right:6px">' + esc(T.t) + '</b>' + REC_OFF.map((o, i) => RK[ti * 4 + i] ? '<span><b style="color:' + DCOL[i] + '">' + DIR(i) + '</b> · ' + esc(who(RK[ti * 4 + i]).n) + '</span>' : '').join("") + '</div>'; }).join("") + '<svg id="lgRec" viewBox="0 0 600 380" style="width:100%;max-width:600px;display:block;margin:10px auto 0;border-radius:10px;background:#6b4626"></svg></div>' : '') + '<div class="d">' + esc(SG.note) + '</div>' +
         '<h2 style="margin-top:12px">🎖 ' + esc(LANG === "zh" ? "角色分配（依參戰者神秘試煉排序）" : LANG === "ko" ? "역할 배정 (참전자 시련 순)" : "Roles (combatants by Mystic Trial)") + '</h2>' +
-        KS0.map((ks, ri, KS) => { const r = SG.roles[ri], pk = r.pair ? KS[SG.roles.findIndex(x => x.k === r.pair)] || [] : null, num = r.k === "lead" || r.pair, TM = SG.teams || [], tmOf = k => TM.findIndex(x => x.ld.indexOf(who(k).n) >= 0), tmTag = k => { const j = tmOf(k); return j < 0 ? '' : ' <small style="color:' + TM[j].c + ';font-weight:800">' + esc(TM[j].t) + '</small>'; }; return '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:' + r.c + '">' + r.n + '</i>' + esc(r.t) + '</span></div><div class="ml" style="margin:6px 0">' + (r.k === "recover" && SG.recover && SG.recover.teams ? SG.recover.teams.map((T, ti) => '<div style="width:100%;margin:2px 0"><b style="color:#d0bfff;margin-right:8px">' + esc(T.t) + '</b>' + ks.slice(ti * 4, ti * 4 + 4).map((k, i) => '<span>' + esc(who(k).n) + ' <small style="color:' + DCOL[i] + ';font-weight:900">(' + DIR(i) + ')</small></span>').join(" ") + '</div>').join("") : ks.map((k, i) => '<span>' + (num ? '<b style="color:' + r.c + '">' + (i + 1 + (pk ? pk.length : 0)) + '</b> ' : '') + esc(who(k).n) + ' <small style="color:#8fa98a">' + (tri(k) ? fmt(tri(k)) : '·') + '</small>' + (pk && pk[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(pk[i]).n) + '</small>' : '') + (r.k === "gather" ? ' <small style="color:#63e6be;font-weight:800">채' + (i + 1) + '</small>' : '') + (r.k === "lead" ? tmTag(k) : pk && pk[i] ? tmTag(pk[i]) : '') + '</span>').join("") || st("none")) + '</div><div class="d" style="margin:0">' + r.d.map(esc).join(" · ") + '</div></div>' + (r.pair && TM.length ? TM.map(x => '<div class="rc" style="border-color:' + x.c + '"><div class="hd"><b style="color:' + x.c + '">' + esc(x.t) + '</b></div><div class="ml" style="margin:6px 0">' + KS[0].map((k, i) => x.ld.indexOf(who(k).n) < 0 ? '' : '<span>' + esc(who(k).n) + (pk === KS[0] && ks[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(ks[i]).n) + '</small>' : '') + '</span>').join("") + '</div></div>').join("") : ''); }).join("") + '</div>';
+        KS0.map((ks, ri, KS) => { const r = SG.roles[ri], pk = r.pair ? KS[SG.roles.findIndex(x => x.k === r.pair)] || [] : null, num = r.k === "lead" || r.pair, TM = SG.teams || [], tmOf = k => TM.findIndex(x => x.ld.indexOf(who(k).n) >= 0), tmTag = k => { const j = tmOf(k); return j < 0 ? '' : ' <small style="color:' + TM[j].c + ';font-weight:800">' + esc(TM[j].t) + '</small>'; }; return '<div class="rc"><div class="hd"><span class="chip" style="min-height:26px"><i style="background:' + r.c + '">' + r.n + '</i>' + esc(r.t) + '</span></div><div class="ml" style="margin:6px 0">' + (r.k === "recover" && SG.recover && SG.recover.teams ? SG.recover.teams.map((T, ti) => '<div style="width:100%;margin:2px 0"><b style="color:#d0bfff;margin-right:8px">' + esc(T.t) + '</b>' + ks.slice(ti * 4, ti * 4 + 4).map((k, i) => '<span>' + esc(who(k).n) + ' <small style="color:' + DCOL[i] + ';font-weight:900">(' + DIR(i) + ')</small></span>').join(" ") + '</div>').join("") : ks.map((k, i) => '<span>' + (num ? '<b style="color:' + r.c + '">' + (i + 1 + (pk ? pk.length : 0)) + '</b> ' : '') + esc(who(k).n) + ' <small style="color:#8fa98a">' + (tri(k) ? fmt(tri(k)) : '·') + '</small>' + (pk && pk[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(pk[i]).n) + '</small>' : '') + (r.k === "gather" ? ' <small style="color:#63e6be;font-weight:800">' + st("gl") + (i + 1) + '</small>' : '') + (r.k === "lead" ? tmTag(k) : pk && pk[i] ? tmTag(pk[i]) : '') + '</span>').join("") || st("none")) + '</div><div class="d" style="margin:0">' + r.d.map(esc).join(" · ") + '</div></div>' + (r.pair && TM.length ? TM.map(x => '<div class="rc" style="border-color:' + x.c + '"><div class="hd"><b style="color:' + x.c + '">' + esc(x.t) + '</b></div><div class="ml" style="margin:6px 0">' + KS[0].map((k, i) => x.ld.indexOf(who(k).n) < 0 ? '' : '<span>' + esc(who(k).n) + (pk === KS[0] && ks[i] ? ' <small style="color:#ffd43b">↔ ' + esc(who(ks[i]).n) + '</small>' : '') + '</span>').join("") + '</div></div>').join("") : ''); }).join("") + '</div>';
     }
     // ① 명단
     h += '<div class="lg"><h2>' + st("s1") + ' <span class="tag">' + st("cnt", L.m.length, L.s.length) + '</span></h2><div class="d">' + esc(st("s1d")) + '</div>' +
@@ -598,7 +629,7 @@
       '<div class="d" style="margin:4px 0 0">' + esc(st("playD")) + '</div><div class="val">' + st("val", fmt(tb.reduce((t, b) => t + b.f, 0)), fmt(tb.reduce((t, b) => t + b.m, 0))) + '</div>' +
       (E ? '<textarea id="lgMemo" placeholder="' + esc(st("memo")) + '">' + esc(ph.memo || "") + '</textarea>' : (ph.memo ? '<pre>📝 ' + esc(ph.memo) + '</pre>' : '')) + '</div>';
     // ④ 브리핑
-    h += '<div class="lg"><h2>' + st("s4") + '</h2><div class="tabs" id="lgBl">' + [["ko", "한국어"], ["en", "English"]].map(x => '<button data-bl="' + x[0] + '"' + (BL === x[0] ? ' class="on"' : '') + '>' + x[1] + '</button>').join("") + '</div><pre id="lgBrief">' + esc(briefText(L, A, BL)) + '</pre><button id="lgCopy">' + st("copy") + '</button></div>';
+    h += '<div class="lg"><h2>' + st("s4") + '</h2><div class="tabs" id="lgBl">' + [["ko", "한국어"], ["zh", "中文"], ["en", "English"]].map(x => '<button data-bl="' + x[0] + '"' + ((BL || (LANG === "ko" || LANG === "zh" ? LANG : "en")) === x[0] ? ' class="on"' : '') + '>' + x[1] + '</button>').join("") + '</div><pre id="lgBrief">' + esc(briefText(L, A, BL || (LANG === "ko" || LANG === "zh" ? LANG : "en"))) + '</pre><button id="lgCopy">' + st("copy") + '</button></div>';
     h += '<div class="lg"><h2>' + st("bd") + '</h2><div class="d">' + esc(st("bdd")) + '</div>' +
       (E ? '<input class="lgt" id="lgPt" maxlength="80" placeholder="' + esc(st("bdT")) + '"><textarea id="lgPb" maxlength="2000" placeholder="' + esc(st("bdB")) + '"></textarea><div class="sv" style="margin:6px 0 10px"><button class="primary" id="lgPadd">' + st("bdAdd") + '</button></div>' : '') +
       (P.posts.length ? P.posts.slice().reverse().map((x, i) => '<div class="post"><b>' + esc(x.t || "") + '</b><div class="by">' + esc((x.by || "") + (x.at ? " · " + x.at : "")) + (E ? ' <button class="chip" style="min-height:24px;font-size:11px" data-pdel="' + (P.posts.length - 1 - i) + '">' + st("bdDel") + '</button>' : '') + '</div><p>' + esc(x.b || "") + '</p></div>').join("") : '<div class="d">' + st("bdNone") + '</div>') + '</div>';
@@ -695,7 +726,7 @@
     if (el.id === "lgAlly") { SA = el.value; SEL = null; MSG = ""; render(); return; }
     if (!editable()) return;
     if (el.dataset.cap) { const l = L.ld.find(x => x.k === el.dataset.cap); if (l) { l.cap = +String(el.value).replace(/[^0-9]/g, "") || 0; touch(); render(); } return; }
-    if (el.id === "lgMemo") { PH(L)[SP].memo = el.value.slice(0, 1500); touch(); const b = $("lgBrief"); if (b) b.textContent = briefText(L, assign(L), BL); }
+    if (el.id === "lgMemo") { PH(L)[SP].memo = el.value.slice(0, 1500); touch(); const b = $("lgBrief"); if (b) b.textContent = briefText(L, assign(L), BL || (LANG === "ko" || LANG === "zh" ? LANG : "en")); }
   }
 
   async function save() {
