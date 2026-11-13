@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-13c</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-13d</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -315,6 +315,10 @@ let GOOGLE_OFF = 0, AI_OFF = 0;
 const roomNames = () => [...new Set([me.n, ...Object.values((HERE && HERE.list) || {}).map(x => x.n)].filter(Boolean))].slice(0, 30);
 // 무료 한도(모델마다 분당 8천 토큰)가 작아서: 방을 열 때 옛 글을 한꺼번에 보내지 않는다 — 한 번에 2개씩, 옛 글은 구글(aiFor 가 고름)
 let AI_RUN = 0; const AI_Q = [];
+// AI 번역은 기기에 기억해 둔다(새로고침 · 다시 열어도 한도를 쓰지 않게, 최근 600개)
+const AIC = (() => { try { return JSON.parse(store.get("chat_aic") || "{}"); } catch (e) { return {}; } })();
+let AIC_T = null;
+const aicPut = (k, v) => { delete AIC[k]; AIC[k] = v; const ks = Object.keys(AIC); ks.slice(0, Math.max(0, ks.length - 600)).forEach(x => delete AIC[x]); clearTimeout(AIC_T); AIC_T = setTimeout(() => store.set("chat_aic", JSON.stringify(AIC)), 500); };
 async function viaAI(text, tl, ctx) {
   if (AI_RUN >= 2) await new Promise(ok => AI_Q.push(ok));
   AI_RUN++;
@@ -323,6 +327,7 @@ async function viaAI(text, tl, ctx) {
     const r = await fetch(VOICE_API + "/voice/tr", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({t: text, tl, ctx: ctx || [], names: roomNames()}), signal: ac.signal});
     if (!r.ok) throw new Error("tr " + r.status);
     const j = await r.json(); if (!j.text) throw new Error("tr empty");
+    aicPut(tl + "\u0001" + text, j.text);
     return j.text;
   } finally { clearTimeout(tm); AI_RUN--; const nx = AI_Q.shift(); if (nx) nx(); }
 }
@@ -341,6 +346,7 @@ async function viaMyMemory(text, tl, sl) {
 }
 function translate(text, tl, sl, ctx, noAI) {
   const key = tl + "\u0001" + text;
+  if (AIC[key]) return Promise.resolve(AIC[key]);
   if (TC.has(key)) return TC.get(key);
   const p = (async () => {
     if (!noAI && Date.now() > AI_OFF) {
@@ -592,6 +598,14 @@ function addMsg(id, m) {
 // 원문은 그대로 위에, 번역은 그 밑에(.org 칸을 번역 칸으로 쓴다)
 // AI 로 번역할 글: 최근 30분 글 · 방을 연 뒤 온 글(옛 글은 구글 — 방을 열 때 한꺼번에 몰리지 않게)
 const aiFor = d => +d.dataset.ts > Math.min(OPENED, Date.now() - 30 * 60e3);
+// 옛 글(구글로 먼저 보인 글)은 화면에 들어오면 AI 번역으로 바꾼다 — 보이는 것만이라 한도에 안 걸린다
+const AI_IO = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return;
+  const d = e.target; AI_IO.unobserve(d);
+  if (Date.now() < AI_OFF) return;
+  const text = d.dataset.t, org = d.querySelector(".org");
+  viaAI(text, me.l, ctxOf(d)).then(r => { if (d.dataset.t === text && !org.hidden && !org.classList.contains("fail")) org.textContent = r; }).catch(() => { AI_OFF = Date.now() + 60e3; });
+}), {root: $("log")}) : null;
 // 이 글 바로 앞 글 4줄(「이름: 글」) — AI 번역이 앞뒤 흐름을 보게
 function ctxOf(d) { const out = []; for (let x = d.previousElementSibling; x && out.length < 4; x = x.previousElementSibling) if (x.classList.contains("msg") && x.dataset.t) out.unshift((x.dataset.n || "?") + ": " + x.dataset.t.slice(0, 200)); return out; }
 async function render(d) {
@@ -602,6 +616,7 @@ async function render(d) {
   try {
     const r = await Promise.race([translate(text, me.l, d.dataset.l, ctxOf(d), !aiFor(d)), new Promise((_, no) => setTimeout(() => no(new Error("timeout")), 15000))]);   // 15초 넘게 답이 없으면 「번역 실패 ↻」(다시 누를 수 있게)
     if (r.trim() === text.trim()) org.hidden = true; else org.textContent = r;
+    if (!org.hidden && AI_IO && !AIC[me.l + "\u0001" + text]) AI_IO.observe(d);
   } catch (e) { org.textContent = t("fail") + " ↻"; org.classList.add("fail"); org.style.cursor = "pointer"; org.onclick = () => { org.onclick = null; org.style.cursor = ""; render(d); }; }
 }
 const withA = m => { const a = myAuth(); if (a) m.a = a; return m; };
