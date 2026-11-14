@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-13d</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-15a</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -344,17 +344,18 @@ async function viaMyMemory(text, tl, sl) {
   if (!r.ok || j.responseStatus != 200 || !j.responseData) throw new Error("mm " + (j.responseStatus || r.status));
   return j.responseData.translatedText;
 }
+// 번역 순서(이박사님 11-15): 구글(무료) 먼저 → 막히면 AI(Groq) → MyMemory
 function translate(text, tl, sl, ctx, noAI) {
   const key = tl + "\u0001" + text;
-  if (AIC[key]) return Promise.resolve(AIC[key]);
   if (TC.has(key)) return TC.get(key);
   const p = (async () => {
-    if (!noAI && Date.now() > AI_OFF) {
-      try { return await viaAI(text, tl, ctx); } catch (e) { AI_OFF = Date.now() + 60e3; }
-    }
     if (Date.now() > GOOGLE_OFF) {
       try { return await viaGoogle(text, tl); } catch (e) { GOOGLE_OFF = Date.now() + 5 * 60e3; }   // 막히면 5분 쉬었다가 다시
     }
+    if (!noAI && Date.now() > AI_OFF) {
+      try { return await viaAI(text, tl, ctx); } catch (e) { AI_OFF = Date.now() + 60e3; }
+    }
+    if (AIC[key]) return AIC[key];
     return await viaMyMemory(text, tl, sl);
   })();
   TC.set(key, p); p.catch(() => TC.delete(key));
@@ -616,7 +617,6 @@ async function render(d) {
   try {
     const r = await Promise.race([translate(text, me.l, d.dataset.l, ctxOf(d), !aiFor(d)), new Promise((_, no) => setTimeout(() => no(new Error("timeout")), 15000))]);   // 15초 넘게 답이 없으면 「번역 실패 ↻」(다시 누를 수 있게)
     if (r.trim() === text.trim()) org.hidden = true; else org.textContent = r;
-    if (!org.hidden && AI_IO && !AIC[me.l + "\u0001" + text]) AI_IO.observe(d);
   } catch (e) { org.textContent = t("fail") + " ↻"; org.classList.add("fail"); org.style.cursor = "pointer"; org.onclick = () => { org.onclick = null; org.style.cursor = ""; render(d); }; }
 }
 const withA = m => { const a = myAuth(); if (a) m.a = a; return m; };
