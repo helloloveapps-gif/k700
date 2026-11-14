@@ -203,7 +203,7 @@ button,input,select,textarea{font:inherit;color:inherit}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-15a</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-15b</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -471,6 +471,8 @@ function enter(id, r, key) {
     curQ = ref0.orderByChild("ts").startAt(since).limitToLast(300);
     curQ.on("child_added", s => addMsg(s.key, s.val()));
     curQ.on("child_removed", rmMsg);
+    // 내 글은 먼저 기기 시계로 짐작한 시각으로 그려진다 — 서버가 진짜 시각을 돌려주면 고쳐 다시 센다(11-15b 1이 안 사라지던 것)
+    curQ.on("child_changed", s => { const m = s.val(), d = document.getElementById("m_" + s.key); if (!m || !d || !m.ts || +d.dataset.ts === m.ts) return; d.dataset.ts = m.ts; const tm = d.querySelector(".tm"); if (tm) tm.textContent = new Date(m.ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}); drawUnread(); });
     // 읽음 표시: 내가 본 시각을 올리고, 방 사람들의 본 시각으로 글마다 안 읽은 수를 센다
     READ = {ref: db.ref("rooms/" + key + "/read"), map: {}, since};
     READ.ref.on("value", x => { READ.map = x.val() || {}; drawUnread(); });
@@ -513,13 +515,22 @@ function drawUnread() {
   unrQ = setTimeout(() => {   // requestAnimationFrame 은 뒤에 있는 창에서 멈춰 숫자가 안 바뀌어 타이머로
     unrQ = 0;
     if (!READ) return;
-    const ms = Object.entries(READ.map);
+    // 한 사람 = 이름 하나(11-15b): 폰 · PC · 앱(설치판)은 기기 번호가 달라 한 사람이 2로 세어지고, 한 기기에서만 봐도 1이 남았다.
+    // 같은 이름 기기 중 하나라도 봤으면 읽음, 그 이름 기기가 모두 🚪 나갔으면 셈에서 빠짐
+    const ppl = {};
+    for (const [p, x] of Object.entries(READ.map)) {
+      if (!x) continue;
+      const k = (x.n || "").trim().toLowerCase() || "#" + p, g = ppl[k] || (ppl[k] = {us: [], j: Infinity, r: 0, in: false});
+      g.us.push(p); g.r = Math.max(g.r, +x.r || 0);
+      if (!x.a) { g.in = true; if (x.j != null) g.j = Math.min(g.j, +x.j); }
+    }
+    const pv = Object.entries(ppl);
     for (const d of log.querySelectorAll(".msg")) {
       const ts = +d.dataset.ts, u = d.dataset.u;
       if (!(u === uid || d.dataset.mine === "1")) { const e0 = d.querySelector(".unr"); if (e0) e0.textContent = ""; continue; }   // 카톡처럼 숫자는 내 글에만(남이 아직 안 본 수 · 이박사님 11-10)
       const nm = (d.dataset.n || "").trim().toLowerCase();
       // 글쓴이 본인(같은 기기 · 같은 이름의 다른 기기)과 자리 비운 사람은 빼고 센다(11-10 내 글에 2가 뜨던 것)
-      const n = ms.filter(([p, x]) => p !== u && x && !x.a && (x.n || "").trim().toLowerCase() !== nm && x.j <= ts && x.r < ts).length;
+      const n = pv.filter(([k, g]) => k !== nm && !g.us.includes(u) && g.in && g.j <= ts && g.r < ts).length;
       const el = d.querySelector(".unr"); if (el) el.textContent = n > 0 ? String(n) : "";
     }
   }, 50);
