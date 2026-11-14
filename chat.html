@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="google" content="notranslate"><!-- 크롬 「페이지 번역」 끄기 — 번역은 이 페이지가 글마다 따로 한다(크롬 번역 창 · 「번역 사용 중지」 알림이 뜨지 않게) -->
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <title>LOVEAPPS 채팅</title>
 <link rel="manifest" href="chat.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -16,7 +16,8 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;background:var(--main);color:var(--text);font:15px/1.375 "gg sans","Noto Sans KR","Malgun Gothic","Microsoft JhengHei",system-ui,sans-serif}
 button,input,select,textarea{font:inherit;color:inherit}
-#app{display:flex;height:100dvh}
+#app{display:flex;height:var(--vh,100dvh)}
+html,body{overflow:hidden;overscroll-behavior:none}
 #side{width:240px;flex:none;background:var(--side);display:flex;flex-direction:column}
 #side .srv{height:48px;display:flex;align-items:center;padding:0 16px;font-weight:700;color:var(--head);border-bottom:1px solid var(--line);box-shadow:0 1px 0 rgba(0,0,0,.2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #side .cat{display:flex;align-items:center;justify-content:space-between;padding:18px 8px 4px 16px;font-size:12px;font-weight:700;letter-spacing:.02em;color:var(--sub);text-transform:uppercase}
@@ -361,6 +362,13 @@ function translate(text, tl, sl, ctx, noAI) {
   TC.set(key, p); p.catch(() => TC.delete(key));
   return p;
 }
+
+// 위 메뉴 고정: 화면 높이를 보이는 높이에 맞추고, 브라우저가 화면을 밀어 올리면 되돌린다(자판 · 주소창)
+(() => {
+  const v = window.visualViewport; if (!v) return;
+  const fit = () => { document.documentElement.style.setProperty("--vh", Math.round(v.height) + "px"); if (window.scrollY || document.documentElement.scrollTop) window.scrollTo(0, 0); };
+  v.addEventListener("resize", fit); v.addEventListener("scroll", fit); addEventListener("scroll", fit, {passive: true}); fit();
+})();
 
 // Firebase
 firebase.initializeApp(FIREBASE_CONFIG);
