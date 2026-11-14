@@ -1,6 +1,11 @@
 // LOVEAPPS 채팅 알림 일꾼(서비스 워커) — 푸시 알림 받기 · 누르면 채팅 열기. 페이지 저장(캐시)은 하지 않는다(늘 새 판)
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", e => e.waitUntil(self.clients.claim()));
+// 화면 열기는 늘 서버의 새 판으로(기기에 10분 남는 옛 판을 건너뜀) — 안 되면(오프라인) 평소대로
+self.addEventListener("fetch", e => {
+  if (e.request.mode !== "navigate") return;
+  e.respondWith(fetch(e.request, {cache: "no-store"}).catch(() => fetch(e.request)));
+});
 self.addEventListener("push", e => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (x) { d = {body: e.data ? e.data.text() : ""}; }

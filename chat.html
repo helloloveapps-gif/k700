@@ -812,6 +812,26 @@ function drawBell() { $("bell").textContent = muted ? "🔕 " + t("bellOff") : "
 const IOS = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
 const STANDALONE = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
 let SWR = null, INSTALL = null;
+// 새 판 바로 받기(이박사님 11-15 「껐다 켜도 갱신이 바로 안 된다」): GitHub 은 화면 파일을 10분 동안 기기에 둔다(max-age=600).
+// 화면을 열 때 · 다시 볼 때 기기에 있는 판과 서버 판을 견줘 다르면 새로 연다 — 글을 쓰는 중 · 음성 채팅 중에는 미룬다
+(() => {
+  const h = t => { let x = 0; for (let i = 0; i < t.length; i++) x = (x * 31 + t.charCodeAt(i)) | 0; return x; };
+  let busy = false, last = 0;
+  const check = async () => {
+    if (busy || Date.now() - last < 30e3) return; busy = true; last = Date.now();
+    try {
+      const u = location.pathname;
+      const [a, b] = await Promise.all([fetch(u, {cache: "force-cache"}).then(r => r.text()), fetch(u, {cache: "no-store"}).then(r => r.ok ? r.text() : "")]);
+      if (b && h(a) !== h(b)) {
+        const go = () => { if (!$("msg").value.trim() && !V) location.reload(); else setTimeout(go, 15e3); };
+        go();
+      }
+    } catch (e) {} finally { busy = false; }
+  };
+  check();
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
+  setInterval(() => { if (!document.hidden) check(); }, 10 * 60e3);
+})();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").then(r => { SWR = r; if (store.get("chat_push") === "1" && cur) pushRoom(cur.key, false); }).catch(() => {});
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); INSTALL = e; });
 const pushOn = () => store.get("chat_push") === "1" && "Notification" in window && Notification.permission === "granted";
