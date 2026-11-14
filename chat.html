@@ -92,6 +92,8 @@ html,body{overflow:hidden;overscroll-behavior:none}
 .unr{flex:none;width:16px;text-align:right;font-size:11px;font-weight:700;color:#f0b232}
 /* 답장 ↱ 줄 · 번역 줄을 글 줄에 맞춘다(안 읽은 수 칸 16px + 틈 4px · 이박사님 11-15) */
 .body>.rep,.body>.org{margin-left:20px}
+#bar .box>button{height:44px;display:flex;align-items:center;justify-content:center;padding-top:0;padding-bottom:0;line-height:1}
+#send svg,#clip svg,#mic svg{display:block}
 .msg:hover .mdel,.msg:focus-within .mdel{display:block}
 @media (hover:none){.mdel,.mrep{display:block}}
 .body{min-width:0;flex:1}
@@ -210,7 +212,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
-    <div id="bar"><div id="rbar"><span id="rbarT"></span><button id="rbarX" aria-label="cancel">✕</button></div><div class="box"><textarea id="msg" maxlength="1000" rows="1"></textarea><button id="clip" aria-label="attach"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button><input id="file" type="file" accept="image/*" multiple hidden><button id="mic" aria-label="voice message">🎤</button><button id="emo" aria-label="emoji">😀</button><button id="send" aria-label="send">➤</button></div><div id="pick"></div></div>
+    <div id="bar"><div id="rbar"><span id="rbarT"></span><button id="rbarX" aria-label="cancel">✕</button></div><div class="box"><textarea id="msg" maxlength="1000" rows="1"></textarea><button id="clip" aria-label="attach"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></button><input id="file" type="file" accept="image/*" multiple hidden><button id="mic" aria-label="voice message">🎤</button><button id="emo" aria-label="emoji">😀</button><button id="send" aria-label="send"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10.1 15 12 3.4 13.9z"/></svg></button></div><div id="pick"></div></div>
   </main>
 </div>
 
