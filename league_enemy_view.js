@@ -5,11 +5,11 @@
 #vLEnemy h2{margin:0 0 6px;font-size:17px;color:#e9d48a;border:none;padding:0}
 #vLEnemy h3{margin:4px 0 8px;font-size:15px;color:#e9d48a}
 #vLEnemy .d{font-size:12.5px;color:#9fb59a;margin-bottom:10px;line-height:1.5}
-#vLEnemy .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+#vLEnemy .lescroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 #vLEnemy table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
 #vLEnemy th,#vLEnemy td{padding:6px 8px;border-bottom:1px solid #22352a;text-align:right;white-space:nowrap}
 #vLEnemy th{color:#9fb59a;font-weight:600;font-size:12px;position:sticky;top:0;background:#0e1611}
-#vLEnemy td.n,#vLEnemy th.n{text-align:left;white-space:normal;min-width:110px;word-break:break-all}
+#vLEnemy td.nm,#vLEnemy th.nm{text-align:left;white-space:normal;min-width:110px;word-break:break-all}
 #vLEnemy td.b{color:#e9d48a;font-weight:800}
 #vLEnemy .tg8{color:#f0b232;font-weight:800}
 #vLEnemy .rk{color:#6f8a6b;font-size:11px;margin-left:3px}
@@ -57,18 +57,18 @@
     const S = [stat(en), stat(top), stat(ours)];
     let h = '<div class="le"><h2>' + esc(f(t.h, D.ek, D.tag)) + '</h2><div class="d">' + esc(f(t.d, D.src, D.at)) + '</div>';
     // 한눈에
-    h += '<h3>' + t.sum + '</h3><div class="tw"><table><tr><th class="n"></th><th>' + esc(f(t.all, D.tag)) + '</th><th>' + esc(f(t.top, D.tag)) + '</th><th>' + t.ours + '</th></tr>';
-    const row = (k, g, bold) => '<tr><td class="n">' + k + '</td>' + S.map((s, i) => '<td' + (bold && i ? ' class="b"' : '') + '>' + g(s) + '</td>').join("") + '</tr>';
+    h += '<h3>' + t.sum + '</h3><div class="lescroll"><table><tr><th class="nm"></th><th>' + esc(f(t.all, D.tag)) + '</th><th>' + esc(f(t.top, D.tag)) + '</th><th>' + t.ours + '</th></tr>';
+    const row = (k, g, bold) => '<tr><td class="nm">' + k + '</td>' + S.map((s, i) => '<td' + (bold && i ? ' class="b"' : '') + '>' + g(s) + '</td>').join("") + '</tr>';
     h += row(t.cnt, s => s.n + t.nm) + row(t.tg8, s => s.tg8 + t.nm, true) + row(t.avg, s => num(s.avg), true) + row(t.tot, s => num(s.tot)) + row(t.top3, s => s.t3 + t.nm, true) + row(t.pw, s => big(s.pw));
     h += '</table></div></div>';
     // 구간
     const cnt = rows => { const c = {}; rows.forEach(x => { const b = band(x.mt); c[b[0]] = (c[b[0]] || 0) + 1; }); return c; };
     const C = [cnt(en), cnt(top), cnt(ours)], mx = Math.max(1, ...BK.map(b => Math.max(C[1][b[0]] || 0, C[2][b[0]] || 0)));
-    h += '<div class="le"><h3>' + t.bk + '</h3><div class="tw"><table><tr><th class="n">' + t.band + '</th><th>' + esc(f(t.all, D.tag)) + '</th><th>' + esc(f(t.top, D.tag)) + '</th><th>' + t.ours + '</th><th class="n"></th></tr>';
+    h += '<div class="le"><h3>' + t.bk + '</h3><div class="lescroll"><table><tr><th class="nm">' + t.band + '</th><th>' + esc(f(t.all, D.tag)) + '</th><th>' + esc(f(t.top, D.tag)) + '</th><th>' + t.ours + '</th><th class="nm"></th></tr>';
     BK.forEach(b => {
       if (!C[0][b[0]] && !C[2][b[0]]) return;
       const a = C[1][b[0]] || 0, o = C[2][b[0]] || 0;
-      h += '<tr><td class="n">' + (b[1] || t.none) + '</td><td>' + (C[0][b[0]] || 0) + '</td><td class="b">' + a + '</td><td class="b">' + o + '</td><td class="n"><span class="bar" style="width:' + Math.round(a / mx * 60) + 'px"></span><br><span class="bar o" style="width:' + Math.round(o / mx * 60) + 'px"></span></td></tr>';
+      h += '<tr><td class="nm">' + (b[1] || t.none) + '</td><td>' + (C[0][b[0]] || 0) + '</td><td class="b">' + a + '</td><td class="b">' + o + '</td><td class="nm"><span class="bar" style="width:' + Math.round(a / mx * 60) + 'px"></span><br><span class="bar o" style="width:' + Math.round(o / mx * 60) + 'px"></span></td></tr>';
     });
     h += '</table></div>';
     const tgc = {}; en.forEach(x => { const k = tg(x.tc); tgc[k] = (tgc[k] || 0) + 1; });
@@ -77,8 +77,8 @@
     const key = {mt: x => x.mt, pet: x => x.pet ? x.pet[0] : -1, mas: x => x.mas ? x.mas[0] : -1, pw: x => x.pw};
     const list = rows => rows.slice().sort((a, b) => key[SORT](b) - key[SORT](a));
     const cell = v => v ? big(v[0]) + '<span class="rk">#' + v[1] + '</span>' : '—';
-    const tbl = rows => '<div class="tw"><table><tr>' + t.c.map((c, i) => '<th' + (i === 1 ? ' class="n"' : '') + '>' + c + '</th>').join("") + '</tr>' + list(rows).map((x, i) =>
-      '<tr><td>' + (i + 1) + '</td><td class="n">' + (x.mt >= 3000 ? '<span class="star">★</span> ' : '') + esc(x.n) + (x.miss ? ' <span class="rk">' + t.miss + '</span>' : '') + '</td><td class="b">' + num(x.mt) + (x.mr ? '<span class="rk">#' + x.mr + '</span>' : '') + '</td><td' + (x.tc === 70 ? ' class="tg8"' : '') + '>' + tg(x.tc) + '</td><td>' + big(x.pw) + '</td><td>' + cell(x.pet) + '</td><td>' + cell(x.mas) + '</td></tr>').join("") + '</table></div>';
+    const tbl = rows => '<div class="lescroll"><table><tr>' + t.c.map((c, i) => '<th' + (i === 1 ? ' class="nm"' : '') + '>' + c + '</th>').join("") + '</tr>' + list(rows).map((x, i) =>
+      '<tr><td>' + (i + 1) + '</td><td class="nm">' + (x.mt >= 3000 ? '<span class="star">★</span> ' : '') + esc(x.n) + (x.miss ? ' <span class="rk">' + t.miss + '</span>' : '') + '</td><td class="b">' + num(x.mt) + (x.mr ? '<span class="rk">#' + x.mr + '</span>' : '') + '</td><td' + (x.tc === 70 ? ' class="tg8"' : '') + '>' + tg(x.tc) + '</td><td>' + big(x.pw) + '</td><td>' + cell(x.pet) + '</td><td>' + cell(x.mas) + '</td></tr>').join("") + '</table></div>';
     const tabs = '<div class="tabs">' + [["mt", t.byM], ["pet", t.byP], ["mas", t.byA], ["pw", t.byW]].map(([k, v]) => '<button data-s="' + k + '"' + (SORT === k ? ' class="on"' : '') + '>' + v + '</button>').join("") + '</div>';
     h += '<div class="le"><h3>' + esc(f(t.list, D.tag)) + ' (' + en.length + t.nm + ')</h3>' + tabs + tbl(en) + '</div>';
     h += '<div class="le"><h3>' + t.ol + '</h3>' + tabs + tbl(ours) + '</div>';
