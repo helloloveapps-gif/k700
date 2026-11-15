@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>성검 암호표</title>
+<title>성검 중국어</title>
 <style>
 :root{--bg:#f4efe2;--ink:#1b1208;--card:#fffaf0;--sub:#6b5a44;--red:#d6402b;--blue:#2457c5;--gold:#c9a227;--line:#1b1208}
-@media (prefers-color-scheme:dark){:root{--bg:#14110c;--ink:#f1e8d6;--card:#1f1a12;--sub:#b3a184;--red:#ff6b52;--blue:#6d9bff;--gold:#e9c450;--line:#f1e8d6}}
+@media (prefers-color-scheme:dark){:root{--bg:#14110c;--ink:#f1e8d6;--card:#1f1a12;--sub:#b3a184;--red:#ff6b52;--blue:#7aa5ff;--gold:#e9c450;--line:#f1e8d6}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Noto Sans KR","Malgun Gothic","Microsoft JhengHei",system-ui,sans-serif}
 .wrap{max-width:980px;margin:0 auto;padding:16px}
@@ -17,26 +17,25 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Noto Sans KR
 #gate input{width:100%;font-size:22px;text-align:center;padding:10px;border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);letter-spacing:.2em}
 #gate button{margin-top:12px;width:100%;font-size:18px;font-weight:800;padding:10px;border:3px solid var(--line);border-radius:10px;background:var(--gold);color:#1b1208;cursor:pointer}
 #gate .err{color:var(--red);font-size:14px;min-height:20px;margin-top:8px}
-header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:6px}
-header h1{margin:0;font-size:24px}
-.lang{display:flex;gap:6px}
-.lang button{border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 12px;font-size:14px;font-weight:700;cursor:pointer}
-.lang button.on{background:var(--ink);color:var(--bg)}
-.lead{color:var(--sub);font-size:14px;margin:4px 0 14px}
-h2{font-size:18px;margin:22px 0 10px;padding-bottom:4px;border-bottom:3px solid var(--line)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px}
-.c{background:var(--card);border:2.5px solid var(--line);border-radius:12px;padding:12px 14px;box-shadow:4px 4px 0 var(--line)}
-.c .w{font-size:30px;font-weight:900;line-height:1.1}
-.c .r{font-size:13px;color:var(--sub);margin-top:2px;font-style:italic}
-.c .m{margin-top:8px;font-size:16px;font-weight:700}
-.c.red .w{color:var(--red)} .c.blue .w{color:var(--blue)}
-.ex{background:var(--card);border:2.5px dashed var(--line);border-radius:12px;padding:12px 14px}
-.ex div{padding:6px 0;border-bottom:1px solid rgba(127,127,127,.25)}
-.ex div:last-child{border:0}
-.ex b{font-size:20px}
-.ex span{color:var(--sub);margin-left:8px}
-.rule{font-size:14px;color:var(--sub);margin-top:6px}
-@media print{#gate{display:none}.c,.ex{box-shadow:none}}
+h1{margin:0;font-size:24px}
+.lead{color:var(--sub);font-size:14px;margin:6px 0 10px}
+.find{width:100%;font-size:17px;padding:10px 12px;border:2.5px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);margin-bottom:6px}
+nav{display:flex;gap:6px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:8px 0;z-index:2}
+nav a{border:2px solid var(--line);border-radius:999px;padding:4px 12px;font-size:14px;font-weight:700;color:var(--ink);text-decoration:none;background:var(--card)}
+h2{font-size:18px;margin:20px 0 10px;padding-bottom:4px;border-bottom:3px solid var(--line);scroll-margin-top:56px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.c{background:var(--card);border:2.5px solid var(--line);border-radius:12px;padding:10px 12px;box-shadow:4px 4px 0 var(--line);display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.c .tx{flex:1;min-width:0}
+.c .ko{font-size:14px;color:var(--sub);font-weight:700}
+.c .say{font-size:25px;font-weight:900;line-height:1.2;margin-top:2px;color:var(--red);word-break:keep-all}
+.c .zh{font-size:17px;margin-top:3px;font-family:"Microsoft JhengHei","PingFang TC","Noto Sans TC",sans-serif}
+.c .py{font-size:12px;color:var(--sub);font-style:italic}
+.c .sp{flex:none;width:38px;height:38px;border:2px solid var(--line);border-radius:50%;background:var(--gold);color:#1b1208;font-size:18px;display:flex;align-items:center;justify-content:center}
+.c.on{outline:4px solid var(--gold)}
+.tip{background:var(--card);border:2.5px dashed var(--line);border-radius:12px;padding:10px 14px;font-size:14px;line-height:1.7}
+.tip b{color:var(--red)}
+.empty{color:var(--sub);padding:20px 0}
+@media print{#gate,nav,.find,.sp{display:none}.c{box-shadow:none}}
 </style>
 </head>
 <body>
@@ -49,83 +48,127 @@ h2{font-size:18px;margin:22px 0 10px;padding-bottom:4px;border-bottom:3px solid 
   </form>
 </div>
 <div class="wrap" id="app" hidden>
-  <header><h1 id="t"></h1><div class="lang" id="lang"></div></header>
-  <div class="lead" id="lead"></div>
+  <h1>🗡 성검 리그 — 대만 친구에게 말하기</h1>
+  <div class="lead">빨간 글씨(한글 발음)를 그대로 읽으면 된다. 카드를 누르면 🔊 대만 발음으로 들린다. 아래 작은 글자는 채팅에 붙여 넣을 중국어.</div>
+  <input class="find" id="find" placeholder="찾기 — 성소, 수비, 집결 …">
+  <nav id="nav"></nav>
   <div id="body"></div>
 </div>
 <script>
-// 성검 리그 리딩 암호표(이박사님 11-15): 음성으로 「성소 가자」 대신 한국어 암호 낱말만 말한다. 링크는 메뉴에 없고, 비밀번호를 넣어야 보인다
-const HASH = "71af0fdd2e7f62c1c351432a69fdf8f6579e9dce0c12c2b3af90f964540bdb83";   // 비밀번호 SHA-256
-// 장소 · 행동 · 상황 — w: 암호(한국어로 말한다), r: 소리(로마자), ko/zh/en: 뜻
-const D = {
-  place: [
-    {w: "김치", r: "gimchi", ko: "성소", zh: "聖所", en: "Sanctuary"},
-    {w: "된장", r: "doenjang", ko: "수도원", zh: "修道院", en: "Abbey"},
-    {w: "라면", r: "ramyeon", ko: "시계탑", zh: "鐘樓", en: "Bell tower"},
-    {w: "만두", r: "mandu", ko: "마구간", zh: "皇家馬廄", en: "Royal stables"},
-    {w: "불고기", r: "bulgogi", ko: "성검 제단", zh: "聖劍祭壇", en: "Sword altar"},
-    {w: "비빔밥", r: "bibimbap", ko: "교화의 홀", zh: "教化之廳", en: "Hall of enlightenment"},
-    {w: "떡볶이", r: "tteokbokki", ko: "용병 주둔지", zh: "傭兵營地", en: "Mercenary camp"},
-    {w: "고구마", r: "goguma", ko: "땅굴", zh: "地道", en: "Tunnel"}
-  ],
-  side: [
-    {w: "빨간", r: "ppalgan", ko: "적군 쪽 (장소 앞에)", zh: "敵方的（放在地點前）", en: "Enemy's (before a place)", cls: "red"},
-    {w: "파란", r: "paran", ko: "아군 쪽 (장소 앞에)", zh: "我方的（放在地點前）", en: "Ours (before a place)", cls: "blue"},
-    {w: "하나 · 둘", r: "hana · dul", ko: "1번 · 2번 (장소 뒤에)", zh: "1 號 · 2 號（放在地點後）", en: "No.1 · No.2 (after a place)"}
-  ],
-  act: [
-    {w: "바다", r: "bada", ko: "집결 걸어라 · 공격", zh: "開集結 · 進攻", en: "Start rally · attack"},
-    {w: "택시", r: "taeksi", ko: "그쪽으로 텔레포트", zh: "傳送過去", en: "Teleport there"},
-    {w: "우산", r: "usan", ko: "수비 · 장비 교체", zh: "防守 · 換裝備", en: "Defend · swap gear"},
-    {w: "산", r: "san", ko: "후퇴 · 빠져라", zh: "撤退", en: "Pull back"},
-    {w: "커피", r: "keopi", ko: "대기 · 멈춰", zh: "待命 · 先停", en: "Hold · wait"},
-    {w: "청소", r: "cheongso", ko: "회수조 출발(전리품 줍기)", zh: "回收組出發（撿補給）", en: "Recovery team go (loot)"},
-    {w: "소풍", r: "sopung", ko: "채집조 땅굴 출발", zh: "採集組去地道", en: "Gatherers to tunnels"},
-    {w: "도시락", r: "dosirak", ko: "치료 · 병사 회복", zh: "治療 · 回兵", en: "Heal troops"}
-  ],
-  sit: [
-    {w: "호랑이", r: "horangi", ko: "적 1군(큰 집결) 보인다", zh: "看到敵方主力集結", en: "Enemy main rally spotted"},
-    {w: "고양이", r: "goyangi", ko: "적 작은 부대 · 정찰", zh: "敵方小部隊 · 偵查", en: "Small enemy squad · scout"},
-    {w: "불", r: "bul", ko: "우리 거점 공격받는 중", zh: "我方據點被打", en: "Our point under attack"},
-    {w: "눈", r: "nun", ko: "거점 비어 있음 · 지금 가져가자", zh: "據點空著 · 現在拿", en: "Point is empty · take it now"},
-    {w: "축하", r: "chukha", ko: "점령 성공", zh: "佔領成功", en: "Captured"},
-    {w: "아이고", r: "aigo", ko: "뺏겼다", zh: "被搶走了", en: "We lost it"}
-  ]
-};
-const H = {
-  ko: {t: "🗝 성검 리딩 암호표", lead: "음성으로는 암호 낱말만 말한다. 어순: [빨간/파란] + [장소] + [하나/둘] + [행동]. 다른 사람에게 이 주소를 보내지 않는다.", place: "장소", side: "누구 쪽 · 몇 번", act: "행동", sit: "상황", ex: "이렇게 말한다", rule: "※ 암호는 한국어 그대로 말한다(번역 X). 대만 친구는 아래 로마자 소리로 알아듣는다."},
-  zh: {t: "🗝 聖劍聯賽 指揮暗號表", lead: "語音只說暗號。順序：[빨간/파란] + [地點] + [하나/둘] + [動作]。不要把這個網址傳給別人。", place: "地點", side: "哪一方 · 幾號", act: "動作", sit: "狀況", ex: "這樣說", rule: "※ 暗號直接用韓語說（不翻譯）。看下面的羅馬拼音就知道怎麼念。"},
-  en: {t: "🗝 Swordland lead code sheet", lead: "On voice, say only the code words. Order: [ppalgan/paran] + [place] + [hana/dul] + [action]. Don't share this link.", place: "Places", side: "Whose · which one", act: "Actions", sit: "Situations", ex: "Say it like this", rule: "※ Say codes in Korean as they are (no translation). Romanization is under each word."}
-};
-const EX = [
-  ["빨간 김치 바다", {ko: "적군 성소 공격", zh: "進攻敵方聖所", en: "Attack enemy sanctuary"}],
-  ["파란 된장 하나 우산", {ko: "아군 수도원 1번 수비 · 장비 교체", zh: "防守我方 1 號修道院 · 換裝備", en: "Defend our abbey No.1 · swap gear"}],
-  ["불고기 택시", {ko: "성검 제단으로 텔레포트", zh: "傳送到聖劍祭壇", en: "Teleport to the sword altar"}],
-  ["호랑이 · 김치 불", {ko: "적 1군 보인다 · 우리 성소 공격받는 중", zh: "看到敵方主力 · 我方聖所被打", en: "Enemy main rally · our sanctuary under attack"}],
-  ["청소", {ko: "회수조 출발", zh: "回收組出發", en: "Recovery team go"}],
-  ["고구마 소풍", {ko: "채집조 땅굴로", zh: "採集組去地道", en: "Gatherers to tunnels"}]
+// 성검 리그 리딩 — 한국어 뜻 · 한글 발음 · 대만 중국어(번체) · 병음. 비밀번호(SHA-256)로 연다, 메뉴에 링크 없음(이박사님 11-15)
+const FULL = "71af0fdd2e7f62c1c351432a69fdf8f6579e9dce0c12c2b3af90f964540bdb83";   // 비밀번호 SHA-256
+// [한국어 뜻, 한글 발음, 중국어, 병음]
+const D = [
+  ["📍 장소", [
+    ["성소", "썽 쒀", "聖所", "shèng suǒ"],
+    ["수도원", "씨우 따오 위앤", "修道院", "xiū dào yuàn"],
+    ["시계탑", "쭝 러우", "鐘樓", "zhōng lóu"],
+    ["마구간", "마 지우", "馬廄", "mǎ jiù"],
+    ["성검 제단", "썽 지앤 지 탄", "聖劍祭壇", "shèng jiàn jì tán"],
+    ["교화의 홀", "쟈오 화 즈 팅", "教化之廳", "jiào huà zhī tīng"],
+    ["용병 주둔지", "용 삥 잉 띠", "傭兵營地", "yōng bīng yíng dì"],
+    ["땅굴", "띠 따오", "地道", "dì dào"],
+    ["적군 (쪽)", "띠 팡", "敵方", "dí fāng"],
+    ["아군 (우리 쪽)", "워 팡", "我方", "wǒ fāng"],
+    ["1번 · 첫째", "띠 이", "第一", "dì yī"],
+    ["2번 · 둘째", "띠 얼", "第二", "dì èr"],
+    ["3번", "띠 싼", "第三", "dì sān"],
+    ["동 · 서 · 남 · 북", "똥 · 씨 · 난 · 뻬이", "東 · 西 · 南 · 北", "dōng · xī · nán · běi"]
+  ]],
+  ["⚔ 가자 · 공격", [
+    ["성소 가자!", "취 썽 쒀!", "去聖所！", "qù shèng suǒ"],
+    ["제2수도원 공격!", "다 띠 얼 씨우 따오 위앤!", "打第二修道院！", "dǎ dì èr xiū dào yuàn"],
+    ["적군 성소 공격!", "다 띠 팡 썽 쒀!", "打敵方聖所！", "dǎ dí fāng shèng suǒ"],
+    ["시계탑 먹자!", "나 쭝 러우!", "拿鐘樓！", "ná zhōng lóu"],
+    ["제단 가자!", "취 지 탄!", "去祭壇！", "qù jì tán"],
+    ["공격!", "진 꽁!", "進攻！", "jìn gōng"],
+    ["다 같이 공격!", "따 지아 이 치 다!", "大家一起打！", "dà jiā yì qǐ dǎ"],
+    ["지금 쳐!", "씨앤 짜이 다!", "現在打！", "xiàn zài dǎ"],
+    ["점령해!", "짠 링!", "佔領！", "zhàn lǐng"]
+  ]],
+  ["🛡 수비 · 후퇴", [
+    ["수비!", "팡 쏘우!", "防守！", "fáng shǒu"],
+    ["성소 수비 들어가!", "취 팡 쏘우 썽 쒀!", "去防守聖所！", "qù fáng shǒu shèng suǒ"],
+    ["수비 보내! (부대 넣어)", "파이 삥 팡 쏘우!", "派兵防守！", "pài bīng fáng shǒu"],
+    ["장비 바꿔!", "환 쫭 뻬이!", "換裝備！", "huàn zhuāng bèi"],
+    ["후퇴!", "처 퉤이!", "撤退！", "chè tuì"],
+    ["빠져! (돌아와)", "후이 라이!", "回來！", "huí lái"],
+    ["치료해!", "쯔 랴오!", "治療！", "zhì liáo"],
+    ["조심!", "씨아오 씬!", "小心！", "xiǎo xīn"]
+  ]],
+  ["🚩 집결", [
+    ["집결 열어!", "카이 지 지에!", "開集結！", "kāi jí jié"],
+    ["내 집결 들어와!", "진 워 더 지 지에!", "進我的集結！", "jìn wǒ de jí jié"],
+    ["집결 따라와! (참여해)", "껀 지 지에!", "跟集結！", "gēn jí jié"],
+    ["병사 5:0:5 로!", "삥 우 링 우!", "兵五零五！", "bīng wǔ líng wǔ"],
+    ["5분 집결", "우 펀 쭝 지 지에", "五分鐘集結", "wǔ fēn zhōng jí jié"],
+    ["1군(주력) 넣어!", "주 리 진 취!", "主力進去！", "zhǔ lì jìn qù"],
+    ["텔레포트(이사) 해!", "치앤 청!", "遷城！", "qiān chéng"],
+    ["거기로 텔레포트!", "치앤 청 꿔 취!", "遷城過去！", "qiān chéng guò qù"]
+  ]],
+  ["👀 상황 알리기", [
+    ["적 집결 온다!", "띠 런 지 지에 라이 러!", "敵人集結來了！", "dí rén jí jié lái le"],
+    ["적 주력 보인다!", "칸 따오 띠 팡 주 리!", "看到敵方主力！", "kàn dào dí fāng zhǔ lì"],
+    ["성소 맞고 있다!", "썽 쒀 뻬이 다!", "聖所被打！", "shèng suǒ bèi dǎ"],
+    ["비어 있다!", "콩 더!", "空的！", "kōng de"],
+    ["점령했다!", "짠 링 러!", "佔領了！", "zhàn lǐng le"],
+    ["뺏겼다!", "뻬이 치앙 러!", "被搶了！", "bèi qiǎng le"],
+    ["정찰해 줘!", "쩐 차 이 씨아!", "偵查一下！", "zhēn chá yí xià"],
+    ["땅굴 열렸다!", "띠 따오 카이 러!", "地道開了！", "dì dào kāi le"],
+    ["15분!", "쓰 우 펀 쭝!", "十五分鐘！", "shí wǔ fēn zhōng"]
+  ]],
+  ["🎒 회수 · 채집", [
+    ["보급 주워! (전리품)", "지앤 뿌 지!", "撿補給！", "jiǎn bǔ jǐ"],
+    ["회수조 출발!", "후이 써우 쭈 추 파!", "回收組出發！", "huí shōu zǔ chū fā"],
+    ["채집조 땅굴로!", "차이 지 쭈 취 띠 따오!", "採集組去地道！", "cǎi jí zǔ qù dì dào"],
+    ["제자리로 돌아와!", "후이 따오 웬 웨이!", "回到原位！", "huí dào yuán wèi"]
+  ]],
+  ["💬 짧은 말", [
+    ["기다려 · 잠깐", "덩 이 씨아", "等一下", "děng yí xià"],
+    ["빨리!", "콰이!", "快！", "kuài"],
+    ["지금!", "씨앤 짜이!", "現在！", "xiàn zài"],
+    ["좋아 · 오케이", "하오!", "好！", "hǎo"],
+    ["잘했어!", "하오 빵!", "好棒！", "hǎo bàng"],
+    ["대박! 최고!", "짠!", "讚！", "zàn"],
+    ["고마워", "씨에 씨에", "謝謝", "xiè xie"],
+    ["알았어?", "쯔 따오 러 마?", "知道了嗎？", "zhī dào le ma"],
+    ["알았어", "쯔 따오 러", "知道了", "zhī dào le"],
+    ["다시!", "짜이 이 츠!", "再一次！", "zài yí cì"],
+    ["힘내!", "지아 요우!", "加油！", "jiā yóu"]
+  ]]
 ];
-let L = "ko";
-try { L = localStorage.getItem("code_l") || (navigator.language.startsWith("zh") ? "zh" : navigator.language.startsWith("ko") ? "ko" : "en"); } catch (e) {}
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
-function draw() {
-  const h = H[L];
-  document.documentElement.lang = L === "zh" ? "zh-Hant" : L;
-  document.getElementById("t").textContent = h.t;
-  document.getElementById("lead").textContent = h.lead;
-  document.getElementById("lang").innerHTML = [["ko", "한국어"], ["zh", "中文"], ["en", "EN"]].map(([k, v]) => '<button data-l="' + k + '"' + (k === L ? ' class="on"' : '') + '>' + v + '</button>').join("");
-  const card = x => '<div class="c ' + (x.cls || "") + '"><div class="w">' + esc(x.w) + '</div><div class="r">' + esc(x.r) + '</div><div class="m">' + esc(x[L]) + '</div></div>';
-  let b = "";
-  for (const k of ["place", "side", "act", "sit"]) b += '<h2>' + h[k] + '</h2><div class="grid">' + D[k].map(card).join("") + '</div>';
-  b += '<h2>' + h.ex + '</h2><div class="ex">' + EX.map(([w, m]) => '<div><b>' + esc(w) + '</b><span>' + esc(m[L]) + '</span></div>').join("") + '</div><div class="rule">' + h.rule + '</div>';
-  document.getElementById("body").innerHTML = b;
+function draw(q) {
+  q = (q || "").trim().toLowerCase();
+  let b = "", nav = "", n = 0;
+  D.forEach(([h, rows], i) => {
+    const rs = rows.filter(r => !q || r.join(" ").toLowerCase().includes(q));
+    if (!rs.length) return;
+    n += rs.length;
+    nav += '<a href="#s' + i + '">' + esc(h) + '</a>';
+    b += '<h2 id="s' + i + '">' + esc(h) + '</h2><div class="grid">' + rs.map(r => '<div class="c" data-z="' + esc(r[2]) + '"><div class="tx"><div class="ko">' + esc(r[0]) + '</div><div class="say">' + esc(r[1]) + '</div><div class="zh">' + esc(r[2]) + '</div><div class="py">' + esc(r[3]) + '</div></div><div class="sp">🔊</div></div>').join("") + '</div>';
+  });
+  if (!q) b += '<h2>📌 말하는 요령</h2><div class="tip">· 문장 = <b>동작</b> + <b>장소</b>. 「취(去)」 = 가자, 「다(打)」 = 공격, 「팡 쏘우(防守)」 = 수비.<br>· 번호는 장소 앞에: 「띠 얼(第二) + 씨우 따오 위앤(修道院)」 = 제2수도원.<br>· 적군 · 아군은 장소 앞에: 「띠 팡(敵方) 썽 쒀」 = 적군 성소, 「워 팡(我方) 썽 쒀」 = 아군 성소.<br>· 발음이 어려우면 카드를 눌러 들어 보고 따라 한다. 채팅에는 중국어 글자를 붙여 넣는다.</div>';
+  document.getElementById("nav").innerHTML = nav;
+  document.getElementById("body").innerHTML = b || '<div class="empty">—</div>';
 }
-document.getElementById("lang").onclick = e => { const b = e.target.closest("button"); if (!b) return; L = b.dataset.l; try { localStorage.setItem("code_l", L); } catch (x) {} draw(); };
+// 🔊 대만 발음(브라우저 무료 음성 zh-TW) · 누르면 중국어 글자도 복사
+let VO = null;
+const pickVoice = () => { const vs = speechSynthesis.getVoices(); VO = vs.find(v => /zh[-_]TW/i.test(v.lang)) || vs.find(v => /zh/i.test(v.lang)) || null; };
+if ("speechSynthesis" in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+document.getElementById("body").addEventListener("click", e => {
+  const c = e.target.closest(".c"); if (!c) return;
+  document.querySelectorAll(".c.on").forEach(x => x.classList.remove("on")); c.classList.add("on");
+  const z = c.dataset.z.replace(/ · /g, "，");
+  if ("speechSynthesis" in window) { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(z); u.lang = "zh-TW"; if (VO) u.voice = VO; u.rate = .85; speechSynthesis.speak(u); }
+  try { navigator.clipboard.writeText(c.dataset.z); } catch (x) {}
+});
+document.getElementById("find").addEventListener("input", e => draw(e.target.value));
 async function sha(t) { const d = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(d)].map(x => x.toString(16).padStart(2, "0")).join(""); }
-function open_() { document.getElementById("gate").hidden = true; document.getElementById("gate").style.display = "none"; document.getElementById("app").hidden = false; draw(); }
+function open_() { document.getElementById("gate").style.display = "none"; document.getElementById("app").hidden = false; draw(""); }
 document.getElementById("gf").onsubmit = async e => {
   e.preventDefault();
-  if (await sha(document.getElementById("pw").value.trim()) === HASH) { try { sessionStorage.setItem("code_ok", "1"); } catch (x) {} open_(); }
+  if (await sha(document.getElementById("pw").value.trim()) === FULL) { try { sessionStorage.setItem("code_ok", "1"); } catch (x) {} open_(); }
   else document.getElementById("err").textContent = "✕";
 };
 try { if (sessionStorage.getItem("code_ok") === "1") open_(); } catch (e) {}
