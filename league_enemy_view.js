@@ -26,17 +26,17 @@
       sum: "한눈에", all: "{0} 전원", top: "{0} 시련 상위 30", ours: "우리 참전 30", cnt: "인원", tg8: "TG8", avg: "시련 평균", tot: "시련 합계", pw: "전투력 합계", top3: "시련 3000 넘는 사람",
       bk: "시련 구간별 인원", band: "시련 구간", none: "0(기록 없음)", tgd: "{0} TG 분포",
       list: "{0} 연맹원", byM: "시련 순", byP: "펫 전투력 순", byA: "거장 전투력 순", byW: "전투력 순",
-      c: ["#", "이름", "시련", "TG", "전투력", "펫 전투력", "거장 전투력"], ol: "우리 참전 30 — 비교", miss: "자료 없음", nm: "명"},
+      c: ["#", "이름", "시련", "TG", "전투력", "펫 전투력", "거장 전투력"], ol: "우리 참전 30 — 비교", miss: "자료 없음", nm: "명", rg: "순위 구간별 시련 비교", rgd: "시련 순으로 줄 세워 같은 순위끼리 견준다({0} 시련 상위 30 vs 우리 참전 30). 차이 + = {0} 쪽이 높음(빨강), − = 우리 쪽이 높음(초록).", rk: "시련 순위", gap: "차이", span: "범위", th: "위", one: "▸ 1:1 순위 비교(펼치기)"},
     zh: {h: "🛡 敵軍情報 — {0} 伺服器 {1}", d: "資料：{0} · {1} 更新。試煉 = 神秘試煉分數 · TG8 = 城鎮最高階段。寵物 · 大師戰力只顯示該伺服器前 100 名（— = 100 名外）。",
       sum: "一覽", all: "{0} 全員", top: "{0} 試煉前 30", ours: "我方參戰 30", cnt: "人數", tg8: "TG8", avg: "試煉平均", tot: "試煉合計", pw: "戰力合計", top3: "試煉 3000 以上",
       bk: "試煉區間人數", band: "試煉區間", none: "0（無紀錄）", tgd: "{0} TG 分布",
       list: "{0} 成員", byM: "依試煉", byP: "依寵物戰力", byA: "依大師戰力", byW: "依戰力",
-      c: ["#", "名字", "試煉", "TG", "戰力", "寵物戰力", "大師戰力"], ol: "我方參戰 30 — 比較", miss: "無資料", nm: "人"},
+      c: ["#", "名字", "試煉", "TG", "戰力", "寵物戰力", "大師戰力"], ol: "我方參戰 30 — 比較", miss: "無資料", nm: "人", rg: "試煉排名區間比較", rgd: "依試煉排序，同名次互相比較（{0} 試煉前 30 vs 我方參戰 30）。差距 + = {0} 較高（紅），− = 我方較高（綠）。", rk: "試煉名次", gap: "差距", span: "範圍", th: " 名", one: "▸ 1:1 名次比較（展開）"},
     en: {h: "🛡 Enemy intel — K{0} {1}", d: "Source: {0} · updated {1}. Trial = Mystic Trial score · TG8 = top Town Center tier. Pet and Master power show only for the kingdom's top 100 (— = outside).",
       sum: "Overview", all: "{0} all", top: "{0} top 30 by trial", ours: "Our 30 fighters", cnt: "Players", tg8: "TG8", avg: "Trial avg", tot: "Trial total", pw: "Total power", top3: "Trial 3000+",
       bk: "Players by trial band", band: "Trial band", none: "0 (no record)", tgd: "{0} TG spread",
       list: "{0} members", byM: "By trial", byP: "By pet power", byA: "By master power", byW: "By power",
-      c: ["#", "Name", "Trial", "TG", "Power", "Pet power", "Master power"], ol: "Our 30 fighters — compare", miss: "no data", nm: ""}
+      c: ["#", "Name", "Trial", "TG", "Power", "Pet power", "Master power"], ol: "Our 30 fighters — compare", miss: "no data", nm: "", rg: "Trial by rank group", rgd: "Both sides sorted by trial, same ranks compared ({0} top 30 vs our 30). Gap + = {0} higher (red), − = we are higher (green).", rk: "Trial rank", gap: "Gap", span: "Range", th: "", one: "▸ 1:1 rank comparison (expand)"}
   };
   const CUR = () => (typeof LANG !== "undefined" ? LANG : "ko");
   const L = () => { const l = CUR(); return T[l === "ko" ? "ko" : l === "zh" ? "zh" : "en"]; };
@@ -61,6 +61,16 @@
     const row = (k, g, bold) => '<tr><td class="nm">' + k + '</td>' + S.map((s, i) => '<td' + (bold && i ? ' class="b"' : '') + '>' + g(s) + '</td>').join("") + '</tr>';
     h += row(t.cnt, s => s.n + t.nm) + row(t.tg8, s => s.tg8 + t.nm, true) + row(t.avg, s => num(s.avg), true) + row(t.tot, s => num(s.tot)) + row(t.top3, s => s.t3 + t.nm, true) + row(t.pw, s => big(s.pw));
     h += '</table></div></div>';
+    // 순위 구간별 시련 비교(이박사님 11-15): 시련 순 1~6 · 7~12 … 25~30 끼리 평균 · 범위 · 차이, 아래 1:1
+    const os = ours.slice().sort((a, b) => b.mt - a.mt), gs = [[0, 6], [6, 12], [12, 18], [18, 24], [24, 30]];
+    const avgOf = rows => { const v = rows.filter(x => x.mt); return v.length ? Math.round(v.reduce((a, x) => a + x.mt, 0) / v.length) : 0; };
+    const rng = rows => { const v = rows.filter(x => x.mt).map(x => x.mt); return v.length ? num(Math.min(...v)) + '–' + num(Math.max(...v)) : '—'; };
+    const dif = d => '<td class="b" style="color:' + (d > 0 ? '#ff7b5c' : d < 0 ? '#6fd08c' : '#9fb59a') + '">' + (d > 0 ? '+' : '') + num(d) + '</td>';
+    h += '<div class="le"><h3>' + t.rg + '</h3><div class="d">' + esc(f(t.rgd, D.tag)) + '</div><div class="lescroll"><table><tr><th class="nm">' + t.rk + '</th><th>' + esc(D.tag) + ' ' + t.avg + '</th><th>' + t.ours + ' ' + t.avg + '</th><th>' + t.gap + '</th><th>' + esc(D.tag) + ' ' + t.span + '</th><th>' + t.ours + ' ' + t.span + '</th></tr>';
+    gs.forEach(([a, b]) => { const A = top.slice(a, b), B = os.slice(a, b), x = avgOf(A), y = avgOf(B); h += '<tr><td class="nm">' + (a + 1) + '~' + b + t.th + '</td><td class="b">' + num(x) + '</td><td class="b">' + num(y) + '</td>' + dif(x - y) + '<td>' + rng(A) + '</td><td>' + rng(B) + '</td></tr>'; });
+    h += '</table></div><details style="margin-top:10px"><summary style="cursor:pointer;color:#9fb59a;font-size:13px">' + t.one + '</summary><div class="lescroll" style="margin-top:8px"><table><tr><th>#</th><th class="nm">' + esc(D.tag) + '</th><th>' + t.c[2] + '</th><th class="nm">' + t.ours + '</th><th>' + t.c[2] + '</th><th>' + t.gap + '</th></tr>';
+    top.forEach((x, i) => { const y = os[i] || {n: "—", mt: 0}; h += '<tr><td>' + (i + 1) + '</td><td class="nm">' + esc(x.n) + '</td><td class="b">' + num(x.mt) + '</td><td class="nm">' + esc(y.n) + (y.miss ? ' <span class="rk">' + t.miss + '</span>' : '') + '</td><td class="b">' + num(y.mt) + '</td>' + (y.miss ? '<td>—</td>' : dif(x.mt - y.mt)) + '</tr>'; });
+    h += '</table></div></details></div>';
     // 구간
     const cnt = rows => { const c = {}; rows.forEach(x => { const b = band(x.mt); c[b[0]] = (c[b[0]] || 0) + 1; }); return c; };
     const C = [cnt(en), cnt(top), cnt(ours)], mx = Math.max(1, ...BK.map(b => Math.max(C[1][b[0]] || 0, C[2][b[0]] || 0)));
