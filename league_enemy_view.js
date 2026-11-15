@@ -50,6 +50,54 @@
   const stat = rows => { const mt = rows.filter(x => x.mt).map(x => x.mt); return {n: rows.length, tg8: rows.filter(x => x.tc === 70).length, avg: mt.length ? Math.round(mt.reduce((a, b) => a + b, 0) / mt.length) : 0, tot: mt.reduce((a, b) => a + b, 0), pw: rows.reduce((a, x) => a + (x.pw || 0), 0), t3: rows.filter(x => x.mt >= 3000).length}; };
   let SORT = "mt";
 
+  // 상대 서버 전체(이박사님 11-15): 연맹 수 · 상위 연맹 표 · 도시 배치 지도
+  const COL = ["#e03131", "#f08c00", "#1c7ed6", "#37b24d", "#ae3ec9", "#0ca678", "#f783ac", "#fab005", "#74c0fc", "#a9e34b", "#ff922b", "#9775fa", "#66d9e8", "#ced4da", "#e599f7"];
+  const S2 = {
+    ko: {h: "🗺 {0}서버 전체", d: "영주 {0}명 · 지도 위 활동 {1}명 · 연맹 {2}개 · 서버 전투력 {3}. 위 15개 연맹은 연맹원 전원을 받아 TG8 · 시련 · 도시 위치를 셌다.",
+      c: ["#", "연맹", "인원", "전투력", "TG8", "시련 3000+", "시련 2500+", "상위 30 시련 평균", "맹주"], rest: "16~100위 연맹 {0}개 · 전투력 합 {1} · 인원 {2}명",
+      map: "도시 배치(위 15개 연맹 · 점 하나 = 도시 하나, 큰 점 = TG8, 가운데 ♛ = 왕좌)", note: "좌표는 MightPulse 가 마지막으로 본 위치라 이사한 사람은 옛 자리일 수 있다."},
+    zh: {h: "🗺 {0} 伺服器全覽", d: "總督 {0} 人 · 地圖上活躍 {1} 人 · 聯盟 {2} 個 · 伺服器戰力 {3}。前 15 個聯盟已取得全員，統計 TG8 · 試煉 · 城市位置。",
+      c: ["#", "聯盟", "人數", "戰力", "TG8", "試煉 3000+", "試煉 2500+", "前 30 試煉平均", "盟主"], rest: "第 16~100 名聯盟 {0} 個 · 戰力合計 {1} · 人數 {2}",
+      map: "城市分布（前 15 個聯盟 · 一點 = 一座城，大點 = TG8，中央 ♛ = 王座）", note: "座標是 MightPulse 最後看到的位置，搬家的人可能還在舊位置。"},
+    en: {h: "🗺 Kingdom {0} overview", d: "{0} governors · {1} active on the map · {2} alliances · kingdom power {3}. The top 15 alliances were loaded in full for TG8, trial and city positions.",
+      c: ["#", "Alliance", "Members", "Power", "TG8", "Trial 3000+", "Trial 2500+", "Top-30 trial avg", "Leader"], rest: "Alliances #16–100: {0} · power {1} · {2} members",
+      map: "City layout (top 15 alliances · one dot = one city, big dot = TG8, ♛ = throne)", note: "Positions are where MightPulse last saw each city; recent movers may show their old spot."}
+  };
+  function srvHtml(D, t) {
+    const s = S2[CUR() === "ko" ? "ko" : CUR() === "zh" ? "zh" : "en"], V = D.srv, A = V.al, full = A.filter(a => a.xy);
+    let h = '<div class="le"><h3>' + esc(f(s.h, D.ek)) + '</h3><div class="d">' + esc(f(s.d, num(V.pc), num(V.act), num(V.ac), big(V.pw))) + '</div>';
+    h += '<div class="lescroll"><table><tr>' + s.c.map((c, i) => '<th' + (i === 1 || i === 8 ? ' class="nm"' : '') + '>' + c + '</th>').join("") + '</tr>';
+    full.forEach((a, i) => {
+      const me = a.t === D.tag;
+      h += '<tr' + (me ? ' style="background:rgba(201,162,39,.12)"' : '') + '><td><span class="bar" style="width:10px;height:10px;border-radius:50%;background:' + COL[i] + '"></span> ' + (i + 1) + '</td><td class="nm"><b>' + esc(a.t) + '</b> <span class="rk">' + esc(a.nm) + '</span></td><td>' + a.c + '</td><td class="b">' + big(a.pw) + '</td><td' + (a.tg8 ? ' class="tg8"' : '') + '>' + a.tg8 + '</td><td>' + (a.m3 || '—') + '</td><td>' + (a.m25 || '—') + '</td><td>' + (a.m30 ? num(a.m30) : '—') + '</td><td class="nm">' + esc(a.ld) + '</td></tr>';
+    });
+    const rest = A.slice(full.length);
+    h += '</table></div><div class="d" style="margin-top:8px">' + esc(f(s.rest, rest.length, big(rest.reduce((x, a) => x + a.pw, 0)), num(rest.reduce((x, a) => x + a.c, 0)))) + '</div>';
+    // 지도(맵 0~1200)
+    const W = 1200;
+    let g = '<rect x="0" y="0" width="' + W + '" height="' + W + '" fill="#0a120d" stroke="#2c4232"/>';
+    for (let i = 200; i < W; i += 200) g += '<line x1="' + i + '" y1="0" x2="' + i + '" y2="' + W + '" stroke="#16241a"/><line x1="0" y1="' + i + '" x2="' + W + '" y2="' + i + '" stroke="#16241a"/>';
+    g += '<text x="600" y="616" text-anchor="middle" font-size="44" fill="#e9d48a">♛</text>';
+    full.slice().reverse().forEach(a => { const c = COL[full.indexOf(a)]; a.xy.forEach(p => { g += '<circle cx="' + p[0] + '" cy="' + (W - p[1]) + '" r="' + (p[3] === 70 ? 9 : 5) + '" fill="' + c + '" fill-opacity=".85" stroke="#0a120d" stroke-width="1.5"/>'; }); });
+    // 연맹 무리(가운데값) — 화면은 무리들과 왕좌가 다 들어오게 확대, 이름표는 겹치면 아래로 비킨다
+    const mid = full.map(a => { const xs = a.xy.map(p => p[0]).sort((x, y) => x - y), ys = a.xy.map(p => p[1]).sort((x, y) => x - y); return xs.length ? [xs[xs.length >> 1], W - ys[ys.length >> 1]] : null; });
+    const pts = mid.filter(Boolean).concat([[600, 600]]);
+    let x0 = Math.min(...pts.map(p => p[0])) - 90, x1 = Math.max(...pts.map(p => p[0])) + 90, y0 = Math.min(...pts.map(p => p[1])) - 90, y1 = Math.max(...pts.map(p => p[1])) + 90;
+    const side = Math.max(x1 - x0, y1 - y0, 300), cx0 = (x0 + x1) / 2, cy0 = (y0 + y1) / 2;
+    x0 = Math.max(0, Math.min(W - side, cx0 - side / 2)); y0 = Math.max(0, Math.min(W - side, cy0 - side / 2));
+    const k = side / 600, used = [];
+    mid.forEach((m, i) => {
+      if (!m) return;
+      const fs = (i < 5 ? 30 : 21) * k, w = (full[i].t.length * 0.62 + 0.4) * fs;
+      let y = m[1] - 12 * k;
+      for (let n = 0; n < 12 && used.some(u => Math.abs(u[0] - m[0]) < (u[2] + w) / 2 && Math.abs(u[1] - y) < fs * 0.95); n++) y += fs;
+      used.push([m[0], y, w]);
+      g += '<text x="' + m[0] + '" y="' + y.toFixed(0) + '" text-anchor="middle" font-size="' + fs.toFixed(0) + '" font-weight="900" fill="' + COL[i] + '" stroke="#000" stroke-width="' + (5 * k).toFixed(1) + '" paint-order="stroke">' + esc(full[i].t) + '</text>';
+    });
+    h += '<div class="d" style="margin-top:12px">' + esc(s.map) + '</div><svg viewBox="' + x0.toFixed(0) + ' ' + y0.toFixed(0) + ' ' + side.toFixed(0) + ' ' + side.toFixed(0) + '" style="width:100%;max-width:640px;display:block;margin:0 auto;border-radius:10px">' + g + '</svg><div class="d" style="margin-top:6px">' + esc(s.note) + '</div></div>';
+    return h;
+  }
+
   window.renderLEnemy = function () {
     const box = document.getElementById("vLEnemy"), D = window.LEAGUE_ENEMY, t = L();
     if (!box || !D) return;
@@ -61,6 +109,7 @@
     const row = (k, g, bold) => '<tr><td class="nm">' + k + '</td>' + S.map((s, i) => '<td' + (bold && i ? ' class="b"' : '') + '>' + g(s) + '</td>').join("") + '</tr>';
     h += row(t.cnt, s => s.n + t.nm) + row(t.tg8, s => s.tg8 + t.nm, true) + row(t.avg, s => num(s.avg), true) + row(t.tot, s => num(s.tot)) + row(t.top3, s => s.t3 + t.nm, true) + row(t.pw, s => big(s.pw));
     h += '</table></div></div>';
+    if (D.srv) h += srvHtml(D, t);
     // 순위 구간별 시련 비교(이박사님 11-15): 시련 순 1~6 · 7~12 … 25~30 끼리 평균 · 범위 · 차이, 아래 1:1
     const os = ours.slice().sort((a, b) => b.mt - a.mt), gs = [[0, 6], [6, 12], [12, 18], [18, 24], [24, 30]];
     const avgOf = rows => { const v = rows.filter(x => x.mt); return v.length ? Math.round(v.reduce((a, x) => a + x.mt, 0) / v.length) : 0; };
