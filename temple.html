@@ -362,7 +362,7 @@ async function together() {
     let names = [];
     const show = () => { $("live").innerHTML = t("live")(here, names.length ? " (" + names.map(esc).join(", ") + ")" : "", all.toLocaleString(), done); };
     DB.ref("pray/here").on("value", s => {
-      const v = Object.fromEntries(Object.entries(s.val() || {}).filter(([k, x]) => x && x.n)); here = Object.keys(v).length;   // 이름 없는 깨진 표시는 안 센다 names = [...new Set(Object.values(v).map(x => (x && x.n) || "").filter(Boolean))]; show();
+      const v = Object.fromEntries(Object.entries(s.val() || {}).filter(([k, x]) => x && x.n)); here = Object.keys(v).length;   // 이름 없는 깨진 표시는 안 센다 names = [...new Set(Object.values(v).map(x => (x && x.n) || "").filter(Boolean))]; here = names.length; show();   // 같은 사람이 폰 · PC 둘로 들어와도 한 명
       // 다른 사람: 새로 오면 걸어 들어오고, 절하면 같이 절하는 모습(소리는 내 것만)
       for (const [k, x] of Object.entries(v)) {
         if (k === uid || !x) continue;
