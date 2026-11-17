@@ -214,7 +214,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-18b</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-18c</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -1262,7 +1262,8 @@ async function toSpeaker() {
 }
 function applyVol() {
   const v = volNow(), els = [...document.querySelectorAll('audio[id^="va_"]')];
-  if (v <= 1) { els.forEach(unboost); return; }
+  // 11-18: 아이폰 사파리는 상대(원격) 소리를 웹 오디오로 돌리면 소리가 아예 안 난다 — 아이폰은 키우기 없이 칸 그대로 튼다
+  if (v <= 1 || IOS) { els.forEach(unboost); return; }
   try {
     if (!BOOST) {
       const C = window.AudioContext || window.webkitAudioContext, ctx = new C(), g = ctx.createGain(), cp = ctx.createDynamicsCompressor();
