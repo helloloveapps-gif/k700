@@ -214,7 +214,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-18f</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-18g</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -1254,8 +1254,8 @@ function meter() {
 // ×1 보다 크면 같은 소리를 웹 오디오로 돌려 키우고(찢어지지 않게 압축기) 칸 자체는 묵음. 오디오가 막혀 있으면 원래대로 칸에서 낸다
 const VOLS = [1, 1.5, 2, 3];
 const ANDROID = /Android/i.test(navigator.userAgent);
-// 11-18 안드로이드 크롬은 메아리 지우기(echoCancellation)를 켜면 「통화 모드」가 되어 소리가 수화기로만 나간다 → 주소에 ?spk 를 붙이면 끄고 스피커로(시험)
-const SPK_MODE = () => new URLSearchParams(location.search).has("spk");
+// 11-18 안드로이드 크롬은 메아리 지우기(echoCancellation)를 켜면 「통화 모드」가 되어 소리가 수화기로만 나간다 → 안드로이드는 기본으로 끄고 스피커로(주소에 ?nospk 면 예전처럼)
+const SPK_MODE = () => { const q = new URLSearchParams(location.search); return q.has("spk") || (ANDROID && !q.has("nospk")); };
 let BOOST = null;
 const volNow = () => { const v = +store.get("chat_vol"); return VOLS.includes(v) ? v : 1; };
 function unboost(a) { if (a._bs) { try { a._bs.disconnect(); } catch (e) {} a._bs = null; a._bsId = ""; } a.muted = false; a.volume = 1; }
