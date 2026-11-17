@@ -41,7 +41,7 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
 </div>
 
 <div id="entry" hidden style="max-width:520px;margin:0 auto;padding:12px 16px 24px;text-align:center">
-  <h1>일주문</h1>
+  <h1 style="margin-top:18px">일주문 · 방명록</h1>
   <div class="sub">절에 오신 것을 환영합니다 · <span id="who2"></span></div>
   <svg viewBox="0 0 300 170" style="width:100%;max-height:30vh">
     <rect x="0" y="140" width="300" height="30" fill="#6b4a2e"/>
@@ -57,7 +57,7 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
     <button class="btn" id="sign" style="width:100%">🖋 방명록에 이름 남기기</button>
     <div id="guests" style="margin-top:10px;font-size:14px;line-height:1.7;max-height:34vh;overflow:auto"></div>
   </div>
-  <button class="btn" id="enter" style="font-size:20px;padding:12px 30px">🙏 법당으로 들어가기</button>
+
 </div>
 
 <div id="app" hidden>
@@ -120,6 +120,7 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
       <line x1="0" y1="246" x2="300" y2="246" stroke="#1a120c" stroke-width="3"/>
       <ellipse cx="150" cy="292" rx="44" ry="10" fill="#8e2a1c" stroke="#1a120c" stroke-width="2"/>
       <!-- 절하는 사람(뒷모습) — 그림 4장을 갈아 끼운다 -->
+      <g id="person">
       <g id="p0" stroke="#1a120c" stroke-width="2.5" fill="#f3e6c8">
         <rect x="134" y="226" width="32" height="62" rx="8"/><circle cx="150" cy="214" r="13" fill="#2a1d14"/>
         <path d="M134 238 l-8 22 M166 238 l8 22" fill="none"/>
@@ -136,6 +137,7 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
       <g id="p3" style="display:none" stroke="#1a120c" stroke-width="2.5" fill="#f3e6c8">
         <ellipse cx="150" cy="280" rx="32" ry="12"/><circle cx="150" cy="270" r="11" fill="#2a1d14"/>
         <path d="M118 278 q-6 -10 2 -12 l-6 -4 M182 278 q6 -10 -2 -12 l6 -4" fill="none"/>
+      </g>
       </g>
       <!-- 염주 108알 -->
       <g id="beads"></g>
@@ -265,8 +267,24 @@ async function wish() {
 }
 $("wishGo").onclick = wish; $("wish").onkeydown = e => { if (e.key === "Enter") wish(); };
 // 비번 · 아이디 → 일주문(방명록) → 법당
-function open() { $("gate").remove(); $("entry").hidden = false; $("who2").textContent = NICK + " 님"; together(); }
-$("enter").onclick = () => { $("entry").hidden = true; $("app").hidden = false; $("who").textContent = NICK + " 님"; draw(); scrollTo(0, 0); };
+// 들어오면 법당이 바로 · 일주문(방명록)은 아래 · 사람이 앞으로 걸어가 방석에 서면 절을 저절로 시작
+function open() {
+  $("gate").remove(); $("app").after($("entry")); $("entry").hidden = false; $("app").hidden = false;
+  $("who").textContent = $("who2").textContent = NICK + " 님"; draw(); together(); walkIn();
+}
+async function walkIn() {
+  const P = $("person"); busy = true; pose(0); $("msg").textContent = "법당 안으로 걸어 들어갑니다…";
+  // 화면 앞쪽(크게)에서 불상 쪽(작게)으로 — 뚝뚝 끊어 걷기(한 걸음마다 좌우로 살짝)
+  const N = 10;
+  for (let i = 0; i <= N; i++) {
+    const k = i / N, y = 90 * (1 - k), sc = 1.35 - .35 * k, x = i < N ? (i % 2 ? 3 : -3) : 0;
+    P.setAttribute("transform", `translate(${150 + x} ${288 + y}) scale(${sc}) translate(-150 -288)`);
+    if (i < N) { moktakSoft(); await wait(260); }
+  }
+  P.removeAttribute("transform"); busy = false;
+  if (n < 108) { $("msg").textContent = "방석 앞에 섰습니다 — 절을 시작합니다"; await wait(700); auto = setInterval(bow, 2400); bow(); $("auto").textContent = "자동 멈춤"; }
+}
+function moktakSoft() { if (!sound) return; try { const c = ac(), t = c.currentTime, o = c.createOscillator(), g = c.createGain(); o.frequency.value = 140; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.15, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + .08); o.connect(g).connect(c.destination); o.start(t); o.stop(t + .1); } catch (e) {} }
 // 방명록: 누르면 닉네임과 시각이 남는다(모두가 본다)
 $("sign").onclick = async () => {
   if (!DB) { $("guests").innerHTML = '<div style="color:var(--muted)">방명록에 연결하지 못했습니다(잠시 뒤 다시)</div>'; return; }
