@@ -240,7 +240,7 @@ async function trTo(text) {
 }
 const today = () => { const d = new Date(); return d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"); };
 let n = 0, busy = false, auto = null, sound = store.get("pray_snd") !== "0";
-const saved = (store.get("pray_day") || "").split(":"); if (saved[0] === today()) n = +saved[1] || 0;
+// 11-18: 들어올 때마다 0 배부터(이어 세지 않음) · 그날 모두 한 절은 방명록에 더해 남는다
 function draw() {
   $("cnt").innerHTML = n <= 108 ? n + "<small> / 108</small>" : n + "<small> 🏅</small>";
   beads.forEach((b, i) => b.setAttribute("fill", i < n ? "#d9a441" : "#3a2a1c"));
@@ -335,7 +335,7 @@ $("reset").onclick = () => { if (!confirm(t("resetQ"))) return; stopAuto(); n = 
 
 // 함께: 지금 법당에 있는 사람 · 오늘 모두 올린 절(채팅과 같은 Firebase). 안 되면 혼자 세기만
 let DB = null, uid = "";
-async function sendBow() { if (!DB) return; try { DB.ref("pray/here/" + uid).update({n: NICK.slice(0, 20), s: AV.me.slot, c: n, b: firebase.database.ServerValue.TIMESTAMP}); await DB.ref("pray/day/" + today()).transaction(v => (v || 0) + 1); bookTouch(); if (n >= 108 && store.get("pray_fin") !== today()) { store.set("pray_fin", today()); DB.ref("pray/done/" + today()).transaction(v => (v || 0) + 1); DB.ref("pray/fin/" + today() + "/" + uid).set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); } } catch (e) {} }
+async function sendBow() { if (!DB) return; try { DB.ref("pray/here/" + uid).update({n: NICK.slice(0, 20), s: AV.me.slot, c: n, b: firebase.database.ServerValue.TIMESTAMP}); await DB.ref("pray/day/" + today()).transaction(v => (v || 0) + 1); bookTouch(1); if (n >= 108 && store.get("pray_fin") !== today()) { store.set("pray_fin", today()); DB.ref("pray/done/" + today()).transaction(v => (v || 0) + 1); DB.ref("pray/fin/" + today() + "/" + uid).set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); } } catch (e) {} }
 async function together() {
   try {
     firebase.initializeApp({apiKey: "AIzaSyBYLf6m03K2-bJeuJuV9cf67cFRv_1czfU", authDomain: "chat1108-d4d5f.firebaseapp.com", databaseURL: "https://chat1108-d4d5f-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "chat1108-d4d5f"});
@@ -445,10 +445,10 @@ async function walkIn() {
 function moktakSoft() { if (!sound) return; try { const c = ac(), t = c.currentTime, o = c.createOscillator(), g = c.createGain(); o.frequency.value = 140; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.15, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + .08); o.connect(g).connect(c.destination); o.start(t); o.stop(t + .1); } catch (e) {} }
 // 방명록: 날짜마다 한 사람 한 줄(pray/book/날짜/닉네임) — 이름 남기기나 절하면 기록 · 절 수는 그날 가장 많이 한 수
 const bookKey = () => NICK.replace(/[.#$\[\]\/]/g, "_").slice(0, 20) || "_";
-function bookTouch() {
+function bookTouch(add) {   // add = 이번에 더할 절 수(들어올 때 · 이름 남기기는 0)
   if (!DB) return Promise.resolve();
-  const now = Date.now();
-  return DB.ref("pray/book/" + today() + "/" + bookKey()).transaction(v => v ? {n: NICK.slice(0, 20), t: v.t || now, c: Math.max(v.c || 0, n), f: v.f || (n >= 108 ? now : 0)} : {n: NICK.slice(0, 20), t: now, c: n, f: n >= 108 ? now : 0});
+  const now = Date.now(), k = add || 0, fin = n >= 108 ? now : 0;
+  return DB.ref("pray/book/" + today() + "/" + bookKey()).transaction(v => v ? {n: NICK.slice(0, 20), t: v.t || now, c: (v.c || 0) + k, f: v.f || fin} : {n: NICK.slice(0, 20), t: now, c: k, f: fin});
 }
 const BK = {ko: {p: "명", came: "옴", bows: "배", rec: "개의 기록"}, zh: {p: "人", came: "來過", bows: "拜", rec: " 筆紀錄"}, en: {p: " people", came: "came", bows: " bows", rec: " records"}};
 const bk = k => (BK[LANG] || BK.ko)[k];
