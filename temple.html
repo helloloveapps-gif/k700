@@ -335,14 +335,29 @@ $("reset").onclick = () => { if (!confirm(t("resetQ"))) return; stopAuto(); n = 
 
 // 함께: 지금 법당에 있는 사람 · 오늘 모두 올린 절(채팅과 같은 Firebase). 안 되면 혼자 세기만
 let DB = null, uid = "";
-async function sendBow() { if (!DB) return; try { DB.ref("pray/here/" + uid).update({c: n, b: firebase.database.ServerValue.TIMESTAMP}); await DB.ref("pray/day/" + today()).transaction(v => (v || 0) + 1); bookTouch(); if (n >= 108 && store.get("pray_fin") !== today()) { store.set("pray_fin", today()); DB.ref("pray/done/" + today()).transaction(v => (v || 0) + 1); DB.ref("pray/fin/" + today() + "/" + uid).set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); } } catch (e) {} }
+async function sendBow() { if (!DB) return; try { DB.ref("pray/here/" + uid).update({n: NICK.slice(0, 20), s: AV.me.slot, c: n, b: firebase.database.ServerValue.TIMESTAMP}); await DB.ref("pray/day/" + today()).transaction(v => (v || 0) + 1); bookTouch(); if (n >= 108 && store.get("pray_fin") !== today()) { store.set("pray_fin", today()); DB.ref("pray/done/" + today()).transaction(v => (v || 0) + 1); DB.ref("pray/fin/" + today() + "/" + uid).set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); } } catch (e) {} }
 async function together() {
   try {
     firebase.initializeApp({apiKey: "AIzaSyBYLf6m03K2-bJeuJuV9cf67cFRv_1czfU", authDomain: "chat1108-d4d5f.firebaseapp.com", databaseURL: "https://chat1108-d4d5f-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "chat1108-d4d5f"});
     await firebase.auth().signInAnonymously(); uid = firebase.auth().currentUser.uid;
     DB = firebase.database();
-    const me = DB.ref("pray/here/" + uid); await me.set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP, c: n, b: 0}); me.onDisconnect().remove();
-    getSeat(); bookTouch();   // 들어오면 방명록에 오늘 한 줄(있으면 그대로)
+    const me = DB.ref("pray/here/" + uid);
+    const reg = async () => { await me.onDisconnect().remove(); await me.set(Object.assign({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP, c: n, b: 0}, AV.me.slot != null ? {s: AV.me.slot} : {})); };
+    await reg();
+    getSeat().catch(() => { if (AV.me.slot == null) seated(ORDER[0]); }); bookTouch();
+    // 11-18 「내 캐릭터 안 나온다」: 폰이 잠깐 끊기면 서버가 내 표시 · 방석을 지운다 → 다시 붙으면 같은 자리로 다시 앉는다(뺏겼으면 빈자리)
+    let down = false;
+    DB.ref(".info/connected").on("value", async c => {
+      if (!c.val()) { down = true; return; }
+      if (!down) return; down = false;
+      try {
+        await reg();
+        if (AV.me.slot != null) {
+          const sr = DB.ref("pray/seat/" + AV.me.slot), r = await sr.transaction(v => (v === null || v === uid) ? uid : undefined);
+          if (r.committed && r.snapshot.val() === uid) sr.onDisconnect().remove(); else { AV.me.slot = null; layout(); getSeat(); }
+        }
+      } catch (e) {}
+    });   // 들어오면 방명록에 오늘 한 줄(있으면 그대로)
     let here = 0, all = 0, done = 0;
     let names = [];
     const show = () => { $("live").innerHTML = t("live")(here, names.length ? " (" + names.map(esc).join(", ") + ")" : "", all.toLocaleString(), done); };
