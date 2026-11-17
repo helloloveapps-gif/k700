@@ -214,7 +214,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-15b</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-18a</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -1026,7 +1026,7 @@ async function lkConnect(tk, att) {
   const redraw = () => drawVoice(V ? V.peers : {});
   room.on(L.RoomEvent.TrackSubscribed, (track, pub, part) => {
     if (track.kind !== "audio") return;
-    const el = track.attach(); el.id = "va_" + part.identity; el.setAttribute("playsinline", ""); document.body.appendChild(el); applyVol(); redraw();
+    const el = track.attach(); el.id = "va_" + part.identity; el.setAttribute("playsinline", ""); document.body.appendChild(el); applyVol(); toSpeaker(); redraw();
   });
   room.on(L.RoomEvent.TrackUnsubscribed, track => { track.detach().forEach(e => e.remove()); redraw(); });
   room.on(L.RoomEvent.ParticipantConnected, redraw);
@@ -1063,6 +1063,7 @@ async function joinVoice() {
   audioCtx();
   vBusy = true; const b = $("vbtn"); b.textContent = "⏳ " + t("vConn") + " · " + t("stepMic"); b.disabled = true;
   let gum;
+  speakerSession();
   try { gum = navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}}); } catch (e) { gum = Promise.reject(e); }
   try { await joinVoiceRun(gum); } finally { vBusy = false; b.disabled = false; drawVoice(V ? V.peers : vLast); }
 }
@@ -1118,7 +1119,7 @@ async function joinVoiceRun(gum) {
   const tkP = DIAG.has("mesh") ? Promise.resolve(null) : lkToken().catch(() => null);   // ?mesh 시험: 서버 중계 없이 예전 방식
   try { stream = await (gum || navigator.mediaDevices.getUserMedia({audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}})); }
   catch (e) { if (AUTO_JOIN) { AUTO_JOIN = false; store.set("chat_voice_on", ""); return; } alert(t("micNo")); return; }
-  AUTO_JOIN = false;
+  AUTO_JOIN = false; toSpeaker();
   vStep("stepSrv");
   tk = await within(tkP, 9000).catch(() => null);
   vStep("stepRelay");
@@ -1241,6 +1242,21 @@ const VOLS = [1, 1.5, 2, 3];
 let BOOST = null;
 const volNow = () => { const v = +store.get("chat_vol"); return VOLS.includes(v) ? v : 1; };
 function unboost(a) { if (a._bs) { try { a._bs.disconnect(); } catch (e) {} a._bs = null; a._bsId = ""; } a.muted = false; a.volume = 1; }
+// 스피커폰으로(이박사님 11-18 「스피커폰이 아니라 안 들려」): 마이크를 켜면 폰이 통화 모드라 귀 쪽 수화기로 나가는 일이 있다
+// 아이폰(사파리 17+) — 오디오 세션을 「재생+녹음」으로(사파리는 이때 스피커가 기본) · 안드로이드/PC — 출력 장치 중 스피커를 골라 거기로
+function speakerSession() { try { if (navigator.audioSession && navigator.audioSession.type !== "play-and-record") navigator.audioSession.type = "play-and-record"; } catch (e) {} }
+async function toSpeaker() {
+  speakerSession();
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+    const outs = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === "audiooutput");
+    const sp = outs.find(d => /speaker|스피커|扬声器|揚聲器|喇叭/i.test(d.label) && !/head|ear|수화|耳|bluetooth|블루투스/i.test(d.label));
+    if (!sp) return;
+    for (const a of document.querySelectorAll('audio[id^="va_"]')) if (a.setSinkId && a.sinkId !== sp.deviceId) await a.setSinkId(sp.deviceId).catch(() => {});
+    if (BOOST && BOOST.ctx.setSinkId) BOOST.ctx.setSinkId(sp.deviceId).catch(() => {});
+    if (V && V.lk && V.lk.switchActiveDevice) V.lk.switchActiveDevice("audiooutput", sp.deviceId).catch(() => {});
+  } catch (e) {}
+}
 function applyVol() {
   const v = volNow(), els = [...document.querySelectorAll('audio[id^="va_"]')];
   if (v <= 1) { els.forEach(unboost); return; }
