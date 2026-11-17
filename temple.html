@@ -117,11 +117,11 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
       <rect x="40" y="212" width="220" height="34" fill="#5b2a1a" stroke="#1a120c" stroke-width="2"/>
       <!-- 명패 -->
       <g stroke="#1a120c" stroke-width="2">
-        <rect x="64" y="213" width="70" height="31" rx="2" fill="#2b1a10"/><rect x="68" y="217" width="62" height="23" fill="#e9d9b0"/>
-        <rect x="166" y="213" width="70" height="31" rx="2" fill="#2b1a10"/><rect x="170" y="217" width="62" height="23" fill="#e9d9b0"/>
+        <rect x="52" y="212" width="84" height="33" rx="2" fill="#2b1a10"/><rect x="56" y="216" width="76" height="25" fill="#e9d9b0"/>
+        <rect x="164" y="212" width="84" height="33" rx="2" fill="#2b1a10"/><rect x="168" y="216" width="76" height="25" fill="#e9d9b0"/>
       </g>
-      <text x="99" y="234" text-anchor="middle" font-size="16" font-weight="800" fill="#1a120c">Robiin</text>
-      <text x="201" y="234" text-anchor="middle" font-size="16" font-weight="800" fill="#1a120c">Dokdo</text>
+      <text x="94" y="236" text-anchor="middle" font-size="21" font-weight="800" fill="#1a120c">Robiin</text>
+      <text x="206" y="236" text-anchor="middle" font-size="21" font-weight="800" fill="#1a120c">Dokdo</text>
       <!-- 촛불 -->
       <g stroke="#1a120c" stroke-width="1.5">
         <rect x="62" y="194" width="8" height="18" fill="#f3e6c8"/><path class="flame" d="M66 182 q-5 7 0 12 q5 -5 0 -12" fill="#f0b23a" style="transform-origin:66px 194px"/>
@@ -283,11 +283,11 @@ function mkAv(id, name, self) {
   setName(a, name, 0); return a;
 }
 const setName = (a, name, c) => { a.nm.textContent = name + (c >= 108 ? " 🏅" : ""); };
-const setPose = (a, k) => { a.ps.forEach((p, i) => p.style.display = i === k ? "" : "none"); a.nm.setAttribute("y", [193, 203, 209, 228, 246, 246][k]); };   // 이름표는 머리를 따라간다
+const setPose = (a, k) => { a.ps.forEach((p, i) => p.style.display = i === k ? "" : "none"); a.nm.setAttribute("y", [193, 203, 209, 228, 246, 246][k] - (a.slot % 2 ? 26 : 0)); };   // 옆 방석 이름표와 안 겹치게 홀수 자리는 위로   // 이름표는 머리를 따라간다
 function layout() {
   for (const a of Object.values(AV)) {
     if (a.slot == null) { a.g.style.display = "none"; continue; }
-    a.g.style.display = ""; a.g.setAttribute("transform", `translate(${MX(a.slot)} 318) scale(${SC}) translate(-150 -288)`);   // 방석 줄을 불단보다 아래로(이름표가 명패를 안 가림)
+    a.g.style.display = ""; setPose(a, a.ps.findIndex(p => p.style.display !== "none")); a.g.setAttribute("transform", `translate(${MX(a.slot)} 318) scale(${SC}) translate(-150 -288)`);   // 방석 줄을 불단보다 아래로(이름표가 명패를 안 가림)
   }
 }
 async function bowAnim(a, snd) {
