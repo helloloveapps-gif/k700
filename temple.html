@@ -34,14 +34,15 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
 <div id="gate">
   <div style="font-size:40px">🙏</div>
   <div>온라인 기도 · 들어가는 비밀번호</div>
-  <input id="pw" type="password" inputmode="text" autocomplete="off">
+  <input id="nick" maxlength="20" placeholder="아이디(이름)" autocomplete="off">
+  <input id="pw" type="password" inputmode="text" autocomplete="off" placeholder="비밀번호">
   <button id="go">들어가기</button>
   <div id="bad" style="color:#e66;min-height:20px"></div>
 </div>
 
 <div id="app" hidden>
   <h1>온라인 백팔배</h1>
-  <div class="sub">마음을 내려놓고, 한 번에 한 배씩</div>
+  <div class="sub">마음을 내려놓고, 한 번에 한 배씩 · <span id="who"></span></div>
   <div id="hall">
     <svg viewBox="0 0 300 315" aria-label="법당">
       <!-- 단청 띠 -->
@@ -78,6 +79,13 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
       </g>
       <!-- 불단 -->
       <rect x="40" y="212" width="220" height="34" fill="#5b2a1a" stroke="#1a120c" stroke-width="2"/>
+      <!-- 명패 -->
+      <g stroke="#1a120c" stroke-width="2">
+        <rect x="80" y="214" width="50" height="28" rx="2" fill="#2b1a10"/><rect x="84" y="218" width="42" height="20" fill="#e9d9b0"/>
+        <rect x="170" y="214" width="50" height="28" rx="2" fill="#2b1a10"/><rect x="174" y="218" width="42" height="20" fill="#e9d9b0"/>
+      </g>
+      <text x="105" y="232" text-anchor="middle" font-size="11" font-weight="700" fill="#1a120c">Robiin</text>
+      <text x="195" y="232" text-anchor="middle" font-size="11" font-weight="700" fill="#1a120c">Dokdo</text>
       <!-- 촛불 -->
       <g stroke="#1a120c" stroke-width="1.5">
         <rect x="62" y="194" width="8" height="18" fill="#f3e6c8"/><path class="flame" d="M66 182 q-5 7 0 12 q5 -5 0 -12" fill="#f0b23a" style="transform-origin:66px 194px"/>
@@ -124,6 +132,10 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
     <button class="btn ghost" id="reset">처음부터</button>
   </div>
   <div id="live"></div>
+  <div style="width:100%;margin-top:14px">
+    <div class="row" style="flex-wrap:nowrap"><input id="wish" maxlength="100" placeholder="부처님께 올릴 기도 한 줄" style="flex:1;min-width:0;font-size:16px;padding:10px;border-radius:10px;border:2px solid var(--gold);background:#000;color:var(--paper);font-family:inherit"><button class="btn" id="wishGo" style="font-size:16px;padding:8px 14px">올리기</button></div>
+    <div id="wishes" style="margin-top:10px;font-size:14px;line-height:1.6"></div>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -135,10 +147,13 @@ const store = {get: k => { try { return localStorage.getItem(k); } catch (e) { r
 const PW_HASH = "1f37fc50627a0ba00603f8b345bc63cf9fdec791288e82cfbec5396e55321b46";
 async function sha(t) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
 async function tryPw() {
-  if (await sha($("pw").value.trim()) === PW_HASH) { try { sessionStorage.setItem("pray_ok", "1"); } catch (e) {} open(); }
+  const nk = $("nick").value.trim();
+  if (!nk) { $("bad").textContent = "아이디를 넣어 주세요"; return; }
+  if (await sha($("pw").value.trim()) === PW_HASH) { store.set("pray_nick", nk); NICK = nk; try { sessionStorage.setItem("pray_ok", "1"); } catch (e) {} open(); }
   else $("bad").textContent = "비밀번호가 다릅니다";
 }
-$("go").onclick = tryPw; $("pw").onkeydown = e => { if (e.key === "Enter") tryPw(); };
+let NICK = store.get("pray_nick") || ""; $("nick").value = NICK;
+$("go").onclick = tryPw; $("nick").onkeydown = e => { if (e.key === "Enter") $("pw").focus(); }; $("pw").onkeydown = e => { if (e.key === "Enter") tryPw(); };
 // 염주 108알
 const B = $("beads"), NS = "http://www.w3.org/2000/svg";
 for (let i = 0; i < 108; i++) {
@@ -203,16 +218,29 @@ async function together() {
     firebase.initializeApp({apiKey: "AIzaSyBYLf6m03K2-bJeuJuV9cf67cFRv_1czfU", authDomain: "chat1108-d4d5f.firebaseapp.com", databaseURL: "https://chat1108-d4d5f-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "chat1108-d4d5f"});
     await firebase.auth().signInAnonymously(); uid = firebase.auth().currentUser.uid;
     DB = firebase.database();
-    const me = DB.ref("pray/here/" + uid); await me.set(firebase.database.ServerValue.TIMESTAMP); me.onDisconnect().remove();
+    const me = DB.ref("pray/here/" + uid); await me.set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); me.onDisconnect().remove();
     let here = 0, all = 0, done = 0;
-    const show = () => { $("live").innerHTML = `지금 법당에 <b>${here}</b>명 · 오늘 모두 올린 절 <b>${all.toLocaleString()}</b>배 · 백팔배 마친 분 <b>${done}</b>`; };
-    DB.ref("pray/here").on("value", s => { here = s.numChildren(); show(); });
+    let names = [];
+    const show = () => { $("live").innerHTML = `지금 법당에 <b>${here}</b>명${names.length ? " (" + names.map(esc).join(", ") + ")" : ""}<br>오늘 모두 올린 절 <b>${all.toLocaleString()}</b>배 · 백팔배 마친 분 <b>${done}</b>`; };
+    DB.ref("pray/here").on("value", s => { const v = s.val() || {}; here = Object.keys(v).length; names = [...new Set(Object.values(v).map(x => (x && x.n) || "").filter(Boolean))]; show(); });
+    DB.ref("pray/wish").limitToLast(30).on("value", s => {
+      const v = Object.values(s.val() || {}).sort((a, b) => b.t - a.t);
+      $("wishes").innerHTML = v.map(w => `<div style="border-bottom:1px solid #3a2a1c;padding:4px 0">🪷 <b style="color:var(--gold)">${esc(w.n)}</b> ${esc(w.m)}</div>`).join("") || '<div style="color:var(--muted)">아직 올린 기도가 없습니다</div>';
+    });
     DB.ref("pray/day/" + today()).on("value", s => { all = s.val() || 0; show(); });
     DB.ref("pray/done/" + today()).on("value", s => { done = s.val() || 0; show(); });
   } catch (e) { DB = null; $("live").textContent = ""; }
 }
-function open() { $("gate").remove(); $("app").hidden = false; draw(); together(); }
-try { if (sessionStorage.getItem("pray_ok")) open(); } catch (e) {}
+const esc = t => String(t || "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+async function wish() {
+  const m = $("wish").value.trim(); if (!m) return;
+  if (!DB) { $("msg").textContent = "기도를 마음에 담았습니다 🙏"; $("wish").value = ""; return; }
+  try { await DB.ref("pray/wish").push({n: NICK.slice(0, 20), m: m.slice(0, 100), t: firebase.database.ServerValue.TIMESTAMP}); $("wish").value = ""; $("msg").textContent = "기도를 올렸습니다 🙏"; bell(); }
+  catch (e) { $("msg").textContent = "기도를 못 올렸습니다(다시)"; }
+}
+$("wishGo").onclick = wish; $("wish").onkeydown = e => { if (e.key === "Enter") wish(); };
+function open() { $("gate").remove(); $("app").hidden = false; $("who").textContent = NICK + " 님"; draw(); together(); }
+try { if (sessionStorage.getItem("pray_ok") && NICK) open(); } catch (e) {}
 </script>
 </body>
 </html>
