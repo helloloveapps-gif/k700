@@ -144,7 +144,7 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
   <div id="cnt">0<small> / 108</small></div>
   <div id="msg"></div>
   <div class="row">
-    <button class="btn" id="bow" data-i="bow"></button>
+    <button class="btn" id="bow" data-i="bow"></button><button class="btn ghost" id="leave" data-i="leave" style="font-size:20px;padding:12px 24px"></button>
   </div>
   <div class="row" style="margin-top:10px">
     <button class="btn ghost" id="auto"></button>
@@ -190,7 +190,7 @@ $("people").before(B);   // 염주는 사람 뒤로
 const L = {
   ko: {gate: "온라인 기도 · 들어가는 비밀번호", nick: "아이디(이름)", pw: "비밀번호", go: "들어가기", noNick: "아이디를 넣어 주세요", badPw: "비밀번호가 다릅니다",
     gateH: "일주문 · 방명록", welcome: "절에 오신 것을 환영합니다", book: "📖 방명록", sign: "🖋 방명록에 이름 남기기", signed: "✅ 이름을 남겼습니다", signAgain: "다시 남기기", noBook: "방명록에 연결하지 못했습니다(잠시 뒤 다시)", firstGuest: "첫 번째로 이름을 남겨 보세요",
-    title: "온라인 백팔배", sub: "마음을 내려놓고, 한 번에 한 배씩", bow: "🙇 절 올리기", autoOn: "자동 절", autoOff: "자동 멈춤", sndOn: "소리 켬", sndOff: "소리 끔", reset: "처음부터", resetQ: "오늘 센 절을 0으로 돌릴까요?", resetDone: "처음부터 다시",
+    title: "온라인 백팔배", sub: "마음을 내려놓고, 한 번에 한 배씩", bow: "🙇 절 올리기", autoOn: "자동 절", autoOff: "자동 멈춤", sndOn: "소리 켬", sndOff: "소리 끔", reset: "처음부터", leave: "🚪 나가기", resetQ: "오늘 센 절을 0으로 돌릴까요?", resetDone: "처음부터 다시",
     press: "「절 올리기」를 누르세요", walk: "법당 안으로 걸어 들어갑니다…", start: "방석 앞에 섰습니다 — 절을 시작합니다", unit: "배", nim: " 님",
     m1: "첫 배 — 오늘도 이 자리에 왔습니다", m27: "스물일곱 배 — 숨을 고르세요", m54: "쉰네 배 — 절반을 넘었습니다", m81: "여든한 배 — 조금만 더", m100: "백 배 — 남은 여덟 배", m108: "🙏 백팔배를 마쳤습니다. 마음이 편안하시기를",
     wish: "말 한마디(기도)", post: "올리기", wished: "기도를 올렸습니다 🙏", wishLocal: "기도를 마음에 담았습니다 🙏", wishFail: "기도를 못 올렸습니다(다시)", noWish: "아직 올린 말이 없습니다", fin: "🏅108배 완성",
@@ -198,7 +198,7 @@ const L = {
     live: (h, nm, a, d) => `지금 법당에 <b>${h}</b>명${nm}<br>오늘 모두 올린 절 <b>${a}</b>배 · 백팔배 마친 분 <b>${d}</b>`},
   zh: {gate: "線上祈福 · 入場密碼", nick: "暱稱(ID)", pw: "密碼", go: "進入", noNick: "請輸入暱稱", badPw: "密碼錯誤",
     gateH: "一柱門 · 留言簿", welcome: "歡迎來到寺院", book: "📖 留言簿", sign: "🖋 在留言簿簽名", signed: "✅ 已留下名字", signAgain: "再簽一次", noBook: "無法連接留言簿(請稍後再試)", firstGuest: "成為第一個簽名的人吧",
-    title: "線上一百零八拜", sub: "放下心事,一次一拜", bow: "🙇 叩拜", autoOn: "自動叩拜", autoOff: "停止自動", sndOn: "聲音開", sndOff: "聲音關", reset: "重新開始", resetQ: "要把今天的拜數歸零嗎?", resetDone: "重新開始",
+    title: "線上一百零八拜", sub: "放下心事,一次一拜", bow: "🙇 叩拜", autoOn: "自動叩拜", autoOff: "停止自動", sndOn: "聲音開", sndOff: "聲音關", reset: "重新開始", leave: "🚪 離開", resetQ: "要把今天的拜數歸零嗎?", resetDone: "重新開始",
     press: "請按「叩拜」", walk: "正走進大殿…", start: "已站在蒲團前 — 開始叩拜", unit: "拜", nim: "",
     m1: "第一拜 — 今天也來到這裡了", m27: "第二十七拜 — 調整呼吸", m54: "第五十四拜 — 已過一半", m81: "第八十一拜 — 再加油", m100: "第一百拜 — 還剩八拜", m108: "🙏 一百零八拜圓滿。願你心安",
     wish: "說一句話(祈願)", post: "送出", wished: "已送出祈願 🙏", wishLocal: "祈願已放在心裡 🙏", wishFail: "送出失敗(請再試)", noWish: "還沒有人留言", fin: "🏅108拜圓滿",
@@ -206,7 +206,7 @@ const L = {
     live: (h, nm, a, d) => `大殿裡現在 <b>${h}</b> 人${nm}<br>今天大家共拜了 <b>${a}</b> 拜 · 完成108拜 <b>${d}</b> 人`},
   en: {gate: "Online Prayer · Password", nick: "Nickname (ID)", pw: "Password", go: "Enter", noNick: "Please enter a nickname", badPw: "Wrong password",
     gateH: "Temple Gate · Guestbook", welcome: "Welcome to the temple", book: "📖 Guestbook", sign: "🖋 Sign the guestbook", signed: "✅ Signed", signAgain: "Sign again", noBook: "Can't reach the guestbook (try again later)", firstGuest: "Be the first to sign",
-    title: "Online 108 Bows", sub: "Let your mind rest, one bow at a time", bow: "🙇 Bow", autoOn: "Auto bow", autoOff: "Stop auto", sndOn: "Sound on", sndOff: "Sound off", reset: "Restart", resetQ: "Reset today's bows to 0?", resetDone: "Starting over",
+    title: "Online 108 Bows", sub: "Let your mind rest, one bow at a time", bow: "🙇 Bow", autoOn: "Auto bow", autoOff: "Stop auto", sndOn: "Sound on", sndOff: "Sound off", reset: "Restart", leave: "🚪 Leave", resetQ: "Reset today's bows to 0?", resetDone: "Starting over",
     press: "Press “Bow”", walk: "Walking into the hall…", start: "Standing at the cushion — bowing begins", unit: " bows", nim: "",
     m1: "First bow — you came here again today", m27: "27 bows — catch your breath", m54: "54 bows — past halfway", m81: "81 bows — almost there", m100: "100 bows — 8 to go", m108: "🙏 108 bows complete. May your heart be at peace",
     wish: "Say a word (prayer)", post: "Post", wished: "Prayer posted 🙏", wishLocal: "Prayer kept in your heart 🙏", wishFail: "Couldn't post (try again)", noWish: "No words yet", fin: "🏅108 done",
@@ -319,6 +319,13 @@ async function bow() {
 }
 function stopAuto() { clearInterval(auto); auto = null; $("auto").textContent = t("autoOn"); }
 $("bow").onclick = bow;
+// 나가기: 방석 · 대기열 · 법당 표시를 비우고 첫 화면으로
+$("leave").onclick = async () => {
+  stopAuto(); $("bgm").pause();
+  try { if (DB) { if (AV.me && AV.me.slot != null) await DB.ref("pray/seat/" + AV.me.slot).remove(); if (QREF) await QREF.remove(); await DB.ref("pray/here/" + uid).remove(); } } catch (e) {}
+  try { sessionStorage.removeItem("pray_ok"); } catch (e) {}
+  location.href = "index.html";
+};
 document.addEventListener("keydown", e => { if (e.code === "Space" && !$("app").hidden) { e.preventDefault(); bow(); } });
 $("auto").onclick = () => { if (auto) return stopAuto(); auto = setInterval(bow, 3600); bow(); $("auto").textContent = t("autoOff"); };
 $("snd").onclick = () => { sound = !sound; store.set("pray_snd", sound ? "1" : "0"); $("snd").textContent = sound ? t("sndOn") : t("sndOff"); bgm(); };
