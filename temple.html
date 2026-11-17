@@ -170,6 +170,7 @@ for (let i = 0; i < 108; i++) {
   c.setAttribute("fill", "#3a2a1c"); c.setAttribute("stroke", "#1a120c"); B.appendChild(c);
 }
 const beads = [...B.children];
+$("people").before(B);   // 염주는 사람 뒤로
 
 
 // 말(한국어 · 대만 중국어 · 영어) — 고르면 기억
@@ -265,7 +266,7 @@ function mkAv(id, name, self) {
   setName(a, name, 0); return a;
 }
 const setName = (a, name, c) => { a.nm.textContent = name + (c >= 108 ? " 🏅" : ""); };
-const setPose = (a, k) => a.ps.forEach((p, i) => p.style.display = i === k ? "" : "none");
+const setPose = (a, k) => { a.ps.forEach((p, i) => p.style.display = i === k ? "" : "none"); a.nm.setAttribute("y", [194, 190, 238, 250][k]); };   // 이름표는 머리를 따라간다
 function layout() {
   const ids = ["me", ...Object.keys(AV).filter(x => x !== "me").sort((x, y) => AV[x].t - AV[y].t)].filter(x => AV[x]);
   ids.forEach((id, i) => {
