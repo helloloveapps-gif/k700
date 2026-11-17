@@ -12,10 +12,10 @@ html,body{margin:0;height:100%;background:var(--bg);color:var(--paper);font-fami
 #gate{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:var(--bg);z-index:9}
 #gate input{font-size:20px;padding:10px 14px;border-radius:10px;border:2px solid var(--gold);background:#000;color:var(--paper);text-align:center;width:200px}
 #gate button,.btn{font-size:18px;padding:10px 22px;border-radius:12px;border:2px solid var(--ink);background:var(--gold);color:var(--ink);font-weight:700;cursor:pointer;font-family:inherit}
-#app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;align-items:center;padding:12px 16px 24px}
+#app{max-width:760px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;align-items:center;padding:12px 16px 24px}
 h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
 .sub{color:var(--muted);font-size:13px;margin-bottom:8px}
-#hall{position:relative;width:100%;aspect-ratio:1/1.05;max-height:62vh;background:var(--wall);border:4px solid var(--ink);border-radius:6px;overflow:hidden}
+#hall{position:relative;width:100%;aspect-ratio:480/315;max-height:72vh;background:var(--wall);border:4px solid var(--ink);border-radius:6px;overflow:hidden}
 #hall svg{position:absolute;inset:0;width:100%;height:100%}
 #cnt{font-size:44px;font-weight:800;color:var(--gold);margin-top:10px;line-height:1}
 #cnt small{font-size:18px;color:var(--muted)}
@@ -24,6 +24,7 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
 #bow{font-size:22px;padding:14px 40px}
 .btn.ghost{background:transparent;color:var(--gold);border-color:var(--gold);font-size:15px;padding:8px 14px}
 #live{margin-top:14px;font-size:13px;color:var(--muted);text-align:center;line-height:1.7}
+.lang{display:flex;gap:6px;justify-content:center;margin:4px 0}.lang button{font:inherit;font-size:13px;padding:3px 10px;border-radius:10px;border:1px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer}.lang button.on{background:var(--gold);color:var(--ink)}
 .smoke{animation:smoke 4s steps(12) infinite;transform-origin:center}
 @keyframes smoke{0%{opacity:0;transform:translateY(0)}20%{opacity:.6}100%{opacity:0;transform:translateY(-40px)}}
 .flame{animation:fl 1s steps(4) infinite}
@@ -33,16 +34,17 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
 <body>
 <div id="gate">
   <div style="font-size:40px">🙏</div>
-  <div>온라인 기도 · 들어가는 비밀번호</div>
-  <input id="nick" maxlength="20" placeholder="아이디(이름)" autocomplete="off">
-  <input id="pw" type="password" inputmode="text" autocomplete="off" placeholder="비밀번호">
-  <button id="go">들어가기</button>
+  <div class="lang"><button data-l="ko">한국어</button><button data-l="zh">中文</button><button data-l="en">EN</button></div>
+  <div data-i="gate"></div>
+  <input id="nick" maxlength="20" data-ip="nick" autocomplete="off">
+  <input id="pw" type="password" inputmode="text" autocomplete="off" data-ip="pw">
+  <button id="go" data-i="go"></button>
   <div id="bad" style="color:#e66;min-height:20px"></div>
 </div>
 
 <div id="entry" hidden style="max-width:520px;margin:0 auto;padding:12px 16px 24px;text-align:center">
-  <h1 style="margin-top:18px">일주문 · 방명록</h1>
-  <div class="sub">절에 오신 것을 환영합니다 · <span id="who2"></span></div>
+  <h1 style="margin-top:18px" data-i="gateH"></h1>
+  <div class="sub"><span data-i="welcome"></span> · <span id="who2"></span></div>
   <svg viewBox="0 0 300 170" style="width:100%;max-height:30vh">
     <rect x="0" y="140" width="300" height="30" fill="#6b4a2e"/>
     <path d="M30 40 L150 8 L270 40 Z" fill="#3b3b3b" stroke="#1a120c" stroke-width="3"/>
@@ -53,29 +55,32 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
     <rect x="224" y="54" width="16" height="88" fill="#8e2a1c" stroke="#1a120c" stroke-width="2"/>
   </svg>
   <div style="background:#2b1a10;border:3px solid var(--gold);border-radius:8px;padding:12px;margin:10px 0;text-align:left">
-    <div style="font-weight:700;color:var(--gold);margin-bottom:8px">📖 방명록</div>
-    <button class="btn" id="sign" style="width:100%">🖋 방명록에 이름 남기기</button>
+    <div style="font-weight:700;color:var(--gold);margin-bottom:8px" data-i="book"></div>
+    <button class="btn" id="sign" style="width:100%" data-i="sign"></button>
     <div id="guests" style="margin-top:10px;font-size:14px;line-height:1.7;max-height:34vh;overflow:auto"></div>
   </div>
 
 </div>
 
 <div id="app" hidden>
-  <h1>온라인 백팔배</h1>
-  <div class="sub">마음을 내려놓고, 한 번에 한 배씩 · <span id="who"></span></div>
+  <div class="lang"><button data-l="ko">한국어</button><button data-l="zh">中文</button><button data-l="en">EN</button></div>
+  <h1 data-i="title"></h1>
+  <div class="sub"><span data-i="sub"></span> · <span id="who"></span></div>
   <div id="hall">
-    <svg viewBox="0 0 300 315" aria-label="법당">
+    <svg viewBox="-90 0 480 315" aria-label="법당">
       <!-- 단청 띠 -->
-      <rect x="0" y="0" width="300" height="22" fill="#1f5c4a"/>
-      <g fill="#c9483a"><rect x="10" y="6" width="20" height="10"/><rect x="50" y="6" width="20" height="10"/><rect x="90" y="6" width="20" height="10"/><rect x="130" y="6" width="40" height="10"/><rect x="190" y="6" width="20" height="10"/><rect x="230" y="6" width="20" height="10"/><rect x="270" y="6" width="20" height="10"/></g>
-      <rect x="0" y="22" width="300" height="4" fill="#1a120c"/>
+      <rect x="-90" y="0" width="480" height="22" fill="#1f5c4a"/>
+      <g fill="#c9483a"><rect x="-70" y="6" width="20" height="10"/><rect x="-30" y="6" width="20" height="10"/><rect x="310" y="6" width="20" height="10"/><rect x="350" y="6" width="20" height="10"/><rect x="10" y="6" width="20" height="10"/><rect x="50" y="6" width="20" height="10"/><rect x="90" y="6" width="20" height="10"/><rect x="130" y="6" width="40" height="10"/><rect x="190" y="6" width="20" height="10"/><rect x="230" y="6" width="20" height="10"/><rect x="270" y="6" width="20" height="10"/></g>
+      <rect x="-90" y="22" width="480" height="4" fill="#1a120c"/>
       <!-- 기둥 -->
-      <rect x="8" y="26" width="18" height="220" fill="#8e2a1c" stroke="#1a120c" stroke-width="2"/>
-      <rect x="274" y="26" width="18" height="220" fill="#8e2a1c" stroke="#1a120c" stroke-width="2"/>
+      <rect x="-84" y="26" width="18" height="220" fill="#8e2a1c" stroke="#1a120c" stroke-width="2"/>
+      <rect x="366" y="26" width="18" height="220" fill="#8e2a1c" stroke="#1a120c" stroke-width="2"/>
       <!-- 연등 -->
       <g stroke="#1a120c" stroke-width="2">
         <line x1="55" y1="26" x2="55" y2="44"/><ellipse cx="55" cy="56" rx="13" ry="12" fill="#e2563f"/>
         <line x1="245" y1="26" x2="245" y2="44"/><ellipse cx="245" cy="56" rx="13" ry="12" fill="#e9b949"/>
+        <line x1="-30" y1="26" x2="-30" y2="44"/><ellipse cx="-30" cy="56" rx="13" ry="12" fill="#e9b949"/>
+        <line x1="330" y1="26" x2="330" y2="44"/><ellipse cx="330" cy="56" rx="13" ry="12" fill="#e2563f"/>
       </g>
       <!-- 광배 -->
       <circle cx="150" cy="105" r="62" fill="#5a2e1d" stroke="#d9a441" stroke-width="3"/>
@@ -116,46 +121,27 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
       <line x1="150" y1="202" x2="150" y2="186" stroke="#7a3a28" stroke-width="1.5"/>
       <path class="smoke" d="M150 184 q-6 -8 0 -16 q6 -8 0 -16" stroke="#b9a27a" stroke-width="1.5" fill="none"/>
       <!-- 바닥(방석) -->
-      <rect x="0" y="246" width="300" height="69" fill="#6b4a2e"/>
-      <line x1="0" y1="246" x2="300" y2="246" stroke="#1a120c" stroke-width="3"/>
-      <ellipse cx="150" cy="292" rx="44" ry="10" fill="#8e2a1c" stroke="#1a120c" stroke-width="2"/>
-      <!-- 절하는 사람(뒷모습) — 그림 4장을 갈아 끼운다 -->
-      <g id="person">
-      <g id="p0" stroke="#1a120c" stroke-width="2.5" fill="#f3e6c8">
-        <rect x="134" y="226" width="32" height="62" rx="8"/><circle cx="150" cy="214" r="13" fill="#2a1d14"/>
-        <path d="M134 238 l-8 22 M166 238 l8 22" fill="none"/>
-      </g>
-      <g id="p1" style="display:none" stroke="#1a120c" stroke-width="2.5" fill="#f3e6c8">
-        <rect x="134" y="222" width="32" height="40" rx="8"/><circle cx="150" cy="210" r="13" fill="#2a1d14"/>
-        <path d="M134 226 q-10 -10 4 -18 M166 226 q10 -10 -4 -18" fill="none"/>
-        <ellipse cx="150" cy="282" rx="26" ry="10"/>
-      </g>
-      <g id="p2" style="display:none" stroke="#1a120c" stroke-width="2.5" fill="#f3e6c8">
-        <ellipse cx="150" cy="276" rx="30" ry="14"/><circle cx="150" cy="258" r="12" fill="#2a1d14"/>
-        <path d="M122 268 l-14 -6 M178 268 l14 -6" fill="none"/>
-      </g>
-      <g id="p3" style="display:none" stroke="#1a120c" stroke-width="2.5" fill="#f3e6c8">
-        <ellipse cx="150" cy="280" rx="32" ry="12"/><circle cx="150" cy="270" r="11" fill="#2a1d14"/>
-        <path d="M118 278 q-6 -10 2 -12 l-6 -4 M182 278 q6 -10 -2 -12 l6 -4" fill="none"/>
-      </g>
-      </g>
+      <rect x="-90" y="246" width="480" height="69" fill="#6b4a2e"/>
+      <line x1="-90" y1="246" x2="390" y2="246" stroke="#1a120c" stroke-width="3"/>
+      <!-- 절하는 사람들(뒷모습) — 머리 위에 닉네임 -->
+      <g id="people"></g>
       <!-- 염주 108알 -->
       <g id="beads"></g>
     </svg>
   </div>
   <div id="cnt">0<small> / 108</small></div>
-  <div id="msg">「절 올리기」를 누르세요</div>
+  <div id="msg"></div>
   <div class="row">
-    <button class="btn" id="bow">🙇 절 올리기</button>
+    <button class="btn" id="bow" data-i="bow"></button>
   </div>
   <div class="row" style="margin-top:10px">
-    <button class="btn ghost" id="auto">자동 절</button>
-    <button class="btn ghost" id="snd">소리 켬</button>
-    <button class="btn ghost" id="reset">처음부터</button>
+    <button class="btn ghost" id="auto"></button>
+    <button class="btn ghost" id="snd"></button>
+    <button class="btn ghost" id="reset" data-i="reset"></button>
   </div>
   <div id="live"></div>
   <div style="width:100%;margin-top:14px">
-    <div class="row" style="flex-wrap:nowrap"><input id="wish" maxlength="100" placeholder="말 한마디(기도)" style="flex:1;min-width:0;font-size:16px;padding:10px;border-radius:10px;border:2px solid var(--gold);background:#000;color:var(--paper);font-family:inherit"><button class="btn" id="wishGo" style="font-size:16px;padding:8px 14px">올리기</button></div>
+    <div class="row" style="flex-wrap:nowrap"><input id="wish" maxlength="100" data-ip="wish" style="flex:1;min-width:0;font-size:16px;padding:10px;border-radius:10px;border:2px solid var(--gold);background:#000;color:var(--paper);font-family:inherit"><button class="btn" id="wishGo" style="font-size:16px;padding:8px 14px" data-i="post"></button></div>
     <div id="wishes" style="margin-top:10px;font-size:14px;line-height:1.6"></div>
   </div>
 </div>
@@ -170,9 +156,9 @@ const PW_HASH = "1f37fc50627a0ba00603f8b345bc63cf9fdec791288e82cfbec5396e55321b4
 async function sha(t) { const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, "0")).join(""); }
 async function tryPw() {
   const nk = $("nick").value.trim();
-  if (!nk) { $("bad").textContent = "아이디를 넣어 주세요"; return; }
+  if (!nk) { $("bad").textContent = t("noNick"); return; }
   if (await sha($("pw").value.trim()) === PW_HASH) { store.set("pray_nick", nk); NICK = nk; try { sessionStorage.setItem("pray_ok", "1"); } catch (e) {} open(); }
-  else $("bad").textContent = "비밀번호가 다릅니다";
+  else $("bad").textContent = t("badPw");
 }
 let NICK = store.get("pray_nick") || ""; $("nick").value = NICK;
 $("go").onclick = tryPw; $("nick").onkeydown = e => { if (e.key === "Enter") $("pw").focus(); }; $("pw").onkeydown = e => { if (e.key === "Enter") tryPw(); };
@@ -185,6 +171,56 @@ for (let i = 0; i < 108; i++) {
 }
 const beads = [...B.children];
 
+
+// 말(한국어 · 대만 중국어 · 영어) — 고르면 기억
+const L = {
+  ko: {gate: "온라인 기도 · 들어가는 비밀번호", nick: "아이디(이름)", pw: "비밀번호", go: "들어가기", noNick: "아이디를 넣어 주세요", badPw: "비밀번호가 다릅니다",
+    gateH: "일주문 · 방명록", welcome: "절에 오신 것을 환영합니다", book: "📖 방명록", sign: "🖋 방명록에 이름 남기기", signed: "✅ 이름을 남겼습니다", signAgain: "다시 남기기", noBook: "방명록에 연결하지 못했습니다(잠시 뒤 다시)", firstGuest: "첫 번째로 이름을 남겨 보세요",
+    title: "온라인 백팔배", sub: "마음을 내려놓고, 한 번에 한 배씩", bow: "🙇 절 올리기", autoOn: "자동 절", autoOff: "자동 멈춤", sndOn: "소리 켬", sndOff: "소리 끔", reset: "처음부터", resetQ: "오늘 센 절을 0으로 돌릴까요?", resetDone: "처음부터 다시",
+    press: "「절 올리기」를 누르세요", walk: "법당 안으로 걸어 들어갑니다…", start: "방석 앞에 섰습니다 — 절을 시작합니다", unit: "배", nim: " 님",
+    m1: "첫 배 — 오늘도 이 자리에 왔습니다", m27: "스물일곱 배 — 숨을 고르세요", m54: "쉰네 배 — 절반을 넘었습니다", m81: "여든한 배 — 조금만 더", m100: "백 배 — 남은 여덟 배", m108: "🙏 백팔배를 마쳤습니다. 마음이 편안하시기를",
+    wish: "말 한마디(기도)", post: "올리기", wished: "기도를 올렸습니다 🙏", wishLocal: "기도를 마음에 담았습니다 🙏", wishFail: "기도를 못 올렸습니다(다시)", noWish: "아직 올린 말이 없습니다", fin: "🏅108배 완성",
+    live: (h, nm, a, d) => `지금 법당에 <b>${h}</b>명${nm}<br>오늘 모두 올린 절 <b>${a}</b>배 · 백팔배 마친 분 <b>${d}</b>`},
+  zh: {gate: "線上祈福 · 入場密碼", nick: "暱稱(ID)", pw: "密碼", go: "進入", noNick: "請輸入暱稱", badPw: "密碼錯誤",
+    gateH: "一柱門 · 留言簿", welcome: "歡迎來到寺院", book: "📖 留言簿", sign: "🖋 在留言簿簽名", signed: "✅ 已留下名字", signAgain: "再簽一次", noBook: "無法連接留言簿(請稍後再試)", firstGuest: "成為第一個簽名的人吧",
+    title: "線上一百零八拜", sub: "放下心事,一次一拜", bow: "🙇 叩拜", autoOn: "自動叩拜", autoOff: "停止自動", sndOn: "聲音開", sndOff: "聲音關", reset: "重新開始", resetQ: "要把今天的拜數歸零嗎?", resetDone: "重新開始",
+    press: "請按「叩拜」", walk: "正走進大殿…", start: "已站在蒲團前 — 開始叩拜", unit: "拜", nim: "",
+    m1: "第一拜 — 今天也來到這裡了", m27: "第二十七拜 — 調整呼吸", m54: "第五十四拜 — 已過一半", m81: "第八十一拜 — 再加油", m100: "第一百拜 — 還剩八拜", m108: "🙏 一百零八拜圓滿。願你心安",
+    wish: "說一句話(祈願)", post: "送出", wished: "已送出祈願 🙏", wishLocal: "祈願已放在心裡 🙏", wishFail: "送出失敗(請再試)", noWish: "還沒有人留言", fin: "🏅108拜圓滿",
+    live: (h, nm, a, d) => `大殿裡現在 <b>${h}</b> 人${nm}<br>今天大家共拜了 <b>${a}</b> 拜 · 完成108拜 <b>${d}</b> 人`},
+  en: {gate: "Online Prayer · Password", nick: "Nickname (ID)", pw: "Password", go: "Enter", noNick: "Please enter a nickname", badPw: "Wrong password",
+    gateH: "Temple Gate · Guestbook", welcome: "Welcome to the temple", book: "📖 Guestbook", sign: "🖋 Sign the guestbook", signed: "✅ Signed", signAgain: "Sign again", noBook: "Can't reach the guestbook (try again later)", firstGuest: "Be the first to sign",
+    title: "Online 108 Bows", sub: "Let your mind rest, one bow at a time", bow: "🙇 Bow", autoOn: "Auto bow", autoOff: "Stop auto", sndOn: "Sound on", sndOff: "Sound off", reset: "Restart", resetQ: "Reset today's bows to 0?", resetDone: "Starting over",
+    press: "Press “Bow”", walk: "Walking into the hall…", start: "Standing at the cushion — bowing begins", unit: " bows", nim: "",
+    m1: "First bow — you came here again today", m27: "27 bows — catch your breath", m54: "54 bows — past halfway", m81: "81 bows — almost there", m100: "100 bows — 8 to go", m108: "🙏 108 bows complete. May your heart be at peace",
+    wish: "Say a word (prayer)", post: "Post", wished: "Prayer posted 🙏", wishLocal: "Prayer kept in your heart 🙏", wishFail: "Couldn't post (try again)", noWish: "No words yet", fin: "🏅108 done",
+    live: (h, nm, a, d) => `In the hall now: <b>${h}</b>${nm}<br>Bows today by everyone: <b>${a}</b> · Finished 108: <b>${d}</b>`}
+};
+let LANG = store.get("pray_lang") || (/^zh/i.test(navigator.language) ? "zh" : /^ko/i.test(navigator.language) ? "ko" : "en");
+const t = k => (L[LANG] && L[LANG][k]) || L.ko[k];
+let REDRAW = () => {};
+function applyLang() {
+  document.documentElement.lang = LANG === "zh" ? "zh-TW" : LANG;
+  document.querySelectorAll("[data-i]").forEach(e => e.textContent = t(e.dataset.i));
+  document.querySelectorAll("[data-ip]").forEach(e => e.placeholder = t(e.dataset.ip));
+  document.querySelectorAll(".lang button").forEach(b => b.classList.toggle("on", b.dataset.l === LANG));
+  if ($("auto")) $("auto").textContent = auto ? t("autoOff") : t("autoOn");
+  if ($("snd")) $("snd").textContent = sound ? t("sndOn") : t("sndOff");
+  if ($("who")) $("who").textContent = $("who2").textContent = NICK ? NICK + t("nim") : "";
+  REDRAW();
+}
+document.querySelectorAll(".lang button").forEach(b => b.onclick = () => { LANG = b.dataset.l; store.set("pray_lang", LANG); applyLang(); });
+// 말 한마디는 보는 사람 말로 번역해 밑에 작게(구글 무료 · 같은 말은 기억)
+const TRC = {};
+async function trTo(text) {
+  const tl = LANG === "zh" ? "zh-TW" : LANG, k = tl + "\u0001" + text;
+  if (k in TRC) return TRC[k];
+  try {
+    const j = await (await fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + tl + "&dt=t&q=" + encodeURIComponent(text))).json();
+    const src = String(j[2] || ""), out = (j[0] || []).map(x => x[0]).join("");
+    return TRC[k] = (src.slice(0, 2) === tl.slice(0, 2) || out.trim() === text.trim()) ? "" : out;
+  } catch (e) { return TRC[k] = ""; }
+}
 const today = () => { const d = new Date(); return d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"); };
 let n = 0, busy = false, auto = null, sound = store.get("pray_snd") !== "0";
 const saved = (store.get("pray_day") || "").split(":"); if (saved[0] === today()) n = Math.min(108, +saved[1] || 0);
@@ -193,7 +229,7 @@ function draw() {
   beads.forEach((b, i) => b.setAttribute("fill", i < n ? "#d9a441" : "#3a2a1c"));
   store.set("pray_day", today() + ":" + n);
 }
-$("snd").textContent = sound ? "소리 켬" : "소리 끔";
+
 
 // 소리: 목탁(나무 똑) · 108배 끝나면 싱잉볼(종)
 let AC = null;
@@ -213,44 +249,95 @@ function bell() {
   });
 }
 
-const MSG = {1: "첫 배 — 오늘도 이 자리에 왔습니다", 27: "스물일곱 배 — 숨을 고르세요", 54: "쉰네 배 — 절반을 넘었습니다", 81: "여든한 배 — 조금만 더", 100: "백 배 — 남은 여덟 배", 108: "🙏 백팔배를 마쳤습니다. 마음이 편안하시기를"};
-const pose = k => { for (let i = 0; i < 4; i++) $("p" + i).style.display = i === k ? "" : "none"; };
+const MSG = {1: "m1", 27: "m27", 54: "m54", 81: "m81", 100: "m100", 108: "m108"};
+const POSES = ['<rect x="134" y="226" width="32" height="62" rx="8"/><circle cx="150" cy="214" r="13" fill="#2a1d14"/> <path d="M134 238 l-8 22 M166 238 l8 22" fill="none"/>', '<rect x="134" y="222" width="32" height="40" rx="8"/><circle cx="150" cy="210" r="13" fill="#2a1d14"/> <path d="M134 226 q-10 -10 4 -18 M166 226 q10 -10 -4 -18" fill="none"/> <ellipse cx="150" cy="282" rx="26" ry="10"/>', '<ellipse cx="150" cy="276" rx="30" ry="14"/><circle cx="150" cy="258" r="12" fill="#2a1d14"/> <path d="M122 268 l-14 -6 M178 268 l14 -6" fill="none"/>', '<ellipse cx="150" cy="280" rx="32" ry="12"/><circle cx="150" cy="270" r="11" fill="#2a1d14"/> <path d="M118 278 q-6 -10 2 -12 l-6 -4 M182 278 q6 -10 -2 -12 l6 -4" fill="none"/>'];
 const wait = ms => new Promise(r => setTimeout(r, ms));
+// 법당 안 사람들: 나는 가운데 앞 방석 · 들어온 차례로 옆 · 뒷줄(11자리까지 보임)
+const AV = {};
+const SLOTS = [[0, 0, 1], [-85, 0, 1], [85, 0, 1], [-170, 0, 1], [170, 0, 1], [-42, 22, 1.06], [42, 22, 1.06], [-127, 22, 1.06], [127, 22, 1.06], [-212, 22, 1.06], [212, 22, 1.06]];
+function mkAv(id, name, self) {
+  const g = document.createElementNS(NS, "g"), body = document.createElementNS(NS, "g");
+  g.innerHTML = `<ellipse cx="150" cy="292" rx="44" ry="10" fill="${self ? "#8e2a1c" : "#6e3a2a"}" stroke="#1a120c" stroke-width="2"/>`;
+  body.innerHTML = POSES.map((p, i) => `<g${i ? ' style="display:none"' : ""} stroke="#1a120c" stroke-width="2.5" fill="${self ? "#f3e6c8" : "#d6c8a8"}">${p}</g>`).join("")
+    + `<text x="150" y="192" text-anchor="middle" font-size="14" font-weight="700" fill="${self ? "#ffd76a" : "#f3e6c8"}" stroke="#1a120c" stroke-width="3.5" paint-order="stroke"></text>`;
+  g.appendChild(body); $("people").appendChild(g);
+  const a = AV[id] = {g, body, ps: [...body.children].slice(0, 4), nm: body.querySelector("text"), b: 0, t: 0, busy: false};
+  setName(a, name, 0); return a;
+}
+const setName = (a, name, c) => { a.nm.textContent = name + (c >= 108 ? " 🏅" : ""); };
+const setPose = (a, k) => a.ps.forEach((p, i) => p.style.display = i === k ? "" : "none");
+function layout() {
+  const ids = ["me", ...Object.keys(AV).filter(x => x !== "me").sort((x, y) => AV[x].t - AV[y].t)].filter(x => AV[x]);
+  ids.forEach((id, i) => {
+    const a = AV[id]; if (i >= SLOTS.length) { a.g.style.display = "none"; return; }
+    const [dx, dy, sc] = SLOTS[i]; a.g.style.display = ""; a.slot = i;
+    a.g.setAttribute("transform", `translate(${150 + dx} ${288 + dy}) scale(${sc}) translate(-150 -288)`);
+  });
+  ids.filter(id => AV[id].slot < SLOTS.length).sort((x, y) => SLOTS[AV[x].slot][1] - SLOTS[AV[y].slot][1]).forEach(id => $("people").appendChild(AV[id].g));   // 앞줄이 위에
+}
+async function bowAnim(a, snd) {
+  if (a.busy) return; a.busy = true;
+  setPose(a, 1); await wait(330); setPose(a, 2); await wait(260); if (snd) moktak(); setPose(a, 3); await wait(420); setPose(a, 2); await wait(260); setPose(a, 1); await wait(300); setPose(a, 0);
+  a.busy = false;
+}
+async function walkAv(a, snd) {
+  const N = 10;
+  for (let i = 0; i <= N; i++) {
+    const k = i / N, y = 90 * (1 - k), sc = 1.35 - .35 * k, x = i < N ? (i % 2 ? 3 : -3) : 0;
+    a.body.setAttribute("transform", `translate(${150 + x} ${288 + y}) scale(${sc}) translate(-150 -288)`);
+    if (i < N) { if (snd) moktakSoft(); await wait(260); }
+  }
+  a.body.removeAttribute("transform");
+}
 async function bow() {
   if (busy || n >= 108) return; busy = true;
   // 서기 → 무릎 → 이마 닿기(목탁) → 손 받들기 → 일어서기 (뚝뚝 끊어 움직임)
-  pose(1); await wait(330); pose(2); await wait(260); moktak(); pose(3); await wait(420); pose(2); await wait(260); pose(1); await wait(300); pose(0);
-  n++; draw(); if (MSG[n]) $("msg").textContent = MSG[n]; else $("msg").textContent = n + "배";
+  await bowAnim(AV.me, true);
+  n++; draw(); setName(AV.me, NICK, n); $("msg").textContent = MSG[n] ? t(MSG[n]) : n + t("unit");
   sendBow();
   if (n >= 108) { bell(); stopAuto(); }
   busy = false;
 }
-function stopAuto() { clearInterval(auto); auto = null; $("auto").textContent = "자동 절"; }
+function stopAuto() { clearInterval(auto); auto = null; $("auto").textContent = t("autoOn"); }
 $("bow").onclick = bow;
 document.addEventListener("keydown", e => { if (e.code === "Space" && !$("app").hidden) { e.preventDefault(); bow(); } });
-$("auto").onclick = () => { if (auto) return stopAuto(); auto = setInterval(bow, 2400); bow(); $("auto").textContent = "자동 멈춤"; };
-$("snd").onclick = () => { sound = !sound; store.set("pray_snd", sound ? "1" : "0"); $("snd").textContent = sound ? "소리 켬" : "소리 끔"; };
-$("reset").onclick = () => { if (!confirm("오늘 센 절을 0으로 돌릴까요?")) return; stopAuto(); n = 0; draw(); $("msg").textContent = "처음부터 다시"; };
+$("auto").onclick = () => { if (auto) return stopAuto(); auto = setInterval(bow, 2400); bow(); $("auto").textContent = t("autoOff"); };
+$("snd").onclick = () => { sound = !sound; store.set("pray_snd", sound ? "1" : "0"); $("snd").textContent = sound ? t("sndOn") : t("sndOff"); };
+$("reset").onclick = () => { if (!confirm(t("resetQ"))) return; stopAuto(); n = 0; draw(); $("msg").textContent = t("resetDone"); };
 
 // 함께: 지금 법당에 있는 사람 · 오늘 모두 올린 절(채팅과 같은 Firebase). 안 되면 혼자 세기만
 let DB = null, uid = "";
-async function sendBow() { if (!DB) return; try { await DB.ref("pray/day/" + today()).transaction(v => (v || 0) + 1); if (n >= 108) { DB.ref("pray/done/" + today()).transaction(v => (v || 0) + 1); DB.ref("pray/fin/" + today() + "/" + uid).set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); } } catch (e) {} }
+async function sendBow() { if (!DB) return; try { DB.ref("pray/here/" + uid).update({c: n, b: firebase.database.ServerValue.TIMESTAMP}); await DB.ref("pray/day/" + today()).transaction(v => (v || 0) + 1); if (n >= 108) { DB.ref("pray/done/" + today()).transaction(v => (v || 0) + 1); DB.ref("pray/fin/" + today() + "/" + uid).set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); } } catch (e) {} }
 async function together() {
   try {
     firebase.initializeApp({apiKey: "AIzaSyBYLf6m03K2-bJeuJuV9cf67cFRv_1czfU", authDomain: "chat1108-d4d5f.firebaseapp.com", databaseURL: "https://chat1108-d4d5f-default-rtdb.asia-southeast1.firebasedatabase.app", projectId: "chat1108-d4d5f"});
     await firebase.auth().signInAnonymously(); uid = firebase.auth().currentUser.uid;
     DB = firebase.database();
-    const me = DB.ref("pray/here/" + uid); await me.set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); me.onDisconnect().remove();
+    const me = DB.ref("pray/here/" + uid); await me.set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP, c: n, b: 0}); me.onDisconnect().remove();
     let here = 0, all = 0, done = 0;
     let names = [];
-    const show = () => { $("live").innerHTML = `지금 법당에 <b>${here}</b>명${names.length ? " (" + names.map(esc).join(", ") + ")" : ""}<br>오늘 모두 올린 절 <b>${all.toLocaleString()}</b>배 · 백팔배 마친 분 <b>${done}</b>`; };
-    DB.ref("pray/here").on("value", s => { const v = s.val() || {}; here = Object.keys(v).length; names = [...new Set(Object.values(v).map(x => (x && x.n) || "").filter(Boolean))]; show(); });
+    const show = () => { $("live").innerHTML = t("live")(here, names.length ? " (" + names.map(esc).join(", ") + ")" : "", all.toLocaleString(), done); };
+    DB.ref("pray/here").on("value", s => {
+      const v = s.val() || {}; here = Object.keys(v).length; names = [...new Set(Object.values(v).map(x => (x && x.n) || "").filter(Boolean))]; show();
+      // 다른 사람: 새로 오면 걸어 들어오고, 절하면 같이 절하는 모습(소리는 내 것만)
+      for (const [k, x] of Object.entries(v)) {
+        if (k === uid || !x) continue;
+        let a = AV[k];
+        if (!a) { a = mkAv(k, x.n || "?", false); a.t = x.t || 0; a.b = x.b || 0; layout(); walkAv(a, false); }
+        setName(a, String(x.n || "?").slice(0, 20), x.c || 0);
+        if ((x.b || 0) > a.b) { a.b = x.b; bowAnim(a, false); }
+      }
+      let gone = false; for (const k of Object.keys(AV)) if (k !== "me" && !v[k]) { AV[k].g.remove(); delete AV[k]; gone = true; }
+      if (gone) layout();
+    });
     // 오늘 108배를 마친 사람만 이름 옆에 「108배 완성」
     let FIN = new Set(), G = [], W = [];
-    const badge = nm => FIN.has(nm) ? ' <span style="font-size:11px;background:var(--gold);color:var(--ink);border-radius:8px;padding:0 6px;font-weight:700;white-space:nowrap">🏅108배 완성</span>' : "";
-    const drawG = () => { $("guests").innerHTML = G.map(g => `<div style="border-bottom:1px solid #3a2a1c">🖋 <b style="color:var(--gold)">${esc(g.n)}</b>${badge(g.n)} <span style="color:var(--muted);font-size:12px">${when(g.t)}</span></div>`).join("") || '<div style="color:var(--muted)">첫 번째로 이름을 남겨 보세요</div>'; };
+    const badge = nm => FIN.has(nm) ? ' <span style="font-size:11px;background:var(--gold);color:var(--ink);border-radius:8px;padding:0 6px;font-weight:700;white-space:nowrap">' + esc(t("fin")) + '</span>' : "";
+    const drawG = () => { $("guests").innerHTML = G.map(g => `<div style="border-bottom:1px solid #3a2a1c">🖋 <b style="color:var(--gold)">${esc(g.n)}</b>${badge(g.n)} <span style="color:var(--muted);font-size:12px">${when(g.t)}</span></div>`).join("") || '<div style="color:var(--muted)">' + t("firstGuest") + '</div>'; };
     // 말 한마디: 왼쪽에 「닉네임 :」, 오른쪽에 한 말
-    const drawW = () => { $("wishes").innerHTML = W.map(w => `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px 0;text-align:left"><span style="flex:none;color:var(--gold);font-weight:700">${esc(w.n)}${badge(w.n)} :</span><span style="flex:1;min-width:0;word-break:break-all">${esc(w.m)}</span></div>`).join("") || '<div style="color:var(--muted)">아직 올린 말이 없습니다</div>'; };
+    const drawW = () => { $("wishes").innerHTML = W.map(w => `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px 0;text-align:left"><span style="flex:none;color:var(--gold);font-weight:700">${esc(w.n)}${badge(w.n)} :</span><span style="flex:1;min-width:0;word-break:break-all">${esc(w.m)}<span class="tr" data-m="${esc(w.m)}" style="display:block;color:var(--muted);font-size:13px"></span></span></div>`).join("") || '<div style="color:var(--muted)">' + t("noWish") + '</div>';
+      $("wishes").querySelectorAll(".tr").forEach(async e => { e.textContent = await trTo(e.dataset.m); }); };
+    REDRAW = () => { show(); drawG(); drawW(); };
     DB.ref("pray/fin/" + today()).on("value", s => { FIN = new Set(Object.values(s.val() || {}).map(x => x && x.n).filter(Boolean)); drawG(); drawW(); });
     DB.ref("pray/guest").limitToLast(100).on("value", s => { G = Object.values(s.val() || {}).sort((a, b) => b.t - a.t); drawG(); });
     DB.ref("pray/wish").limitToLast(30).on("value", s => { W = Object.values(s.val() || {}).sort((a, b) => b.t - a.t); drawW(); });
@@ -261,38 +348,32 @@ async function together() {
 const esc = t => String(t || "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 async function wish() {
   const m = $("wish").value.trim(); if (!m) return;
-  if (!DB) { $("msg").textContent = "기도를 마음에 담았습니다 🙏"; $("wish").value = ""; return; }
-  try { await DB.ref("pray/wish").push({n: NICK.slice(0, 20), m: m.slice(0, 100), t: firebase.database.ServerValue.TIMESTAMP}); $("wish").value = ""; $("msg").textContent = "기도를 올렸습니다 🙏"; bell(); }
-  catch (e) { $("msg").textContent = "기도를 못 올렸습니다(다시)"; }
+  if (!DB) { $("msg").textContent = t("wishLocal"); $("wish").value = ""; return; }
+  try { await DB.ref("pray/wish").push({n: NICK.slice(0, 20), m: m.slice(0, 100), t: firebase.database.ServerValue.TIMESTAMP}); $("wish").value = ""; $("msg").textContent = t("wished"); bell(); }
+  catch (e) { $("msg").textContent = t("wishFail"); }
 }
 $("wishGo").onclick = wish; $("wish").onkeydown = e => { if (e.key === "Enter") wish(); };
 // 비번 · 아이디 → 일주문(방명록) → 법당
 // 들어오면 법당이 바로 · 일주문(방명록)은 아래 · 사람이 앞으로 걸어가 방석에 서면 절을 저절로 시작
 function open() {
   $("gate").remove(); $("app").after($("entry")); $("entry").hidden = false; $("app").hidden = false;
-  $("who").textContent = $("who2").textContent = NICK + " 님"; draw(); together(); walkIn();
+  mkAv("me", NICK, true); setName(AV.me, NICK, n); layout(); draw(); applyLang(); together(); walkIn();
 }
 async function walkIn() {
-  const P = $("person"); busy = true; pose(0); $("msg").textContent = "법당 안으로 걸어 들어갑니다…";
-  // 화면 앞쪽(크게)에서 불상 쪽(작게)으로 — 뚝뚝 끊어 걷기(한 걸음마다 좌우로 살짝)
-  const N = 10;
-  for (let i = 0; i <= N; i++) {
-    const k = i / N, y = 90 * (1 - k), sc = 1.35 - .35 * k, x = i < N ? (i % 2 ? 3 : -3) : 0;
-    P.setAttribute("transform", `translate(${150 + x} ${288 + y}) scale(${sc}) translate(-150 -288)`);
-    if (i < N) { moktakSoft(); await wait(260); }
-  }
-  P.removeAttribute("transform"); busy = false;
-  if (n < 108) { $("msg").textContent = "방석 앞에 섰습니다 — 절을 시작합니다"; await wait(700); auto = setInterval(bow, 2400); bow(); $("auto").textContent = "자동 멈춤"; }
+  busy = true; $("msg").textContent = t("walk");
+  await walkAv(AV.me, true); busy = false;   // 화면 앞쪽(크게)에서 방석으로 — 뚝뚝 끊어 걷기
+  if (n < 108) { $("msg").textContent = t("start"); await wait(700); auto = setInterval(bow, 2400); bow(); $("auto").textContent = t("autoOff"); }
 }
 function moktakSoft() { if (!sound) return; try { const c = ac(), t = c.currentTime, o = c.createOscillator(), g = c.createGain(); o.frequency.value = 140; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.15, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + .08); o.connect(g).connect(c.destination); o.start(t); o.stop(t + .1); } catch (e) {} }
 // 방명록: 누르면 닉네임과 시각이 남는다(모두가 본다)
 $("sign").onclick = async () => {
-  if (!DB) { $("guests").innerHTML = '<div style="color:var(--muted)">방명록에 연결하지 못했습니다(잠시 뒤 다시)</div>'; return; }
+  if (!DB) { $("guests").innerHTML = '<div style="color:var(--muted)">' + t("noBook") + '</div>'; return; }
   $("sign").disabled = true;
-  try { await DB.ref("pray/guest").push({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); $("sign").textContent = "✅ 이름을 남겼습니다"; }
-  catch (e) { $("sign").disabled = false; $("sign").textContent = "다시 남기기"; }
+  try { await DB.ref("pray/guest").push({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); $("sign").textContent = t("signed"); }
+  catch (e) { $("sign").disabled = false; $("sign").textContent = t("signAgain"); }
 };
 const when = t => { const d = new Date(t), p = x => String(x).padStart(2, "0"); return (d.getMonth() + 1) + "/" + d.getDate() + " " + p(d.getHours()) + ":" + p(d.getMinutes()); };
+applyLang();
 try { if (sessionStorage.getItem("pray_ok") && NICK) open(); } catch (e) {}
 </script>
 </body>
