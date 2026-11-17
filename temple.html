@@ -40,6 +40,26 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
   <div id="bad" style="color:#e66;min-height:20px"></div>
 </div>
 
+<div id="entry" hidden style="max-width:520px;margin:0 auto;padding:12px 16px 24px;text-align:center">
+  <h1>일주문</h1>
+  <div class="sub">절에 오신 것을 환영합니다 · <span id="who2"></span></div>
+  <svg viewBox="0 0 300 170" style="width:100%;max-height:30vh">
+    <rect x="0" y="140" width="300" height="30" fill="#6b4a2e"/>
+    <path d="M30 40 L150 8 L270 40 Z" fill="#3b3b3b" stroke="#1a120c" stroke-width="3"/>
+    <rect x="40" y="40" width="220" height="14" fill="#1f5c4a" stroke="#1a120c" stroke-width="2"/>
+    <rect x="115" y="56" width="70" height="22" fill="#2b1a10" stroke="#d9a441" stroke-width="2"/>
+    <text x="150" y="72" text-anchor="middle" font-size="13" font-weight="700" fill="#d9a441">一柱門</text>
+    <rect x="60" y="54" width="16" height="88" fill="#8e2a1c" stroke="#1a120c" stroke-width="2"/>
+    <rect x="224" y="54" width="16" height="88" fill="#8e2a1c" stroke="#1a120c" stroke-width="2"/>
+  </svg>
+  <div style="background:#2b1a10;border:3px solid var(--gold);border-radius:8px;padding:12px;margin:10px 0;text-align:left">
+    <div style="font-weight:700;color:var(--gold);margin-bottom:8px">📖 방명록</div>
+    <button class="btn" id="sign" style="width:100%">🖋 방명록에 이름 남기기</button>
+    <div id="guests" style="margin-top:10px;font-size:14px;line-height:1.7;max-height:34vh;overflow:auto"></div>
+  </div>
+  <button class="btn" id="enter" style="font-size:20px;padding:12px 30px">🙏 법당으로 들어가기</button>
+</div>
+
 <div id="app" hidden>
   <h1>온라인 백팔배</h1>
   <div class="sub">마음을 내려놓고, 한 번에 한 배씩 · <span id="who"></span></div>
@@ -223,6 +243,10 @@ async function together() {
     let names = [];
     const show = () => { $("live").innerHTML = `지금 법당에 <b>${here}</b>명${names.length ? " (" + names.map(esc).join(", ") + ")" : ""}<br>오늘 모두 올린 절 <b>${all.toLocaleString()}</b>배 · 백팔배 마친 분 <b>${done}</b>`; };
     DB.ref("pray/here").on("value", s => { const v = s.val() || {}; here = Object.keys(v).length; names = [...new Set(Object.values(v).map(x => (x && x.n) || "").filter(Boolean))]; show(); });
+    DB.ref("pray/guest").limitToLast(100).on("value", s => {
+      const v = Object.values(s.val() || {}).sort((a, b) => b.t - a.t);
+      $("guests").innerHTML = v.map(g => `<div style="border-bottom:1px solid #3a2a1c">🖋 <b style="color:var(--gold)">${esc(g.n)}</b> <span style="color:var(--muted);font-size:12px">${when(g.t)}</span></div>`).join("") || '<div style="color:var(--muted)">첫 번째로 이름을 남겨 보세요</div>';
+    });
     DB.ref("pray/wish").limitToLast(30).on("value", s => {
       const v = Object.values(s.val() || {}).sort((a, b) => b.t - a.t);
       $("wishes").innerHTML = v.map(w => `<div style="border-bottom:1px solid #3a2a1c;padding:4px 0">🪷 <b style="color:var(--gold)">${esc(w.n)}</b> ${esc(w.m)}</div>`).join("") || '<div style="color:var(--muted)">아직 올린 기도가 없습니다</div>';
@@ -239,7 +263,17 @@ async function wish() {
   catch (e) { $("msg").textContent = "기도를 못 올렸습니다(다시)"; }
 }
 $("wishGo").onclick = wish; $("wish").onkeydown = e => { if (e.key === "Enter") wish(); };
-function open() { $("gate").remove(); $("app").hidden = false; $("who").textContent = NICK + " 님"; draw(); together(); }
+// 비번 · 아이디 → 일주문(방명록) → 법당
+function open() { $("gate").remove(); $("entry").hidden = false; $("who2").textContent = NICK + " 님"; together(); }
+$("enter").onclick = () => { $("entry").hidden = true; $("app").hidden = false; $("who").textContent = NICK + " 님"; draw(); scrollTo(0, 0); };
+// 방명록: 누르면 닉네임과 시각이 남는다(모두가 본다)
+$("sign").onclick = async () => {
+  if (!DB) { $("guests").innerHTML = '<div style="color:var(--muted)">방명록에 연결하지 못했습니다(잠시 뒤 다시)</div>'; return; }
+  $("sign").disabled = true;
+  try { await DB.ref("pray/guest").push({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP}); $("sign").textContent = "✅ 이름을 남겼습니다"; }
+  catch (e) { $("sign").disabled = false; $("sign").textContent = "다시 남기기"; }
+};
+const when = t => { const d = new Date(t), p = x => String(x).padStart(2, "0"); return (d.getMonth() + 1) + "/" + d.getDate() + " " + p(d.getHours()) + ":" + p(d.getMinutes()); };
 try { if (sessionStorage.getItem("pray_ok") && NICK) open(); } catch (e) {}
 </script>
 </body>
