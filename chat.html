@@ -214,7 +214,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-18c</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-18d</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -786,6 +786,7 @@ function unlockAudio() {
   try { if (V.lk && V.lk.canPlaybackAudio === false) V.lk.startAudio().catch(() => {}); } catch (e) {}
   if (typeof WAKE !== "undefined" && !WAKE) wakeOn();   // 화면 꺼짐 방지는 누른 순간에만 허락하는 폰이 있어 한 번 더
   document.querySelectorAll('audio[id^="va_"]').forEach(a => { if (a.paused) a.play().catch(() => {}); });
+  if (typeof ANDROID !== "undefined" && ANDROID) { try { if (BOOST) BOOST.ctx.resume().catch(() => {}); applyVol(); } catch (e) {} }   // 안드로이드 스피커 길(웹 오디오)을 누른 순간 다시 연다
 }, {passive: true}));
 function hmph() { if (muted) return; try { HMPH.currentTime = 0; const p = HMPH.play(); if (p) p.catch(() => {}); } catch (e) {} }
 function tone() {
@@ -1242,6 +1243,7 @@ function meter() {
 // 상대 소리 키우기(11-12 「목소리가 아주 작게 들린다」): 🔊 ×1 → ×1.5 → ×2 → ×3. 소리 칸(audio)의 최대는 1배라
 // ×1 보다 크면 같은 소리를 웹 오디오로 돌려 키우고(찢어지지 않게 압축기) 칸 자체는 묵음. 오디오가 막혀 있으면 원래대로 칸에서 낸다
 const VOLS = [1, 1.5, 2, 3];
+const ANDROID = /Android/i.test(navigator.userAgent);
 let BOOST = null;
 const volNow = () => { const v = +store.get("chat_vol"); return VOLS.includes(v) ? v : 1; };
 function unboost(a) { if (a._bs) { try { a._bs.disconnect(); } catch (e) {} a._bs = null; a._bsId = ""; } a.muted = false; a.volume = 1; }
@@ -1263,7 +1265,8 @@ async function toSpeaker() {
 function applyVol() {
   const v = volNow(), els = [...document.querySelectorAll('audio[id^="va_"]')];
   // 11-18: 아이폰 사파리는 상대(원격) 소리를 웹 오디오로 돌리면 소리가 아예 안 난다 — 아이폰은 키우기 없이 칸 그대로 튼다
-  if (v <= 1 || IOS) { els.forEach(unboost); return; }
+  // 11-18 안드로이드 「스피커폰이 안 된다」: 칸(audio)으로 틀면 통화 소리로 잡혀 수화기로 간다 → 안드로이드는 늘 웹 오디오(미디어 소리)로 내보낸다
+  if (IOS || (v <= 1 && !ANDROID)) { els.forEach(unboost); return; }
   try {
     if (!BOOST) {
       const C = window.AudioContext || window.webkitAudioContext, ctx = new C(), g = ctx.createGain(), cp = ctx.createDynamicsCompressor();
