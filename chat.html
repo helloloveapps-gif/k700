@@ -214,7 +214,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-18d</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-18e</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -680,8 +680,18 @@ $("log").addEventListener("click", e => {
   const d = e.target.closest(".msg"); if (!d || e.target.closest("button,.rep,img")) return;
   const on = !d.classList.contains("sel"); log.querySelectorAll(".msg.sel").forEach(x => x.classList.remove("sel")); if (on) d.classList.add("sel");
 });
+// 11-18 음성 진단: 채팅에 「/진단」을 보내면 이 기기의 음성 상태(소리 길 · 재생 · 볼륨)를 글로 올린다
+function vDiag() {
+  const els = [...document.querySelectorAll('audio[id^="va_"]')];
+  return "🔧진단 " + (($("verL") || {}).textContent || "") + " | " + navigator.userAgent.replace(/^.*?\(/, "").slice(0, 70)
+    + " | A=" + ANDROID + " vol=" + volNow() + " boost=" + (BOOST ? BOOST.ctx.state + "/g" + BOOST.g.gain.value + "/sr" + BOOST.ctx.sampleRate : "없음")
+    + " | 칸 " + els.length + ": " + els.map(a => (a.paused ? "정지" : "재생") + (a.muted ? "·묵음" : "") + "·v" + a.volume + "·bs" + (a._bs ? 1 : 0) + "·" + (a.srcObject ? a.srcObject.getAudioTracks().map(t => t.readyState + (t.muted ? "m" : "") + (t.enabled ? "" : "x")).join("/") : "-")).join(", ")
+    + " | lk=" + (typeof V !== "undefined" && V && V.lk ? V.lk.state + "/play" + V.lk.canPlaybackAudio : "-")
+    + " | sess=" + (navigator.audioSession ? navigator.audioSession.type : "-");
+}
 function send() {
-  const box = $("msg"), text = box.value.trim();
+  const box = $("msg"); let text = box.value.trim();
+  if (/^\/(진단|diag)$/.test(text)) { try { text = vDiag(); } catch (e) { text = "🔧진단 오류 " + e.message; } }
   if (!text || !me.n || !curRef) return;
   box.value = ""; grow();
   const m = {n: me.n, l: me.l, t: text.slice(0, 1000), u: uid, ts: firebase.database.ServerValue.TIMESTAMP};
