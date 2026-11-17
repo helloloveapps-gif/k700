@@ -380,12 +380,19 @@ async function together() {
     const badge = nm => FIN.has(nm) ? ' <span style="font-size:11px;background:var(--gold);color:var(--ink);border-radius:8px;padding:0 6px;font-weight:700;white-space:nowrap">' + esc(t("fin")) + '</span>' : "";
     const drawG = () => drawBook();
     // 말 한마디: 왼쪽에 「닉네임 :」, 오른쪽에 한 말
-    const drawW = () => { $("wishes").innerHTML = W.map(w => `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px 0;text-align:left"><span style="flex:none;color:var(--gold);font-weight:700">${esc(w.n)}${badge(w.n)} :</span><span style="flex:1;min-width:0;word-break:break-all">${esc(w.m)}<span class="tr" data-m="${esc(w.m)}" style="display:block;color:var(--muted);font-size:13px"></span></span></div>`).join("") || '<div style="color:var(--muted)">' + t("noWish") + '</div>';
+    // 말 한마디: 20줄씩 쪽 넘김
+    let WP = 0;
+    const drawW = () => { const WPER = 20, pages = Math.max(1, Math.ceil(W.length / WPER)); WP = Math.min(WP, pages - 1);
+      const pb = (k, label, on) => `<button data-wp="${k}" style="font:inherit;font-size:13px;min-width:30px;padding:3px 8px;margin:2px;border-radius:8px;border:1px solid var(--gold);background:${on ? "var(--gold)" : "transparent"};color:${on ? "var(--ink)" : "var(--gold)"};cursor:pointer">${label}</button>`;
+      let nav = ""; if (pages > 1) { nav = pb(Math.max(0, WP - 1), "‹"); for (let i = 0; i < pages; i++) nav += pb(i, i + 1, i === WP); nav += pb(Math.min(pages - 1, WP + 1), "›"); }
+      $("wishes").innerHTML = W.slice(WP * WPER, WP * WPER + WPER).map(w => `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px 0;text-align:left"><span style="flex:none;color:var(--gold);font-weight:700">${esc(w.n)}${badge(w.n)} :</span><span style="flex:1;min-width:0;word-break:break-all">${esc(w.m)}<span class="tr" data-m="${esc(w.m)}" style="display:block;color:var(--muted);font-size:13px"></span></span></div>`).join("") + (nav ? `<div style="text-align:center;margin-top:6px">${nav}</div>` : "") || '<div style="color:var(--muted)">' + t("noWish") + '</div>';
+      if (!W.length) $("wishes").innerHTML = '<div style="color:var(--muted)">' + t("noWish") + '</div>';
+      $("wishes").querySelectorAll("[data-wp]").forEach(b => b.onclick = () => { WP = +b.dataset.wp; drawW(); });
       $("wishes").querySelectorAll(".tr").forEach(async e => { e.textContent = await trTo(e.dataset.m); }); };
     REDRAW = () => { show(); drawG(); drawW(); };
     DB.ref("pray/fin/" + today()).on("value", s => { FIN = new Set(Object.values(s.val() || {}).map(x => x && x.n).filter(Boolean)); drawG(); drawW(); });
     DB.ref("pray/book").orderByKey().limitToLast(60).on("value", s => { BOOK = s.val() || {}; drawBook(); });
-    DB.ref("pray/wish").limitToLast(30).on("value", s => { W = Object.values(s.val() || {}).sort((a, b) => b.t - a.t); drawW(); });
+    DB.ref("pray/wish").limitToLast(400).on("value", s => { W = Object.values(s.val() || {}).sort((a, b) => b.t - a.t); drawW(); });
     DB.ref("pray/day/" + today()).on("value", s => { all = s.val() || 0; show(); });
     DB.ref("pray/done/" + today()).on("value", s => { done = s.val() || 0; show(); });
   } catch (e) { DB = null; $("live").textContent = ""; if (AV.me.slot == null) seated(3); }
