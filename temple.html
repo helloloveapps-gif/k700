@@ -62,11 +62,12 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
 
 </div>
 
+<audio id="bgm" src="namu.mp3" loop preload="auto"></audio>
 <div id="app" hidden>
   <div class="lang"><button data-l="ko">한국어</button><button data-l="zh">中文</button><button data-l="en">EN</button></div>
   <h1 data-i="title"></h1>
   <div class="sub"><span data-i="sub"></span> · <span id="who"></span></div>
-  <div id="hall">
+  <div id="hall"><div id="queue" hidden style="position:absolute;inset:auto 0 8px 0;margin:auto;width:max-content;max-width:92%;z-index:2;background:#000c;border:2px solid var(--gold);border-radius:12px;padding:10px 16px;text-align:center;color:var(--paper);font-size:15px"></div>
     <svg viewBox="-90 0 480 315" aria-label="법당">
       <!-- 단청 띠 -->
       <rect x="-90" y="0" width="480" height="22" fill="#1f5c4a"/>
@@ -85,18 +86,28 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
       <!-- 광배 -->
       <circle cx="150" cy="105" r="62" fill="#5a2e1d" stroke="#d9a441" stroke-width="3"/>
       <circle cx="150" cy="105" r="50" fill="none" stroke="#d9a441" stroke-width="1.5" stroke-dasharray="4 5"/>
-      <!-- 부처님(단순한 앉은 모습) -->
-      <g stroke="#1a120c" stroke-width="2.5" fill="#d9a441">
-        <path d="M95 200 Q100 150 150 145 Q200 150 205 200 Z"/>
-        <rect x="140" y="128" width="20" height="20"/>
-        <ellipse cx="150" cy="110" rx="22" ry="25"/>
-        <circle cx="150" cy="82" r="10"/>
-        <path d="M128 112 q-6 14 2 22 M172 112 q6 14 -2 22" fill="none"/>
-        <ellipse cx="150" cy="185" rx="26" ry="9"/>
+      <!-- 부처님(인자한 얼굴 · 선정인) -->
+      <g stroke="#1a120c" stroke-width="2.5" stroke-linejoin="round">
+        <path d="M92 202 Q94 160 122 150 Q150 142 178 150 Q206 160 208 202 Z" fill="#c98a2e"/>
+        <path d="M122 151 Q141 175 132 201 M178 151 Q160 173 169 201 M150 146 Q146 170 150 178" fill="none" stroke-width="1.6"/>
+        <path d="M140 130 v15 q10 6 20 0 v-15" fill="#f0c56e"/>
+        <path d="M128 102 q-9 2 -8 15 q1 14 6 21 q5 2 6 -5" fill="#f0c56e"/>
+        <path d="M172 102 q9 2 8 15 q-1 14 -6 21 q-5 2 -6 -5" fill="#f0c56e"/>
+        <path d="M127 100 Q127 78 150 78 Q173 78 173 100 Q173 127 150 134 Q127 127 127 100 Z" fill="#f0c56e"/>
+        <path d="M126 99 Q125 71 150 69 Q175 71 174 99 Q166 86 150 86 Q134 86 126 99 Z" fill="#33295e"/>
+        <ellipse cx="150" cy="65" rx="11" ry="9" fill="#33295e"/>
+        <ellipse cx="150" cy="186" rx="22" ry="8" fill="#f0c56e"/>
+        <path d="M130 186 q20 -9 40 0" fill="none" stroke-width="1.5"/>
       </g>
-      <path d="M140 108 q4 3 8 0 M152 108 q4 3 8 0" stroke="#1a120c" stroke-width="2" fill="none"/>
-      <path d="M145 121 q5 3 10 0" stroke="#1a120c" stroke-width="2" fill="none"/>
-      <circle cx="150" cy="99" r="1.8" fill="#1a120c"/>
+      <g fill="none" stroke="#1a120c" stroke-linecap="round">
+        <path d="M135 98 q7 -4 13 0 M152 98 q7 -4 13 0" stroke-width="1.6"/>
+        <path d="M136 106 q6 5 11 0 M153 106 q6 5 11 0" stroke-width="2"/>
+        <path d="M150 108 q-3 9 0 11" stroke-width="1.4"/>
+        <path d="M142 123 q8 6 16 0" stroke-width="2"/>
+        <path d="M142 141 q8 3 16 0" stroke-width="1.3"/>
+      </g>
+      <ellipse cx="136" cy="116" rx="4.5" ry="2.2" fill="#f2a07a" opacity=".55"/><ellipse cx="164" cy="116" rx="4.5" ry="2.2" fill="#f2a07a" opacity=".55"/>
+      <circle cx="150" cy="92" r="1.8" fill="#c0392b"/>
       <!-- 연꽃 좌대 -->
       <g stroke="#1a120c" stroke-width="2" fill="#e8a3a0">
         <path d="M88 200 q15 -18 30 0 q15 -18 32 0 q17 -18 32 0 q15 -18 30 0 Z"/>
@@ -124,6 +135,7 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
       <rect x="-90" y="246" width="480" height="69" fill="#6b4a2e"/>
       <line x1="-90" y1="246" x2="390" y2="246" stroke="#1a120c" stroke-width="3"/>
       <!-- 절하는 사람들(뒷모습) — 머리 위에 닉네임 -->
+      <g id="mats"></g>
       <g id="people"></g>
       <!-- 염주 108알 -->
       <g id="beads"></g>
@@ -181,6 +193,7 @@ const L = {
     press: "「절 올리기」를 누르세요", walk: "법당 안으로 걸어 들어갑니다…", start: "방석 앞에 섰습니다 — 절을 시작합니다", unit: "배", nim: " 님",
     m1: "첫 배 — 오늘도 이 자리에 왔습니다", m27: "스물일곱 배 — 숨을 고르세요", m54: "쉰네 배 — 절반을 넘었습니다", m81: "여든한 배 — 조금만 더", m100: "백 배 — 남은 여덟 배", m108: "🙏 백팔배를 마쳤습니다. 마음이 편안하시기를",
     wish: "말 한마디(기도)", post: "올리기", wished: "기도를 올렸습니다 🙏", wishLocal: "기도를 마음에 담았습니다 🙏", wishFail: "기도를 못 올렸습니다(다시)", noWish: "아직 올린 말이 없습니다", fin: "🏅108배 완성",
+    full: q => `🙏 법당 방석 8자리가 모두 찼습니다<br>대기 <b>${q}</b>번째 — 자리가 나면 바로 들어갑니다`,
     live: (h, nm, a, d) => `지금 법당에 <b>${h}</b>명${nm}<br>오늘 모두 올린 절 <b>${a}</b>배 · 백팔배 마친 분 <b>${d}</b>`},
   zh: {gate: "線上祈福 · 入場密碼", nick: "暱稱(ID)", pw: "密碼", go: "進入", noNick: "請輸入暱稱", badPw: "密碼錯誤",
     gateH: "一柱門 · 留言簿", welcome: "歡迎來到寺院", book: "📖 留言簿", sign: "🖋 在留言簿簽名", signed: "✅ 已留下名字", signAgain: "再簽一次", noBook: "無法連接留言簿(請稍後再試)", firstGuest: "成為第一個簽名的人吧",
@@ -188,6 +201,7 @@ const L = {
     press: "請按「叩拜」", walk: "正走進大殿…", start: "已站在蒲團前 — 開始叩拜", unit: "拜", nim: "",
     m1: "第一拜 — 今天也來到這裡了", m27: "第二十七拜 — 調整呼吸", m54: "第五十四拜 — 已過一半", m81: "第八十一拜 — 再加油", m100: "第一百拜 — 還剩八拜", m108: "🙏 一百零八拜圓滿。願你心安",
     wish: "說一句話(祈願)", post: "送出", wished: "已送出祈願 🙏", wishLocal: "祈願已放在心裡 🙏", wishFail: "送出失敗(請再試)", noWish: "還沒有人留言", fin: "🏅108拜圓滿",
+    full: q => `🙏 大殿8個蒲團都滿了<br>排隊第 <b>${q}</b> 位 — 有空位就會進入`,
     live: (h, nm, a, d) => `大殿裡現在 <b>${h}</b> 人${nm}<br>今天大家共拜了 <b>${a}</b> 拜 · 完成108拜 <b>${d}</b> 人`},
   en: {gate: "Online Prayer · Password", nick: "Nickname (ID)", pw: "Password", go: "Enter", noNick: "Please enter a nickname", badPw: "Wrong password",
     gateH: "Temple Gate · Guestbook", welcome: "Welcome to the temple", book: "📖 Guestbook", sign: "🖋 Sign the guestbook", signed: "✅ Signed", signAgain: "Sign again", noBook: "Can't reach the guestbook (try again later)", firstGuest: "Be the first to sign",
@@ -195,6 +209,7 @@ const L = {
     press: "Press “Bow”", walk: "Walking into the hall…", start: "Standing at the cushion — bowing begins", unit: " bows", nim: "",
     m1: "First bow — you came here again today", m27: "27 bows — catch your breath", m54: "54 bows — past halfway", m81: "81 bows — almost there", m100: "100 bows — 8 to go", m108: "🙏 108 bows complete. May your heart be at peace",
     wish: "Say a word (prayer)", post: "Post", wished: "Prayer posted 🙏", wishLocal: "Prayer kept in your heart 🙏", wishFail: "Couldn't post (try again)", noWish: "No words yet", fin: "🏅108 done",
+    full: q => `🙏 All 8 cushions are taken<br>You are <b>#${q}</b> in line — you'll enter when a seat opens`,
     live: (h, nm, a, d) => `In the hall now: <b>${h}</b>${nm}<br>Bows today by everyone: <b>${a}</b> · Finished 108: <b>${d}</b>`}
 };
 let LANG = store.get("pray_lang") || (/^zh/i.test(navigator.language) ? "zh" : /^ko/i.test(navigator.language) ? "ko" : "en");
@@ -255,12 +270,13 @@ const POSES = ['<rect x="139" y="266" width="9" height="22" fill="#5c5a55"/><rec
 const wait = ms => new Promise(r => setTimeout(r, ms));
 // 법당 안 사람들: 나는 가운데 앞 방석 · 들어온 차례로 옆 · 뒷줄(11자리까지 보임)
 const AV = {};
-const SLOTS = [[0, 0, 1], [-85, 0, 1], [85, 0, 1], [-170, 0, 1], [170, 0, 1], [-42, 22, 1.06], [42, 22, 1.06], [-127, 22, 1.06], [127, 22, 1.06], [-212, 22, 1.06], [212, 22, 1.06]];
+const MATS = 8, GAP = 58, SC = .6, MX = i => 150 + (i - (MATS - 1) / 2) * GAP;   // 방석 8개 한 줄
+const ORDER = [3, 4, 2, 5, 1, 6, 0, 7];   // 나는 가운데 · 오는 차례로 양옆
+for (let i = 0; i < MATS; i++) { const e = document.createElementNS(NS, "ellipse"); e.setAttribute("cx", MX(i)); e.setAttribute("cy", 292); e.setAttribute("rx", 44 * SC + 2); e.setAttribute("ry", 10 * SC + 2); e.setAttribute("fill", "#8e2a1c"); e.setAttribute("stroke", "#1a120c"); e.setAttribute("stroke-width", 2); $("mats").appendChild(e); }
 function mkAv(id, name, self) {
   const g = document.createElementNS(NS, "g"), body = document.createElementNS(NS, "g");
-  g.innerHTML = `<ellipse cx="150" cy="292" rx="44" ry="10" fill="${self ? "#8e2a1c" : "#6e3a2a"}" stroke="#1a120c" stroke-width="2"/>`;
   body.innerHTML = POSES.map((p, i) => `<g${i ? ' style="display:none"' : ""} stroke="#1a120c" stroke-width="2.5" fill="${self ? "#f3e6c8" : "#d6c8a8"}">${p}</g>`).join("")
-    + `<text x="150" y="192" text-anchor="middle" font-size="14" font-weight="700" fill="${self ? "#ffd76a" : "#f3e6c8"}" stroke="#1a120c" stroke-width="3.5" paint-order="stroke"></text>`;
+    + `<text x="150" y="192" text-anchor="middle" font-size="22" font-weight="700" fill="${self ? "#ffd76a" : "#f3e6c8"}" stroke="#1a120c" stroke-width="5" paint-order="stroke"></text>`;
   g.appendChild(body); $("people").appendChild(g);
   const a = AV[id] = {g, body, ps: [...body.children].slice(0, POSES.length), nm: body.querySelector("text"), b: 0, t: 0, busy: false};
   setName(a, name, 0); return a;
@@ -268,13 +284,10 @@ function mkAv(id, name, self) {
 const setName = (a, name, c) => { a.nm.textContent = name + (c >= 108 ? " 🏅" : ""); };
 const setPose = (a, k) => { a.ps.forEach((p, i) => p.style.display = i === k ? "" : "none"); a.nm.setAttribute("y", [193, 203, 209, 228, 246, 246][k]); };   // 이름표는 머리를 따라간다
 function layout() {
-  const ids = ["me", ...Object.keys(AV).filter(x => x !== "me").sort((x, y) => AV[x].t - AV[y].t)].filter(x => AV[x]);
-  ids.forEach((id, i) => {
-    const a = AV[id]; if (i >= SLOTS.length) { a.g.style.display = "none"; return; }
-    const [dx, dy, sc] = SLOTS[i]; a.g.style.display = ""; a.slot = i;
-    a.g.setAttribute("transform", `translate(${150 + dx} ${288 + dy}) scale(${sc}) translate(-150 -288)`);
-  });
-  ids.filter(id => AV[id].slot < SLOTS.length).sort((x, y) => SLOTS[AV[x].slot][1] - SLOTS[AV[y].slot][1]).forEach(id => $("people").appendChild(AV[id].g));   // 앞줄이 위에
+  for (const a of Object.values(AV)) {
+    if (a.slot == null) { a.g.style.display = "none"; continue; }
+    a.g.style.display = ""; a.g.setAttribute("transform", `translate(${MX(a.slot)} 288) scale(${SC}) translate(-150 -288)`);
+  }
 }
 async function bowAnim(a, snd) {
   if (a.busy) return; a.busy = true;
@@ -288,8 +301,8 @@ async function bowAnim(a, snd) {
 async function walkAv(a, snd) {
   const N = 10;
   for (let i = 0; i <= N; i++) {
-    const k = i / N, y = 90 * (1 - k), sc = 1.35 - .35 * k, x = i < N ? (i % 2 ? 3 : -3) : 0;
-    a.body.setAttribute("transform", `translate(${150 + x} ${288 + y}) scale(${sc}) translate(-150 -288)`);
+    const k = i / N, y = 110 * (1 - k), x = i < N ? (i % 2 ? 3 : -3) : 0;   // 제 방석 줄 그대로 아래에서 올라온다(옆 사람과 안 겹침)
+    a.body.setAttribute("transform", `translate(${x} ${y})`);
     if (i < N) { if (snd) moktakSoft(); await wait(260); }
   }
   a.body.removeAttribute("transform");
@@ -307,7 +320,9 @@ function stopAuto() { clearInterval(auto); auto = null; $("auto").textContent = 
 $("bow").onclick = bow;
 document.addEventListener("keydown", e => { if (e.code === "Space" && !$("app").hidden) { e.preventDefault(); bow(); } });
 $("auto").onclick = () => { if (auto) return stopAuto(); auto = setInterval(bow, 3600); bow(); $("auto").textContent = t("autoOff"); };
-$("snd").onclick = () => { sound = !sound; store.set("pray_snd", sound ? "1" : "0"); $("snd").textContent = sound ? t("sndOn") : t("sndOff"); };
+$("snd").onclick = () => { sound = !sound; store.set("pray_snd", sound ? "1" : "0"); $("snd").textContent = sound ? t("sndOn") : t("sndOff"); bgm(); };
+function bgm() { const a = $("bgm"); a.volume = .35; if (sound && !$("app").hidden) a.play().catch(() => {}); else a.pause(); }
+document.addEventListener("pointerdown", () => { if ($("bgm").paused) bgm(); });   // 휴대폰은 한 번 눌러야 소리가 난다
 $("reset").onclick = () => { if (!confirm(t("resetQ"))) return; stopAuto(); n = 0; draw(); $("msg").textContent = t("resetDone"); };
 
 // 함께: 지금 법당에 있는 사람 · 오늘 모두 올린 절(채팅과 같은 Firebase). 안 되면 혼자 세기만
@@ -319,6 +334,7 @@ async function together() {
     await firebase.auth().signInAnonymously(); uid = firebase.auth().currentUser.uid;
     DB = firebase.database();
     const me = DB.ref("pray/here/" + uid); await me.set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP, c: n, b: 0}); me.onDisconnect().remove();
+    getSeat();
     let here = 0, all = 0, done = 0;
     let names = [];
     const show = () => { $("live").innerHTML = t("live")(here, names.length ? " (" + names.map(esc).join(", ") + ")" : "", all.toLocaleString(), done); };
@@ -328,7 +344,8 @@ async function together() {
       for (const [k, x] of Object.entries(v)) {
         if (k === uid || !x) continue;
         let a = AV[k];
-        if (!a) { a = mkAv(k, x.n || "?", false); a.t = x.t || 0; a.b = x.b || 0; layout(); walkAv(a, false); }
+        if (!a) { a = mkAv(k, x.n || "?", false); a.t = x.t || 0; a.b = x.b || 0; a.slot = null; }
+        if (typeof x.s === "number" && a.slot !== x.s) { a.slot = x.s; layout(); walkAv(a, false); }   // 자리를 잡으면 그 방석으로 걸어 들어온다
         setName(a, String(x.n || "?").slice(0, 20), x.c || 0);
         if ((x.b || 0) > a.b) { a.b = x.b; bowAnim(a, false); }
       }
@@ -348,7 +365,7 @@ async function together() {
     DB.ref("pray/wish").limitToLast(30).on("value", s => { W = Object.values(s.val() || {}).sort((a, b) => b.t - a.t); drawW(); });
     DB.ref("pray/day/" + today()).on("value", s => { all = s.val() || 0; show(); });
     DB.ref("pray/done/" + today()).on("value", s => { done = s.val() || 0; show(); });
-  } catch (e) { DB = null; $("live").textContent = ""; }
+  } catch (e) { DB = null; $("live").textContent = ""; if (AV.me.slot == null) seated(3); }
 }
 const esc = t => String(t || "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
 async function wish() {
@@ -362,7 +379,40 @@ $("wishGo").onclick = wish; $("wish").onkeydown = e => { if (e.key === "Enter") 
 // 들어오면 법당이 바로 · 일주문(방명록)은 아래 · 사람이 앞으로 걸어가 방석에 서면 절을 저절로 시작
 function open() {
   $("gate").remove(); $("app").after($("entry")); $("entry").hidden = false; $("app").hidden = false;
-  mkAv("me", NICK, true); setName(AV.me, NICK, n); layout(); draw(); applyLang(); together(); walkIn();
+  mkAv("me", NICK, true); setName(AV.me, NICK, n); layout(); draw(); applyLang(); bgm(); busy = true; together();
+}
+// 빈 방석 잡기: 가운데부터 · 동시에 같은 자리를 노려도 한 사람만(트랜잭션) · 나가면 자리 비움
+async function claimSeat() {
+  for (const i of ORDER) {
+    const ref = DB.ref("pray/seat/" + i);
+    const r = await ref.transaction(v => (v === null || v === uid) ? uid : undefined);
+    if (r.committed && r.snapshot.val() === uid) { ref.onDisconnect().remove(); return i; }
+  }
+  return -1;
+}
+let QREF = null;
+async function getSeat() {
+  const i = await claimSeat();
+  if (i >= 0) return seated(i);
+  // 다 찼다: 대기열에 서고, 자리가 나면 맨 앞 사람부터 들어간다
+  QREF = DB.ref("pray/queue/" + uid); await QREF.set(firebase.database.ServerValue.TIMESTAMP); QREF.onDisconnect().remove();
+  let Q = {}, SEAT = {}, trying = false;
+  const check = async () => {
+    if (AV.me.slot != null || trying) return;
+    const line = Object.entries(Q).sort((a, b) => a[1] - b[1]).map(x => x[0]), pos = line.indexOf(uid) + 1;
+    $("queue").hidden = false; $("queue").innerHTML = t("full")(pos || 1);
+    if (pos === 1 && Object.keys(SEAT).length < MATS) {
+      trying = true; const k = await claimSeat(); trying = false;
+      if (k >= 0) { DB.ref("pray/queue").off(); DB.ref("pray/seat").off(); await QREF.remove(); QREF = null; $("queue").hidden = true; seated(k); }
+    }
+  };
+  DB.ref("pray/queue").on("value", s => { Q = s.val() || {}; check(); });
+  DB.ref("pray/seat").on("value", s => { SEAT = s.val() || {}; check(); });
+}
+function seated(i) {
+  AV.me.slot = i; layout();
+  if (DB) DB.ref("pray/here/" + uid).update({s: i});
+  walkIn();
 }
 async function walkIn() {
   busy = true; $("msg").textContent = t("walk");
