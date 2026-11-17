@@ -57,7 +57,7 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
   <div style="background:#2b1a10;border:3px solid var(--gold);border-radius:8px;padding:12px;margin:10px 0;text-align:left">
     <div style="font-weight:700;color:var(--gold);margin-bottom:8px" data-i="book"></div>
     <button class="btn" id="sign" style="width:100%" data-i="sign"></button>
-    <div id="guests" style="margin-top:10px;font-size:14px;line-height:1.7;max-height:34vh;overflow:auto"></div>
+    <div id="guests" style="margin-top:10px;font-size:14px;line-height:1.7;"></div>
   </div>
 
 </div>
@@ -117,11 +117,11 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
       <rect x="40" y="212" width="220" height="34" fill="#5b2a1a" stroke="#1a120c" stroke-width="2"/>
       <!-- 명패 -->
       <g stroke="#1a120c" stroke-width="2">
-        <rect x="80" y="214" width="50" height="28" rx="2" fill="#2b1a10"/><rect x="84" y="218" width="42" height="20" fill="#e9d9b0"/>
-        <rect x="170" y="214" width="50" height="28" rx="2" fill="#2b1a10"/><rect x="174" y="218" width="42" height="20" fill="#e9d9b0"/>
+        <rect x="64" y="213" width="70" height="31" rx="2" fill="#2b1a10"/><rect x="68" y="217" width="62" height="23" fill="#e9d9b0"/>
+        <rect x="166" y="213" width="70" height="31" rx="2" fill="#2b1a10"/><rect x="170" y="217" width="62" height="23" fill="#e9d9b0"/>
       </g>
-      <text x="105" y="232" text-anchor="middle" font-size="11" font-weight="700" fill="#1a120c">Robiin</text>
-      <text x="195" y="232" text-anchor="middle" font-size="11" font-weight="700" fill="#1a120c">Dokdo</text>
+      <text x="99" y="234" text-anchor="middle" font-size="16" font-weight="800" fill="#1a120c">Robiin</text>
+      <text x="201" y="234" text-anchor="middle" font-size="16" font-weight="800" fill="#1a120c">Dokdo</text>
       <!-- 촛불 -->
       <g stroke="#1a120c" stroke-width="1.5">
         <rect x="62" y="194" width="8" height="18" fill="#f3e6c8"/><path class="flame" d="M66 182 q-5 7 0 12 q5 -5 0 -12" fill="#f0b23a" style="transform-origin:66px 194px"/>
@@ -342,7 +342,7 @@ async function together() {
     await firebase.auth().signInAnonymously(); uid = firebase.auth().currentUser.uid;
     DB = firebase.database();
     const me = DB.ref("pray/here/" + uid); await me.set({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP, c: n, b: 0}); me.onDisconnect().remove();
-    getSeat();
+    getSeat(); bookTouch();   // 들어오면 방명록에 오늘 한 줄(있으면 그대로)
     let here = 0, all = 0, done = 0;
     let names = [];
     const show = () => { $("live").innerHTML = t("live")(here, names.length ? " (" + names.map(esc).join(", ") + ")" : "", all.toLocaleString(), done); };
@@ -369,7 +369,7 @@ async function together() {
       $("wishes").querySelectorAll(".tr").forEach(async e => { e.textContent = await trTo(e.dataset.m); }); };
     REDRAW = () => { show(); drawG(); drawW(); };
     DB.ref("pray/fin/" + today()).on("value", s => { FIN = new Set(Object.values(s.val() || {}).map(x => x && x.n).filter(Boolean)); drawG(); drawW(); });
-    DB.ref("pray/book").orderByKey().limitToLast(14).on("value", s => { BOOK = s.val() || {}; drawBook(); });
+    DB.ref("pray/book").orderByKey().limitToLast(60).on("value", s => { BOOK = s.val() || {}; drawBook(); });
     DB.ref("pray/wish").limitToLast(30).on("value", s => { W = Object.values(s.val() || {}).sort((a, b) => b.t - a.t); drawW(); });
     DB.ref("pray/day/" + today()).on("value", s => { all = s.val() || 0; show(); });
     DB.ref("pray/done/" + today()).on("value", s => { done = s.val() || 0; show(); });
@@ -435,19 +435,22 @@ function bookTouch() {
   const now = Date.now();
   return DB.ref("pray/book/" + today() + "/" + bookKey()).transaction(v => v ? {n: NICK.slice(0, 20), t: v.t || now, c: Math.max(v.c || 0, n), f: v.f || (n >= 108 ? now : 0)} : {n: NICK.slice(0, 20), t: now, c: n, f: n >= 108 ? now : 0});
 }
-const BK = {ko: {p: "명", came: "옴", bows: "배"}, zh: {p: "人", came: "來過", bows: "拜"}, en: {p: " people", came: "came", bows: " bows"}};
+const BK = {ko: {p: "명", came: "옴", bows: "배", rec: "개의 기록"}, zh: {p: "人", came: "來過", bows: "拜", rec: " 筆紀錄"}, en: {p: " people", came: "came", bows: " bows", rec: " records"}};
 const bk = k => (BK[LANG] || BK.ko)[k];
-let BOOK = {}, OPEN = new Set([today()]);
+let BOOK = {}, PAGE = 0;
+const PER = 10;
 function drawBook() {
-  const days = Object.keys(BOOK).sort().reverse();
-  if (!days.length) { $("guests").innerHTML = '<div style="color:var(--muted)">' + t("firstGuest") + '</div>'; return; }
-  const hm = t => { const d = new Date(t), p = x => String(x).padStart(2, "0"); return p(d.getHours()) + ":" + p(d.getMinutes()); };
-  $("guests").innerHTML = days.map(d => {
-    const v = Object.values(BOOK[d] || {}).sort((a, b) => (b.c || 0) - (a.c || 0) || a.t - b.t), op = OPEN.has(d);
-    const head = `<button data-d="${d}" style="width:100%;text-align:left;font:inherit;font-size:15px;padding:6px 8px;margin-top:4px;border-radius:8px;border:1px solid var(--gold);background:${op ? "var(--gold)" : "transparent"};color:${op ? "var(--ink)" : "var(--gold)"};cursor:pointer">${op ? "▾" : "▸"} 📅 ${+d.slice(4, 6)}/${+d.slice(6)} · ${v.length}${bk("p")} · 🏅${v.filter(x => x.f).length}</button>`;
-    return head + (op ? v.map(x => `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:3px 4px"><span style="flex:1;min-width:0">🖋 <b style="color:var(--gold)">${esc(x.n)}</b> · ${x.c || 0}${bk("bows")}${x.f ? ' <span style="font-size:11px;background:var(--gold);color:var(--ink);border-radius:8px;padding:0 6px;font-weight:700">' + esc(t("fin")) + '</span>' : ""}</span><span style="color:var(--muted);font-size:12px">${hm(x.t)} ${bk("came")}</span></div>`).join("") : "");
-  }).join("");
-  $("guests").querySelectorAll("[data-d]").forEach(b => b.onclick = () => { const d = b.dataset.d; OPEN.has(d) ? OPEN.delete(d) : OPEN.add(d); drawBook(); });
+  const rows = [];
+  for (const [d, v] of Object.entries(BOOK)) for (const x of Object.values(v || {})) rows.push({...x, d});
+  rows.sort((a, b) => (b.t || 0) - (a.t || 0));
+  if (!rows.length) { $("guests").innerHTML = '<div style="color:var(--muted)">' + t("firstGuest") + '</div>'; return; }
+  const pages = Math.ceil(rows.length / PER); PAGE = Math.min(PAGE, pages - 1);
+  const hm = t => { const d = new Date(t), p = x => String(x).padStart(2, "0"); return (d.getMonth() + 1) + "/" + d.getDate() + " " + p(d.getHours()) + ":" + p(d.getMinutes()); };
+  const list = rows.slice(PAGE * PER, PAGE * PER + PER).map(x => `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px"><span style="flex:1;min-width:0">🖋 <b style="color:var(--gold)">${esc(x.n)}</b> · ${x.c || 0}${bk("bows")}${x.f ? ' <span style="font-size:11px;background:var(--gold);color:var(--ink);border-radius:8px;padding:0 6px;font-weight:700">' + esc(t("fin")) + '</span>' : ""}</span><span style="color:var(--muted);font-size:12px;white-space:nowrap">${hm(x.t)} ${bk("came")}</span></div>`).join("");
+  const btn = (k, label, on) => `<button data-pg="${k}" style="font:inherit;font-size:13px;min-width:30px;padding:3px 8px;margin:2px;border-radius:8px;border:1px solid var(--gold);background:${on ? "var(--gold)" : "transparent"};color:${on ? "var(--ink)" : "var(--gold)"};cursor:pointer">${label}</button>`;
+  let nav = ""; if (pages > 1) { nav = btn(Math.max(0, PAGE - 1), "‹"); for (let i = 0; i < pages; i++) nav += btn(i, i + 1, i === PAGE); nav += btn(Math.min(pages - 1, PAGE + 1), "›"); }
+  $("guests").innerHTML = `<div style="color:var(--muted);font-size:12px;margin-bottom:4px">${rows.length}${bk("rec")}</div>` + list + (nav ? `<div style="text-align:center;margin-top:6px">${nav}</div>` : "");
+  $("guests").querySelectorAll("[data-pg]").forEach(b => b.onclick = () => { PAGE = +b.dataset.pg; drawBook(); });
 }
 $("sign").onclick = async () => {
   if (!DB) { $("guests").innerHTML = '<div style="color:var(--muted)">' + t("noBook") + '</div>'; return; }
