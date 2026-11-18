@@ -146,6 +146,10 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
   <div id="cnt">0<small> / 108</small></div>
   <div id="tot" style="font-size:14px;color:var(--muted);margin-top:4px;min-height:18px"></div>
   <div id="msg"></div>
+  <div id="more" hidden style="margin:2px 0 10px;padding:12px 14px;border:2px solid var(--gold);border-radius:12px;background:#20160f;text-align:center">
+    <div id="moreQ" style="font-size:16px;margin-bottom:10px"></div>
+    <div class="row one"><button class="btn" id="moreYes" style="font-size:17px;padding:10px 18px"></button><button class="btn ghost" id="moreNo" style="font-size:17px;padding:10px 14px"></button></div>
+  </div>
   <div class="row one">
     <button class="btn" id="bow" data-i="bow"></button><button class="btn ghost" id="leave" data-i="leave" style="font-size:18px;padding:12px 14px"></button>
   </div>
@@ -335,9 +339,16 @@ async function bow() {
   await bowAnim(AV.me, true);
   n++; draw(); setName(AV.me, NICK, n); $("msg").textContent = MSG[n] ? t(MSG[n]) : n + t("unit");
   sendBow();
-  if (n === 108) bell();
+  if (n % 108 === 0) { bell(); stopAuto(); askMore(); }   // 108배마다 자동 멈추고 더 할지 묻는다
   busy = false;
 }
+// 108배를 마치면: 「더 하시겠어요?」 — 더 하기(자동으로 이어서) / 그만하기(나가기)
+function askMore() {
+  const Q = {ko: [`🙏 ${n}배를 마쳤습니다. 더 하시겠어요?`, "🙇 더 하기", "🚪 그만하기"], zh: [`🙏 已完成 ${n} 拜。要繼續嗎?`, "🙇 繼續", "🚪 結束"], en: [`🙏 ${n} bows done. Continue?`, "🙇 Continue", "🚪 Stop"]}[LANG] || [];
+  $("moreQ").textContent = Q[0]; $("moreYes").textContent = Q[1]; $("moreNo").textContent = Q[2]; $("more").hidden = false;
+}
+$("moreYes").onclick = () => { $("more").hidden = true; auto = setInterval(bow, 3600); bow(); $("auto").textContent = t("autoOff"); };
+$("moreNo").onclick = () => { $("more").hidden = true; $("leave").click(); };
 function stopAuto() { clearInterval(auto); auto = null; $("auto").textContent = t("autoOn"); }
 $("bow").onclick = bow;
 // 나가기: 방석 · 대기열 · 법당 표시를 비우고 첫 화면으로
@@ -481,7 +492,7 @@ function moktakSoft() { if (!sound) return; try { const c = ac(), t = c.currentT
 const bookKey = () => NICK.replace(/[.#$\[\]\/]/g, "_").slice(0, 20) || "_";
 function bookTouch(add) {   // add = 이번에 더할 절 수(들어올 때 · 이름 남기기는 0)
   if (!DB) return Promise.resolve();
-  const now = Date.now(), k = add || 0, fin = n >= 108 ? now : 0, done = k && n === 108 ? 1 : 0;   // 들어와서 108배째가 되는 순간마다 완성 1회(같은 날 두 번이면 2회)
+  const now = Date.now(), k = add || 0, fin = n >= 108 ? now : 0, done = k && n > 0 && n % 108 === 0 ? 1 : 0;   // 들어와서 108배째가 되는 순간마다 완성 1회(같은 날 두 번이면 2회)
   return DB.ref("pray/book/" + today() + "/" + bookKey()).transaction(v => v ? {n: NICK.slice(0, 20), t: v.t || now, c: (v.c || 0) + k, f: v.f || fin, fc: (v.fc != null ? v.fc : (v.f ? 1 : 0)) + done} : {n: NICK.slice(0, 20), t: now, c: k, f: fin, fc: done});
 }
 const BK = {ko: {p: "명", came: "완성", bows: "배", rec: "개의 기록"}, zh: {p: "人", came: "圓滿", bows: "拜", rec: " 筆紀錄"}, en: {p: " people", came: "done", bows: " bows", rec: " records"}};
