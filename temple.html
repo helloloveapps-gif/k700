@@ -376,7 +376,7 @@ async function together() {
     const me = DB.ref("pray/here/" + uid);
     const reg = async () => { await me.onDisconnect().remove(); await me.set(Object.assign({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP, c: n, b: 0}, AV.me.slot != null ? {s: AV.me.slot} : {})); };
     await reg();
-    getSeat().catch(() => { if (AV.me.slot == null) seated(ORDER[0]); });
+    getSeat().catch(() => { if (AV.me.slot == null) seated(ORDER[0]); }); bookTouch(0);   // 들어올 때 최근 접속 시각(절 안 하면 방명록엔 안 나옴)
     // 11-18 「내 캐릭터 안 나온다」: 폰이 잠깐 끊기면 서버가 내 표시 · 방석을 지운다 → 다시 붙으면 같은 자리로 다시 앉는다(뺏겼으면 빈자리)
     let down = false;
     DB.ref(".info/connected").on("value", async c => {
@@ -493,7 +493,8 @@ const bookKey = () => NICK.replace(/[.#$\[\]\/]/g, "_").slice(0, 20) || "_";
 function bookTouch(add) {   // add = 이번에 더할 절 수(들어올 때 · 이름 남기기는 0)
   if (!DB) return Promise.resolve();
   const now = Date.now(), k = add || 0, fin = n >= 108 ? now : 0, done = k && n > 0 && n % 108 === 0 ? 1 : 0;   // 들어와서 108배째가 되는 순간마다 완성 1회(같은 날 두 번이면 2회)
-  return DB.ref("pray/book/" + today() + "/" + bookKey()).transaction(v => v ? {n: NICK.slice(0, 20), t: v.t || now, l: k ? now : (v.l || v.t || now), c: (v.c || 0) + k, f: done ? now : (v.f || fin), fc: (v.fc != null ? v.fc : (v.f ? 1 : 0)) + done} : {n: NICK.slice(0, 20), t: now, l: now, c: k, f: fin, fc: done});   // f = 마지막으로 108배를 마친 시각 · l = 마지막 절
+  return DB.ref("pray/book/" + today() + "/" + bookKey()).transaction(v => v ? {n: NICK.slice(0, 20), t: v.t || now, a: now, l: k ? now : (v.l || 0), c: (v.c || 0) + k, f1: v.f1 || v.f || fin, f: done ? now : (v.f || fin), fc: (v.fc != null ? v.fc : (v.f ? 1 : 0)) + done} : {n: NICK.slice(0, 20), t: now, a: now, l: k ? now : 0, c: k, f1: fin, f: fin, fc: done});
+  // DB 칸: t 첫 접속 · a 최근 접속 · l 마지막 절 · f1 처음 108배 완성 · f 마지막 108배 완성 · c 그날 누적 절 · fc 그날 108배 완성 횟수
 }
 const BK = {ko: {p: "명", came: "완성", bows: "배", rec: "개의 기록"}, zh: {p: "人", came: "圓滿", bows: "拜", rec: " 筆紀錄"}, en: {p: " people", came: "done", bows: " bows", rec: " records"}};
 const bk = k => (BK[LANG] || BK.ko)[k];
