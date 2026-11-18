@@ -482,18 +482,21 @@ function bookTouch(add) {   // add = 이번에 더할 절 수(들어올 때 · �
   const now = Date.now(), k = add || 0, fin = n >= 108 ? now : 0;
   return DB.ref("pray/book/" + today() + "/" + bookKey()).transaction(v => v ? {n: NICK.slice(0, 20), t: v.t || now, c: (v.c || 0) + k, f: v.f || fin} : {n: NICK.slice(0, 20), t: now, c: k, f: fin});
 }
-const BK = {ko: {p: "명", came: "옴", bows: "배", rec: "개의 기록"}, zh: {p: "人", came: "來過", bows: "拜", rec: " 筆紀錄"}, en: {p: " people", came: "came", bows: " bows", rec: " records"}};
+const BK = {ko: {p: "명", came: "완성", bows: "배", rec: "개의 기록"}, zh: {p: "人", came: "圓滿", bows: "拜", rec: " 筆紀錄"}, en: {p: " people", came: "done", bows: " bows", rec: " records"}};
 const bk = k => (BK[LANG] || BK.ko)[k];
 let BOOK = {}, PAGE = 0;
 const PER = 10;
 function drawBook() {
   const rows = [];
   for (const [d, v] of Object.entries(BOOK)) for (const x of Object.values(v || {})) if (x && x.f) rows.push({...x, d});   // 방명록 = 108배 마친 사람만(자동)
-  rows.sort((a, b) => (b.t || 0) - (a.t || 0));
+  rows.sort((a, b) => b.d.localeCompare(a.d) || (a.f || 0) - (b.f || 0));   // 날짜(최근 먼저) → 그날 108배 마친 차례
   if (!rows.length) { $("guests").innerHTML = '<div style="color:var(--muted)">' + t("firstGuest") + '</div>'; return; }
   const pages = Math.ceil(rows.length / PER); PAGE = Math.min(PAGE, pages - 1);
   const hm = t => { const d = new Date(t), p = x => String(x).padStart(2, "0"); return (d.getMonth() + 1) + "/" + d.getDate() + " " + p(d.getHours()) + ":" + p(d.getMinutes()); };
-  const list = rows.slice(PAGE * PER, PAGE * PER + PER).map(x => `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px"><span style="flex:1;min-width:0">🖋 <b style="color:var(--gold)">${esc(x.n)}</b> · ${x.c || 0}${bk("bows")}${x.f ? ' <span style="font-size:11px;background:var(--gold);color:var(--ink);border-radius:8px;padding:0 6px;font-weight:700">' + esc(t("fin")) + '</span>' : ""}</span><span style="color:var(--muted);font-size:12px;white-space:nowrap">${hm(x.t)} ${bk("came")}</span></div>`).join("");
+  // 날짜마다 구분 줄 · 줄마다 그날 하루치 누적 절 수
+  let lastD = "";
+  const dayHead = d => { if (d === lastD) return ""; lastD = d; const n = rows.filter(r => r.d === d).length; return `<div style="margin-top:8px;padding:3px 8px;border-radius:6px;background:#3a2a1c;color:var(--gold);font-weight:700;font-size:13px">📅 ${d.slice(0, 4)}.${+d.slice(4, 6)}.${+d.slice(6)} · 🏅 ${n}${bk("p")}</div>`; };
+  const list = rows.slice(PAGE * PER, PAGE * PER + PER).map(x => dayHead(x.d) + `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px"><span style="flex:1;min-width:0">🖋 <b style="color:var(--gold)">${esc(x.n)}</b> · ${x.c || 0}${bk("bows")}${x.f ? ' <span style="font-size:11px;background:var(--gold);color:var(--ink);border-radius:8px;padding:0 6px;font-weight:700">' + esc(t("fin")) + '</span>' : ""}</span><span style="color:var(--muted);font-size:12px;white-space:nowrap">${hm(x.f || x.t)} ${bk("came")}</span></div>`).join("");
   const btn = (k, label, on) => `<button data-pg="${k}" style="font:inherit;font-size:13px;min-width:30px;padding:3px 8px;margin:2px;border-radius:8px;border:1px solid var(--gold);background:${on ? "var(--gold)" : "transparent"};color:${on ? "var(--ink)" : "var(--gold)"};cursor:pointer">${label}</button>`;
   let nav = ""; if (pages > 1) { nav = btn(Math.max(0, PAGE - 1), "‹"); for (let i = 0; i < pages; i++) nav += btn(i, i + 1, i === PAGE); nav += btn(Math.min(pages - 1, PAGE + 1), "›"); }
   $("guests").innerHTML = `<div style="color:var(--muted);font-size:12px;margin-bottom:4px">${rows.length}${bk("rec")}</div>` + list + (nav ? `<div style="text-align:center;margin-top:6px">${nav}</div>` : "");
