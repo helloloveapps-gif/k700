@@ -42,6 +42,18 @@ html,body{overflow:hidden;overscroll-behavior:none}
 #top .t{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #top a,#burger{color:var(--sub);text-decoration:none;background:none;border:0;font-size:20px;cursor:pointer}
 #top{position:relative}
+/* 11-19 구글 번역 칸(위에 고정) */
+#gtb{background:none;border:1px solid #4e5058;border-radius:14px;padding:2px 8px;font-size:15px;cursor:pointer;flex:none;color:var(--text)}
+#gtb.on{background:#5865f2;border-color:#5865f2}
+#gtp{flex:none;padding:8px 10px;border-bottom:1px solid var(--line);background:#232428}
+#gtp .gtrow{display:flex;gap:6px}
+#gtIn{flex:1;min-width:0;resize:none;background:#383a40;color:var(--text);border:0;border-radius:8px;padding:7px 9px;font:inherit;font-size:15px}
+#gtp .gtside{display:flex;flex-direction:column;gap:4px}
+#gtTl{background:#383a40;color:var(--text);border:0;border-radius:6px;padding:4px;font-size:13px}
+#gtSwap,#gtp .gtbtns button,#gtGo{background:#2b2d31;border:1px solid #1f2023;color:var(--text);border-radius:6px;padding:3px 9px;font-size:13px;cursor:pointer;text-decoration:none}
+#gtp .gtout{min-height:20px;margin:6px 2px;font-size:15px;color:var(--text);white-space:pre-wrap;word-break:break-word}
+#gtp .gtout.wait{color:var(--sub)}
+#gtp .gtbtns{display:flex;gap:6px;justify-content:flex-end}
 #more{background:none;border:0;color:var(--sub);font-size:22px;line-height:1;padding:0 4px;cursor:pointer;flex:none}
 #menu{position:absolute;right:8px;top:44px;z-index:8;min-width:170px;background:#111214;border:1px solid #2b2d31;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.5);padding:6px;display:flex;flex-direction:column}
 #menu[hidden]{display:none}
@@ -220,8 +232,15 @@ html,body{overflow:hidden;overscroll-behavior:none}
     <div id="me"><div class="av" id="meAv"></div><div class="who" id="meWho"><b id="meN"></b><small id="mode"></small></div><select id="lang" aria-label="language"></select></div>
   </nav>
   <main id="main">
-    <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-19d</small></div></div>
+    <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="gtb" aria-label="translate" title="Google 번역">🌐</button><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-19e</small></div></div>
+    <div id="gtp" hidden>
+      <div class="gtrow"><textarea id="gtIn" rows="2" placeholder="번역할 글"></textarea>
+        <div class="gtside"><select id="gtTl"><option value="zh-TW">→ 中文(台灣)</option><option value="ko">→ 한국어</option><option value="en">→ English</option><option value="ja">→ 日本語</option></select>
+        <button id="gtSwap" title="방향 바꾸기">⇅</button></div></div>
+      <div id="gtOut" class="gtout"></div>
+      <div class="gtbtns"><button id="gtCopy">📋</button><button id="gtPut">⬇ 입력창</button><a id="gtGo" target="_blank" rel="noopener">Google ↗</a><button id="gtClr">✕</button></div>
+    </div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -684,6 +703,29 @@ function setReply(r) {
   if (r) { $("rbarT").innerHTML = esc(fm(t("replyTo"), "")) + '<b>' + esc(r.n) + '</b> · ' + esc(r.t); $("msg").focus(); }
 }
 $("rbarX").onclick = () => setReply(null);
+// 11-19 구글 번역 칸: 🌐 로 열고 닫음(열린 채 기억) · 쓰면 0.5초 뒤 구글 번역 · 결과 복사 / 입력창에 넣기 / 구글 사이트로
+(() => {
+  const P = $("gtp"), B = $("gtb"), I = $("gtIn"), O = $("gtOut"), T = $("gtTl");
+  T.value = store.get("chat_gt_tl") || (me.l === "ko" ? "zh-TW" : "ko");
+  const show = on => { P.hidden = !on; B.classList.toggle("on", on); store.set("chat_gt", on ? "1" : ""); if (on) I.focus(); };
+  B.onclick = () => show(P.hidden);
+  if (store.get("chat_gt") === "1") show(true);
+  let tm = null, seq = 0;
+  const go = async () => {
+    const q = I.value.trim(), tl = T.value; $("gtGo").href = "https://translate.google.com/?sl=auto&tl=" + tl + "&text=" + encodeURIComponent(q) + "&op=translate";
+    if (!q) { O.textContent = ""; return; }
+    const my = ++seq; O.classList.add("wait");
+    try { const r = await gtx(unZhuyin(q), tl); if (my === seq) { O.textContent = r; O.classList.remove("wait"); } }
+    catch (e) { if (my === seq) { O.textContent = "(번역 실패 — Google ↗ 로 열어 보세요)"; O.classList.remove("wait"); } }
+  };
+  I.addEventListener("input", () => { clearTimeout(tm); tm = setTimeout(go, 500); });
+  T.onchange = () => { store.set("chat_gt_tl", T.value); go(); };
+  $("gtSwap").onclick = () => { if (O.textContent && !O.classList.contains("wait")) I.value = O.textContent; T.value = T.value === "ko" ? (store.get("chat_gt_tl2") || "zh-TW") : "ko"; if (T.value !== "ko") store.set("chat_gt_tl2", T.value); store.set("chat_gt_tl", T.value); go(); };
+  $("gtCopy").onclick = () => { if (O.textContent) copyText(O.textContent); };
+  $("gtPut").onclick = () => { if (!O.textContent) return; const box = $("msg"); box.value = (box.value ? box.value + " " : "") + O.textContent; box.dispatchEvent(new Event("input", {bubbles: true})); box.focus(); };
+  $("gtClr").onclick = () => { I.value = ""; O.textContent = ""; I.focus(); };
+  go();
+})();
 // 11-19 글 복사: 📋 를 누르면 원문, 번역이 보이면 번역도 아래 줄에 같이 복사
 function copyText(t) {
   const done = () => { let tip = $("copyTip"); if (!tip) { tip = document.createElement("div"); tip.id = "copyTip"; document.body.appendChild(tip); } tip.textContent = "📋 " + ({ko: "복사했어요", "zh-TW": "已複製", "zh-CN": "已复制", en: "Copied"}[me.l] || "OK"); tip.hidden = false; clearTimeout(tip._t); tip._t = setTimeout(() => tip.hidden = true, 1200); };
