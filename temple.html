@@ -21,7 +21,9 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
 #cnt small{font-size:18px;color:var(--muted)}
 #msg{min-height:22px;color:var(--paper);font-size:15px;margin:6px 0 10px;text-align:center}
 .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-#bow{font-size:22px;padding:14px 40px}
+#bow{font-size:20px;padding:13px 22px;white-space:nowrap;flex:1 1 auto;max-width:260px}
+#leave{white-space:nowrap;flex:0 0 auto}
+.row.one{flex-wrap:nowrap;width:100%}
 .btn.ghost{background:transparent;color:var(--gold);border-color:var(--gold);font-size:15px;padding:8px 14px}
 #live{margin-top:14px;font-size:13px;color:var(--muted);text-align:center;line-height:1.7}
 .lang{display:flex;gap:6px;justify-content:center;margin:4px 0}.lang button{font:inherit;font-size:13px;padding:3px 10px;border-radius:10px;border:1px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer}.lang button.on{background:var(--gold);color:var(--ink)}
@@ -142,9 +144,10 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
     </svg>
   </div>
   <div id="cnt">0<small> / 108</small></div>
+  <div id="tot" style="font-size:14px;color:var(--muted);margin-top:4px;min-height:18px"></div>
   <div id="msg"></div>
-  <div class="row">
-    <button class="btn" id="bow" data-i="bow"></button><button class="btn ghost" id="leave" data-i="leave" style="font-size:20px;padding:12px 24px"></button>
+  <div class="row one">
+    <button class="btn" id="bow" data-i="bow"></button><button class="btn ghost" id="leave" data-i="leave" style="font-size:18px;padding:12px 14px"></button>
   </div>
   <div class="row" style="margin-top:10px">
     <button class="btn ghost" id="auto"></button>
@@ -224,7 +227,7 @@ function applyLang() {
   if ($("auto")) $("auto").textContent = auto ? t("autoOff") : t("autoOn");
   if ($("snd")) $("snd").textContent = sound ? t("sndOn") : t("sndOff");
   if ($("who")) $("who").textContent = $("who2").textContent = NICK ? NICK + t("nim") : "";
-  REDRAW();
+  REDRAW(); try { drawTot(); } catch (e) {}
 }
 document.querySelectorAll(".lang button").forEach(b => b.onclick = () => { LANG = b.dataset.l; store.set("pray_lang", LANG); applyLang(); });
 // 말 한마디는 보는 사람 말로 번역해 밑에 작게(구글 무료 · 같은 말은 기억)
@@ -241,6 +244,13 @@ async function trTo(text) {
 const today = () => { const d = new Date(); return d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"); };
 let n = 0, busy = false, auto = null, sound = store.get("pray_snd") !== "0";
 // 11-18: 들어올 때마다 0 배부터(이어 세지 않음) · 그날 모두 한 절은 방명록에 더해 남는다
+// 큰 숫자 밑 작은 숫자: 내 누적 절 수(방명록 기록에서 · 오늘 / 모든 날 합계)
+function drawTot() {
+  const k = typeof bookKey === "function" ? bookKey() : ""; let all = 0, td = 0;
+  for (const [d, v] of Object.entries(typeof BOOK === "object" && BOOK || {})) { const x = v && v[k]; if (x) { all += x.c || 0; if (d === today()) td = x.c || 0; } }
+  const T = {ko: ["오늘 누적", "총 누적", "배"], zh: ["今日累計", "總累計", "拜"], en: ["Today", "All-time", " bows"]}[typeof LANG === "string" ? LANG : "ko"] || ["오늘 누적", "총 누적", "배"];
+  $("tot").textContent = all ? `${T[0]} ${td.toLocaleString()}${T[2]} · ${T[1]} ${all.toLocaleString()}${T[2]}` : "";
+}
 function draw() {
   $("cnt").innerHTML = n <= 108 ? n + "<small> / 108</small>" : n + "<small> 🏅</small>";
   beads.forEach((b, i) => b.setAttribute("fill", i < n ? "#d9a441" : "#3a2a1c"));
@@ -391,7 +401,7 @@ async function together() {
       $("wishes").querySelectorAll(".tr").forEach(async e => { e.textContent = await trTo(e.dataset.m); }); };
     REDRAW = () => { show(); drawG(); drawW(); };
     DB.ref("pray/fin/" + today()).on("value", s => { FIN = new Set(Object.values(s.val() || {}).map(x => x && x.n).filter(Boolean)); drawG(); drawW(); });
-    DB.ref("pray/book").orderByKey().limitToLast(60).on("value", s => { BOOK = s.val() || {}; drawBook(); });
+    DB.ref("pray/book").orderByKey().limitToLast(400).on("value", s => { BOOK = s.val() || {}; drawBook(); drawTot(); });
     DB.ref("pray/wish").limitToLast(400).on("value", s => { W = Object.values(s.val() || {}).sort((a, b) => b.t - a.t); drawW(); });
     DB.ref("pray/day/" + today()).on("value", s => { all = s.val() || 0; show(); });
     DB.ref("pray/done/" + today()).on("value", s => { done = s.val() || 0; show(); });
