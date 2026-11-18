@@ -99,7 +99,10 @@ html,body{overflow:hidden;overscroll-behavior:none}
 #bar .box>button{height:44px;display:flex;align-items:center;justify-content:center;padding-top:0;padding-bottom:0;line-height:1}
 #send svg,#clip svg,#mic svg{display:block}
 .msg:hover .mdel,.msg:focus-within .mdel{display:block}
-@media (hover:none){.mdel,.mrep,.mcopy{display:block}}
+@media (hover:none){.mdel,.mrep,.mcopy{display:block}.body{padding-right:92px}.msg:has(.mdel) .body{padding-right:132px}}
+/* 11-19 오른쪽 단추(📋 ↩ 🗑)를 글 첫 줄 높이에 맞춘다 — 이름 줄이 있는 글은 이름 줄 아래 · 이어진 글은 맨 위 */
+.mdel,.mrep,.mcopy{top:18px!important;line-height:1.2}
+.msg.cont .mdel,.msg.cont .mrep,.msg.cont .mcopy{top:-2px!important}
 .body{min-width:0;flex:1}
 .hd{display:flex;align-items:baseline;gap:8px}
 .hd b{font-weight:600}
@@ -218,7 +221,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-19c</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-19d</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
