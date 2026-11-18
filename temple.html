@@ -58,7 +58,7 @@ h1{font-size:22px;margin:6px 0 2px;color:var(--gold);letter-spacing:4px}
   </svg>
   <div style="background:#2b1a10;border:3px solid var(--gold);border-radius:8px;padding:12px;margin:10px 0;text-align:left">
     <div style="font-weight:700;color:var(--gold);margin-bottom:8px" data-i="book"></div>
-    <button class="btn" id="sign" style="width:100%" data-i="sign"></button>
+    <button class="btn" id="sign" style="width:100%;display:none" data-i="sign"></button>
     <div id="guests" style="margin-top:10px;font-size:14px;line-height:1.7;"></div>
   </div>
 
@@ -336,7 +336,7 @@ $("leave").onclick = async () => {
   try { sessionStorage.removeItem("pray_ok"); } catch (e) {}
   location.href = "index.html";
 };
-document.addEventListener("keydown", e => { if (e.code === "Space" && !$("app").hidden) { e.preventDefault(); bow(); } });
+document.addEventListener("keydown", e => { if (e.code === "Space" && !$("app").hidden && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) { e.preventDefault(); bow(); } });   // 글 쓰는 칸에서는 띄어쓰기(11-18)
 $("auto").onclick = () => { if (auto) return stopAuto(); auto = setInterval(bow, 3600); bow(); $("auto").textContent = t("autoOff"); };
 $("snd").onclick = () => { sound = !sound; store.set("pray_snd", sound ? "1" : "0"); $("snd").textContent = sound ? t("sndOn") : t("sndOff"); bgm(); };
 function bgm() { const a = $("bgm"); a.volume = .35; if (sound && !$("app").hidden) a.play().catch(() => {}); else a.pause(); }
@@ -354,7 +354,7 @@ async function together() {
     const me = DB.ref("pray/here/" + uid);
     const reg = async () => { await me.onDisconnect().remove(); await me.set(Object.assign({n: NICK.slice(0, 20), t: firebase.database.ServerValue.TIMESTAMP, c: n, b: 0}, AV.me.slot != null ? {s: AV.me.slot} : {})); };
     await reg();
-    getSeat().catch(() => { if (AV.me.slot == null) seated(ORDER[0]); }); bookTouch();
+    getSeat().catch(() => { if (AV.me.slot == null) seated(ORDER[0]); });
     // 11-18 「내 캐릭터 안 나온다」: 폰이 잠깐 끊기면 서버가 내 표시 · 방석을 지운다 → 다시 붙으면 같은 자리로 다시 앉는다(뺏겼으면 빈자리)
     let down = false;
     DB.ref(".info/connected").on("value", async c => {
@@ -473,7 +473,7 @@ let BOOK = {}, PAGE = 0;
 const PER = 10;
 function drawBook() {
   const rows = [];
-  for (const [d, v] of Object.entries(BOOK)) for (const x of Object.values(v || {})) rows.push({...x, d});
+  for (const [d, v] of Object.entries(BOOK)) for (const x of Object.values(v || {})) if (x && x.f) rows.push({...x, d});   // 방명록 = 108배 마친 사람만(자동)
   rows.sort((a, b) => (b.t || 0) - (a.t || 0));
   if (!rows.length) { $("guests").innerHTML = '<div style="color:var(--muted)">' + t("firstGuest") + '</div>'; return; }
   const pages = Math.ceil(rows.length / PER); PAGE = Math.min(PAGE, pages - 1);
