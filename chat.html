@@ -75,6 +75,10 @@ html,body{overflow:hidden;overscroll-behavior:none}
 .msg.sel{background:var(--hover)}
 .msg{-webkit-touch-callout:none}
 .msg:not(:has(.mdel)) .mrep{right:16px}
+.mcopy{position:absolute;right:96px;top:-6px;display:none;background:#2b2d31;border:1px solid #1f2023;border-radius:6px;padding:2px 6px;cursor:pointer;font-size:14px;color:var(--text)}
+.msg:not(:has(.mdel)) .mcopy{right:56px}
+.msg:hover .mcopy,.msg:focus-within .mcopy,.msg.sel .mcopy{display:block}
+#copyTip{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#111;color:#fff;padding:6px 14px;border-radius:14px;font-size:13px;z-index:99;pointer-events:none}
 .rep{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--sub);margin:0 0 2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .rep b{color:var(--text);font-weight:600}
 .rep:hover{color:var(--text)}
@@ -95,7 +99,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
 #bar .box>button{height:44px;display:flex;align-items:center;justify-content:center;padding-top:0;padding-bottom:0;line-height:1}
 #send svg,#clip svg,#mic svg{display:block}
 .msg:hover .mdel,.msg:focus-within .mdel{display:block}
-@media (hover:none){.mdel,.mrep{display:block}}
+@media (hover:none){.mdel,.mrep,.mcopy{display:block}}
 .body{min-width:0;flex:1}
 .hd{display:flex;align-items:baseline;gap:8px}
 .hd b{font-weight:600}
@@ -214,7 +218,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-19b</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-19c</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -626,7 +630,7 @@ function addMsg(id, m) {
   const d = document.createElement("div");
   d.className = "msg" + (cont ? " cont" : ""); d.id = "m_" + id; d.dataset.ts = ts; d.dataset.u = m.u || ""; d.dataset.n = m.n || ""; d.dataset.t = m.t; d.dataset.l = m.l || ""; d.dataset.mine = mine ? "1" : "";
   const col = colorOf(m.u || m.n), ln = (LANGS.find(x => x[0] === m.l) || ["", m.l || "?"])[1];
-  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b>' + (cur && isOwnerMsg(m, cur.r) ? '<span title="owner" style="font-size:13px">👑</span>' : '') + '<span class="lg">' + esc(ln) + '</span>' + (m.s ? '<span class="lg" style="background:#23a559;color:#fff">🎙</span>' : '') + '<span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.r && m.r.id ? '<div class="rep" data-to="' + esc(m.r.id) + '">↱ <b>' + esc(m.r.n || "?") + '</b> ' + esc(m.r.t || "") + '</div>' : '') + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="txr"><span class="unr"></span><div class="tx"></div></div><div class="org" hidden></div></div>' + '<button class="mrep" title="reply">↩</button>' + (m.a && m.a === myAuth() ? '<button class="mdel" title="delete">🗑</button>' : '');
+  d.innerHTML = '<div class="av" data-u="' + esc(m.u || "") + '" style="background-color:' + col + '">' + esc((m.n || "?").trim().charAt(0).toUpperCase()) + '</div><div class="body"><div class="hd"><b style="color:' + col + '">' + esc(m.n) + '</b>' + (cur && isOwnerMsg(m, cur.r) ? '<span title="owner" style="font-size:13px">👑</span>' : '') + '<span class="lg">' + esc(ln) + '</span>' + (m.s ? '<span class="lg" style="background:#23a559;color:#fff">🎙</span>' : '') + '<span class="tm">' + new Date(ts).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}) + '</span></div>' + (m.r && m.r.id ? '<div class="rep" data-to="' + esc(m.r.id) + '">↱ <b>' + esc(m.r.n || "?") + '</b> ' + esc(m.r.t || "") + '</div>' : '') + (m.v ? '<button class="play" data-id="' + esc(id) + '" data-d="' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '">▶ ' + Math.floor(m.v / 60) + ":" + String(m.v % 60).padStart(2, "0") + '</button>' : '') + (m.i ? '<div class="pic" data-id="' + esc(id) + '">…</div>' : '') + '<div class="txr"><span class="unr"></span><div class="tx"></div></div><div class="org" hidden></div></div>' + '<button class="mcopy" title="copy">📋</button><button class="mrep" title="reply">↩</button>' + (m.a && m.a === myAuth() ? '<button class="mdel" title="delete">🗑</button>' : '');
   if (late) {
     const nx = [...log.querySelectorAll(".msg")].find(x => +x.dataset.ts > ts);
     if (nx) { log.insertBefore(d, nx); if (nx.classList.contains("cont")) nx.classList.remove("cont"); }   // 뒤 글은 이름을 다시 단다
@@ -677,7 +681,16 @@ function setReply(r) {
   if (r) { $("rbarT").innerHTML = esc(fm(t("replyTo"), "")) + '<b>' + esc(r.n) + '</b> · ' + esc(r.t); $("msg").focus(); }
 }
 $("rbarX").onclick = () => setReply(null);
+// 11-19 글 복사: 📋 를 누르면 원문, 번역이 보이면 번역도 아래 줄에 같이 복사
+function copyText(t) {
+  const done = () => { let tip = $("copyTip"); if (!tip) { tip = document.createElement("div"); tip.id = "copyTip"; document.body.appendChild(tip); } tip.textContent = "📋 " + ({ko: "복사했어요", "zh-TW": "已複製", "zh-CN": "已复制", en: "Copied"}[me.l] || "OK"); tip.hidden = false; clearTimeout(tip._t); tip._t = setTimeout(() => tip.hidden = true, 1200); };
+  if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(done, () => old());
+  else old();
+  function old() { const ta = document.createElement("textarea"); ta.value = t; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); try { document.execCommand("copy"); done(); } catch (e) {} ta.remove(); }
+}
 $("log").addEventListener("click", e => {
+  const c = e.target.closest(".mcopy");
+  if (c) { const d = c.closest(".msg"), org = d.dataset.t || "", tx = (d.querySelector(".tx") || {}).textContent || ""; copyText(tx && tx.trim() !== org.trim() && !d.querySelector(".org[hidden]") ? org + "\n" + tx.trim() : org); return; }
   const b = e.target.closest(".mrep");
   if (b) { const d = b.closest(".msg"); setReply({id: d.id.slice(2), n: d.dataset.n.slice(0, 40), t: d.dataset.t.replace(/\s+/g, " ").slice(0, 80), u: (d.dataset.u || "").slice(0, 20)}); return; }
   const q = e.target.closest(".rep");
