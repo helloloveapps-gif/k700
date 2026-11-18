@@ -214,7 +214,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-19a</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-19b</small></div></div>
     <div id="vpanel" hidden></div>
     <div id="caps"></div>
     <div id="log"></div>
@@ -373,6 +373,7 @@ async function viaMyMemory(text, tl, sl) {
 function translate(text, tl, sl, ctx, noAI, gctx) {
   const key = tl + "\u0001" + text;
   if (TC.has(key)) return TC.get(key);
+  if (AIC[key]) return Promise.resolve(AIC[key]);   // 전에 AI 로 번역해 둔 글은 다시 번역하지 않는다
   const p = (async () => {
     // 11-18 순서 바꿈: 무료 구글 주소는 옛 엔진이라 대만 채팅 말투(이불 속 · 졸려?)를 딱딱하게 옮긴다 → 새 글은 AI(문맥 · 반말) 먼저, 막히면 구글
     if (!noAI && Date.now() > AI_OFF) {
@@ -642,7 +643,8 @@ function addMsg(id, m) {
 }
 // 원문은 그대로 위에, 번역은 그 밑에(.org 칸을 번역 칸으로 쓴다)
 // AI 로 번역할 글: 최근 30분 글 · 방을 연 뒤 온 글(옛 글은 구글 — 방을 열 때 한꺼번에 몰리지 않게)
-const aiFor = d => true;   // 11-19 이박사님 「말뜻 정확보다 그 말만의 느낌」 — 옛 글도 AI 먼저(한도에 걸리면 저절로 구글 · 한 번 번역한 건 기기에 기억)
+// 새 글(방을 연 뒤 · 30분 안)만 AI(느낌 우선) · 옛 글은 구글로 바로 — 옛 글까지 AI 로 돌리면 방을 열 때마다 전체를 다시 번역해 느려진다(11-19 되돌림)
+const aiFor = d => +d.dataset.ts > Math.min(OPENED, Date.now() - 30 * 60e3);
 // 옛 글(구글로 먼저 보인 글)은 화면에 들어오면 AI 번역으로 바꾼다 — 보이는 것만이라 한도에 안 걸린다
 const AI_IO = "IntersectionObserver" in window ? new IntersectionObserver(es => es.forEach(e => {
   if (!e.isIntersecting) return;
