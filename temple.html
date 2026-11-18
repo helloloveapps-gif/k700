@@ -292,6 +292,15 @@ function mkAv(id, name, self) {
   const a = AV[id] = {g, body, ps: [...body.children].slice(0, POSES.length), nm: body.querySelector("text"), b: 0, t: 0, busy: false};
   setName(a, name, 0); return a;
 }
+function bubble(name, msg) {
+  const a = Object.values(AV).find(x => x.nm && x.nm.textContent.replace(/ 🏅$/, "") === name && x.slot != null); if (!a) return;
+  if (a.bub) a.bub.remove();
+  const g = document.createElementNS(NS, "g"), t = String(msg || "").slice(0, 22) + (String(msg || "").length > 22 ? "…" : "");
+  const w = Math.min(300, 30 + [...t].length * 21);
+  g.innerHTML = `<rect x="${150 - w / 2}" y="128" width="${w}" height="40" rx="12" fill="#f3e6c8" stroke="#1a120c" stroke-width="3"/><path d="M142 167 l8 12 l8 -12" fill="#f3e6c8" stroke="#1a120c" stroke-width="3"/><rect x="140" y="163" width="20" height="5" fill="#f3e6c8"/><text x="150" y="156" text-anchor="middle" font-size="22" font-weight="700" fill="#1a120c"></text>`;
+  g.querySelector("text").textContent = t; g.setAttribute("transform", `translate(0 ${a.slot % 2 ? -26 : 0})`);
+  a.g.appendChild(g); a.bub = g; setTimeout(() => { if (a.bub === g) { g.remove(); a.bub = null; } }, 7000);
+}
 const setName = (a, name, c) => { a.nm.textContent = name + (c >= 108 ? " 🏅" : ""); };
 const setPose = (a, k) => { a.ps.forEach((p, i) => p.style.display = i === k ? "" : "none"); a.nm.setAttribute("y", [193, 203, 209, 228, 246, 246][k] - (a.slot % 2 ? 26 : 0)); };   // 옆 방석 이름표와 안 겹치게 홀수 자리는 위로   // 이름표는 머리를 따라간다
 function layout() {
@@ -402,7 +411,13 @@ async function together() {
     REDRAW = () => { show(); drawG(); drawW(); };
     DB.ref("pray/fin/" + today()).on("value", s => { FIN = new Set(Object.values(s.val() || {}).map(x => x && x.n).filter(Boolean)); drawG(); drawW(); });
     DB.ref("pray/book").orderByKey().limitToLast(400).on("value", s => { BOOK = s.val() || {}; drawBook(); drawTot(); });
-    DB.ref("pray/wish").limitToLast(400).on("value", s => { W = Object.values(s.val() || {}).sort((a, b) => b.t - a.t); drawW(); });
+    // 말 한마디: 목록은 바로바로 · 새로 올라온 말은 그 사람 머리 위에 말풍선으로 몇 초(실시간)
+    let WSEEN = null;
+    DB.ref("pray/wish").limitToLast(400).on("value", s => {
+      const v = s.val() || {}; W = Object.values(v).sort((a, b) => b.t - a.t); drawW();
+      if (WSEEN) for (const [k, w] of Object.entries(v)) if (!WSEEN.has(k) && w) bubble(w.n, w.m);
+      WSEEN = new Set(Object.keys(v));
+    });
     DB.ref("pray/day/" + today()).on("value", s => { all = s.val() || 0; show(); });
     DB.ref("pray/done/" + today()).on("value", s => { done = s.val() || 0; show(); });
   } catch (e) { DB = null; $("live").textContent = ""; if (AV.me.slot == null) seated(3); }
