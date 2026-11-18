@@ -246,10 +246,12 @@ let n = 0, busy = false, auto = null, sound = store.get("pray_snd") !== "0";
 // 11-18: 들어올 때마다 0 배부터(이어 세지 않음) · 그날 모두 한 절은 방명록에 더해 남는다
 // 큰 숫자 밑 작은 숫자: 내 누적 절 수(방명록 기록에서 · 오늘 / 모든 날 합계)
 function drawTot() {
-  const k = typeof bookKey === "function" ? bookKey() : ""; let all = 0, td = 0;
-  for (const [d, v] of Object.entries(typeof BOOK === "object" && BOOK || {})) { const x = v && v[k]; if (x) { all += x.c || 0; if (d === today()) td = x.c || 0; } }
-  const T = {ko: ["오늘 누적", "총 누적", "배"], zh: ["今日累計", "總累計", "拜"], en: ["Today", "All-time", " bows"]}[typeof LANG === "string" ? LANG : "ko"] || ["오늘 누적", "총 누적", "배"];
-  $("tot").textContent = all ? `${T[0]} ${td.toLocaleString()}${T[2]} · ${T[1]} ${all.toLocaleString()}${T[2]}` : "";
+  const k = typeof bookKey === "function" ? bookKey() : ""; let all = 0, td = 0, days = 0;
+  for (const [d, v] of Object.entries(typeof BOOK === "object" && BOOK || {})) { const x = v && v[k]; if (x) { all += x.c || 0; if (x.f) days++; if (d === today()) td = x.c || 0; } }
+  const T = {ko: ["오늘 누적", "총 누적", "108배 성공", "배", "일"], zh: ["今日累計", "總累計", "108拜圓滿", "拜", "天"], en: ["Today", "All-time", "108 done", " bows", " days"]}[typeof LANG === "string" ? LANG : "ko"] || ["오늘 누적", "총 누적", "108배 성공", "배", "일"];
+  const chip = (lb, v) => `<div style="flex:1 1 90px;min-width:90px;border:1px solid #6b4a2e;border-radius:10px;padding:6px 4px;background:#20160f"><div style="font-size:11px;color:var(--muted)">${lb}</div><div style="font-size:17px;font-weight:800;color:var(--gold)">${v}</div></div>`;
+  $("tot").innerHTML = `<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:360px;margin:6px auto 0;text-align:center">`
+    + chip(T[0], td.toLocaleString() + T[3]) + chip(T[1], all.toLocaleString() + T[3]) + chip(T[2], days + T[4]) + `</div>`;
 }
 function draw() {
   $("cnt").innerHTML = n <= 108 ? n + "<small> / 108</small>" : n + "<small> 🏅</small>";
