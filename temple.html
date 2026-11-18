@@ -246,12 +246,12 @@ let n = 0, busy = false, auto = null, sound = store.get("pray_snd") !== "0";
 // 11-18: 들어올 때마다 0 배부터(이어 세지 않음) · 그날 모두 한 절은 방명록에 더해 남는다
 // 큰 숫자 밑 작은 숫자: 내 누적 절 수(방명록 기록에서 · 오늘 / 모든 날 합계)
 function drawTot() {
-  const k = typeof bookKey === "function" ? bookKey() : ""; let all = 0, td = 0, days = 0;
-  for (const [d, v] of Object.entries(typeof BOOK === "object" && BOOK || {})) { const x = v && v[k]; if (x) { all += x.c || 0; if (x.f) days++; if (d === today()) td = x.c || 0; } }
-  const T = {ko: ["오늘 누적", "총 누적", "108배 성공", "배", "일"], zh: ["今日累計", "總累計", "108拜圓滿", "拜", "天"], en: ["Today", "All-time", "108 done", " bows", " days"]}[typeof LANG === "string" ? LANG : "ko"] || ["오늘 누적", "총 누적", "108배 성공", "배", "일"];
+  const k = typeof bookKey === "function" ? bookKey() : ""; let all = 0, td = 0, days = 0, times = 0;
+  for (const [d, v] of Object.entries(typeof BOOK === "object" && BOOK || {})) { const x = v && v[k]; if (x) { all += x.c || 0; if (x.f) { days++; times += x.fc != null ? x.fc : 1; } if (d === today()) td = x.c || 0; } }
+  const T = {ko: ["오늘 누적", "총 누적", "108배 성공", "배", "회", "일"], zh: ["今日累計", "總累計", "108拜圓滿", "拜", "次", "天"], en: ["Today", "All-time", "108 done", " bows", "×", " days"]}[typeof LANG === "string" ? LANG : "ko"] || ["오늘 누적", "총 누적", "108배 성공", "배", "회", "일"];
   const chip = (lb, v) => `<div style="flex:1 1 90px;min-width:90px;border:1px solid #6b4a2e;border-radius:10px;padding:6px 4px;background:#20160f"><div style="font-size:11px;color:var(--muted)">${lb}</div><div style="font-size:17px;font-weight:800;color:var(--gold)">${v}</div></div>`;
   $("tot").innerHTML = `<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;max-width:360px;margin:6px auto 0;text-align:center">`
-    + chip(T[0], td.toLocaleString() + T[3]) + chip(T[1], all.toLocaleString() + T[3]) + chip(T[2], days + T[4]) + `</div>`;
+    + chip(T[0], td.toLocaleString() + T[3]) + chip(T[1], all.toLocaleString() + T[3]) + chip(T[2], times + T[4] + ` <small style="font-size:11px;color:var(--muted)">(${days}${T[5]})</small>`) + `</div>`;
 }
 function draw() {
   $("cnt").innerHTML = n <= 108 ? n + "<small> / 108</small>" : n + "<small> 🏅</small>";
@@ -481,8 +481,8 @@ function moktakSoft() { if (!sound) return; try { const c = ac(), t = c.currentT
 const bookKey = () => NICK.replace(/[.#$\[\]\/]/g, "_").slice(0, 20) || "_";
 function bookTouch(add) {   // add = 이번에 더할 절 수(들어올 때 · 이름 남기기는 0)
   if (!DB) return Promise.resolve();
-  const now = Date.now(), k = add || 0, fin = n >= 108 ? now : 0;
-  return DB.ref("pray/book/" + today() + "/" + bookKey()).transaction(v => v ? {n: NICK.slice(0, 20), t: v.t || now, c: (v.c || 0) + k, f: v.f || fin} : {n: NICK.slice(0, 20), t: now, c: k, f: fin});
+  const now = Date.now(), k = add || 0, fin = n >= 108 ? now : 0, done = k && n === 108 ? 1 : 0;   // 들어와서 108배째가 되는 순간마다 완성 1회(같은 날 두 번이면 2회)
+  return DB.ref("pray/book/" + today() + "/" + bookKey()).transaction(v => v ? {n: NICK.slice(0, 20), t: v.t || now, c: (v.c || 0) + k, f: v.f || fin, fc: (v.fc != null ? v.fc : (v.f ? 1 : 0)) + done} : {n: NICK.slice(0, 20), t: now, c: k, f: fin, fc: done});
 }
 const BK = {ko: {p: "명", came: "완성", bows: "배", rec: "개의 기록"}, zh: {p: "人", came: "圓滿", bows: "拜", rec: " 筆紀錄"}, en: {p: " people", came: "done", bows: " bows", rec: " records"}};
 const bk = k => (BK[LANG] || BK.ko)[k];
@@ -498,7 +498,7 @@ function drawBook() {
   // 날짜마다 구분 줄 · 줄마다 그날 하루치 누적 절 수
   let lastD = "";
   const dayHead = d => { if (d === lastD) return ""; lastD = d; const n = rows.filter(r => r.d === d).length; return `<div style="margin-top:8px;padding:3px 8px;border-radius:6px;background:#3a2a1c;color:var(--gold);font-weight:700;font-size:13px">📅 ${d.slice(0, 4)}.${+d.slice(4, 6)}.${+d.slice(6)} · 🏅 ${n}${bk("p")}</div>`; };
-  const list = rows.slice(PAGE * PER, PAGE * PER + PER).map(x => dayHead(x.d) + `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px"><span style="flex:1;min-width:0">🖋 <b style="color:var(--gold)">${esc(x.n)}</b> · ${x.c || 0}${bk("bows")}${x.f ? ' <span style="font-size:11px;background:var(--gold);color:var(--ink);border-radius:8px;padding:0 6px;font-weight:700">' + esc(t("fin")) + '</span>' : ""}</span><span style="color:var(--muted);font-size:12px;white-space:nowrap">${hm(x.f || x.t)} ${bk("came")}</span></div>`).join("");
+  const list = rows.slice(PAGE * PER, PAGE * PER + PER).map(x => dayHead(x.d) + `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px"><span style="flex:1;min-width:0">🖋 <b style="color:var(--gold)">${esc(x.n)}</b> · ${x.c || 0}${bk("bows")}${x.f ? ' <span style="font-size:11px;background:var(--gold);color:var(--ink);border-radius:8px;padding:0 6px;font-weight:700">' + esc(t("fin")) + ((x.fc || 1) > 1 ? " ×" + x.fc : "") + '</span>' : ""}</span><span style="color:var(--muted);font-size:12px;white-space:nowrap">${hm(x.f || x.t)} ${bk("came")}</span></div>`).join("");
   const btn = (k, label, on) => `<button data-pg="${k}" style="font:inherit;font-size:13px;min-width:30px;padding:3px 8px;margin:2px;border-radius:8px;border:1px solid var(--gold);background:${on ? "var(--gold)" : "transparent"};color:${on ? "var(--ink)" : "var(--gold)"};cursor:pointer">${label}</button>`;
   let nav = ""; if (pages > 1) { nav = btn(Math.max(0, PAGE - 1), "‹"); for (let i = 0; i < pages; i++) nav += btn(i, i + 1, i === PAGE); nav += btn(Math.min(pages - 1, PAGE + 1), "›"); }
   $("guests").innerHTML = `<div style="color:var(--muted);font-size:12px;margin-bottom:4px">${rows.length}${bk("rec")}</div>` + list + (nav ? `<div style="text-align:center;margin-top:6px">${nav}</div>` : "");
