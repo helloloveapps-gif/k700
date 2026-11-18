@@ -503,7 +503,8 @@ const PER = 10;
 function drawBook() {
   const rows = [];
   for (const [d, v] of Object.entries(BOOK)) for (const x of Object.values(v || {})) if (x && (x.c || 0) > 0) rows.push({...x, d});   // 방명록 = 그날 한 번이라도 절한 사람(하루 한 줄 · 그날 누적)
-  rows.sort((a, b) => b.d.localeCompare(a.d) || (b.c || 0) - (a.c || 0));   // 날짜(최근 먼저) → 그날 108배 마친 차례
+  const lastAt = x => Math.max(x.f || 0, x.l || 0, x.t || 0);   // 최근에 절하거나 마친 시각
+  rows.sort((a, b) => b.d.localeCompare(a.d) || lastAt(b) - lastAt(a));   // 날짜도 그날 안에서도 최근 먼저   // 날짜(최근 먼저) → 그날 108배 마친 차례
   if (!rows.length) { $("guests").innerHTML = '<div style="color:var(--muted)">' + t("firstGuest") + '</div>'; return; }
   const pages = Math.ceil(rows.length / PER); PAGE = Math.min(PAGE, pages - 1);
   const hm = t => { const d = new Date(t), p = x => String(x).padStart(2, "0"); return (d.getMonth() + 1) + "/" + d.getDate() + " " + p(d.getHours()) + ":" + p(d.getMinutes()); };
