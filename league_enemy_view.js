@@ -1,6 +1,7 @@
 // 성검 리그전 → 적군 정보(이박사님 11-15). 자료는 league_enemy.js(enemy_league.py 가 MightPulse 에서 만든다)
 (function () {
   const css = `
+#vLEnemy .letabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 10px}#vLEnemy .letabs button{font:inherit;font-size:14px;font-weight:700;padding:6px 14px;border-radius:18px;border:1px solid #2c4232;background:#0e1611;color:#9fb79a;cursor:pointer}#vLEnemy .letabs button.on{background:#2f6b3d;color:#fff;border-color:#2f6b3d}
 #vLEnemy .le{background:#0e1611;color:#d9e7d3;border:1px solid #2c4232;border-radius:14px;padding:14px;margin-bottom:12px}
 #vLEnemy h2{margin:0 0 6px;font-size:17px;color:#e9d48a;border:none;padding:0}
 #vLEnemy h3{margin:4px 0 8px;font-size:15px;color:#e9d48a}
@@ -99,11 +100,16 @@
   }
 
   window.renderLEnemy = function () {
-    const box = document.getElementById("vLEnemy"), D = window.LEAGUE_ENEMY, t = L();
+    const box = document.getElementById("vLEnemy"), t = L();
+    const ALL = window.LEAGUE_ENEMIES || (window.LEAGUE_ENEMY ? [window.LEAGUE_ENEMY] : []);
+    let pick = ""; try { pick = localStorage.getItem("le_pick") || ""; } catch (e) {}
+    const D = ALL.find(x => x.ek + "_" + x.tag === pick) || ALL[0];
     if (!box || !D) return;
+    // 상대마다 탭(11-19 이박사님 「VIN 이랑은 탭으로 분리」)
+    const etabs = ALL.length > 1 ? '<div class="letabs">' + ALL.map(x => '<button data-le="' + esc(x.ek + "_" + x.tag) + '"' + (x === D ? ' class="on"' : '') + '>' + esc(x.ek + " · " + x.tag) + '</button>').join("") + '</div>' : '';
     const en = D.en, top = en.slice().sort((a, b) => b.mt - a.mt).slice(0, 30), ours = D.ours;
     const S = [stat(en), stat(top), stat(ours)];
-    let h = '<div class="le"><h2>' + esc(f(t.h, D.ek, D.tag)) + '</h2><div class="d">' + esc(f(t.d, D.src, D.at)) + '</div>';
+    let h = etabs + '<div class="le"><h2>' + esc(f(t.h, D.ek, D.tag)) + '</h2><div class="d">' + esc(f(t.d, D.src, D.at)) + '</div>';
     // 한눈에
     h += '<h3>' + t.sum + '</h3><div class="lescroll"><table><tr><th class="nm"></th><th>' + esc(f(t.all, D.tag)) + '</th><th>' + esc(f(t.top, D.tag)) + '</th><th>' + t.ours + '</th></tr>';
     const row = (k, g, bold) => '<tr><td class="nm">' + k + '</td>' + S.map((s, i) => '<td' + (bold && i ? ' class="b"' : '') + '>' + g(s) + '</td>').join("") + '</tr>';
@@ -142,6 +148,7 @@
     h += '<div class="le"><h3>' + esc(f(t.list, D.tag)) + ' (' + en.length + t.nm + ')</h3>' + tabs + tbl(en) + '</div>';
     h += '<div class="le"><h3>' + t.ol + '</h3>' + tabs + tbl(ours) + '</div>';
     box.innerHTML = h;
+    box.querySelectorAll("[data-le]").forEach(b => b.onclick = () => { try { localStorage.setItem("le_pick", b.dataset.le); } catch (e) {} window.renderLEnemy(); });
     box.querySelectorAll(".tabs button").forEach(b => b.onclick = () => { SORT = b.dataset.s; renderLEnemy(); });
   };
 })();
