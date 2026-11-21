@@ -237,7 +237,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="gtb" aria-label="translate" title="Google 번역">🌐</button><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22a</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22b</small></div></div>
     <div id="gtp" hidden>
       <div class="gtrow"><textarea id="gtIn" rows="2" placeholder="번역할 글"></textarea>
         <div class="gtside"><select id="gtTl"><option value="zh-TW">→ 中文(台灣)</option><option value="ko">→ 한국어</option><option value="en">→ English</option><option value="ja">→ 日本語</option></select>
@@ -400,20 +400,22 @@ async function viaMyMemory(text, tl, sl) {
   return j.responseData.translatedText;
 }
 // 번역 순서(이박사님 11-15): 구글(무료) 먼저 → 막히면 AI(Groq) → MyMemory
+const TRS = [];
 function translate(text, tl, sl, ctx, noAI, gctx) {
   const key = tl + "\u0001" + text;
   if (TC.has(key)) return TC.get(key);
   if (AIC[key]) return Promise.resolve(AIC[key]);   // 전에 AI 로 번역해 둔 글은 다시 번역하지 않는다
+  const t0 = Date.now(), note = (eng, err) => { TRS.push((eng || "?") + (err ? "!" : "") + Math.round((Date.now() - t0) / 100) / 10 + "s"); if (TRS.length > 12) TRS.shift(); };   // 11-22 진단용: 번역 걸린 시간
   const p = (async () => {
     // 11-18 순서 바꿈: 무료 구글 주소는 옛 엔진이라 대만 채팅 말투(이불 속 · 졸려?)를 딱딱하게 옮긴다 → 새 글은 AI(문맥 · 반말) 먼저, 막히면 구글
     if (!noAI && Date.now() > AI_OFF) {
-      try { return await viaAI(text, tl, ctx); } catch (e) { AI_OFF = Date.now() + 60e3; }
+      try { const r = await viaAI(text, tl, ctx); note("ai"); return r; } catch (e) { AI_OFF = Date.now() + 60e3; note("ai", 1); }
     }
     if (Date.now() > GOOGLE_OFF) {
-      try { return await viaGoogle(text, tl, gctx); } catch (e) { GOOGLE_OFF = Date.now() + 5 * 60e3; }   // 막히면 5분 쉬었다가 다시
+      try { const r = await viaGoogle(text, tl, gctx); note("g"); return r; } catch (e) { GOOGLE_OFF = Date.now() + 5 * 60e3; note("g", 1); }   // 막히면 5분 쉬었다가 다시
     }
     if (AIC[key]) return AIC[key];
-    return await viaMyMemory(text, tl, sl);
+    const r = await viaMyMemory(text, tl, sl); note("mm"); return r;
   })();
   TC.set(key, p); p.catch(() => TC.delete(key));
   return p;
@@ -795,7 +797,8 @@ function vDiag() {
     + " | A=" + ANDROID + " vol=" + volNow() + " boost=" + (BOOST ? BOOST.ctx.state + "/g" + BOOST.g.gain.value + "/sr" + BOOST.ctx.sampleRate : "없음")
     + " | 칸 " + els.length + ": " + els.map(a => (a.paused ? "정지" : "재생") + (a.muted ? "·묵음" : "") + "·v" + a.volume + "·bs" + (a._bs ? 1 : 0) + "·" + (a.srcObject ? a.srcObject.getAudioTracks().map(t => t.readyState + (t.muted ? "m" : "") + (t.enabled ? "" : "x")).join("/") : "-")).join(", ")
     + " | lk=" + (typeof V !== "undefined" && V && V.lk ? V.lk.state + "/play" + V.lk.canPlaybackAudio : "-")
-    + " | sess=" + (navigator.audioSession ? navigator.audioSession.type : "-");
+    + " | sess=" + (navigator.audioSession ? navigator.audioSession.type : "-")
+    + " | 번역 " + (TRS.join(" ") || "-") + " · AI줄 " + AI_RUN + "/" + AI_Q.length + (Date.now() < AI_OFF ? " · AI쉼" : "") + (Date.now() < GOOGLE_OFF ? " · 구글쉼" : "");
 }
 function send() {
   const box = $("msg"); let text = box.value.trim();
