@@ -237,7 +237,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="gtb" aria-label="translate" title="Google 번역">🌐</button><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-21a</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22a</small></div></div>
     <div id="gtp" hidden>
       <div class="gtrow"><textarea id="gtIn" rows="2" placeholder="번역할 글"></textarea>
         <div class="gtside"><select id="gtTl"><option value="zh-TW">→ 中文(台灣)</option><option value="ko">→ 한국어</option><option value="en">→ English</option><option value="ja">→ 日本語</option></select>
@@ -694,10 +694,13 @@ async function render(d) {
   if (ag) { tx.classList.add("big"); tx.innerHTML = ag.map(e => '<img class="aemo" alt="' + esc(e) + '" src="' + ANI_URL(ANI[e]) + '" loading="lazy" decoding="async" onerror="this.replaceWith(this.alt)">').join(""); }
   if (d.dataset.mine || d.dataset.l === me.l || text === "🖼️" || text === "🎤" || !/\p{L}/u.test(text)) { org.hidden = true; return; }   // 글자 없는 글(？ · 👀 · 710 · 00:50)은 번역할 것이 없다 — 「번역 중」에 멈춰 있던 것(11-12)
   org.hidden = false; org.innerHTML = '<span class="wait">' + esc(t("wait")) + '</span>';
+  let done = false;
+  if (aiFor(d) && !AIC[me.l + "\u0001" + text] && Date.now() > GOOGLE_OFF) viaGoogle(text, me.l, gctxOf(d)).then(g => { if (done || !g) return; if (g.trim() === text.trim()) org.hidden = true; else org.textContent = g; }).catch(() => {});
   try {
     const r = await Promise.race([translate(text, me.l, d.dataset.l, ctxOf(d), !aiFor(d), gctxOf(d)), new Promise((_, no) => setTimeout(() => no(new Error("timeout")), 15000))]);   // 15초 넘게 답이 없으면 「번역 실패 ↻」(다시 누를 수 있게)
-    if (r.trim() === text.trim()) org.hidden = true; else org.textContent = r;
-  } catch (e) { org.textContent = t("fail") + " ↻"; org.classList.add("fail"); org.style.cursor = "pointer"; org.onclick = () => { org.onclick = null; org.style.cursor = ""; render(d); }; }
+    done = true;
+    if (r.trim() === text.trim()) org.hidden = true; else { org.hidden = false; org.textContent = r; }
+  } catch (e) { done = true; if (org.textContent && !org.querySelector(".wait")) return; org.textContent = t("fail") + " ↻"; org.classList.add("fail"); org.style.cursor = "pointer"; org.onclick = () => { org.onclick = null; org.style.cursor = ""; render(d); }; }
 }
 const withA = m => { const a = myAuth(); if (a) m.a = a; return m; };
 // 답장(디스코드처럼): 글에 마우스를 올리면 ↩ → 입력칸 위에 「○○에게 답장」 → 보내면 그 글 위에 ↱ 원래 글이 붙는다
@@ -1823,10 +1826,13 @@ function stopCaps() {
 async function showCap(m) {
   if (isGhost(m.t || "")) return;   // 옛 판 폰이 보낸 지어낸 말도 거른다
   const row = liveRow(m.n, m.t, false, m.u);
-  let tx = m.t;
+  let tx = m.t, done = false;
+  const put = v => { row.querySelector(".lt").textContent = v; row.querySelector(".lo").textContent = v !== m.t ? m.t : ""; };
+  if (m.l !== me.l && Date.now() > GOOGLE_OFF) viaGoogle(m.t, me.l).then(g => { if (!done && g) put(g); }).catch(() => {});
   if (m.l !== me.l) { try { tx = await translate(m.t, me.l, m.l); } catch (e) {} }
+  done = true;
   capLine("🗣 " + m.n + ": " + tx + (tx !== m.t ? "  (" + m.t + ")" : ""));
-  row.querySelector(".lt").textContent = tx; row.querySelector(".lo").textContent = tx !== m.t ? m.t : "";
+  put(tx);
 }
 // 실시간 번역 창: 음성 참가하면 저절로 열리고, ▁ 로 접으면 🗣 동그라미로
 function liveRow(n, text, mine) {
