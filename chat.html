@@ -237,7 +237,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="gtb" aria-label="translate" title="Google 번역">🌐</button><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22b</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22c</small></div></div>
     <div id="gtp" hidden>
       <div class="gtrow"><textarea id="gtIn" rows="2" placeholder="번역할 글"></textarea>
         <div class="gtside"><select id="gtTl"><option value="zh-TW">→ 中文(台灣)</option><option value="ko">→ 한국어</option><option value="en">→ English</option><option value="ja">→ 日本語</option></select>
@@ -641,8 +641,12 @@ $("nPw").addEventListener("keydown", e => { if (e.key === "Enter") $("nGo").clic
 const log = $("log");
 const nearBottom = () => log.scrollHeight - log.scrollTop - log.clientHeight < 120;
 const dayKey = ts => { const d = new Date(ts); return d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate(); };
+// 11-22 진단: 남의 새 글이 서버 시각(ts)보다 몇 초 늦게 이 기기에 왔나(서버 시계 차이 보정) — 전송이 늦는지 번역이 늦는지 가른다
+const ARV = []; let SRV_OFF = 0;
+try { firebase.database().ref(".info/serverTimeOffset").on("value", s => { SRV_OFF = s.val() || 0; }); } catch (e) {}
 function addMsg(id, m) {
   if (!m || document.getElementById("m_" + id)) return;
+  if (m && m.ts && m.u !== uid) { const lag = (Date.now() + SRV_OFF - m.ts) / 1000; if (lag >= 0 && lag < 120) { ARV.push(lag.toFixed(1) + "s"); if (ARV.length > 8) ARV.shift(); } }
   if (m.k === "j" || m.k === "l") return sysMsg(id, m);
   if (m.s) return;   // 옛 판(11-09)이 음성 말을 채팅 글로도 올린 것 — 음성 말은 음성 칸에만(11-12)
   const e = $("empty"); if (e) e.remove();
@@ -798,7 +802,7 @@ function vDiag() {
     + " | 칸 " + els.length + ": " + els.map(a => (a.paused ? "정지" : "재생") + (a.muted ? "·묵음" : "") + "·v" + a.volume + "·bs" + (a._bs ? 1 : 0) + "·" + (a.srcObject ? a.srcObject.getAudioTracks().map(t => t.readyState + (t.muted ? "m" : "") + (t.enabled ? "" : "x")).join("/") : "-")).join(", ")
     + " | lk=" + (typeof V !== "undefined" && V && V.lk ? V.lk.state + "/play" + V.lk.canPlaybackAudio : "-")
     + " | sess=" + (navigator.audioSession ? navigator.audioSession.type : "-")
-    + " | 번역 " + (TRS.join(" ") || "-") + " · AI줄 " + AI_RUN + "/" + AI_Q.length + (Date.now() < AI_OFF ? " · AI쉼" : "") + (Date.now() < GOOGLE_OFF ? " · 구글쉼" : "");
+    + " | 도착 " + (ARV.join(" ") || "-") + " | 번역 " + (TRS.join(" ") || "-") + " · AI줄 " + AI_RUN + "/" + AI_Q.length + (Date.now() < AI_OFF ? " · AI쉼" : "") + (Date.now() < GOOGLE_OFF ? " · 구글쉼" : "");
 }
 function send() {
   const box = $("msg"); let text = box.value.trim();
