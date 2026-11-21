@@ -237,7 +237,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="gtb" aria-label="translate" title="Google 번역">🌐</button><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22c</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22d</small></div></div>
     <div id="gtp" hidden>
       <div class="gtrow"><textarea id="gtIn" rows="2" placeholder="번역할 글"></textarea>
         <div class="gtside"><select id="gtTl"><option value="zh-TW">→ 中文(台灣)</option><option value="ko">→ 한국어</option><option value="en">→ English</option><option value="ja">→ 日本語</option></select>
@@ -603,7 +603,17 @@ function drawUnread() {
 }
 document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") markRead(); });
 window.addEventListener("focus", markRead);
-function rmMsg(s) { const el = document.getElementById("m_" + s.key); if (el) { const nx = el.nextElementSibling; if (nx && nx.classList.contains("cont") && !el.classList.contains("cont")) nx.classList.remove("cont"); el.remove(); } }
+// 11-22 글 삭제: 지운 자리에 「○○님이 글을 삭제했어요」를 남기고, 뒤 글은 이름부터 다시 보이게(묶음 끊기)
+//   예전엔 맨 끝 글이 지워져도 「마지막 글」 기억이 남아, 같은 사람의 다음 글이 남의 글 밑에 이름 없이 붙어 보였다
+const DEL_T = {ko: "{0}님이 글을 삭제했어요", "zh-TW": "{0} 刪除了一則訊息", "zh-CN": "{0} 删除了一条消息", en: "{0} deleted a message"};
+function rmMsg(s) {
+  const el = document.getElementById("m_" + s.key); if (!el) return;
+  const nx = el.nextElementSibling; if (nx && nx.classList.contains("msg")) nx.classList.remove("cont");
+  const note = document.createElement("div"); note.className = "sys out del"; note.dataset.ts = el.dataset.ts;
+  note.textContent = "🗑 " + (DEL_T[me.l] || DEL_T.ko).replace("{0}", el.dataset.n || "?");
+  el.replaceWith(note);
+  if (lastMsg && String(lastMsg.ts) === String(el.dataset.ts)) lastMsg = {u: "", n: "", ts: +el.dataset.ts};   // 다음 글은 묶지 않는다
+}
 $("pGo").onclick = async () => {
   if (!pending) return;
   const h = (await sha(pending.id + $("pPw").value)).slice(0, 20), key = pending.id + (pending.r.own ? "/" : "_") + h;
