@@ -237,7 +237,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="gtb" aria-label="translate" title="Google 번역">🌐</button><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22d</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22e</small></div></div>
     <div id="gtp" hidden>
       <div class="gtrow"><textarea id="gtIn" rows="2" placeholder="번역할 글"></textarea>
         <div class="gtside"><select id="gtTl"><option value="zh-TW">→ 中文(台灣)</option><option value="ko">→ 한국어</option><option value="en">→ English</option><option value="ja">→ 日本語</option></select>
@@ -1171,7 +1171,7 @@ async function lkConnect(tk, att) {
   room.on(L.RoomEvent.ParticipantConnected, redraw);
   // 메아리 막기(이박사님 11-10): 상대가 말하는 중인지(서버가 알려 줌) — 그동안 내 마이크에 들어온 소리는 내 말로 치지 않는다
   room.on(L.RoomEvent.ActiveSpeakersChanged, sp => { REMOTE_TALK = sp.some(p => p.identity !== uid); if (REMOTE_TALK) REMOTE_AT = Date.now(); });
-  room.on(L.RoomEvent.ParticipantDisconnected, redraw);
+  room.on(L.RoomEvent.ParticipantDisconnected, p => { REMOTE_TALK = [...room.remoteParticipants.values()].some(x => x !== p && x.isSpeaking); redraw(); });   // 말하던 사람이 나가면 풀기(11-22)
   room.on(L.RoomEvent.Disconnected, () => { if (V && V.lk === room) leaveVoice("drop"); });   // 끊김 — 돌아오면 자동으로 다시
   await room.connect(tk.url, tk.token);
   if (att.dead) { room.disconnect(); throw new Error("late"); }   // 시간 제한이 지난 뒤 붙은 연결은 버린다(유령 연결 방지)
@@ -1311,7 +1311,7 @@ function leaveVoice(why) {
   if (why !== "drop") store.set("chat_voice_on", "");   // 사용자가 나간 것 · 방을 옮긴 것은 자동 재접속 안 함
   wakeOff(); $("vHint").hidden = true;
   try { if ("mediaSession" in navigator) { navigator.mediaSession.playbackState = "none"; navigator.mediaSession.metadata = null; } } catch (e) {}
-  stopCaps();
+  stopCaps(); REMOTE_TALK = false;   // 다음에 들어올 때 「상대가 말하는 중」이 남아 있지 않게(11-22)
   liveShow(false);
   const v = V; V = null;
   if (v.inbox) { v.inbox.off(); v.inbox.remove(); }   // 연결 중에 나가면 아직 없음
@@ -1386,7 +1386,7 @@ const volNow = () => { const v = +store.get("chat_vol"); return VOLS.includes(v)
 function unboost(a) { if (a._bs) { try { a._bs.disconnect(); } catch (e) {} a._bs = null; a._bsId = ""; } a.muted = false; a.volume = 1; }
 // 스피커폰으로(이박사님 11-18 「스피커폰이 아니라 안 들려」): 마이크를 켜면 폰이 통화 모드라 귀 쪽 수화기로 나가는 일이 있다
 // 아이폰(사파리 17+) — 오디오 세션을 「재생+녹음」으로(사파리는 이때 스피커가 기본) · 안드로이드/PC — 출력 장치 중 스피커를 골라 거기로
-function speakerSession() { try { if (navigator.audioSession && navigator.audioSession.type !== "play-and-record") navigator.audioSession.type = "play-and-record"; } catch (e) {} }
+function speakerSession() {}   // 11-22 되돌림: 11-18 에 아이폰 오디오 세션을 play-and-record 로 정했는데, 그 뒤 아이폰 마이크 소리가 작아진다는 의심(확인 중)
 async function toSpeaker() {
   speakerSession();
   try {
@@ -1722,7 +1722,8 @@ let SRV = null, ACX = null, REMOTE_TALK = false, REMOTE_AT = 0;
 // 마이크 감도: 말로 치는 최소 소리 크기(dBFS) — 높음 -38 · 보통 -30 · 낮음 -24. 숫자가 클수록(0 에 가까울수록) 큰 소리만
 const SENS = {hi: -38, mid: -30, lo: -24};
 const sensKey = () => SENS[store.get("chat_sens")] !== undefined ? store.get("chat_sens") : "mid";
-const sensRms = () => Math.pow(10, SENS[sensKey()] / 20);   // -30dB → 0.0316
+// 11-22 아이폰은 통화 중 마이크 소리가 거의 무음(-27dB 아래)까지 작아질 때가 있어 말이 통째로 버려졌다 → 아이폰만 12dB 낮춘다(보통 -30 → -42)
+const sensRms = () => Math.pow(10, (SENS[sensKey()] - (IOS ? 12 : 0)) / 20);   // -30dB → 0.0316
 function audioCtx() { try { if (!ACX) ACX = new (window.AudioContext || window.webkitAudioContext)(); ACX.resume().catch(() => {}); } catch (e) {} return ACX; }
 document.addEventListener("pointerdown", () => { if (ACX && ACX.state !== "running") ACX.resume().catch(() => {}); });
 function startSrvStt() {
@@ -1731,7 +1732,9 @@ function startSrvStt() {
   try {
     const src = ac.createMediaStreamSource(V.stream), node = ac.createScriptProcessor(4096, 1, 1);
     const st = {src, node, v: V, buf: [], len: 0, talking: false, quiet: 0, floor: 0.008, pre: null, fails: 0, q: Promise.resolve(), sum: 0, cnt: 0, peak: 0, lvl: 0.06};   // lvl = 내 목소리 평소 크기(배움)
+    st.at = Date.now(); st.wd = setInterval(() => { if (SRV !== st) return clearInterval(st.wd); if (Date.now() - st.at > 4000) { sttStat("stall " + ac.state); ac.resume().catch(() => {}); } }, 2000);   // 11-22 소리 처리가 4초 멈추면 다시 깨움
     node.onaudioprocess = e => {
+      st.at = Date.now();
       const x = e.inputBuffer.getChannelData(0), dur = x.length / ac.sampleRate;
       let q = 0; for (let i = 0; i < x.length; i++) q += x[i] * x[i];
       const rms = Math.sqrt(q / x.length);
@@ -1764,11 +1767,13 @@ function srvFlush(st, rate) {
   const n = st.len, parts = st.buf, speech = n / rate - st.quiet, avg = st.cnt ? st.sum / st.cnt : 0, peak = st.peak;
   const echo = st.echo || 0;
   st.talking = false; st.buf = []; st.len = 0; st.quiet = 0; st.sum = 0; st.cnt = 0; st.peak = 0; st.echo = 0;
-  if (speech < 0.6) { $("liveMe").textContent = ""; return; }
+  const why = x => { $("liveMe").textContent = ""; sttStat("drop:" + x + " avg" + Math.round(20 * Math.log10(avg + 1e-6)) + " max" + Math.round(20 * Math.log10(peak + 1e-6)) + " lvl" + Math.round(20 * Math.log10(st.lvl)) + " " + speech.toFixed(1) + "s #" + (st.drops = (st.drops || 0) + 1)); if (!/^short/.test(x)) st.lvl = Math.max(Math.min(st.lvl, 0.06), st.lvl * 0.8); };   // 크게 한 번 말한 뒤 보통 목소리가 나갈 때까지 계속 버려지던 것(기준이 안 내려옴)   // 11-22 왜 버렸나(말 내용은 안 남김)
+  if (speech < 0.6) { why("short"); return; }
   // 이 말 덩어리의 절반 넘게 상대가 말하고 있었으면 = 스피커 소리가 다시 들어온 것(메아리) → 버림. 내가 훨씬 크게 말했으면 살림
-  if (echo > (n / rate) * 0.3 && avg < st.lvl * 1.6) { $("liveMe").textContent = ""; return; }
+  if (echo > (n / rate) * 0.3 && avg < st.lvl * (IOS ? 0.4 : 1.6)) { why("echo" + Math.round(echo / (n / rate) * 100) + "%"); return; }
   // 먼 데서 들리는 말 · 주변 소리 거르기(이박사님 11-10 「멀리서 들리는 것도 다 녹음」): 내 평소 목소리보다 많이 작으면 버린다
-  if (avg < Math.max(sensRms() * 1.2, st.lvl * 0.5) || peak < Math.max(sensRms() * 2.5, st.lvl * 0.9)) { $("liveMe").textContent = ""; return; }   // 덩어리 평균도 감도 이상
+  const k5 = IOS ? 0 : 0.5, k9 = IOS ? 0 : 0.9;
+  if (avg < Math.max(sensRms() * 1.2, st.lvl * k5) || peak < Math.max(sensRms() * (IOS ? 1.6 : 2.5), st.lvl * k9)) { why("quiet"); return; }   // 덩어리 평균도 감도 이상
   st.lvl = Math.min(0.3, st.lvl * 0.8 + avg * 0.2);   // 내 목소리 크기를 계속 배운다
   const all = new Float32Array(n); let o = 0; for (const p of parts) { all.set(p, o); o += p.length; }
   const wav = toWav16k(all, rate);
@@ -1778,7 +1783,7 @@ function srvFlush(st, rate) {
       const r = await fetch(VOICE_API + "/voice/stt?lang=" + (SRV_LANG[me.l] || ""), {method: "POST", headers: {"Content-Type": "audio/wav"}, body: wav, signal: ac2.signal}).finally(() => clearTimeout(tm));
       if (!r.ok) throw new Error("stt " + r.status);
       const j = await r.json(); st.fails = 0; sttStat("srv:" + (j.engine || "?"));
-      if (j.text) sttFinal(j.text, j.lang); else $("liveMe").textContent = "";
+      if (j.text) sttFinal(j.text, j.lang); else { $("liveMe").textContent = ""; sttStat("empty:" + (j.engine || "?") + " #" + (st.empties = (st.empties || 0) + 1)); }
     } catch (e) {
       st.fails++; sttStat("srv-fail " + (e.message || e)); $("liveMe").textContent = "⚠ STT";
       if (st.fails >= 3 && SRV === st && (!TOUCH || IOS) && SR) { stopSrvStt(); startSTT(); }   // ③ 서버까지 안 되면 PC 는 크롬 받아쓰기. 폰은 끄지 않고 계속 서버에 보낸다(서버가 살아나면 바로 됨)
