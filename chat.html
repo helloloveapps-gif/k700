@@ -237,7 +237,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="gtb" aria-label="translate" title="Google 번역">🌐</button><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22f</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-22g</small></div></div>
     <div id="gtp" hidden>
       <div class="gtrow"><textarea id="gtIn" rows="2" placeholder="번역할 글"></textarea>
         <div class="gtside"><select id="gtTl"><option value="zh-TW">→ 中文(台灣)</option><option value="ko">→ 한국어</option><option value="en">→ English</option><option value="ja">→ 日本語</option></select>
@@ -1777,15 +1777,25 @@ function srvFlush(st, rate) {
   // 먼 데서 들리는 말 · 주변 소리 거르기(이박사님 11-10 「멀리서 들리는 것도 다 녹음」): 내 평소 목소리보다 많이 작으면 버린다
   if (avg < Math.max(sensRms() * 1.2, st.lvl * 0.5) || peak < Math.max(sensRms() * 2.5, st.lvl * 0.9)) { why("quiet"); return; }   // 덩어리 평균도 감도 이상
   st.lvl = Math.min(0.3, st.lvl * 0.8 + avg * 0.2);   // 내 목소리 크기를 계속 배운다
+  // 이 말 동안이나 바로 앞(1.5초)에 상대가 말했나 — 다른 언어로 들리면 메아리로 본다(11-22)
+  const heard = echo > 0 || REMOTE_TALK || REMOTE_AT > Date.now() - (n / rate) * 1000 - 1500;
   const all = new Float32Array(n); let o = 0; for (const p of parts) { all.set(p, o); o += p.length; }
   const wav = toWav16k(all, rate);
   st.q = st.q.then(async () => {   // 순서대로 하나씩
     try {
       const ac2 = new AbortController(), tm = setTimeout(() => ac2.abort(), 15000);   // 서버가 멈춰도 줄이 막히지 않게
-      const r = await fetch(VOICE_API + "/voice/stt?lang=" + (SRV_LANG[me.l] || ""), {method: "POST", headers: {"Content-Type": "audio/wav"}, body: wav, signal: ac2.signal}).finally(() => clearTimeout(tm));
-      if (!r.ok) throw new Error("stt " + r.status);
-      const j = await r.json(); st.fails = 0; sttStat("srv:" + (j.engine || "?"));
-      if (j.text) sttFinal(j.text, j.lang); else { $("liveMe").textContent = ""; sttStat("empty:" + (j.engine || "?") + " #" + (st.empties = (st.empties || 0) + 1)); }
+      // 11-22: 언어를 강제하지 않고 물어 서버가 알아낸 언어를 본다 — 강제하면 상대 목소리(메아리)를 내 언어로 지어낸다(「계속 말해 봐」 → 「繼續說」 · 「よし」)
+      const ask = async lang => { const r = await fetch(VOICE_API + "/voice/stt?lang=" + lang, {method: "POST", headers: {"Content-Type": "audio/wav"}, body: wav, signal: ac2.signal}); if (!r.ok) throw new Error("stt " + r.status); return r.json(); };
+      let j;
+      try {
+        j = await ask("");
+        if (j.text && !["ko", "zh", "en"].includes(j.lang) && heard) { why("lang-?"); return; }
+        if (j.text && !["ko", "zh", "en"].includes(j.lang)) j = await ask(SRV_LANG[me.l] || "");   // 짧은 말을 엉뚱한 언어(베트남어 등)로 짐작하면 설정 언어로 한 번 더(11-10)
+      } finally { clearTimeout(tm); }
+      st.fails = 0;
+      if (j.text && ["ko", "zh", "en"].includes(j.lang) && j.lang !== me.l.slice(0, 2) && heard) { why("lang-" + j.lang); return; }   // 상대가 말하던 참에 다른 언어 = 메아리
+      sttStat("srv:" + (j.engine || "?") + " " + (j.lang || ""));
+      if (j.text) sttFinal(j.text, j.lang === "zh" && me.l === "zh-TW" ? "zh-CN" : j.lang); else { $("liveMe").textContent = ""; sttStat("empty:" + (j.engine || "?") + " #" + (st.empties = (st.empties || 0) + 1)); }
     } catch (e) {
       st.fails++; sttStat("srv-fail " + (e.message || e)); $("liveMe").textContent = "⚠ STT";
       if (st.fails >= 3 && SRV === st && (!TOUCH || IOS) && SR) { stopSrvStt(); startSTT(); }   // ③ 서버까지 안 되면 PC 는 크롬 받아쓰기. 폰은 끄지 않고 계속 서버에 보낸다(서버가 살아나면 바로 됨)
