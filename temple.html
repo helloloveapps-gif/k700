@@ -259,7 +259,38 @@ function bell() {
 }
 
 const MSG = {1: "m1", 27: "m27", 54: "m54", 81: "m81", 100: "m100", 108: "m108"};
-const POSES = ['<rect x="139" y="266" width="9" height="22" fill="#5c5a55"/><rect x="152" y="266" width="9" height="22" fill="#5c5a55"/><path d="M136 228 Q150 221 164 228 L168 272 L132 272 Z"/><circle cx="150" cy="212" r="12" fill="#2a1d14"/><path d="M137 233 q-10 9 8 15 M163 233 q10 9 -8 15" fill="none" stroke-linecap="round"/>', '<path d="M140 268 l-5 20 M160 268 l5 20" stroke-width="8" stroke="#5c5a55" fill="none" stroke-linecap="round"/><path d="M135 236 Q150 229 165 236 L167 270 L133 270 Z"/><circle cx="150" cy="222" r="12" fill="#2a1d14"/><path d="M136 241 l-7 22 M164 241 l7 22" fill="none" stroke-linecap="round"/>', '<ellipse cx="141" cy="287" rx="7" ry="4" fill="#3a3530"/><ellipse cx="159" cy="287" rx="7" ry="4" fill="#3a3530"/><path d="M135 242 Q150 235 165 242 L168 282 L132 282 Z"/><circle cx="150" cy="228" r="12" fill="#2a1d14"/><path d="M135 247 l-10 33 M165 247 l10 33" fill="none" stroke-linecap="round"/>', '<ellipse cx="141" cy="288" rx="7" ry="4" fill="#3a3530"/><ellipse cx="159" cy="288" rx="7" ry="4" fill="#3a3530"/><path d="M133 254 Q150 247 167 254 L169 284 L131 284 Z"/><circle cx="150" cy="246" r="11" fill="#2a1d14"/><path d="M134 258 l-14 24 M166 258 l14 24" fill="none" stroke-linecap="round"/>', '<ellipse cx="141" cy="289" rx="7" ry="4" fill="#3a3530"/><ellipse cx="159" cy="289" rx="7" ry="4" fill="#3a3530"/><ellipse cx="150" cy="276" rx="23" ry="14"/><circle cx="150" cy="264" r="10" fill="#2a1d14"/><path d="M131 272 l-6 -6 M169 272 l6 -6" fill="none" stroke-linecap="round"/><ellipse cx="124" cy="265" rx="5" ry="3"/><ellipse cx="176" cy="265" rx="5" ry="3"/>', '<ellipse cx="141" cy="289" rx="7" ry="4" fill="#3a3530"/><ellipse cx="159" cy="289" rx="7" ry="4" fill="#3a3530"/><ellipse cx="150" cy="276" rx="23" ry="14"/><circle cx="150" cy="264" r="10" fill="#2a1d14"/><path d="M131 272 l-5 -12 M169 272 l5 -12" fill="none" stroke-linecap="round"/><ellipse cx="125" cy="257" rx="4" ry="5"/><ellipse cx="175" cy="257" rx="4" ry="5"/>'];   // 서기 · 굽힘 · 꿇어앉기 · 숙임 · 이마 닿기 · 손바닥 받들기
+// 절하는 사람(옆모습 · 오른쪽을 봄, 왼쪽을 볼 땐 뒤집어 씀) — 관절 자리를 이어 큰절 한 번을 움직인다. 바닥 y=288
+// c 머리 · s 어깨 · b 등 굽이(가운데) · h 엉덩이 · k 무릎 · a 발목 · e 팔꿈치 · w 손 (x 는 150 에서 떨어진 값) · ha 고개 각도 · hd 손 모양(0 합장 · 1 바닥에 펴기 · 2 손바닥 받들기)
+const BOWK = {
+  stand: {cx: 4, cy: 198, sx: -1, sy: 218, bx: -5, by: 232, hx: -3, hy: 247, kx: 0, ky: 267, ax: -2, ay: 284, ex: 5, ey: 238, wx: 16, wy: 224, ha: 0, hd: 0},
+  nod:   {cx: 18, cy: 208, sx: 8, sy: 222, bx: -1, by: 232, hx: -5, hy: 247, kx: 0, ky: 267, ax: -2, ay: 284, ex: 14, ey: 241, wx: 24, wy: 228, ha: 38, hd: 0},
+  bend:  {cx: 12, cy: 220, sx: 4, sy: 238, bx: -6, by: 250, hx: -11, hy: 263, kx: 12, ky: 270, ax: -4, ay: 284, ex: 11, ey: 256, wx: 21, wy: 243, ha: 14, hd: 0},
+  kneel: {cx: 0, cy: 227, sx: -5, sy: 246, bx: -10, by: 259, hx: -9, hy: 273, kx: 15, ky: 281, ax: -15, ay: 284, ex: 3, ey: 264, wx: 12, wy: 250, ha: 8, hd: 0},
+  hands: {cx: 30, cy: 247, sx: 17, sy: 255, bx: 2, by: 257, hx: -10, hy: 270, kx: 13, ky: 281, ax: -17, ay: 284, ex: 24, ey: 270, wx: 32, wy: 284, ha: 52, hd: 1},
+  floor: {cx: 33, cy: 275, sx: 18, sy: 267, bx: 2, by: 258, hx: -13, hy: 270, kx: 10, ky: 281, ax: -19, ay: 284, ex: 28, ey: 282, wx: 45, wy: 285, ha: 112, hd: 1},
+  palms: {cx: 33, cy: 275, sx: 18, sy: 267, bx: 2, by: 258, hx: -13, hy: 270, kx: 10, ky: 281, ax: -19, ay: 284, ex: 34, ey: 284, wx: 45, wy: 272, ha: 112, hd: 2}
+};
+const BOWMIX = (a, b, t) => { const o = {}; for (const k in a) o[k] = a[k] + (b[k] - a[k]) * t; return o; };
+function bowFig(p, self) {
+  const R = self ? "#9a9ea3" : "#83878c", R2 = self ? "#7a7e84" : "#686c71", SK = "#e9bd90", SK2 = "#cf9f70", SASH = self ? "#9a4327" : "#7c4a36", I = "#1a120c";
+  const X = v => (150 + v).toFixed(1), Y = v => v.toFixed(1), limb = (d, w, c, o = 4) => `<path d="${d}" fill="none" stroke="${I}" stroke-width="${w + o}"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}"/>`;
+  const leg = `M${X(p.hx)} ${Y(p.hy)} L${X(p.kx)} ${Y(p.ky)} L${X(p.ax)} ${Y(p.ay - 2)}`;
+  const foot = `<ellipse cx="${X(p.ax + (p.ky < 275 ? 5 : -3))}" cy="${Y(p.ay + 2)}" rx="8" ry="3.6" fill="${p.ky < 275 ? "#f0ece2" : SK}" stroke="${I}" stroke-width="1.8"/>`;
+  const tor = `M${X(p.hx)} ${Y(p.hy)} Q${X(p.bx * 1.6 - (p.hx + p.sx) * .3)} ${Y(p.by * 1.6 - (p.hy + p.sy) * .3)} ${X(p.sx)} ${Y(p.sy)}`;
+  // 등 쪽 그늘 · 허리띠
+  const mx = (p.hx * .62 + p.bx * .38), my = (p.hy * .62 + p.by * .38), an = Math.atan2(p.sy - p.hy, p.sx - p.hx), nx = -Math.sin(an) * 10.5, ny = Math.cos(an) * 10.5;
+  const sash = `<path d="M${X(mx - nx)} ${Y(my - ny)} L${X(mx + nx)} ${Y(my + ny)}" stroke="${I}" stroke-width="7" fill="none" stroke-linecap="butt"/><path d="M${X(mx - nx)} ${Y(my - ny)} L${X(mx + nx)} ${Y(my + ny)}" stroke="${SASH}" stroke-width="4.2" fill="none" stroke-linecap="butt"/>`;
+  const armD = `M${X(p.sx + 1)} ${Y(p.sy + 2)} L${X(p.ex)} ${Y(p.ey)} L${X(p.wx - (p.hd < .5 ? 1.5 : 3))} ${Y(p.wy + (p.hd < .5 ? 4 : 0))}`;
+  let hand;
+  if (p.hd < .5) hand = `<path d="M${X(p.wx - 3)} ${Y(p.wy + 5)} Q${X(p.wx - 2)} ${Y(p.wy - 5)} ${X(p.wx + 3)} ${Y(p.wy - 9)} Q${X(p.wx + 6)} ${Y(p.wy - 3)} ${X(p.wx + 3)} ${Y(p.wy + 5)} Z" fill="${SK}" stroke="${I}" stroke-width="1.8"/>`;
+  else if (p.hd < 1.35) hand = `<ellipse cx="${X(p.wx + 1)}" cy="${Y(p.wy + .5)}" rx="7" ry="3.2" fill="${SK}" stroke="${I}" stroke-width="1.8"/>`;
+  else hand = `<path d="M${X(p.wx - 7)} ${Y(p.wy + 2)} Q${X(p.wx)} ${Y(p.wy + 5)} ${X(p.wx + 9)} ${Y(p.wy - 2)} Q${X(p.wx + 2)} ${Y(p.wy - 2)} ${X(p.wx - 6)} ${Y(p.wy - 3)} Z" fill="${SK}" stroke="${I}" stroke-width="1.8"/>`;
+  const neck = limb(`M${X(p.sx + 1)} ${Y(p.sy - 3)} L${X(p.cx - 1)} ${Y(p.cy + 3)}`, 7, SK2, 3.6);
+  const head = `<g transform="translate(${X(p.cx)} ${Y(p.cy)}) rotate(${p.ha.toFixed(0)})" stroke="${I}" stroke-width="2"><path d="M-9 4 C-11 -8 -4 -13 3 -12 C9 -11 11 -6 11 -2 L14 3 L11 4.5 C11.5 9 8 12 2 12 C-4 12 -8 9 -9 4 Z" fill="${SK}"/><path d="M-5 11 C-12 8 -13 -4 -9 -9 C-5 -14 4 -14.5 9 -10 C11 -8 11 -6 10.5 -5 C6 -7 3 -6 1 -3 C0 0 -1 2 -2 3 C-3 6 -3 9 -5 11 Z" fill="#2a1d14"/><ellipse cx="-.5" cy="3" rx="2.2" ry="3.2" fill="${SK2}" stroke-width="1.4"/><path d="M6 .5 q2.2 1.6 4 .4" fill="none" stroke-width="1.5"/><path d="M8 7.5 q1.6 .6 3 -.4" fill="none" stroke-width="1.2"/></g>`;
+  const down = p.hd > .9;   // 엎드리면 머리보다 팔이 앞
+  const body = limb(leg, 15, R2) + foot + limb(`M${X(p.hx)} ${Y(p.hy)} L${X(p.kx)} ${Y(p.ky)}`, 19, R) + limb(tor, 21, R) + sash;
+  return `<g stroke-linecap="round" stroke-linejoin="round">` + (down ? neck + head + body + limb(armD, 8.5, R) + hand : body + neck + head + limb(armD, 8.5, R) + hand) + `</g>`;
+}
 const wait = ms => new Promise(r => setTimeout(r, ms));
 // 법당 안 사람들: 나는 가운데 앞 방석 · 들어온 차례로 옆 · 뒷줄(11자리까지 보임)
 const AV = {};
@@ -268,10 +299,10 @@ const ORDER = [3, 4, 2, 5, 1, 6, 0, 7];   // 나는 가운데 · 오는 차례�
 for (let i = 0; i < MATS; i++) { const e = document.createElementNS(NS, "ellipse"); e.setAttribute("cx", MX(i)); e.setAttribute("cy", 321); e.setAttribute("rx", 44 * SC + 2); e.setAttribute("ry", 10 * SC + 2); e.setAttribute("fill", "#8e2a1c"); e.setAttribute("stroke", "#1a120c"); e.setAttribute("stroke-width", 2); $("mats").appendChild(e); }
 function mkAv(id, name, self) {
   const g = document.createElementNS(NS, "g"), body = document.createElementNS(NS, "g");
-  body.innerHTML = POSES.map((p, i) => `<g${i ? ' style="display:none"' : ""} stroke="#1a120c" stroke-width="2.5" fill="${self ? "#f3e6c8" : "#d6c8a8"}">${p}</g>`).join("")
+  body.innerHTML = '<g></g>'
     + `<text x="150" y="192" text-anchor="middle" font-size="22" font-weight="700" fill="${self ? "#ffd76a" : "#f3e6c8"}" stroke="#1a120c" stroke-width="5" paint-order="stroke"></text>`;
   g.appendChild(body); $("people").appendChild(g);
-  const a = AV[id] = {g, body, ps: [...body.children].slice(0, POSES.length), nm: body.querySelector("text"), b: 0, t: 0, busy: false};
+  const a = AV[id] = {g, body, fig: body.firstChild, self, pose: BOWK.stand, nm: body.querySelector("text"), b: 0, t: 0, busy: false};
   setName(a, name, 0); return a;
 }
 function bubble(name, msg) {
@@ -284,30 +315,34 @@ function bubble(name, msg) {
   a.g.appendChild(g); a.bub = g; setTimeout(() => { if (a.bub === g) { g.remove(); a.bub = null; } }, 7000);
 }
 const setName = (a, name, c) => { a.nm.textContent = name + (c >= 108 ? " 🏅" : ""); };
-const setPose = (a, k) => { a.ps.forEach((p, i) => p.style.display = i === k ? "" : "none"); a.nm.setAttribute("y", [193, 203, 209, 228, 246, 246][k] - (a.slot % 2 ? 26 : 0)); };   // 옆 방석 이름표와 안 겹치게 홀수 자리는 위로   // 이름표는 머리를 따라간다
+const setPose = (a, p) => { a.pose = p; a.fig.innerHTML = bowFig(p, a.self); a.fig.setAttribute("transform", a.slot > 3 ? "translate(307 0) scale(-1 1)" : "translate(-7 0)"); a.nm.setAttribute("y", Math.min(p.cy - 21, 238) - (a.slot % 2 ? 26 : 0)); };   // 왼쪽 자리는 오른쪽 · 오른쪽 자리는 왼쪽(가운데 부처님 쪽)을 본다 · 이름표는 머리를 따라간다
 function layout() {
   for (const a of Object.values(AV)) {
     if (a.slot == null) { a.g.style.display = "none"; continue; }
-    a.g.style.display = ""; setPose(a, a.ps.findIndex(p => p.style.display !== "none")); a.g.setAttribute("transform", `translate(${MX(a.slot)} 318) scale(${SC}) translate(-150 -288)`);   // 방석 줄을 불단보다 아래로(이름표가 명패를 안 가림)
+    a.g.style.display = ""; setPose(a, a.pose); a.g.setAttribute("transform", `translate(${MX(a.slot)} 318) scale(${SC}) translate(-150 -288)`);   // 방석 줄을 불단보다 아래로(이름표가 명패를 안 가림)
   }
 }
 async function bowAnim(a, snd) {
   if (a.busy) return; a.busy = true;
-  // 큰절 한 번: 굽혀 꿇어앉고 → 숙여 이마를 바닥에(목탁) → 손바닥 받들기 → 내리고 → 거꾸로 일어서기 (뚝뚝 끊어 움직임)
-  for (const [k, ms] of [[1, 260], [2, 300], [3, 240], [4, 300]]) { setPose(a, k); await wait(ms); }
-  if (snd) moktak(); setPose(a, 5); await wait(480); setPose(a, 4); await wait(260);
-  for (const [k, ms] of [[3, 240], [2, 260], [1, 260]]) { setPose(a, k); await wait(ms); }
-  setPose(a, 0);
+  // 큰절 한 번: 합장 반배 → 굽혀 → 꿇어앉기 → 손 짚기 → 이마를 바닥에(목탁) → 손바닥 받들기 → 거꾸로 일어서기. 초당 12장으로 이어 움직임
+  for (const [k, ms, hold, hit] of [["nod", 260, 90], ["bend", 280, 0], ["kneel", 260, 80], ["hands", 260, 0], ["floor", 280, 200, 1], ["palms", 180, 300], ["floor", 180, 60], ["hands", 240, 0], ["kneel", 260, 0], ["bend", 260, 0], ["stand", 280, 0]]) {
+    const from = a.pose, N = Math.max(1, Math.round(ms / 83));
+    for (let i = 1; i <= N; i++) { const t = i / N; setPose(a, BOWMIX(from, BOWK[k], t * t * (3 - 2 * t))); await wait(ms / N); }
+    if (hit && snd) moktak();
+    if (hold) await wait(hold);
+  }
+  setPose(a, BOWK.stand);
   a.busy = false;
 }
 async function walkAv(a, snd) {
   const N = 10;
   for (let i = 0; i <= N; i++) {
     const k = i / N, y = 110 * (1 - k), x = i < N ? (i % 2 ? 3 : -3) : 0;   // 제 방석 줄 그대로 아래에서 올라온다(옆 사람과 안 겹침)
+    setPose(a, {...BOWK.stand, kx: i % 2 ? 6 : -3, ax: i % 2 ? 6 : -7});   // 걷는 다리
     a.body.setAttribute("transform", `translate(${x} ${y})`);
     if (i < N) { if (snd) moktakSoft(); await wait(260); }
   }
-  a.body.removeAttribute("transform");
+  a.body.removeAttribute("transform"); setPose(a, BOWK.stand);
 }
 async function bow() {
   if (busy) return; busy = true;
@@ -323,7 +358,7 @@ function askMore() {
   const Q = {ko: [`🙏 ${n}배를 마쳤습니다. 더 하시겠어요?`, "🙇 더 하기", "🚪 그만하기"], zh: [`🙏 已完成 ${n} 拜。要繼續嗎?`, "🙇 繼續", "🚪 結束"], en: [`🙏 ${n} bows done. Continue?`, "🙇 Continue", "🚪 Stop"]}[LANG] || [];
   $("moreQ").textContent = Q[0]; $("moreYes").textContent = Q[1]; $("moreNo").textContent = Q[2]; $("more").hidden = false;
 }
-$("moreYes").onclick = () => { $("more").hidden = true; auto = setInterval(bow, 3600); bow(); $("auto").textContent = t("autoOff"); };
+$("moreYes").onclick = () => { $("more").hidden = true; auto = setInterval(bow, 4200); bow(); $("auto").textContent = t("autoOff"); };
 $("moreNo").onclick = () => { $("more").hidden = true; $("leave").click(); };
 function stopAuto() { clearInterval(auto); auto = null; $("auto").textContent = t("autoOn"); }
 $("bow").onclick = bow;
@@ -335,7 +370,7 @@ $("leave").onclick = async () => {
   location.href = "index.html";
 };
 document.addEventListener("keydown", e => { if (e.code === "Space" && !$("app").hidden && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) { e.preventDefault(); bow(); } });   // 글 쓰는 칸에서는 띄어쓰기(11-18)
-$("auto").onclick = () => { if (auto) return stopAuto(); auto = setInterval(bow, 3600); bow(); $("auto").textContent = t("autoOff"); };
+$("auto").onclick = () => { if (auto) return stopAuto(); auto = setInterval(bow, 4200); bow(); $("auto").textContent = t("autoOff"); };
 $("snd").onclick = () => { sound = !sound; store.set("pray_snd", sound ? "1" : "0"); $("snd").textContent = sound ? t("sndOn") : t("sndOff"); bgm(); };
 function bgm() { const a = $("bgm"); a.volume = .35; if (sound && !$("app").hidden) a.play().catch(() => {}); else a.pause(); }
 document.addEventListener("pointerdown", () => { if ($("bgm").paused) bgm(); });   // 휴대폰은 한 번 눌러야 소리가 난다
@@ -461,7 +496,7 @@ function seated(i) {
 async function walkIn() {
   busy = true; $("msg").textContent = t("walk");
   await walkAv(AV.me, true); busy = false;   // 화면 앞쪽(크게)에서 방석으로 — 뚝뚝 끊어 걷기
-  { $("msg").textContent = t("start"); await wait(700); auto = setInterval(bow, 3600); bow(); $("auto").textContent = t("autoOff"); }
+  { $("msg").textContent = t("start"); await wait(700); auto = setInterval(bow, 4200); bow(); $("auto").textContent = t("autoOff"); }
 }
 function moktakSoft() { if (!sound) return; try { const c = ac(), t = c.currentTime, o = c.createOscillator(), g = c.createGain(); o.frequency.value = 140; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.15, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + .08); o.connect(g).connect(c.destination); o.start(t); o.stop(t + .1); } catch (e) {} }
 // 방명록: 날짜마다 한 사람 한 줄(pray/book/날짜/닉네임) — 이름 남기기나 절하면 기록 · 절 수는 그날 가장 많이 한 수
