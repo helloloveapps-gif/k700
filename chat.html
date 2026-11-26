@@ -225,6 +225,11 @@ html,body{overflow:hidden;overscroll-behavior:none}
   .msg{gap:12px;padding:2px 12px}
   .av{width:36px;height:36px}
 }
+.yt{position:relative;margin-top:6px;width:100%;max-width:380px;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;cursor:pointer}
+.yt img{width:100%;height:100%;object-fit:cover;display:block}
+.yt .ytp{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:58px;height:40px;border-radius:10px;background:#e00;color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center}
+.yt iframe,.yt>div{position:absolute;inset:0;width:100%;height:100%;border:0}
+.yt .ytu{position:absolute;left:8px;bottom:8px;z-index:2;font-size:14px;padding:6px 10px;border-radius:16px;border:0;background:rgba(0,0,0,.7);color:#fff;cursor:pointer}
 </style>
 </head>
 <body>
@@ -237,7 +242,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
   </nav>
   <main id="main">
     <div id="top"><button id="burger" aria-label="menu">☰</button><span class="h" id="topH">#</span><span class="t" id="topT"></span><span id="owner" style="color:#f0b232;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px"></span><span id="here" style="color:var(--sub);font-size:13px;font-weight:600;white-space:nowrap"></span><button id="gtb" aria-label="translate" title="Google 번역">🌐</button><button id="vbtn"></button><button id="more" aria-label="menu">⋯</button>
-      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-27b</small></div></div>
+      <div id="menu" hidden><button id="delRoom" hidden></button><button id="pushB"></button><button id="installB"></button><button id="soundB"></button><button id="bell"></button><button id="leaveRoom" hidden></button><a href="./" id="homeL"></a><small id="verL" style="color:var(--sub);font-size:11px;padding:6px 10px">판 11-27c</small></div></div>
     <div id="gtp" hidden>
       <div class="gtrow"><textarea id="gtIn" rows="2" placeholder="번역할 글"></textarea>
         <div class="gtside"><select id="gtTl"><option value="zh-TW">→ 中文(台灣)</option><option value="ko">→ 한국어</option><option value="en">→ English</option><option value="ja">→ 日本語</option></select>
@@ -685,7 +690,47 @@ function addMsg(id, m) {
   if (m.i) { if (m.t === "🖼️") d.querySelector(".tx").hidden = true; loadImg(d.querySelector(".pic")); }
   if (!mine && ts > OPENED) ding();   // 남의 글: 화면이 안 보이면 「슬립~」, 보고 있으면 「띵」(이박사님 11-10)
   render(d);
+  ytAttach(d, ts > OPENED);
   if (stick || mine) log.scrollTop = log.scrollHeight;
+}
+// 11-27 유튜브 링크 → 글 밑에 플레이어. 방을 연 뒤 새로 온 링크는 소리까지 켜고 바로 재생(둘이 같이 보게) ·
+// 폰이 소리 자동 재생을 막으면(아이폰 등) 소리 없이 재생하고 「🔊 소리 켜기」 단추 · 옛 글은 그림만, 누르면 재생 · 한 번에 하나만 재생
+const YT_RE = /(?:youtube\.com\/(?:watch\?(?:[^\s#]*&)?v=|shorts\/|live\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/;
+let YT_API = null; const YTS = new Set();
+const ytApi = () => YT_API || (YT_API = new Promise((ok, no) => {
+  if (window.YT && YT.Player) return ok();
+  const prev = window.onYouTubeIframeAPIReady; window.onYouTubeIframeAPIReady = () => { if (prev) prev(); ok(); };
+  const sc = document.createElement("script"); sc.src = "https://www.youtube.com/iframe_api"; sc.onerror = () => { YT_API = null; no(new Error("yt")); }; document.head.appendChild(sc);
+}));
+function ytAttach(d, auto) {
+  const m = YT_RE.exec(d.dataset.t || ""); if (!m || d.querySelector(".yt")) return;
+  const id = m[1], box = document.createElement("div"); box.className = "yt";
+  box.innerHTML = '<img alt="" loading="lazy" src="https://i.ytimg.com/vi/' + id + '/hqdefault.jpg"><div class="ytp">▶</div>';
+  (d.querySelector(".tx") || d.lastChild).after(box);
+  box.onclick = () => { if (!box.dataset.on) ytPlay(box, id, true); };
+  if (auto) ytPlay(box, id, false);
+}
+async function ytPlay(box, id, tapped) {
+  box.dataset.on = "1";
+  const hold = document.createElement("div"); box.innerHTML = ""; box.appendChild(hold);
+  try { await ytApi(); } catch (e) { box.innerHTML = '<iframe src="https://www.youtube.com/embed/' + id + '?autoplay=1&playsinline=1&rel=0" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>'; return; }
+  let p;
+  const others = () => YTS.forEach(o => { if (o !== p) try { o.pauseVideo(); } catch (e) {} });
+  p = new YT.Player(hold, {videoId: id, playerVars: {autoplay: 1, playsinline: 1, rel: 0}, host: "https://www.youtube.com", events: {
+    onReady: e => {
+      YTS.add(p); others(); e.target.unMute(); e.target.setVolume(100); e.target.playVideo();
+      if (tapped) return;
+      setTimeout(() => {   // 소리 켠 채 재생이 막혔으면 소리 없이라도 틀고 단추를 띄운다
+        let s = -1; try { s = p.getPlayerState(); } catch (er) {}
+        if (s === YT.PlayerState.PLAYING) return;
+        try { p.mute(); p.playVideo(); } catch (er) {}
+        const u = document.createElement("button"); u.className = "ytu"; u.textContent = "🔊 " + ({ko: "소리 켜기", "zh-TW": "開聲音", "zh-CN": "开声音", en: "Sound on"}[me.l] || "🔊");
+        u.onclick = ev => { ev.stopPropagation(); try { p.unMute(); p.setVolume(100); p.playVideo(); } catch (er) {} u.remove(); };
+        box.appendChild(u);
+      }, 1800);
+    },
+    onStateChange: e => { if (e.data === YT.PlayerState.PLAYING) others(); }
+  }});
 }
 // 원문은 그대로 위에, 번역은 그 밑에(.org 칸을 번역 칸으로 쓴다)
 // AI 로 번역할 글: 최근 30분 글 · 방을 연 뒤 온 글(옛 글은 구글 — 방을 열 때 한꺼번에 몰리지 않게)
