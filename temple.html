@@ -262,13 +262,13 @@ function applyLang() {
 document.querySelectorAll(".lang button").forEach(b => b.onclick = () => { LANG = b.dataset.l; store.set("pray_lang", LANG); applyLang(); });
 // 말 한마디는 보는 사람 말로 번역해 밑에 작게(구글 무료 · 같은 말은 기억)
 const TRC = {};
-async function trTo(text) {
-  const tl = LANG === "zh" ? "zh-TW" : LANG, k = tl + "\u0001" + text;
+async function trTo(text, want) {   // want = 단추로 고른 말(그때는 같은 말이어도 숨기지 않음)
+  const tl = want || (LANG === "zh" ? "zh-TW" : LANG), k = tl + "\u0001" + text + (want ? "\u0001b" : "");
   if (k in TRC) return TRC[k];
   try {
     const j = await (await fetch("https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" + tl + "&dt=t&q=" + encodeURIComponent(text))).json();
     const src = String(j[2] || ""), out = (j[0] || []).map(x => x[0]).join("");
-    return TRC[k] = (src.slice(0, 2) === tl.slice(0, 2) || out.trim() === text.trim()) ? "" : out;
+    return TRC[k] = !want && (src.slice(0, 2) === tl.slice(0, 2) || out.trim() === text.trim()) ? "" : out;
   } catch (e) { return TRC[k] = ""; }
 }
 const today = () => { const d = new Date(); return d.getFullYear() + String(d.getMonth() + 1).padStart(2, "0") + String(d.getDate()).padStart(2, "0"); };
@@ -526,14 +526,15 @@ async function together() {
     const drawG = () => drawBook();
     // 말 한마디: 왼쪽에 「닉네임 :」, 오른쪽에 한 말
     // 말 한마디: 20줄씩 쪽 넘김
-    let WP = 0;
+    let WP = 0; const WSHOW = {};   // 말 한마디마다 단추로 고른 번역 말
     const drawW = () => { const WPER = 20, pages = Math.max(1, Math.ceil(W.length / WPER)); WP = Math.min(WP, pages - 1);
       const pb = (k, label, on) => `<button data-wp="${k}" style="font:inherit;font-size:13px;min-width:30px;padding:3px 8px;margin:2px;border-radius:8px;border:1px solid var(--gold);background:${on ? "var(--gold)" : "transparent"};color:${on ? "var(--ink)" : "var(--gold)"};cursor:pointer">${label}</button>`;
       let nav = ""; if (pages > 1) { nav = pb(Math.max(0, WP - 1), "‹"); for (let i = 0; i < pages; i++) nav += pb(i, i + 1, i === WP); nav += pb(Math.min(pages - 1, WP + 1), "›"); }
-      $("wishes").innerHTML = W.slice(WP * WPER, WP * WPER + WPER).map(w => `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px 0;text-align:left"><span style="flex:none;color:var(--gold);font-weight:700">${esc(w.n)} :</span><span style="flex:1;min-width:0;word-break:break-all">${esc(w.m)}<span class="tr" data-m="${esc(w.m)}" style="display:block;color:var(--muted);font-size:13px"></span></span></div>`).join("") + (nav ? `<div style="text-align:center;margin-top:6px">${nav}</div>` : "") || '<div style="color:var(--muted)">' + t("noWish") + '</div>';
+      $("wishes").innerHTML = W.slice(WP * WPER, WP * WPER + WPER).map(w => `<div style="display:flex;gap:6px;border-bottom:1px solid #3a2a1c;padding:4px 0;text-align:left"><span style="flex:none;color:var(--gold);font-weight:700">${esc(w.n)} :</span><span style="flex:1;min-width:0;word-break:break-all">${esc(w.m)}<span class="tr" data-m="${esc(w.m)}" style="display:block;color:var(--muted);font-size:13px"></span></span><span style="flex:none;white-space:nowrap">${[["ko", "한"], ["zh-TW", "中"], ["en", "EN"]].map(([l, x]) => `<button class="wtr" data-l="${l}" style="font:inherit;font-size:12px;padding:1px 6px;margin-left:2px;border-radius:6px;border:1px solid var(--gold);background:${WSHOW[w.m] === l ? "var(--gold)" : "transparent"};color:${WSHOW[w.m] === l ? "var(--ink)" : "var(--gold)"};cursor:pointer">${x}</button>`).join("")}</span></div>`).join("") + (nav ? `<div style="text-align:center;margin-top:6px">${nav}</div>` : "") || '<div style="color:var(--muted)">' + t("noWish") + '</div>';
       if (!W.length) $("wishes").innerHTML = '<div style="color:var(--muted)">' + t("noWish") + '</div>';
       $("wishes").querySelectorAll("[data-wp]").forEach(b => b.onclick = () => { WP = +b.dataset.wp; drawW(); });
-      $("wishes").querySelectorAll(".tr").forEach(async e => { e.textContent = await trTo(e.dataset.m); }); };
+      $("wishes").querySelectorAll(".tr").forEach(async e => { const w = WSHOW[e.dataset.m]; e.textContent = w ? "…" : ""; e.textContent = await trTo(e.dataset.m, w); });
+      $("wishes").querySelectorAll(".wtr").forEach(b => b.onclick = () => { const m = b.closest("div").querySelector(".tr").dataset.m; if (WSHOW[m] === b.dataset.l) delete WSHOW[m]; else WSHOW[m] = b.dataset.l; drawW(); }); };
     REDRAW = () => { show(); drawG(); drawW(); };
     DB.ref("pray/fin/" + today()).on("value", s => { FIN = new Set(Object.values(s.val() || {}).map(x => x && x.n).filter(Boolean)); drawG(); drawW(); });
     DB.ref("pray/book").orderByKey().limitToLast(400).on("value", s => { BOOK = s.val() || {}; drawBook(); drawTot(); });
